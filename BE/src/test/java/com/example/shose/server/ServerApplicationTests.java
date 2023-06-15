@@ -1,10 +1,10 @@
-package com.example.be;
+package com.example.shose.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BeApplicationTests {
+class ServerApplicationTests {
 
     @Test
     void contextLoads() {

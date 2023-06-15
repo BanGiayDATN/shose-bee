@@ -1,13 +1,13 @@
-package com.example.be;
+package com.example.shose.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BeApplication {
+public class ServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BeApplication.class, args);
+        SpringApplication.run(ServerApplication.class, args);
     }
 
 }
