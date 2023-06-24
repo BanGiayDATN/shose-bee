@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 
 const Datatable = () => {
   var userRows =  useSelector((state) => state.users.users.value)
-  console.log(userRows);
   const [data, setData] = useState(userRows);
 
   const handleDelete = (id) => {
@@ -23,13 +22,13 @@ const Datatable = () => {
         return (
           <div className="cellAction">
             <Link to="/users/test" style={{ textDecoration: "none" }}>
-              <div className="viewButton">View</div>
+              <div className="viewButton"><i class="uil uil-eye"></i></div>
             </Link>
             <div
               className="deleteButton"
               onClick={() => handleDelete(params.row.id)}
             >
-              Delete
+              <i class="uil uil-trash"></i>
             </div>
           </div>
         );
@@ -39,11 +38,6 @@ const Datatable = () => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        Add New User
-        <i class="fa-solid fa-user"></i>
-        <Link to="/users/new" className="link">
-          Add New
-        </Link>
       </div>
       <DataGrid
         className="datagrid"

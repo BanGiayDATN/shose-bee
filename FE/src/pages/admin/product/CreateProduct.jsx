@@ -72,31 +72,37 @@ function CreateProduct() {
 
   // end product
   //  end quiiljs
-  const [data, setData] = useState([])
+  const [indexImd, setIndexImg] = useState(-1)
   const [url, setImg] = useState();
-  function zoomImg(i) {
-    setImg(data[i].img)
-  }
+  // function zoomImg(i) {
+  //   setImg(data[i].img)
+  // }
   const handleClick = (event) => {
+    // console.log(i);
     var url = event.target.value
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setData([...data, { url: url, img: reader.result }])
-      console.log(data);
+      const data = { url: url, img: reader.result }
+      const onchangeVal = [...datacClassify]
+      onchangeVal[indexImd].data.push(data)
+      setDataClassify(onchangeVal)
     };
   };
-  const handleDelete = (i) => {
-    const deleteVal = [...data]
-    deleteVal.splice(i, 1)
-    setData(deleteVal)
+  const handleDelete = (i, indexImg) => {
+    console.log(indexImg);
+    const deleteVal = [...datacClassify]
+    const data = deleteVal[i].data
+    data.splice(indexImg, 1)
+    deleteVal[i].data = data
+    setDataClassify(deleteVal)
   }
 
   // begin classify
-  const [datacClassify, setDataClassify] = useState([{ color: "", size: "", quantity: 0, price: 0 }])
+  const [datacClassify, setDataClassify] = useState([{ color: "", size: "", quantity: 0, price: 0, data: [] }])
   const handleClickClassify = () => {
-    setDataClassify([...datacClassify, { color: "", size: "", quantity: 0, price: 0 }])
+    setDataClassify([...datacClassify, { color: "", size: "", quantity: 0, price: 0, data: [] }])
   }
   const handleChangeClassify = (e, i) => {
     const { name, value } = e.target
@@ -124,35 +130,7 @@ function CreateProduct() {
                 <div className="row">
                   <h4>Thông tin cơ bản</h4>
                 </div>
-                {/* begin img */}
-                <div className="row mt-4">
-                  <label className='col-2'>Hình ảnh sản phẩm:</label>
-                  <div className="col-10">
-                    <div className="row">
-                      {
-                        data.map((val, i) =>
 
-                          <div key={i} className='col-1 image'>
-                            <div className="row">
-                              <img src={val.img} className=' ' alt='123' />
-                            </div>
-                            <div className="row" style={{ margin: "0" }}>
-                              {/* <div className='col-6 ' style={{ textAlign: "left", padding: "0px" }} data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => zoomImg(i)}><i class="uil uil-crop-alt"></i></div> */}
-                              <div className=' text center' onClick={() => handleDelete(i)}><i class="uil uil-times"></i></div>
-                            </div>
-                          </div>
-
-                        )
-                      }
-                      <label htmlFor='addImg' className='col-1 image' style={{ height: "100px", textAlign: "center" }}>
-                        <i className="uil uil-image-plus"></i><br />
-                        Thêm hình ảnh
-                      </label>
-                      <input type="file" id="addImg" className='col-2' style={{ display: "none" }} onChange={handleClick} />
-                    </div>
-                  </div>
-                </div>
-                {/* end img */}
                 <div className="row mt-4">
                   <div className="col-2">
                     <label htmlFor="nameProduct" class="form-label "> Tên Sản Phẩm:</label>
@@ -280,6 +258,40 @@ function CreateProduct() {
                         <div className="col-1 mt-2 mb-2 centerHeight">
                           <button onClick={() => handleDeleteClassify(i)} className='btn btn-danger'> <i className="uil uil-times-circle"></i></button>
                         </div>
+                        {/* begin img */}
+                        <div className="row mt-4">
+                          <label className='col-2'>Hình ảnh sản phẩm:</label>
+                          <div className="col-10">
+                            <div className="row">
+                              {
+                                val.data.map((valImg, index) =>
+
+                                  <div key={index} className='col-1 image'>
+                                    <div className="row">
+                                      <img src={valImg.img} className=' ' alt='123' />
+                                    </div>
+                                    <div className="row" style={{ margin: "0" }}>
+                                      {/* <div className='col-6 ' style={{ textAlign: "left", padding: "0px" }} data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => zoomImg(i)}><i class="uil uil-crop-alt"></i></div> */}
+                                      <div className=' text center' onClick={() => {console.log(index);handleDelete(i, index)}}><i class="uil uil-times"></i></div>
+                                    </div>
+                                  </div>
+
+                                )
+                              }
+                               {/* <label htmlFor='id' className='col-1 image' style={{ height: "100px", textAlign: "center" }}>
+                                <i className="uil uil-image-plus"></i><br />
+                                Thêm hình ảnh
+                              </label>
+                              <input type='file' id='id' onChange={(e) =>{console.log(i +" "+e); handleClick(e, i)}}></input> */}
+                              <label htmlFor='addImg' onClick={() => {setIndexImg(i); }} className='col-1 image' style={{ height: "100px", textAlign: "center" }}>
+                                <i className="uil uil-image-plus"></i><br />
+                                Thêm hình ảnh
+                              </label>
+                              <input type="file" id="addImg" className='col-2' style={{ display: "none" }} onChange={(e) => handleClick(e)} />
+                            </div>
+                          </div>
+                        </div>
+                        {/* end img */}
                       </div>
                     </div>
                   )
