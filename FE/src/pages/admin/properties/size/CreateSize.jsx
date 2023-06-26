@@ -16,12 +16,7 @@ function CreateSize({ onchange }) {
         setSize({ ...size, [event.target.name]: event.target.value })
         validator.current.showMessages();
         validator.current.getErrorMessages();
-        // if (validator.current.allValid()) {
-        //     onchange()
-        // }
     }
-    // const dispatch = useDispatch();
-    // const navigate = useNavigate();
     const dispatch = useDispatch();
     const handleSubmiForm = () => {
 

@@ -46,6 +46,7 @@ function CreateProduct() {
       });
     }
   }, [quill]);
+
   // begin product
   const [product, setProduct] = useState({
     name: "",
@@ -71,6 +72,7 @@ function CreateProduct() {
   }
 
   // end product
+
   //  end quiiljs
   const [indexImd, setIndexImg] = useState(-1)
   const [url, setImg] = useState();
@@ -123,6 +125,14 @@ function CreateProduct() {
       <Sidebar />
       <div className="newContainer">
         <Navbar />
+        <div className="row" style={{ margin: '10px 0 10px 10px' }}>
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item"><a href="/products">Sản phẩm</a></li>
+              <li className="breadcrumb-item active" aria-current="page">Tạo sản phẩm</li>
+            </ol>
+          </nav>
+        </div>
         <div style={{ background: "#f6f6f6" }} className=''>
           <div className="row" style={{ margin: "0 10px" }}>
             <div className="partition">
@@ -272,18 +282,18 @@ function CreateProduct() {
                                     </div>
                                     <div className="row" style={{ margin: "0" }}>
                                       {/* <div className='col-6 ' style={{ textAlign: "left", padding: "0px" }} data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => zoomImg(i)}><i class="uil uil-crop-alt"></i></div> */}
-                                      <div className=' text center' onClick={() => {console.log(index);handleDelete(i, index)}}><i class="uil uil-times"></i></div>
+                                      <div className=' text center' onClick={() => { console.log(index); handleDelete(i, index) }}><i class="uil uil-times"></i></div>
                                     </div>
                                   </div>
 
                                 )
                               }
-                               {/* <label htmlFor='id' className='col-1 image' style={{ height: "100px", textAlign: "center" }}>
+                              {/* <label htmlFor='id' className='col-1 image' style={{ height: "100px", textAlign: "center" }}>
                                 <i className="uil uil-image-plus"></i><br />
                                 Thêm hình ảnh
                               </label>
                               <input type='file' id='id' onChange={(e) =>{console.log(i +" "+e); handleClick(e, i)}}></input> */}
-                              <label htmlFor='addImg' onClick={() => {setIndexImg(i); }} className='col-1 image' style={{ height: "100px", textAlign: "center" }}>
+                              <label htmlFor='addImg' onClick={() => { setIndexImg(i); }} className='col-1 image' style={{ height: "100px", textAlign: "center" }}>
                                 <i className="uil uil-image-plus"></i><br />
                                 Thêm hình ảnh
                               </label>

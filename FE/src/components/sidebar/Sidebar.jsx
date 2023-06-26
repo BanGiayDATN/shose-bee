@@ -11,15 +11,24 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { Link } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
+import { Accordion } from "react-bootstrap";
 
+const menu = [{ name: 'Thống Kê', url: '', status: 0, icon: DashboardIcon },
+{ name: 'Quản lý đơn hàng', url: '', status: 0, icon: ShoppingCartIcon },
+{ name: 'Bán tại quầy', url: '', status: 0, icon: ShoppingCartCheckoutIcon },
+{ parent: 'Quản lý sản phẩm', child: [{ name: 'Sản Phẩm', url: '', icon: StoreIcon }], status: 1 },
+{ parent: 'Quản lý tài khoản', child: [{ name: 'Nhân Viên', url: '', icon: AccountCircleOutlinedIcon }, { name: 'Khách hàng', url: '', icon: AccountCircleOutlinedIcon }], status: 1 }]
 const Sidebar = () => {
   const { dispatch } = useContext(DarkModeContext);
   return (
     <div className="sidebar">
       <div className="top">
+
         <Link to="/" style={{ textDecoration: "none" }}>
           <span className="logo">lamadmin</span>
         </Link>
@@ -27,6 +36,40 @@ const Sidebar = () => {
       <hr />
       <div className="center">
         <ul>
+          {/* {
+            menu.map((item, index) => {
+              if (item.status == 0) {
+                const Icon = item.icon;
+                return <Link key={index} to={item.url} style={{ textDecoration: "none" }}>
+                  <li>
+                    <Icon className="icon" />
+                    <span className="title" >{item.name}</span>
+                  </li>
+                </Link>
+              } else {
+                return  <div className="">
+                  <Accordion defaultActiveKey={index} >
+                    <Accordion.Item eventKey={0} style={{ border: "none"}}>
+                     <Accordion.Header className="title" >{item.parent}</Accordion.Header>
+                      <Accordion.Body>
+                        <ul>
+                          {item.child.map((childMenu, indexChild) =>{
+                            const Icon = childMenu.icon;
+                             return <Link key={indexChild} to={childMenu.url} style={{ textDecoration: "none" }}>
+                             <li>
+                               <Icon className="icon" />
+                               <span className="title" >{childMenu.name}</span>
+                             </li>
+                           </Link>
+                          })}
+                        </ul>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  </Accordion>
+                </div>
+              }
+            })
+          } */}
           <p className="title">MAIN</p>
           <li>
             <DashboardIcon className="icon" />
