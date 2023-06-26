@@ -32,23 +32,23 @@ const Sidebar = () => {
             <DashboardIcon className="icon" />
             <span>Dashboard</span>
           </li>
-          <p className="title">LISTS</p>
-          <Link to="/users" style={{ textDecoration: "none" }}>
-            <li>
-              <PersonOutlineIcon className="icon" />
-              <span>Users</span>
-            </li>
-          </Link>
+          <p className="title">Quản Lý sản phẩm</p>
           <Link to="/products" style={{ textDecoration: "none" }}>
             <li>
               <StoreIcon className="icon" />
-              <span>Products</span>
+              <span>Sản Phẩm</span>
             </li>
           </Link>
           <Link to="/create-product" style={{ textDecoration: "none" }}>
             <li>
               <StoreIcon className="icon" />
-              <span>Create Products</span>
+              <span>Tạo sản phẩm</span>
+            </li>
+          </Link>
+          <Link to="/properties" style={{ textDecoration: "none" }}>
+            <li>
+              <StoreIcon className="icon" />
+              <span>Thuộc tính</span>
             </li>
           </Link>
           <li>

@@ -1,15 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-var size = [{name:"36", status:1}, {name:"37", status:0}]
+// var size = [{name:"36", status:1}, {name:"37", status:0}]
 export const sizeSlice = createSlice({
     name: "sizes",
     initialState: {
         sizes: {
-        value: size ,
-        isFetching:false
-      },
-      search:{
-        isFetching:false
+        value: [] 
       }
     },
     reducers: {
@@ -18,9 +14,7 @@ export const sizeSlice = createSlice({
         state.sizes.value.unshift(action.payload);
       },
       addAllPost: (state, action) => {
-        console.log("AddPost Action");
-        state.posts.isFetching = false;
-        state.posts.value = [...action.payload];
+        state.sizes.value = [...action.payload];
       },
     },
   });
