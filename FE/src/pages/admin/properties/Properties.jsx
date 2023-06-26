@@ -11,7 +11,6 @@ const properties = [{ name: " Kích cỡ", page: Size }, { name: " Màu", page: 
 function Properties() {
 
   const handleNotify = (text) => {
-    console.log(123);
     toast(text)
   };
 
@@ -21,11 +20,11 @@ function Properties() {
         <Sidebar />
         <div className="newContainer">
           <Navbar />
-          <Accordion defaultActiveKey="0">
+\          <Accordion defaultActiveKey="0">
             {
               properties.map((propertie, index) => {
                 const Page = propertie.page
-                return <Accordion.Item eventKey={index}>
+                return <Accordion.Item eventKey={index} key={index}>
                   <Accordion.Header>{propertie.name}</Accordion.Header>
                   <Accordion.Body>
                     <Page />
