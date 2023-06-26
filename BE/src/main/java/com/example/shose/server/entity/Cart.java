@@ -4,6 +4,7 @@ import com.example.shose.server.entity.base.PrimaryEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Cart extends PrimaryEntity {
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_account",referencedColumnName = "id")
     private Account account;
 

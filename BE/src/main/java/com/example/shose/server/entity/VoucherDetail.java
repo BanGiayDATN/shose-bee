@@ -45,5 +45,4 @@ public class VoucherDetail extends PrimaryEntity {
     @JoinColumn(name = "id_voucher",referencedColumnName = "id")
     private Voucher voucher;
 
-
 }

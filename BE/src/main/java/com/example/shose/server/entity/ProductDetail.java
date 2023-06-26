@@ -1,6 +1,7 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
+import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -30,7 +31,7 @@ public class ProductDetail extends PrimaryEntity {
 
     private String description;
 
-    private Boolean gender;
+    private GenderProductDetail gender;
 
     private BigDecimal price;
 
@@ -59,5 +60,9 @@ public class ProductDetail extends PrimaryEntity {
     @ManyToOne
     @JoinColumn(name = "id_sole",referencedColumnName = "id")
     private Sole sole;
+
+    @ManyToOne
+    @JoinColumn(name = "id_size",referencedColumnName = "id")
+    private Size size;
 
 }

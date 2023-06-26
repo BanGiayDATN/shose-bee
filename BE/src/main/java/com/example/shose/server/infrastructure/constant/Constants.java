@@ -19,4 +19,5 @@ public class Constants {
         public static final String PROPERTIES_APPLICATION = "application.properties";
         public static final String PROPERTIES_VALIDATION = "messages.properties";
     }
+
 }

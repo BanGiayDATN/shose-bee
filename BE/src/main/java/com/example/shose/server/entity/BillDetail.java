@@ -1,7 +1,7 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
-import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusBill;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+
 /**
  * @author Nguyễn Vinh
  */
@@ -21,21 +23,22 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
-@Table(name = "product_detail_size")
+@Table(name = "bill_detail")
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDetailSize extends PrimaryEntity {
+public class BillDetail extends PrimaryEntity {
 
     private Integer quantity;
 
-    private Status status;
+    private BigDecimal price;
+
+    private StatusBill statusBill ;
 
     @ManyToOne
-    @JoinColumn(name = "id_size",referencedColumnName = "id")
-    private Size size;
-
-    @ManyToOne
-    @JoinColumn(name = "id_product_detail",referencedColumnName = "id")
+    @JoinColumn(name = "id_product_detail")
     private ProductDetail productDetail;
 
+    @ManyToOne
+    @JoinColumn(name = "id_bill")
+    private Bill bill;
 }

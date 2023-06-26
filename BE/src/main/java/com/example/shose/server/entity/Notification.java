@@ -33,6 +33,8 @@ public class Notification extends PrimaryEntity {
     @Column(name = "notify_date")
     private Long notifyDate;
 
+    private String url;
+
     private Status status;
 
     @ManyToOne

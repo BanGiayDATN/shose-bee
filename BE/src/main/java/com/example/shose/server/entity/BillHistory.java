@@ -1,6 +1,7 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -25,7 +26,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class BillHistory extends PrimaryEntity {
 
-    private String note;
+    @Column(name = "action_description")
+    private String actionDescription;
 
     @ManyToOne
     @JoinColumn(name = "id_bill",referencedColumnName = "id")
