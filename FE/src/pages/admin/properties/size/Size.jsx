@@ -1,20 +1,25 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import CreateSize from './CreateSize';
 import SizeService from '../../../../service/SizeService';
+import { Button, Nav, Navbar, Offcanvas } from 'react-bootstrap'
 
 function Size() {
     const sizes = useSelector((state) => state.sizes.sizes.value);
     const dispatch = useDispatch();
     useEffect(() => {
         SizeService.getAll(dispatch);
-        
-    },[])
+    }, [])
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return (
 
         <div>
-            <button className="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Thêm mới</button>
-            <table className="table">
+            <Button variant="primary" onClick={handleShow} > Thêm </Button>
+            <table className="table ">
                 <thead>
                     <tr>
                         <th scope="col">tên</th>
@@ -25,21 +30,16 @@ function Size() {
                     {sizes.map((item, index) => (
                         <tr key={index}>
                             <td>{item.name}</td>
-                            <td>{item.status}</td>
+                            <td className='float-right'>
+                                <p className={`status w-25 ${item.status == 'DANG_SU_DUNG'? 'Approved':'Pending'}`}>{item.status == 'DANG_SU_DUNG' ? 'Hoạt động':'Không hoạt động'}</p>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-
-            <div className="offcanvas offcanvas-end" style={{width: "40%"}} tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-                <div className="offcanvas-header">
-                    <h5 id="offcanvasRightLabel">Thêm kích thước</h5>
-                    <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div className="offcanvas-body" >
-                    <CreateSize/>
-                </div>
-            </div>
+            <Offcanvas show={show} onHide={handleClose} placement={'end'} >
+                <CreateSize onchange={handleClose}/>
+            </Offcanvas>
         </div>
     )
 }
