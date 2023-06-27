@@ -37,7 +37,7 @@ public class PaymentsMethod extends PrimaryEntity {
     @Column(name = "total_money")
     private BigDecimal totalMoney;
 
-    private Status status;
+    private StatusMethod status;
 
     @ManyToOne
     @JoinColumn(name = "id_bill",referencedColumnName = "id")

@@ -21,10 +21,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Account> findAll() {
-        int check = 0;
-        if (check == 0) {
+        return accountRepository.findAll();
+    }
+
+    @Override
+    public Account getOneByEmail(String email) {
+        Account account = accountRepository.getOneByEmail(email);
+        if(account == null){
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        return accountRepository.findAll();
+        return account;
     }
 }

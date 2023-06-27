@@ -11,4 +11,5 @@ public interface AccountService {
 
     List<Account> findAll ();
 
+    Account getOneByEmail(String email);
 }

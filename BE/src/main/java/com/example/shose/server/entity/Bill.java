@@ -2,6 +2,7 @@ package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,8 +44,8 @@ public class Bill extends PrimaryEntity {
     @Column(name = "item_discount")
     private BigDecimal itemDiscount;
 
-    @Column(name = "grand_total ")
-    private BigDecimal grandTotal;
+    @Column(name = "total_money ")
+    private BigDecimal totalMoney;
 
     @Column(name = "confirmation_date")
     private Long confirmationDate;
@@ -67,7 +68,7 @@ public class Bill extends PrimaryEntity {
     @Column(name = "money_ship ")
     private BigDecimal moneyShip;
 
-    private Status status;
+    private StatusBill statusBill;
 
     @ManyToOne
     @JoinColumn(name = "id_customer",referencedColumnName = "id")

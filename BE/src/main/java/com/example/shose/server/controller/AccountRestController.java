@@ -4,7 +4,9 @@ import com.example.shose.server.service.AccountService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -20,5 +22,10 @@ public class AccountRestController {
     @GetMapping()
     public ResponseObject getList() {
         return new ResponseObject(accountService.findAll());
+    }
+
+    @GetMapping("/get-email")
+    public ResponseObject getOneByEmail(@RequestParam("email") String email) {
+        return new ResponseObject(accountService.getOneByEmail(email));
     }
 }
