@@ -8,8 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useSelector } from "react-redux";
 
-const List = () => {
-  const rows = useSelector((state) => state.product.product.value)
+const List = ({rows}) => {
   
   return (
     <TableContainer component={Paper} className="table">

@@ -24,7 +24,7 @@ const Home = () => {
         </div>
         <div className="listContainer">
           <div className="listTitle">Giao dịch mới nhất</div>
-          <Table />
+          {/* <Table /> */}
         </div>
       </div>
     </div>

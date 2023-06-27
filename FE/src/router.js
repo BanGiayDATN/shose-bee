@@ -5,6 +5,7 @@ import List from "./pages/admin/list/List";
 import Single from "./pages/admin/detailUser/Single";
 import Properties from "./pages/admin/properties/Properties";
 import CreateProduct from "./pages/admin/product/CreateProduct";
+import Product from "./pages/admin/product/Product";
 
 const publicRouters = [
     {path: '/', element: Home},
@@ -13,7 +14,8 @@ const publicRouters = [
     {path: '/users/:userId', element: Single},
     {path: '/properties', element: Properties},
     {path: '/create-product', element: CreateProduct},
-    {path: '/home', element: UserHome}
+    {path: '/home', element: UserHome},
+    {path: '/products', element: Product},
 ]
 
 const privateRouters = []
