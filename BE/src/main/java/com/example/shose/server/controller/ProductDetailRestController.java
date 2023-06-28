@@ -1,6 +1,6 @@
 package com.example.shose.server.controller;
 
-import com.example.shose.server.dto.request.FindProductRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class ProductDetailRestController {
     private ProductDetailService productDetailService;
 
     @GetMapping("")
-    public ResponseObject view ( final FindProductRequest request){
+    public ResponseObject view ( final FindProductDetailRequest request){
         return new ResponseObject(productDetailService.getAllProduct(request));
     }
 }

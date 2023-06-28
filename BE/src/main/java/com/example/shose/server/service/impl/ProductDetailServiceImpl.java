@@ -1,6 +1,6 @@
 package com.example.shose.server.service.impl;
 
-import com.example.shose.server.dto.request.FindProductRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.infrastructure.common.base.PageableObject;
 import com.example.shose.server.repository.ProductDetailRepository;
@@ -21,7 +21,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private ProductDetailRepository productDetailRepository;
 
     @Override
-    public PageableObject<ProductDetailReponse> getAllProduct(FindProductRequest request) {
+    public PageableObject<ProductDetailReponse> getAllProduct(FindProductDetailRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(),request.getSize());
         Page<ProductDetailReponse> list = productDetailRepository.getAllProductDetail(pageable,request);
         return new PageableObject<>(list);

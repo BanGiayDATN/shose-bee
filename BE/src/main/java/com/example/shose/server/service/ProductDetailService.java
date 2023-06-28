@@ -1,6 +1,6 @@
 package com.example.shose.server.service;
 
-import com.example.shose.server.dto.request.FindProductRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.infrastructure.common.base.PageableObject;
 
@@ -9,6 +9,6 @@ import com.example.shose.server.infrastructure.common.base.PageableObject;
  */
 public interface ProductDetailService {
 
-    PageableObject<ProductDetailReponse> getAllProduct (FindProductRequest findProductRequest);
+    PageableObject<ProductDetailReponse> getAllProduct (FindProductDetailRequest findProductDetailRequest);
 
 }

@@ -1,9 +1,8 @@
 package com.example.shose.server.repository;
 
-import com.example.shose.server.dto.request.FindProductRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.infrastructure.common.base.PageableObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,5 +38,5 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             WHERE i.status = '0'
             GROUP BY detail.id, i.name, p.name, detail.price, detail.created_date, detail.gender, detail.status;
                        """,nativeQuery = true)
-    Page<ProductDetailReponse> getAllProductDetail(Pageable pageable, @Param("req")FindProductRequest req);
+    Page<ProductDetailReponse> getAllProductDetail(Pageable pageable, @Param("req") FindProductDetailRequest req);
 }

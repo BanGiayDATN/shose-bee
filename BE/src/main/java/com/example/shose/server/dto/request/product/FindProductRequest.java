@@ -1,4 +1,4 @@
-package com.example.shose.server.dto.request;
+package com.example.shose.server.dto.request.product;
 
 import com.example.shose.server.infrastructure.common.base.PageableRequest;
 import lombok.Getter;
