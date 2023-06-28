@@ -1,15 +1,14 @@
 package com.example.shose.server.service;
 
-import com.example.shose.server.entity.ProductDetail;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
+import com.example.shose.server.dto.request.FindProductRequest;
+import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.infrastructure.common.base.PageableObject;
 
 /**
  * @author Nguyễn Vinh
  */
 public interface ProductDetailService {
 
-    Page<ProductDetail> getAll (Integer pageNo ,Integer pageSize);
+    PageableObject<ProductDetailReponse> getAllProduct (FindProductRequest findProductRequest);
 
 }

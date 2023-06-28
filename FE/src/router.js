@@ -8,16 +8,16 @@ import CreateProduct from "./pages/admin/product/CreateProduct";
 import Product from "./pages/admin/product/Product";
 
 const publicRouters = [
-    {path: '/', element: Home},
-    {path: '/login', element: Login},
-    {path: '/users', element: List},
-    {path: '/users/:userId', element: Single},
-    {path: '/properties', element: Properties},
-    {path: '/create-product', element: CreateProduct},
-    {path: '/home', element: UserHome},
-    {path: '/products', element: Product},
-]
+  { path: "/", element: Home },
+  { path: "/login", element: Login },
+  { path: "/users", element: List },
+  { path: "/users/:userId", element: Single },
+  { path: "/properties", element: Properties },
+  { path: "/create-product", element: CreateProduct },
+  { path: "/home", element: UserHome },
+  { path: "/products", element: Product },
+];
 
-const privateRouters = []
+const privateRouters = [];
 
-export  {publicRouters, privateRouters}
+export { publicRouters, privateRouters };
