@@ -6,6 +6,10 @@ import Single from "./pages/admin/detailUser/Single";
 import Properties from "./pages/admin/properties/Properties";
 import CreateProduct from "./pages/admin/product/CreateProduct";
 import Product from "./pages/admin/product/Product";
+import Employee from "./pages/admin/employee/Employee";
+import MemberOffers from "./pages/admin/voucher/MemberOffers";
+import Voucher from "./pages/admin/voucher/Voucher";
+import Bill from "./pages/admin/bill/Bill";
 
 const publicRouters = [
   { path: "/", element: Home },
@@ -14,8 +18,13 @@ const publicRouters = [
   { path: "/users/:userId", element: Single },
   { path: "/properties", element: Properties },
   { path: "/create-product", element: CreateProduct },
+  { path: "/employee", element: Employee },
+  { path: "/user", element: Single },
+  { path: "/member-offers", element: MemberOffers },
+  { path: "/voucher", element: Voucher },
   { path: "/home", element: UserHome },
-  { path: "/products", element: Product },
+  { path: "/home", element: UserHome },
+  { path: "/bill", element: Bill },
 ];
 
 const privateRouters = [];
