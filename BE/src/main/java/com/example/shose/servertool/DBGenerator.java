@@ -345,9 +345,9 @@ public class DBGenerator implements CommandLineRunner {
         userReposiory.save(user2);
         userReposiory.save(user3);
 
-        Account account1 = Account.builder().email(user1.getEmail()).password("123").roles(Roles.ADMIN).build();
-        Account account2 = Account.builder().email(user2.getEmail()).password("123").roles(Roles.NHAN_VIEN).build();
-        Account account3 = Account.builder().email(user3.getEmail()).password("123").roles(Roles.USER).build();
+        Account account1 = Account.builder().user(user1).email(user1.getEmail()).password("123").roles(Roles.ADMIN).build();
+        Account account2 = Account.builder().user(user3).email(user2.getEmail()).password("123").roles(Roles.NHAN_VIEN).build();
+        Account account3 = Account.builder().user(user2).email(user3.getEmail()).password("123").roles(Roles.USER).build();
         accountRepository.save(account1);
         accountRepository.save(account2);
         accountRepository.save(account3);
@@ -356,14 +356,14 @@ public class DBGenerator implements CommandLineRunner {
         Customer customer1 = Customer.builder().fullName("Hà Phương Na").phoneNumber("0951753852").email("phuongna@gmail.com").status(Status.DANG_SU_DUNG).build();
         customerRepository.save(customer1);
 
-        Bill bill1 = Bill.builder()
+        Bill bill1 = Bill.builder().code("HD0001")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000000"))
                 .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("10/05/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account2).account(account3)
                 .build();
-        Bill bill2 = Bill.builder()
+        Bill bill2 = Bill.builder().code("HD0002")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
                 .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/05/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))

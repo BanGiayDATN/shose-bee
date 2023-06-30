@@ -1,4 +1,6 @@
 import React from 'react'
+import SidebarProject from '../../../components/sidebar/SidebarProject'
+import Navbar from "./../../../components/navbar/Navbar";
 
 function Voucher() {
   return (

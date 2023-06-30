@@ -31,6 +31,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class Bill extends PrimaryEntity {
 
+    @Column(name = "code")
+    private String code;
 
     @Column(name = "phone_number")
     private String phoneNumber;
