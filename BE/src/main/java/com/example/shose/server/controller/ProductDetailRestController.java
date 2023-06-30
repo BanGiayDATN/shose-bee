@@ -6,6 +6,7 @@ import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,12 @@ public class ProductDetailRestController {
     private ProductDetailService productDetailService;
 
     @GetMapping("")
-    public ResponseObject view ( final FindProductDetailRequest request){
+    public ResponseObject view(final FindProductDetailRequest request) {
         return new ResponseObject(productDetailService.getAllProduct(request));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject getOneById(@PathVariable("id") String id) {
+        return new ResponseObject(productDetailService.getOneById(id));
     }
 }

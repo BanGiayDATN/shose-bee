@@ -7,10 +7,14 @@ import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.infrastructure.common.base.PageableObject;
 
+import java.util.List;
+
 /**
  * @author Nguyễn Vinh
  */
 public interface ProductService {
+
+    List<Product> getAll ();
     PageableObject<ProductResponse> findAll(final FindProductRequest req);
 
     Product create(final CreateProductRequest req);

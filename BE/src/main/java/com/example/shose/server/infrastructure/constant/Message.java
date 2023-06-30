@@ -1,7 +1,5 @@
 package com.example.shose.server.infrastructure.constant;
 
-import com.example.shose.server.util.PropertiesReader;
-
 /**
  * @author Nguyễn Vinh
  */
@@ -10,8 +8,8 @@ public enum Message {
     SUCCESS("Success"),
     ERROR_UNKNOWN("Error Unknown"),
     NOT_EXISTS("Không tồn tại"),
-    CODE_EXISTS ("Mã đã tồn tại");
-
+    NAME_EXISTS("Tên đã tồn tại"),
+    CODE_EXISTS("Mã đã tồn tại");
 
 
     private String message;
