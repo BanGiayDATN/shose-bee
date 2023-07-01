@@ -14,12 +14,17 @@ import './bill.scss'
 
 function Bill() {
 
-  const dataSource = useSelector((state) => state.bills.sizes.value);
-  const currentPage = useSelector((state) => state.bills.sizes.currentPage);
-  const totalPage = useSelector((state) => state.bills.sizes.totalPage);
+  const dataSource = useSelector((state) => state.bill.bills.value);
+  console.log( useSelector((state) => state.bill.search))
+  var dataUse = BillService.getAllUser();
+  var dataEmployees =[];
+  const currentPage = useSelector((state) => state.bill.bills.currentPage);
+  const totalPage = useSelector((state) => state.bill.bills.totalPage);
   const dispatch = useDispatch();
   useEffect(() => {
     BillService.getAll(dispatch, fillter);
+    dataUse = BillService.getAllUser();
+    dataEmployees = BillService.getAllEmployees(dispatch);
   }, [])
 
   const [show, setShow] = useState(false);
@@ -76,7 +81,8 @@ function Bill() {
     employees: '',
     user: '',
     phoneNumber: '',
-    type: -1
+    type: -1,
+    page: 0
 
   })
 
@@ -125,7 +131,7 @@ function Bill() {
       key: "statusBill",
       render: (text) => (
         <button className="trangThai" style={{ border: "none", borderRadius: "0px" }}>
-          {text === 0 ? "chờ xác nhận" : text === 1 ? "Chờ thanh toán" : "Hủy"}
+          {text === 0 ? "chờ xác nhận" : text === 1 ? "Đang vận chuyển" : "Hủy"}
         </button>
       ),
     },
@@ -150,14 +156,34 @@ function Bill() {
   ];
 
   const handlePageClick = (event) => {
-    // Xử lý sự kiện click của nút button tại đây
     const selectedPage = event.selected;
-    console.log(selectedPage);
+    var data = fillter
+    data.page = selectedPage
+      BillService.getAll(dispatch, data);
   };
 
   const searchBill = () => {
-    console.log(123);
     console.log(fillter);
+    BillService.getAll(dispatch, fillter);
+    setShow(false)
+  }
+
+  const clearnFillter = () => {
+    setFillter({
+      startTime: '',
+      endTime: '',
+      status: [],
+      endDeliveryDate: '',
+      startDeliveryDate: '',
+      code: '',
+      employees: '',
+      user: '',
+      phoneNumber: '',
+      type: -1,
+      page: 0
+  
+    })
+    BillService.getAll(dispatch, fillter);
   }
 
   return (
@@ -167,6 +193,7 @@ function Bill() {
       <div className="homeContainer">
         <Navbar />
         <Button variant="primary" onClick={handleShow} > Lọc </Button>
+        <Button variant="primary" onClick={clearnFillter} > Xóa bộ lọc </Button>
         <Table
           dataSource={dataSource}
           columns={columns}
@@ -174,8 +201,8 @@ function Bill() {
           pagination={false} // Disable default pagination
           className="product-table"
         />
-        <div className="pagination-container">
-          <ReactPaginate
+        
+         { totalPage !== 1 ?  <div className="pagination-container"><ReactPaginate
             previousLabel={"<<"}
             nextLabel={">>"}
             breakLabel={"..."}
@@ -185,11 +212,11 @@ function Bill() {
             onPageChange={handlePageClick}
             containerClassName={"pagination"}
             activeClassName={"active"}
-          />
-        </div>
+          /></div> : <div></div>}
+        
         <Offcanvas show={show} onHide={handleClose} placement={'end'} >
           <div className="row">
-            <Search style={{ height: '90%' }} changeStatusValue={changeStatusValue} searchBill={searchBill} fillter={fillter} changFillter={onChangeForm} />
+            <Search style={{ height: '90%' }}  changeStatusValue={changeStatusValue} searchBill={searchBill} fillter={fillter} changFillter={onChangeForm} />
           </div>
           <div className="row">
             <div className='col-7'></div>

@@ -24,4 +24,9 @@ public class BillRestController {
     public ResponseObject getAll(BillRequest request){
         return  new ResponseObject(billService.getAll(request));
     }
+
+    @GetMapping("/user-bill")
+    public ResponseObject getAllUserInBill(){
+        return  new ResponseObject(billService.getAllUserInBill());
+    }
 }

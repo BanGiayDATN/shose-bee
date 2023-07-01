@@ -1,8 +1,18 @@
 import axios from "axios";
-import { addBills, addBill } from "../redux/billSlice";
+import { addBills, addBill, addAll, addAllDataUsers } from "../redux/billSlice";
 
 var api = 'http://localhost:8080';
 var apiBill = api + `/admin/bill`;
+var dataUser = []
+var dataEmployess = []
+
+const getDataEmployess = () => {
+  return dataEmployess
+}
+const getDataUser = () => {
+  return dataUser
+}
+
 const getAll = (dispatch, fillter) => {
   var startDate = new Date(Date.parse(fillter.startTime));
   var timeInMillisStartDate = startDate.getTime() ;
@@ -25,14 +35,38 @@ const getAll = (dispatch, fillter) => {
     timeInMillisStartDeliveryDate = 0;
   }
   try {
-    axios.get(apiBill + "?startTime="+timeInMillisStartDate+"&endTime="+timeInMillisEndDate+"&status="+fillter.status+"&endDeliveryDate="+timeInMillisEndDeliveryDate+"&startDeliveryDate="+timeInMillisStartDeliveryDate+"&code="+fillter.code+"&employees="+fillter.employees+"&user="+ fillter.user+"&phoneNumber="+fillter.phoneNumber+"&type="+fillter.type)
+    axios.get(apiBill + "?startTime="+timeInMillisStartDate+"&endTime="+timeInMillisEndDate+"&status="+fillter.status+"&endDeliveryDate="+timeInMillisEndDeliveryDate+"&startDeliveryDate="+timeInMillisStartDeliveryDate+"&code="+fillter.code+"&employees="+fillter.employees+"&user="+ fillter.user+"&phoneNumber="+fillter.phoneNumber+"&type="+fillter.type+"&page="+fillter.page)
       .then(response => {
-        console.log(response);
-        dispatch(addBills(response.data.data));
+        dispatch(addAll(response.data.data));
       })
   } catch {
   }
   return
+};
+
+const getAllUser = async() => {
+  try {
+    await axios.get(apiBill+"/user-bill")
+      .then(response => {
+        dataUser = response.data.data
+        // dispatch(addAllDataUsers(response.data.data));
+      })
+  } catch {
+   
+  }
+  return 
+};
+
+const getAllEmployees = () => {
+  try {
+    axios.get("http://localhost:8080/account/simple-employess")
+      .then(response => {
+        dataEmployess = response.data.data
+        // dispatch(addAllDataUsers(response.data.data));
+      })
+  } catch {
+  }
+  return 
 };
 
 const create = (dispatch, data) => {
@@ -53,7 +87,11 @@ const create = (dispatch, data) => {
 
 const BillService = {
   getAll,
-  create
+  create,
+  getAllUser,
+  getAllEmployees,
+  getDataUser,
+  getDataEmployess
 };
 
 export default BillService;

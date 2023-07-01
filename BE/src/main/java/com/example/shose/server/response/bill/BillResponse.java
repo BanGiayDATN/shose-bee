@@ -1,4 +1,4 @@
-package com.example.shose.server.response;
+package com.example.shose.server.response.bill;
 
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.User;

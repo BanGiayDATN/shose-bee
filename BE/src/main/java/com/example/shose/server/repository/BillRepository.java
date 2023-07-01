@@ -2,12 +2,15 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.request.bill.BillRequest;
-import com.example.shose.server.response.BillResponse;
+import com.example.shose.server.response.bill.BillResponse;
+import com.example.shose.server.response.bill.UserBillResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Nguyễn Vinh
@@ -49,7 +52,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             AND ( :#{#request.type} = -1
                      OR bi.type = :#{#request.type})
             ORDER BY bi.created_date
-            
+                        
             """, countQuery = """
             SELECT COUNT(bi.id)  FROM bill bi
              LEFT JOIN account ac ON ac.id = bi.id_account
@@ -84,7 +87,15 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             AND ( :#{#request.type} = -1
                      OR bi.type = :#{#request.type})
             ORDER BY bi.created_date
-            
+                        
             """, nativeQuery = true)
     Page<BillResponse> getAll(Pageable pageable, BillRequest request);
+
+    @Query(value = """
+             SELECT  IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
+                        LEFT JOIN account ac ON ac.id = bi.id_account
+                        LEFT JOIN customer cu ON cu.id = bi.id_customer
+                        LEFT JOIN user usac ON usac.id = ac.id_user
+            """, nativeQuery = true)
+    List<UserBillResponse> getAllUserInBill();
 }

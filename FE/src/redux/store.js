@@ -27,8 +27,7 @@ const rootReducer = combineReducers({
     product: productReducer,
     users: userReducer, 
     sizes: sizeReducer, 
-    test: billReducer,
-    bills: billReducer });
+   bill: billReducer });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
