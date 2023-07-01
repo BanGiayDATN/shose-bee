@@ -1,4 +1,4 @@
-package com.example.shose.server.infrastructure.common.base;
+package com.example.shose.server.infrastructure.common;
 
 import com.example.shose.server.infrastructure.constant.PaginationConstant;
 import lombok.Getter;

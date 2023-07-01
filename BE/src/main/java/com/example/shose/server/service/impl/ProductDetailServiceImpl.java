@@ -4,7 +4,7 @@ import com.example.shose.server.dto.request.productdetail.CreateProductDetailReq
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.infrastructure.common.base.PageableObject;
+import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ProductDetailRepository;

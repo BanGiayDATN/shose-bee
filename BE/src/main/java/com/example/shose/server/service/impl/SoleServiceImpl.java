@@ -5,7 +5,7 @@ import com.example.shose.server.dto.request.sole.FindSoleRequest;
 import com.example.shose.server.dto.request.sole.UpdateSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
 import com.example.shose.server.entity.Sole;
-import com.example.shose.server.infrastructure.common.base.PageableObject;
+import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -28,6 +29,11 @@ public class SoleServiceImpl implements SoleService {
 
     @Autowired
     private SoleRepository soleRepository;
+
+    @Override
+    public List<Sole> getList() {
+        return soleRepository.findAll();
+    }
 
     @Override
     public PageableObject<SoleResponse> findAll(FindSoleRequest req) {
@@ -49,19 +55,23 @@ public class SoleServiceImpl implements SoleService {
     @Override
     public Sole update(UpdateSoleRequest req) {
         Optional<Sole> optional = soleRepository.findById(req.getId());
-        if(!optional.isPresent()){
+        if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Sole existence = soleRepository.getByNameExistence(req.getName(),req.getId());
+        if (existence != null) {
+            throw new RestApiException(Message.NAME_EXISTS);
         }
         Sole update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus()== 0? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
         return soleRepository.save(update);
     }
 
     @Override
     public Boolean delete(String id) {
         Optional<Sole> optional = soleRepository.findById(id);
-        if(!optional.isPresent()){
+        if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         soleRepository.delete(optional.get());
@@ -71,7 +81,7 @@ public class SoleServiceImpl implements SoleService {
     @Override
     public Sole getOneById(String id) {
         Optional<Sole> optional = soleRepository.findById(id);
-        if(!optional.isPresent()){
+        if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();

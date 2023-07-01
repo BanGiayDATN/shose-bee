@@ -5,7 +5,7 @@ import com.example.shose.server.dto.request.product.FindProductRequest;
 import com.example.shose.server.dto.request.product.UpdateProductRequest;
 import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
-import com.example.shose.server.infrastructure.common.base.PageableObject;
+import com.example.shose.server.infrastructure.common.PageableObject;
 
 import java.util.List;
 

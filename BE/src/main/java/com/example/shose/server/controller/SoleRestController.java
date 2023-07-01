@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,8 +28,13 @@ public class SoleRestController {
     @Autowired
     private SoleService soleService;
 
+    @GetMapping("/list")
+    public ResponseObject getList() {
+        return new ResponseObject(soleService.getList());
+    }
+
     @GetMapping()
-    public ResponseObject view(final FindSoleRequest req) {
+    public ResponseObject view(@ModelAttribute final FindSoleRequest req) {
         return new ResponseObject(soleService.findAll(req));
     }
 
@@ -42,7 +48,7 @@ public class SoleRestController {
         return new ResponseObject(soleService.create(req));
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id,
                                  @RequestBody UpdateSoleRequest req) {
         req.setId(id);

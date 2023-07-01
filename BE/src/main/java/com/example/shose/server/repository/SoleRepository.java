@@ -1,8 +1,6 @@
 package com.example.shose.server.repository;
 
-import com.example.shose.server.dto.request.product.FindProductRequest;
 import com.example.shose.server.dto.request.sole.FindSoleRequest;
-import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.dto.response.SoleResponse;
 import com.example.shose.server.entity.Sole;
 import org.springframework.data.domain.Page;
@@ -16,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Nguyễn Vinh
  */
 @Repository
-public interface SoleRepository extends JpaRepository<Sole,String> {
+public interface SoleRepository extends JpaRepository<Sole, String> {
 
     @Query(value = """
              SELECT
@@ -26,14 +24,29 @@ public interface SoleRepository extends JpaRepository<Sole,String> {
                 s.status AS status,
                 s.created_date AS createdDate,
                 s.last_modified_date AS lastModifiedDate
-            FROM sole s         
+            FROM sole s
+            WHERE 
+                ( :#{#req.name} IS NULL 
+                    OR :#{#req.name} LIKE '' 
+                    OR name LIKE %:#{#req.name}% ) 
+            GROUP BY s.id
+            ORDER BY s.last_modified_date DESC         
             """, countQuery = """
             SELECT count(1)            
-             FROM sole s 
+            FROM sole s 
+            WHERE 
+                ( :#{#req.name} IS NULL 
+                    OR :#{#req.name} LIKE '' 
+                    OR name LIKE %:#{#req.name}% ) 
+            GROUP BY s.id
+            ORDER BY s.last_modified_date DESC
             """, nativeQuery = true)
-    Page<SoleResponse> getAll(Pageable pageable, FindSoleRequest req);
+    Page<SoleResponse> getAll(Pageable pageable, @Param(("req")) FindSoleRequest req);
 
     @Query("SELECT s FROM Sole s WHERE s.name =:name")
-    Sole getByName (@Param("name") String name);
+    Sole getByName(@Param("name") String name);
+
+    @Query("SELECT s FROM Sole s WHERE s.name =:name AND s.id <> :id")
+    Sole getByNameExistence(@Param("name") String name, @Param("id") String id);
 
 }

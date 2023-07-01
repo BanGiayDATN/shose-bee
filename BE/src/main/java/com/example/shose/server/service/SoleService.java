@@ -5,12 +5,16 @@ import com.example.shose.server.dto.request.sole.FindSoleRequest;
 import com.example.shose.server.dto.request.sole.UpdateSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
 import com.example.shose.server.entity.Sole;
-import com.example.shose.server.infrastructure.common.base.PageableObject;
+import com.example.shose.server.infrastructure.common.PageableObject;
+
+import java.util.List;
 
 /**
  * @author Nguyễn Vinh
  */
 public interface SoleService {
+
+    List<Sole> getList ();
 
     PageableObject<SoleResponse> findAll (final FindSoleRequest req);
 
