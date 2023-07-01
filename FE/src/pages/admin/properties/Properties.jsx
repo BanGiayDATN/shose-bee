@@ -20,7 +20,7 @@ function Properties() {
         <Sidebar />
         <div className="newContainer">
           <Navbar />
-\          <Accordion defaultActiveKey="0">
+         <Accordion defaultActiveKey="0">
             {
               properties.map((propertie, index) => {
                 const Page = propertie.page

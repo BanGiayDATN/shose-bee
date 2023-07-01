@@ -22,7 +22,7 @@ const publicRouters = [
   { path: "/user", element: Single },
   { path: "/member-offers", element: MemberOffers },
   { path: "/voucher", element: Voucher },
-  { path: "/home", element: UserHome },
+  { path: "/products", element: Product },
   { path: "/home", element: UserHome },
   { path: "/bill", element: Bill },
 ];

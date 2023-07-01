@@ -1,5 +1,7 @@
 import React from "react";
 import { Layout, Menu } from "antd";
+import "./sidebar.scss";
+
 import {
   UserOutlined,
   LaptopOutlined,
@@ -22,7 +24,7 @@ const subMenu = [
       { name: "Sản Phẩm", url: "/products" },
       { name: "Màu", url: "/mau" },
     ],
-    icon: StoreIcon,
+    icon: LaptopOutlined,
   },
   {
     parent: "Quản lý Tài khoản",
@@ -53,24 +55,26 @@ const SidebarProject = () => {
         defaultOpenKeys={["sub1"]}
         style={{ height: "100%", borderRight: 0 }}
       >
+       
         {menu.map((item, index) => {
           var Icon = item.icon;
           return (
-            <Link to={item.url}>
-              <Menu.SubMenu
-                key={index}
-                icon={<Icon />}
-                title={item.name}
-              ></Menu.SubMenu>
+            <Link key={'M'+index} to={item.url}   style={{ textDecoration: "none" , color:"black"}}>
+              <div className="ant-menu-submenu-title" style={{paddingLeft:"24px"}}>
+              <Icon className="anticon anticon-user ant-menu-item-icon"  style={{ color:"black"}}/> 
+              <p className="ant-menu-title-content" style={{margin: "0px 0px 0px 10px"}} >{item.name}</p>
+
+              </div>
+              
             </Link>
           );
         })}
-        {subMenu.map((item, key) => {
+        {subMenu.map((item, index) => {
           var Icon = item.icon;
           return (
-            <Menu.SubMenu key={key} icon={<UserOutlined />} title={item.parent}>
+            <Menu.SubMenu key={'Sb'+index} icon={<Icon />} title={item.parent}>
               {item.child.map((child,keyChild) =>{
-                return <Menu.Item ><Link key={keyChild} to={child.url}>{child.name}</Link></Menu.Item>
+                return <Menu.Item ><Link   style={{ textDecoration: "none" }} key={'Sb'+ index+''+keyChild } to={child.url}>{child.name}</Link></Menu.Item>
               })}
             </Menu.SubMenu>
           );
