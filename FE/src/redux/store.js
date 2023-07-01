@@ -1,8 +1,23 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import productReducer from "./productSlice";
+import accountReducer from "./accountSlice";
+import addressReducer from "./addressSlice";
+import billReducer from "./billSlice"
+import brandReducer from "./brandSlice"
+import cartReducer from "./cartSlice"
+import categoryReducer from "./categorySlice"
+import employeesReducer from "./employeesSlice"
+import colorReducer from "./colorSlice"
+import customerReducer from "./customerSlice"
+import materialReducer from "./materialSlice"
+import notificationReducer from "./notificationSlice"
+import productReducer from "./productSlice"
 import authReducer from "./authSlice"
-import userReducer from "./usersSlice"
+import userReducers from "./usersSlice"
 import sizeReducer from "./sizeSlice"
+import soleReducer from "./soleSlice"
+import userReducer from "./userSlice"
+import voucherReducer from "./voucherSlice"
+
 
 import {
   persistStore,
@@ -21,7 +36,25 @@ const persistConfig = {
   version: 1,
   storage,
 };
-const rootReducer = combineReducers({ auth: authReducer, product: productReducer, users: userReducer, sizes: sizeReducer });
+const rootReducer = combineReducers({ 
+    account: accountReducer,
+    address: addressReducer,
+    brand: brandReducer,
+    employees: employeesReducer,
+    cart: cartReducer,
+    category: categoryReducer,
+    color: colorReducer,
+    customer: customerReducer,
+    material: materialReducer,
+    notification: notificationReducer,
+    sole: soleReducer,
+    user: userReducer,
+    voucher: voucherReducer,
+    auth: authReducer,
+    products: productReducer,
+    users: userReducers, 
+    sizes: sizeReducer, 
+   bill: billReducer });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({

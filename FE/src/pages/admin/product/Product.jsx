@@ -7,7 +7,7 @@ import TableProductDetail from "../../../components/table/tableProduct";
 
 
 function Product() {
-  const products = useSelector((state) => state.product.product.value);
+  const products = useSelector((state) => state.products.products.value);
   return (
     <div>
       <div className="home">
