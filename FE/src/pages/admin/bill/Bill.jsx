@@ -139,11 +139,27 @@ function Bill() {
       title: <div className="title-product">Tiền giảm</div>,
       dataIndex: "itemDiscount",
       key: "itemDiscount",
+      render: (itemDiscount) => (
+        <span>
+          {itemDiscount.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </span>
+      ),
     },
     {
       title: <div className="title-product">Tổng tiền</div>,
       dataIndex: "totalMoney",
       key: "totalMoney",
+      render: (totalMoney) => (
+        <span>
+          {totalMoney.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </span>
+      ),
     },
     // {
     //   title: <div className="title-product">Thao Tác</div>,
