@@ -59,7 +59,7 @@ const SidebarProject = () => {
         {menu.map((item, index) => {
           var Icon = item.icon;
           return (
-            <Link to={item.url}   style={{ textDecoration: "none" , color:"black"}}>
+            <Link key={'M'+index} to={item.url}   style={{ textDecoration: "none" , color:"black"}}>
               <div className="ant-menu-submenu-title" style={{paddingLeft:"24px"}}>
               <Icon className="anticon anticon-user ant-menu-item-icon"  style={{ color:"black"}}/> 
               <p className="ant-menu-title-content" style={{margin: "0px 0px 0px 10px"}} >{item.name}</p>
@@ -69,12 +69,12 @@ const SidebarProject = () => {
             </Link>
           );
         })}
-        {subMenu.map((item, key) => {
+        {subMenu.map((item, index) => {
           var Icon = item.icon;
           return (
-            <Menu.SubMenu key={key} icon={<Icon />} title={item.parent}>
+            <Menu.SubMenu key={'Sb'+index} icon={<Icon />} title={item.parent}>
               {item.child.map((child,keyChild) =>{
-                return <Menu.Item ><Link   style={{ textDecoration: "none" }} key={keyChild} to={child.url}>{child.name}</Link></Menu.Item>
+                return <Menu.Item ><Link   style={{ textDecoration: "none" }} key={'Sb'+ index+''+keyChild } to={child.url}>{child.name}</Link></Menu.Item>
               })}
             </Menu.SubMenu>
           );

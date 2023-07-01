@@ -1,5 +1,6 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.infrastructure.common.base.PageableObject;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.request.bill.BillRequest;
 import com.example.shose.server.response.BillResponse;
@@ -8,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
+
+import java.util.Arrays;
 
 /**
  * @author thangdt
@@ -21,8 +23,9 @@ public class BillServiceImpl implements BillService {
     private BillRepository billRepository;
 
     @Override
-    public List<BillResponse> getAll(BillRequest request) {
+    public PageableObject<BillResponse> getAll(BillRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return billRepository.getAll(pageable, request);
+        request.setConverStatus(Arrays.toString(request.getStatus()));
+        return new PageableObject<>(billRepository.getAll(pageable, request));
     }
 }

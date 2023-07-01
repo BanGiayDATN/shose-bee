@@ -1,5 +1,6 @@
 package com.example.shose.server.service;
 
+import com.example.shose.server.infrastructure.common.base.PageableObject;
 import com.example.shose.server.request.bill.BillRequest;
 import com.example.shose.server.response.BillResponse;
 
@@ -10,6 +11,6 @@ import java.util.List;
  */
 public interface BillService {
 
-    List<BillResponse> getAll(BillRequest request);
+    PageableObject<BillResponse> getAll(BillRequest request);
 
 }

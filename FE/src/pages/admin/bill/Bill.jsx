@@ -1,90 +1,164 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import SidebarProject from '../../../components/sidebar/SidebarProject'
 import Navbar from "./../../../components/navbar/Navbar";
 import { TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { Table } from 'antd';
+import { Button, Table } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Paper from "@mui/material/Paper";
 import BillService from '../../../service/BillService';
 import moment from 'moment';
+import ReactPaginate from 'react-paginate';
+import Search from './Search';
+import { Offcanvas } from 'react-bootstrap';
+import './bill.scss'
 
 function Bill() {
 
   const dataSource = useSelector((state) => state.bills.sizes.value);
-  console.log(dataSource);
+  const currentPage = useSelector((state) => state.bills.sizes.currentPage);
+  const totalPage = useSelector((state) => state.bills.sizes.totalPage);
   const dispatch = useDispatch();
-    useEffect(() => {
-      BillService.getAll(dispatch);
-    }, [])
+  useEffect(() => {
+    BillService.getAll(dispatch, fillter);
+  }, [])
 
-    const columns = [
-      {
-        title: <div className="title-product">Mã</div>,
-        dataIndex: "code",
-        key: "code",
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const onChangeForm = event => {
+    setFillter({ ...fillter, [event.target.name]: event.target.value })
+  }
+
+  const changeStatusValue = (item) => {
+    const checkbox = fillter
+    checkbox.status = item 
+   setFillter(checkbox)
+  }
+
+  // begin trạng thái
+  const toggleHandler = (e, item) => {
+
+    if (e.target.checked) {
+      console.log(item);
+      var dataChecks = fillter.status
+      // dataChecks.push(item)
+
+      console.log(dataChecks);
+      // var datas = peopleInfo.sizes;
+      // datas.push(item)
+      setFillter(dataChecks);
+    } else {
+      // remove from list
+      if (typeof peopleInfo === 'object' && fillter.status !== null) {
+        var index = fillter.status((people) => people.id !== item.id)
+        var datas = fillter.status;
+
+        datas.splice(index, 1)
+        setFillter(
+          datas
+        );
+      }
+    }
+
+  };
+  // end trạng thái 
+
+
+  const [fillter, setFillter] = useState({
+    startTime: '',
+    endTime: '',
+    status: [],
+    endDeliveryDate: '',
+    startDeliveryDate: '',
+    code: '',
+    employees: '',
+    user: '',
+    phoneNumber: '',
+    type: -1
+
+  })
+
+  const columns = [
+    {
+      title: <div className="title-product">Mã</div>,
+      dataIndex: "code",
+      key: "code",
+    },
+    {
+      title: <div className="title-product">Ngày tạo</div>,
+      dataIndex: "createdDate",
+      key: "createdDate",
+      render: (text) => {
+        const formattedDate = moment(text).format("DD-MM-YYYY"); // Định dạng ngày
+        return formattedDate;
       },
-      {
-        title: <div className="title-product">Ngày tạo</div>,
-        dataIndex: "createdDate",
-        key: "createdDate",
-        render: (text) => {
-          const formattedDate = moment(text).format("DD-MM-YYYY"); // Định dạng ngày
-          return formattedDate;
-        },
-        
+
+    },
+    {
+      title: <div className="title-product">Khách hàng</div>,
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: <div className="title-product">Nhân viên</div>,
+      dataIndex: "nameEmployees",
+      key: "nameEmployees",
+    },
+
+    {
+      title: <div className="title-product">Hình thức</div>,
+      dataIndex: "type",
+      key: "type",
+      render: (text) => {
+        const genderClass =
+          text === 0 ? "Online" : "Tại Quầy";
+        return (
+          genderClass
+        );
       },
-      {
-        title: <div className="title-product">Khách hàng</div>,
-        dataIndex: "userName",
-        key: "userName",
-      },
-      {
-        title: <div className="title-product">Nhân viên</div>,
-        dataIndex: "nameEmployees",
-        key: "nameEmployees",
-      },
-   
-      {
-        title: <div className="title-product">Hình thức</div>,
-        dataIndex: "type",
-        key: "type",
-        render: (text) => {
-          const genderClass =
-            text === 0 ? "Online" : "Tại Quầy";
-          return (
-            genderClass
-          );
-        },
-      },
-      {
-        title: <div className="title-product">Trạng Thái</div>,
-        dataIndex: "statusBill",
-        key: "statusBill",
-        render: (text) => (
-          <button className="trangThai" style={{border: "none", borderRadius: "0px"}}>
-            {text === 0 ? "chờ xác nhận" : text === 1 ? "Chờ thanh toán" : "Hủy"}
-          </button>
-        ),
-      },
-      {
-        title: <div className="title-product">Tiền giảm</div>,
-        dataIndex: "itemDiscount",
-        key: "itemDiscount",
-      },
-      {
-        title: <div className="title-product">Tổng tiền</div>,
-        dataIndex: "totalMoney",
-        key: "totalMoney",
-      },
-      // {
-      //   title: <div className="title-product">Thao Tác</div>,
-      //   dataIndex: "id",
-      //   key: "actions",
-      //   render: (id) => (
-      //     <Button onClick={() => handleButtonClick(id)}>Chi tiết</Button>
-      //   ),
-      // },
-    ];
+    },
+    {
+      title: <div className="title-product">Trạng Thái</div>,
+      dataIndex: "statusBill",
+      key: "statusBill",
+      render: (text) => (
+        <button className="trangThai" style={{ border: "none", borderRadius: "0px" }}>
+          {text === 0 ? "chờ xác nhận" : text === 1 ? "Chờ thanh toán" : "Hủy"}
+        </button>
+      ),
+    },
+    {
+      title: <div className="title-product">Tiền giảm</div>,
+      dataIndex: "itemDiscount",
+      key: "itemDiscount",
+    },
+    {
+      title: <div className="title-product">Tổng tiền</div>,
+      dataIndex: "totalMoney",
+      key: "totalMoney",
+    },
+    // {
+    //   title: <div className="title-product">Thao Tác</div>,
+    //   dataIndex: "id",
+    //   key: "actions",
+    //   render: (id) => (
+    //     <Button onClick={() => handleButtonClick(id)}>Chi tiết</Button>
+    //   ),
+    // },
+  ];
+
+  const handlePageClick = (event) => {
+    // Xử lý sự kiện click của nút button tại đây
+    const selectedPage = event.selected;
+    console.log(selectedPage);
+  };
+
+  const searchBill = () => {
+    console.log(123);
+    console.log(fillter);
+  }
 
   return (
     <div className="home">
@@ -92,50 +166,37 @@ function Bill() {
       <SidebarProject />
       <div className="homeContainer">
         <Navbar />
-
+        <Button variant="primary" onClick={handleShow} > Lọc </Button>
         <Table
-        dataSource={dataSource}
-        columns={columns}
-        rowKey="id"
-        pagination={false} // Disable default pagination
-        className="product-table"
-      />
+          dataSource={dataSource}
+          columns={columns}
+          rowKey="id"
+          pagination={false} // Disable default pagination
+          className="product-table"
+        />
+        <div className="pagination-container">
+          <ReactPaginate
+            previousLabel={"<<"}
+            nextLabel={">>"}
+            breakLabel={"..."}
+            pageCount={10}
+            marginPagesDisplayed={1}
+            pageRangeDisplayed={2}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            activeClassName={"active"}
+          />
+        </div>
+        <Offcanvas show={show} onHide={handleClose} placement={'end'} >
+          <div className="row">
+            <Search style={{ height: '90%' }} changeStatusValue={changeStatusValue} searchBill={searchBill} fillter={fillter} changFillter={onChangeForm} />
+          </div>
+          <div className="row">
+            <div className='col-7'></div>
+            <button style={{marginLeft: '10px', height: "35px"}} className='btn btn-primary col-4' onClick={searchBill}>Tìm kiếm </button>
+          </div>
 
-{/* 
-        <TableContainer component={Paper} className="table">
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell className="tableCell"> Mã</TableCell>
-            <TableCell className="tableCell">Ngày tạo</TableCell>
-            <TableCell className="tableCell">Khách hàng</TableCell>
-            <TableCell className="tableCell">Nhân viên</TableCell>
-            <TableCell className="tableCell">Hình thức</TableCell>
-            <TableCell className="tableCell">Trạng thái</TableCell>
-            <TableCell className="tableCell">Tiền giảm</TableCell>
-            <TableCell className="tableCell">Tổng tiền </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell className="tableCell">{row.code}</TableCell>
-              <TableCell className="tableCell">
-              {row.createdDate }
-              </TableCell>
-              <TableCell className="tableCell">{row.customer}</TableCell>
-              <TableCell className="tableCell">{row.date}</TableCell>
-              <TableCell className="tableCell">{row.amount}</TableCell>
-              <TableCell className="tableCell">{row.method}</TableCell>
-              <TableCell className="tableCell">
-                <span className={`status ${row.status}`}>{row.status}</span>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer> */}
-
+        </Offcanvas>
       </div>
     </div>
   )

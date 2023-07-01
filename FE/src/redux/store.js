@@ -22,7 +22,13 @@ const persistConfig = {
   version: 1,
   storage,
 };
-const rootReducer = combineReducers({ auth: authReducer, product: productReducer, users: userReducer, sizes: sizeReducer, bills: billReducer });
+const rootReducer = combineReducers({ 
+    auth: authReducer,
+    product: productReducer,
+    users: userReducer, 
+    sizes: sizeReducer, 
+    test: billReducer,
+    bills: billReducer });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
