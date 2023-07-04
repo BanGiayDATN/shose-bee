@@ -1,44 +1,39 @@
 import { Button, Table } from "antd";
-import axios from "axios";
 import moment from "moment/moment";
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import ProductService from "../../service/ProductService";
+import ProductService from "../../service/ProductDetailService";
 import { useDispatch, useSelector } from "react-redux";
 
 const TableProductDetail = () => {
 
-  const dataSource = useSelector((state) => state.products.products.value);
-  const currentPage = useSelector((state) => state.products.products.currentPage);
-  const totalPage = useSelector((state) => state.products.products.totalPage);
-  const[page, setCurrentPage] = useState(0)
+  const [listProductDetail, setListProductDetail] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
 
   // Gọi khi người dùng nhấp để yêu cầu một trang khác.
+  // Xử lý sự kiện click của nút button tại đây
   const handlePageClick = (event) => {
-    // Xử lý sự kiện click của nút button tại đây
-    const selectedPage = event.selected;
-    setCurrentPage(selectedPage);
-    loadData(page);
+    loadData(+event.selected);
   };
 
   const handleButtonClick = (id) => {
     // Xử lý sự kiện click của nút button tại đây
     console.log("Edit button clicked for ID:", id);
   };
-  const dispatch = useDispatch();
   useEffect(() => {
-    ProductService.getAll(dispatch,page);
+    loadData(0);
   }, []);
   const loadData = async (page) => {
-    ProductService.getAll(page);
-    // axios
-    //   .get(`http://localhost:8080/admin/product-detail?page=${page}`)
-    //   .then((response) => {
-    //     setDataSource(response.data.data.data);
-    //     setCurrentPage(response.data.data.currentPage);
-    //     setTotalPage(response.data.data.totalPages);
-    //   })
-    //   .catch((error) => {});
+    ProductService.fetchAllProductDetail(page)
+      .then((res) => {
+        setListProductDetail(res.data.data.data);
+        setCurrentPage(res.data.data.currentPage);
+        setTotalPage(res.data.data.totalPages);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const columns = [
@@ -120,7 +115,7 @@ const TableProductDetail = () => {
     <>
       {/* Bảng sản phẩm */}
       <Table
-        dataSource={dataSource}
+        dataSource={listProductDetail}
         columns={columns}
         rowKey="id"
         pagination={false} // Disable default pagination

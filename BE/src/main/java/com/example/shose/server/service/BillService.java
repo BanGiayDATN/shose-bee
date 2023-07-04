@@ -1,11 +1,13 @@
 package com.example.shose.server.service;
 
+
+import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.entity.Bill;
-import com.example.shose.server.infrastructure.common.base.PageableObject;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
+
 
 import java.util.List;
 

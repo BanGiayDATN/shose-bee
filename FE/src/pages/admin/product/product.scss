@@ -74,6 +74,12 @@
   display: flex;
     align-items: center;
 }
-.tableProduct{
-  
+
+.row-combox {
+  display: flex;
+  justify-content: space-between;
+}
+.combox-container {
+  margin-right: 10px; 
+  margin-bottom: 15px;
 }

@@ -1,6 +1,6 @@
 package com.example.shose.server.dto.request.bill;
 
-import com.example.shose.server.infrastructure.common.base.PageableRequest;
+import com.example.shose.server.infrastructure.common.PageableRequest;
 import lombok.Getter;
 import lombok.Setter;
 

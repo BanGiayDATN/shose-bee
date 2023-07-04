@@ -27,12 +27,35 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                 p.created_date AS createdDate,
                 p.last_modified_date AS lastModifiedDate
             FROM product p
+            WHERE 
+                ( :#{#req.code} IS NULL 
+                    OR :#{#req.code} LIKE '' 
+                    OR code LIKE %:#{#req.code}% ) 
+            AND 
+                ( :#{#req.name} IS NULL 
+                    OR :#{#req.name} LIKE '' 
+                    OR name LIKE %:#{#req.name}% ) 
+            GROUP BY p.id
+            ORDER BY p.last_modified_date DESC  
             """, countQuery = """
             SELECT count(1)            
             FROM product p
+            WHERE 
+                ( :#{#req.code} IS NULL 
+                    OR :#{#req.code} LIKE '' 
+                    OR code LIKE %:#{#req.code}% ) 
+            AND 
+                ( :#{#req.name} IS NULL 
+                    OR :#{#req.name} LIKE '' 
+                    OR name LIKE %:#{#req.name}% ) 
+            GROUP BY p.id
+            ORDER BY p.last_modified_date DESC
             """, nativeQuery = true)
-    Page<ProductResponse> getAll(Pageable pageable, FindProductRequest req);
+    Page<ProductResponse> getAll(Pageable pageable,@Param("req") FindProductRequest req);
 
     @Query("SELECT p FROM Product p WHERE p.code =:code")
     Product getOneByCode (@Param("code") String code);
+
+    @Query("SELECT s FROM Product s WHERE s.code =:code AND s.id <> :id")
+    Product getByNameExistence(@Param("code") String code, @Param("id") String id);
 }
