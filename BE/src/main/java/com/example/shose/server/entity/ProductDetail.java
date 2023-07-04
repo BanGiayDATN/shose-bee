@@ -37,6 +37,8 @@ public class ProductDetail extends PrimaryEntity {
 
     private Status status;
 
+    private long quantity;
+
     @ManyToOne
     @JoinColumn(name = "id_category",referencedColumnName = "id")
     private Category category;

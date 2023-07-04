@@ -1,7 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.entity.Account;
-import com.example.shose.server.response.employee.SimpleEmployeeResponse;
+import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

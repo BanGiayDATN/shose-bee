@@ -1,4 +1,4 @@
-package com.example.shose.server.response.employee;
+package com.example.shose.server.dto.response.employee;
 
 import com.example.shose.server.entity.User;
 import org.springframework.beans.factory.annotation.Value;

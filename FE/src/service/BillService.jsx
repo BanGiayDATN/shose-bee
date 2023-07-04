@@ -1,5 +1,5 @@
 import axios from "axios";
-import { addBills, addBill, addAll, addAllDataUsers } from "../redux/billSlice";
+import { addBills, addBill, addAll, addAllDataUsers, addbillWait } from "../redux/billSlice";
 
 var api = 'http://localhost:8080';
 var apiBill = api + `/admin/bill`;
@@ -84,6 +84,18 @@ const create = (dispatch, data) => {
   return
 };
 
+const createBillWait = (dispatch) => {
+  try {
+    axios.post(apiBill+ "/offline")
+      .then(response => {
+        console.log(response.data.data);
+        dispatch(addbillWait(response.data.data));
+      })
+  } catch {
+  }
+  return
+}
+
 
 const BillService = {
   getAll,
@@ -91,7 +103,8 @@ const BillService = {
   getAllUser,
   getAllEmployees,
   getDataUser,
-  getDataEmployess
+  getDataEmployess,
+  createBillWait
 };
 
 export default BillService;

@@ -1,7 +1,7 @@
 package com.example.shose.server.service;
 
 import com.example.shose.server.entity.Account;
-import com.example.shose.server.response.employee.SimpleEmployeeResponse;
+import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
 
 import java.util.List;
 
