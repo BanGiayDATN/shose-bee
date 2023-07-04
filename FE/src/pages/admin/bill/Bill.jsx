@@ -11,11 +11,15 @@ import ReactPaginate from 'react-paginate';
 import Search from './Search';
 import { Offcanvas } from 'react-bootstrap';
 import './bill.scss'
+import { deletebillWait } from '../../../redux/billSlice';
+import { Link } from 'react-router-dom';
+// import { addBills, addBill, addAll, deletebillWait } from "./redux/billSlice";
 
 function Bill() {
 
   const dataSource = useSelector((state) => state.bill.bills.value);
-  console.log( useSelector((state) => state.bill.search))
+  const test = useSelector((state) => state.bill);
+  console.log( test)
   var dataUse = BillService.getAllUser();
   var dataEmployees =[];
   const currentPage = useSelector((state) => state.bill.bills.currentPage);
@@ -206,8 +210,9 @@ function Bill() {
     <div className="home">
       {/* mới sửa */}
       <SidebarProject />
-      <div className="homeContainer">
+      <div className="homeContainer ">
         <Navbar />
+        <Button variant="primary" onClick={handleShow} > <Link to='/sale'>Bán Tại Quầy</Link> </Button>
         <Button variant="primary" onClick={handleShow} > Lọc </Button>
         <Button variant="primary" onClick={clearnFillter} > Xóa bộ lọc </Button>
         <Table

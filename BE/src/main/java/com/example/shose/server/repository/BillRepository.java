@@ -1,9 +1,9 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.entity.Bill;
-import com.example.shose.server.request.bill.BillRequest;
-import com.example.shose.server.response.bill.BillResponse;
-import com.example.shose.server.response.bill.UserBillResponse;
+import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.response.bill.BillResponse;
+import com.example.shose.server.dto.response.bill.UserBillResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

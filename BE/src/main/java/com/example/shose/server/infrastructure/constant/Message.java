@@ -10,7 +10,10 @@ public enum Message {
     SUCCESS("Success"),
     ERROR_UNKNOWN("Error Unknown"),
     NOT_EXISTS("Không tồn tại"),
-    CODE_EXISTS ("Mã đã tồn tại");
+    CODE_EXISTS ("Mã đã tồn tại"),
+    BILL_NOT_EXIT(""),
+    ACCOUNT_NOT_EXIT(""),
+    ACCOUNT_NOT_PERMISSION("");
 
 
 

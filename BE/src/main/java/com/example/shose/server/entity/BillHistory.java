@@ -1,6 +1,7 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
+import com.example.shose.server.infrastructure.constant.StatusBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -28,6 +29,8 @@ public class BillHistory extends PrimaryEntity {
 
     @Column(name = "action_description")
     private String actionDescription;
+
+    private StatusBill statusBill;
 
     @ManyToOne
     @JoinColumn(name = "id_bill",referencedColumnName = "id")
