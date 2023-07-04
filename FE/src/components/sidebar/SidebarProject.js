@@ -22,6 +22,8 @@ const subMenu = [
     parent: "Quản lý sản phẩm",
     child: [
       { name: "Sản Phẩm", url: "/products" },
+      { name: "Thể loại ", url: "/category" },
+      { name: "Đế giày", url: "/sole" },
       { name: "Màu", url: "/mau" },
     ],
     icon: LaptopOutlined,

@@ -34,7 +34,7 @@ public class CategoryRestController {
     }
 
     @GetMapping()
-    public ResponseObject view(@ModelAttribute final FindCategoryRequest req) {
+    public ResponseObject view( final FindCategoryRequest req) {
         return new ResponseObject(categoryService.findAll(req));
     }
 

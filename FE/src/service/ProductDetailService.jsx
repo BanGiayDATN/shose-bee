@@ -3,20 +3,10 @@ import { addAllProduct, addProduct } from "../redux/productSlice";
 
 var api = "http://localhost:8080/api";
 var apiPost = api + `/product`;
-const getAll = (dispatch, page) => {
-  if(page == undefined){
-    page = 0
-  }
-  axios
-  .get(`http://localhost:8080/admin/product-detail`)
-  .then((response) => {
-    console.log(response.data.data);
-    dispatch(addAllProduct(response.data.data));
-  })
-  .catch((error) => {});
-  return
-};
 
+const fetchAllProductDetail = (page) => {
+  return  axios.get(`http://localhost:8080/admin/product-detail?page=${page}`)
+};
 const create = (dispatch, data) => {
   try {
     axios.post(apiPost, data)
@@ -34,8 +24,8 @@ const create = (dispatch, data) => {
 
 
 const ProductService = {
-  getAll,
-  create
+  create,
+  fetchAllProductDetail
 };
 
 export default ProductService;

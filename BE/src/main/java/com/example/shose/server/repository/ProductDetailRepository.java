@@ -38,7 +38,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             AND 
                 ( :#{#req.color} IS NULL 
                     OR :#{#req.color} LIKE '' 
-                    OR col.name LIKE %:#{#req.color}% ) 
+                    OR col.code LIKE %:#{#req.color}% ) 
             AND 
                 ( :#{#req.brand} IS NULL 
                     OR :#{#req.brand} LIKE '' 
@@ -63,18 +63,24 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 ( :#{#req.category} IS NULL 
                     OR :#{#req.category} LIKE '' 
                     OR c.name LIKE %:#{#req.category}% )
-            GROUP BY detail.id, i.name, p.name, detail.price, detail.created_date, detail.gender, detail.status
+            GROUP BY detail.id, i.name, p.name,s.name,m.name,si.name,c.name,b.name,col.code, detail.price, detail.created_date, detail.gender, detail.status
             ORDER BY detail.last_modified_date DESC 
             """, countQuery = """
             SELECT COUNT(1)
             FROM product_detail detail
             JOIN product p on detail.id_product = p.id
             JOIN image i on detail.id = i.id_product_detail
+            JOIN sole s on s.id = detail.id_sole
+            JOIN material m on detail.id_material = m.id
+            JOIN size si on detail.id_size = si.id
+            JOIN category c on detail.id_category = c.id
+            JOIN brand b on detail.id_brand = b.id
+            JOIN color col on detail.id_color = col.id
             WHERE i.status = '0'
             AND 
                 ( :#{#req.color} IS NULL 
                     OR :#{#req.color} LIKE '' 
-                    OR col.name LIKE %:#{#req.color}% ) 
+                    OR col.code LIKE %:#{#req.color}% ) 
             AND 
                 ( :#{#req.brand} IS NULL 
                     OR :#{#req.brand} LIKE '' 
@@ -99,7 +105,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 ( :#{#req.category} IS NULL 
                     OR :#{#req.category} LIKE '' 
                     OR c.name LIKE %:#{#req.category}% )
-            GROUP BY detail.id, i.name, p.name, detail.price, detail.created_date, detail.gender, detail.status
+            GROUP BY detail.id, i.name, p.name,s.name,m.name,si.name,c.name,b.name,col.code, detail.price, detail.created_date, detail.gender, detail.status
             ORDER BY detail.last_modified_date DESC
                        """, nativeQuery = true)
     Page<ProductDetailReponse> getAllProductDetail(Pageable pageable, @Param("req") FindProductDetailRequest req);

@@ -1,5 +1,6 @@
 package com.example.shose.server.dto.request.category;
 
+import com.example.shose.server.infrastructure.constant.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +13,5 @@ public abstract class BaseCategoryRequest {
 
     private String name;
 
-    private Integer status;
+    private Status status;
 }

@@ -1,6 +1,6 @@
 package com.example.shose.server.service.impl;
 
-import com.example.shose.server.infrastructure.common.base.PageableObject;
+import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.request.bill.BillRequest;
 import com.example.shose.server.response.bill.BillResponse;

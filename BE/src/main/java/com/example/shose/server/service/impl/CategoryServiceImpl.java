@@ -47,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Category add = Category.builder().name(req.getName()).status(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG).build();
+        Category add = Category.builder().name(req.getName()).status(req.getStatus()).build();
         return categoryRepository.save(add);
     }
 
@@ -59,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(req.getStatus());
         return categoryRepository.save(update);
     }
 

@@ -10,6 +10,8 @@ import Employee from "./pages/admin/employee/Employee";
 import MemberOffers from "./pages/admin/voucher/MemberOffers";
 import Voucher from "./pages/admin/voucher/Voucher";
 import Bill from "./pages/admin/bill/Bill";
+import ViewCategory from "./pages/admin/category/ViewCategory";
+import ViewSole from "./pages/admin/sole/ViewSole";
 
 const publicRouters = [
   { path: "/", element: Home },
@@ -25,6 +27,10 @@ const publicRouters = [
   { path: "/products", element: Product },
   { path: "/home", element: UserHome },
   { path: "/bill", element: Bill },
+  { path: "/category", element: ViewCategory },
+  { path: "/sole", element: ViewSole },
+  
+
 ];
 
 const privateRouters = [];

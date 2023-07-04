@@ -8,6 +8,7 @@ import './quilljs.css'
 import ComboboxPropertie from './ComboboxPropertie';
 import { CustomMenu, CustomToggle } from './CustomMenu'
 import { Dropdown } from 'react-bootstrap';
+import SidebarProject from '../../../components/sidebar/SidebarProject';
 
 const fruits = [
   { id: "1", name: "Apples", prefix: "How's about them " },
@@ -122,7 +123,7 @@ function CreateProduct() {
   // end classify
   return (
     <div className="new">
-      <Sidebar />
+      <SidebarProject />
       <div className="newContainer">
         <Navbar />
         <div className="row" style={{ margin: '10px 0 10px 10px' }}>
