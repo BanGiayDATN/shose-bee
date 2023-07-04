@@ -11,7 +11,7 @@ function Employee() {
       <SidebarProject /> 
       <div className="homeContainer">
         <Navbar />
-       
+        
       </div>
     </div>
   )

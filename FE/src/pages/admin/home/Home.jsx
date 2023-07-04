@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <div className="home">
       {/* mới sửa */}
-      <SidebarProject /> 
+      <SidebarProject />
       <div className="homeContainer">
         <Navbar />
         <div className="widgets">
