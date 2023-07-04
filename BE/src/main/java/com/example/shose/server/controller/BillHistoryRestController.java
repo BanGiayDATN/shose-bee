@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/admin/bill-detail")
+@RequestMapping("/admin/bill-history")
 public class BillHistoryRestController {
 
     @Autowired

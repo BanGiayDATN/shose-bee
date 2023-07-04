@@ -11,6 +11,7 @@ import MemberOffers from "./pages/admin/voucher/MemberOffers";
 import Voucher from "./pages/admin/voucher/Voucher";
 import Bill from "./pages/admin/bill/Bill";
 import CreateBill from "./pages/admin/bill/CreateBill";
+import DetailBill from "./pages/admin/bill/DetailBill";
 
 const publicRouters = [
   { path: "/", element: Home },
@@ -26,6 +27,7 @@ const publicRouters = [
   { path: "/products", element: Product },
   { path: "/home", element: UserHome },
   { path: "/bill", element: Bill },
+  { path: "/bill/:id", element: DetailBill },
   { path: "/sale", element: CreateBill },
 ];
 

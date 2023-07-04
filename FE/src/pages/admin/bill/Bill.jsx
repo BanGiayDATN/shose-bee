@@ -134,8 +134,8 @@ function Bill() {
       dataIndex: "statusBill",
       key: "statusBill",
       render: (text) => (
-        <button className="trangThai" style={{ border: "none", borderRadius: "0px" }}>
-          {text === 0 ? "chờ xác nhận" : text === 1 ? "Đang vận chuyển" : "Hủy"}
+        <button className={`trangThai ${" status"+text} ` } style={{ border: "none", borderRadius: "0px" }}>
+          {text === 0 ? "Tạo Hóa đơn" : (text === 1 ? "Chờ xác nhận" : (text === 2 ? "Đang vận chuyển" : (text === 3 ? "Đã thanh toán" : (text === 4 ? "Thành công" : "Đã hủy"))))}
         </button>
       ),
     },
@@ -145,10 +145,11 @@ function Bill() {
       key: "itemDiscount",
       render: (itemDiscount) => (
         <span>
-          {itemDiscount.toLocaleString("vi-VN", {
+          {itemDiscount}
+          {/* {itemDiscount.toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
-          })}
+          })} */}
         </span>
       ),
     },
@@ -158,21 +159,22 @@ function Bill() {
       key: "totalMoney",
       render: (totalMoney) => (
         <span>
-          {totalMoney.toLocaleString("vi-VN", {
+          {totalMoney}
+          {/* {totalMoney.toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
-          })}
+          })} */}
         </span>
       ),
     },
-    // {
-    //   title: <div className="title-product">Thao Tác</div>,
-    //   dataIndex: "id",
-    //   key: "actions",
-    //   render: (id) => (
-    //     <Button onClick={() => handleButtonClick(id)}>Chi tiết</Button>
-    //   ),
-    // },
+    {
+      title: <div className="title-product">Thao Tác</div>,
+      dataIndex: "id",
+      key: "actions",
+      render: (id) => (
+        <Button ><Link to={`/bill/${id}`}>Chi tiết</Link></Button>
+      ),
+    },
   ];
 
   const handlePageClick = (event) => {
