@@ -14,9 +14,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <DarkModeContextProvider>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      {/* <PersistGate loading={null} > */}
         <App />
-      </PersistGate>
+      {/* </PersistGate> */}
     </Provider>
   </DarkModeContextProvider>
 );
