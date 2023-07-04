@@ -1,12 +1,10 @@
 package com.example.shose.server.service.impl;
 
-<<<<<<< HEAD
-import com.example.shose.server.infrastructure.common.PageableObject;
-=======
+
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
-import com.example.shose.server.infrastructure.common.base.PageableObject;
+import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.StatusBill;
@@ -14,7 +12,6 @@ import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
->>>>>>> develop
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;

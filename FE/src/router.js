@@ -10,13 +10,10 @@ import Employee from "./pages/admin/employee/Employee";
 import MemberOffers from "./pages/admin/voucher/MemberOffers";
 import Voucher from "./pages/admin/voucher/Voucher";
 import Bill from "./pages/admin/bill/Bill";
-<<<<<<< HEAD
 import ViewCategory from "./pages/admin/category/ViewCategory";
 import ViewSole from "./pages/admin/sole/ViewSole";
-=======
 import CreateBill from "./pages/admin/bill/CreateBill";
-import DetailBill from "./pages/admin/bill/DetailBill";
->>>>>>> develop
+// import DetailBill from "./pages/admin/bill/DetailBill";
 
 const publicRouters = [
   { path: "/", element: Home },
@@ -32,15 +29,10 @@ const publicRouters = [
   { path: "/products", element: Product },
   { path: "/home", element: UserHome },
   { path: "/bill", element: Bill },
-<<<<<<< HEAD
   { path: "/category", element: ViewCategory },
   { path: "/sole", element: ViewSole },
-  
-
-=======
-  { path: "/bill/:id", element: DetailBill },
+  // { path: "/bill/:id", element: DetailBill },
   { path: "/sale", element: CreateBill },
->>>>>>> develop
 ];
 
 const privateRouters = [];
