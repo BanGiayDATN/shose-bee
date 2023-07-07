@@ -19,7 +19,7 @@ import java.util.List;
 public interface BillRepository extends JpaRepository<Bill, String> {
 
     @Query(value = """
-            SELECT bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
+            SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
             LEFT JOIN account ac ON ac.id = bi.id_account
             LEFT JOIN account em ON em.id = bi.id_employees
             LEFT JOIN customer cu ON cu.id = bi.id_customer
@@ -92,10 +92,11 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     Page<BillResponse> getAll(Pageable pageable, BillRequest request);
 
     @Query(value = """
-             SELECT  IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
+             SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
                         LEFT JOIN account ac ON ac.id = bi.id_account
                         LEFT JOIN customer cu ON cu.id = bi.id_customer
                         LEFT JOIN user usac ON usac.id = ac.id_user
+                        ORDER BY bi.created_date
             """, nativeQuery = true)
     List<UserBillResponse> getAllUserInBill();
 }

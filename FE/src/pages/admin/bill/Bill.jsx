@@ -18,8 +18,6 @@ import { Link } from 'react-router-dom';
 function Bill() {
 
   const dataSource = useSelector((state) => state.bill.bills.value);
-  const test = useSelector((state) => state.bill);
-  console.log( test)
   var dataUse = BillService.getAllUser();
   var dataEmployees =[];
   const currentPage = useSelector((state) => state.bill.bills.currentPage);
@@ -135,7 +133,7 @@ function Bill() {
       key: "statusBill",
       render: (text) => (
         <button className={`trangThai ${" status"+text} ` } style={{ border: "none", borderRadius: "0px" }}>
-          {text === 0 ? "Tạo Hóa đơn" : (text === 1 ? "Chờ xác nhận" : (text === 2 ? "Đang vận chuyển" : (text === 3 ? "Đã thanh toán" : (text === 4 ? "Thành công" : "Đã hủy"))))}
+          {text === 0 ? "Tạo Hóa đơn" : (text === 1 ? "Chờ xác nhận" : (text === 2 ? "Đang vận chuyển" : (text === 3 ? "Đã thanh toán" : (text === 4 ? "Trả hàng" :(text === 5 ? "Thành công" : "Đã hủy")))))}
         </button>
       ),
     },
@@ -225,11 +223,11 @@ function Bill() {
           className="product-table"
         />
         
-         { totalPage !== 1 ?  <div className="pagination-container"><ReactPaginate
+         { totalPage >= 1 ?  <div className="pagination-container"><ReactPaginate
             previousLabel={"<<"}
             nextLabel={">>"}
             breakLabel={"..."}
-            pageCount={10}
+            pageCount={totalPage}
             marginPagesDisplayed={1}
             pageRangeDisplayed={2}
             onPageChange={handlePageClick}
