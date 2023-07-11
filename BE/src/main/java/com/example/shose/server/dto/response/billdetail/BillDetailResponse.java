@@ -10,6 +10,9 @@ import org.springframework.data.rest.core.config.Projection;
 @Projection(types = {Bill.class, BillDetail.class, ProductDetail.class, Product.class, Size.class})
 public interface BillDetailResponse {
 
+    @Value("#{target.stt}")
+    String getStt();
+
     @Value("#{target.id}")
     String getId();
 

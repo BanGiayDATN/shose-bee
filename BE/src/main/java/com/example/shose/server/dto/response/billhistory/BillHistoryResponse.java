@@ -10,6 +10,9 @@ import org.springframework.data.rest.core.config.Projection;
 @Projection(types = {Bill.class, BillHistory.class})
 public interface BillHistoryResponse {
 
+    @Value("#{target.stt}")
+    String getStt();
+
     @Value("#{target.id}")
     String getId();
 
@@ -17,10 +20,10 @@ public interface BillHistoryResponse {
     int getStatusBill();
 
     @Value("#{target.created_date}")
-    int getCreateDate();
+    long getCreateDate();
 
     @Value("#{target.action_description}")
-    int getActionDesc();
+    String getActionDesc();
 
 
 

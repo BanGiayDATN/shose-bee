@@ -5,7 +5,7 @@ package com.example.shose.server.infrastructure.constant;
  */
 public enum StatusBill {
     TAO_HOA_DON,
-    CHO_THANH_TOAN,
+    CHO_XAC_NHAN,
     VAN_CHUYEN,
     DA_THANH_TOAN,
     TRA_HANG,

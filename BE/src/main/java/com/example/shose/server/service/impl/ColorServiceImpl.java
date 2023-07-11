@@ -47,7 +47,7 @@ public class ColorServiceImpl implements ColorService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Color add = Color.builder().name(req.getName()).status(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG).build();
+        Color add = Color.builder().code(req.getCode()).name(req.getName()).status(req.getStatus()).build();
         return colorRepository.save(add);
     }
 
@@ -60,7 +60,7 @@ public class ColorServiceImpl implements ColorService {
         Color update = optional.get();
         update.setCode(req.getCode());
         update.setName(req.getName());
-        update.setStatus(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(req.getStatus());
         return colorRepository.save(update);
     }
 

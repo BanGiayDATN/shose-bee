@@ -5,23 +5,27 @@ import BillService from '../../../service/BillService';
 const data = [
     {
         id: "0",
-        name: "Chờ xác nhận"
+        name: "Tạo Hóa đơn"
     },
     {
         id: "1",
-        name: "Đang vận chuyển"
+        name: "Chờ xác nhận"
     },
     {
         id: "2",
-        name: "Đã thanh toán"
+        name: "Đang vận chuyển"
     },
     {
         id: "3",
-        name: "Đã hủy"
+        name: "Đã thanh toán"
     },
     {
         id: "4",
-        name: " Trả hàng"
+        name: "Thành công"
+    },
+    {
+        id: "5",
+        name: "Đã hủy"
     },
 ];
 
