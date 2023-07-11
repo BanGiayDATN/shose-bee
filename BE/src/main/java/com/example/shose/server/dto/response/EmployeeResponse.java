@@ -47,5 +47,4 @@ public interface EmployeeResponse {
 
     @Value("#{target.gender}")
     Boolean getGender();
-
 }

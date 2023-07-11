@@ -8,6 +8,5 @@ import lombok.Setter;
 /**
  * @author Phuong Oanh
  */
-@Getter @Setter
 public class CreateEmployeeRequest extends BaseEmployeeRequest {
 }

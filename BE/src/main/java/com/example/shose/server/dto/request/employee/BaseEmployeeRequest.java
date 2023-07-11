@@ -1,12 +1,14 @@
 package com.example.shose.server.dto.request.employee;
 
+import com.example.shose.server.infrastructure.constant.Status;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * @author Phuong Oanh
  */
-@Getter @Setter
+@Getter
+@Setter
 public abstract class BaseEmployeeRequest {
     private String fullName;
 
@@ -20,5 +22,9 @@ public abstract class BaseEmployeeRequest {
 
     private String avata;
 
-    private Integer status;
+    private Status status;
+
+    private Long startTime;
+
+    private Long endTime;
 }

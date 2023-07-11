@@ -39,27 +39,50 @@ public interface UserReposiory extends JpaRepository<User, String> {
     Page<EmployeeResponse> getAll(Pageable pageable, FindEmployeeRequest req);
 
     @Query(value = """
-    SELECT
-        ROW_NUMBER() OVER (ORDER BY u.last_modified_date DESC) AS stt,
-        u.id AS id,
-        u.gender AS gender,
-        u.full_name AS fullName,
-        u.date_of_birth AS dateOfBirth,
-        u.avata AS avata,
-        u.email AS email,
-        u.phone_number AS phoneNumber,
-        u.updated_by AS updatedBy,
-        u.created_by AS createdBy,
-        u.status AS status,
-        u.created_date AS createdDate,
-        u.last_modified_date AS lastModifiedDate
-    FROM user u
-    WHERE  
-        (:#{#req.fullName} IS NULL 
-        OR u.full_name LIKE CONCAT('%', :#{#req.fullName}, '%'))
-        AND
-        (:#{#req.phoneNumber} IS NULL
-        OR u.phone_number LIKE CONCAT('%', :#{#req.phoneNumber}, '%'))
-    """, nativeQuery = true)
+            SELECT
+                ROW_NUMBER() OVER (ORDER BY u.last_modified_date DESC) AS stt,
+                u.id AS id,
+                u.gender AS gender,
+                u.full_name AS fullName,
+                u.date_of_birth AS dateOfBirth,
+                u.avata AS avata,
+                u.email AS email,
+                u.phone_number AS phoneNumber,
+                u.updated_by AS updatedBy,
+                u.created_by AS createdBy,
+                u.status AS status,
+                u.created_date AS createdDate,
+                u.last_modified_date AS lastModifiedDate
+            FROM user u
+            WHERE  
+                (:#{#req.fullName} IS NULL 
+                OR u.full_name LIKE CONCAT('%', :#{#req.fullName}, '%'))
+                AND
+                (:#{#req.email} IS NULL
+                OR u.email LIKE CONCAT('%', :#{#req.email}, '%'))
+            """, nativeQuery = true)
     Page<EmployeeResponse> findByName(Pageable pageable, @Param("req") FindEmployeeRequest req);
+
+    @Query(value = """
+                    SELECT
+                        ROW_NUMBER() OVER (ORDER BY u.last_modified_date DESC) AS stt,
+                        u.id AS id,
+                        u.gender AS gender,
+                        u.full_name AS fullName,
+                        u.date_of_birth AS dateOfBirth,
+                        u.avata AS avata,
+                        u.email AS email,
+                        u.phone_number AS phoneNumber,
+                        u.updated_by AS updatedBy,
+                        u.created_by AS createdBy,
+                        u.status AS status,
+                        u.created_date AS createdDate,
+                        u.last_modified_date AS lastModifiedDate
+                    FROM user u
+                 WHERE  ( :#{#req.startTime} = 0
+                             OR u.created_date >= :#{#req.startTime}  )
+                    AND ( :#{#req.endTime} = 0
+                             OR u.created_date <= :#{#req.endTime}  )
+            """, nativeQuery = true)
+    Page<EmployeeResponse> findByDate(Pageable pageable, @Param("req") FindEmployeeRequest req);
 }

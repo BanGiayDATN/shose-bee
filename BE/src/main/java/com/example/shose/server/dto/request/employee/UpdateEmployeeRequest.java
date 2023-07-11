@@ -10,4 +10,5 @@ import lombok.Setter;
 @Getter
 public class UpdateEmployeeRequest extends BaseEmployeeRequest {
     private String id;
+
 }

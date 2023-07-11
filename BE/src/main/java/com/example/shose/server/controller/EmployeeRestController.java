@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/admin/user")
+@RequestMapping("/admin/employee")
 public class EmployeeRestController {
     @Autowired
     private EmployeeService userService;
 
     @GetMapping("/index")
-    public ResponseObject getAll (){
+    public ResponseObject getAll() {
         return new ResponseObject(userService.getAll());
     }
 
@@ -36,20 +36,31 @@ public class EmployeeRestController {
     public ResponseObject view(final FindEmployeeRequest req) {
         return new ResponseObject(userService.findAll(req));
     }
+
     @GetMapping("/search")
     public ResponseObject search(final FindEmployeeRequest rep) {
         return new ResponseObject(userService.search(rep));
     }
+    @GetMapping("/search-date")
+    public ResponseObject searchDate(final FindEmployeeRequest rep) {
+        return new ResponseObject(userService.searchDate(rep));
+    }
+
     @PostMapping
     public ResponseObject add(@RequestBody CreateEmployeeRequest req) {
         return new ResponseObject(userService.create(req));
     }
+    @GetMapping("/{id}")
+    public ResponseObject getOneById(@PathVariable("id") String id) {
+        return new ResponseObject(userService.getOneById(id));
+    }
     @PutMapping("/{id}")
-    public ResponseObject update (@PathVariable("id") String id ,
-                                  @RequestBody UpdateEmployeeRequest req){
+    public ResponseObject update(@PathVariable("id") String id,
+                                 @RequestBody UpdateEmployeeRequest req) {
         req.setId(id);
         return new ResponseObject(userService.update(req));
     }
+
     @DeleteMapping("/{id}")
     public ResponseObject delete(@PathVariable("id") String id) {
         return new ResponseObject(userService.delete(id));
