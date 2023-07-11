@@ -13,6 +13,7 @@ import Bill from "./pages/admin/bill/Bill";
 import ViewCategory from "./pages/admin/category/ViewCategory";
 import ViewSole from "./pages/admin/sole/ViewSole";
 import CreateBill from "./pages/admin/bill/CreateBill";
+import ViewAddress from "./pages/admin/address/ViewAddress";
 // import DetailBill from "./pages/admin/bill/DetailBill";
 
 const publicRouters = [
@@ -33,6 +34,7 @@ const publicRouters = [
   { path: "/sole", element: ViewSole },
   // { path: "/bill/:id", element: DetailBill },
   { path: "/sale", element: CreateBill },
+  { path: "/address", element: ViewAddress },
 ];
 
 const privateRouters = [];

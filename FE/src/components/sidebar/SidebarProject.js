@@ -15,6 +15,7 @@ const menu = [
   { name: "Thống kê", url: "/", icon: UserOutlined },
   { name: "Hóa đơn", url: "/bill", icon: UserOutlined },
   { name: "Quản lý đơn hàng", url: "/don-hang", icon: UserOutlined },
+  { name: "Địa chỉ", url: "/address", icon: UserOutlined },
 ];
 
 const subMenu = [
@@ -57,26 +58,52 @@ const SidebarProject = () => {
         defaultOpenKeys={["sub1"]}
         style={{ height: "100%", borderRight: 0 }}
       >
-       
         {menu.map((item, index) => {
           var Icon = item.icon;
           return (
-            <Link key={'M'+index} to={item.url}   style={{ textDecoration: "none" , color:"black"}}>
-              <div className="ant-menu-submenu-title" style={{paddingLeft:"24px"}}>
-              <Icon className="anticon anticon-user ant-menu-item-icon"  style={{ color:"black"}}/> 
-              <p className="ant-menu-title-content" style={{margin: "0px 0px 0px 10px"}} >{item.name}</p>
-
+            <Link
+              key={"M" + index}
+              to={item.url}
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <div
+                className="ant-menu-submenu-title"
+                style={{ paddingLeft: "24px" }}
+              >
+                <Icon
+                  className="anticon anticon-user ant-menu-item-icon"
+                  style={{ color: "black" }}
+                />
+                <p
+                  className="ant-menu-title-content"
+                  style={{ margin: "0px 0px 0px 10px" }}
+                >
+                  {item.name}
+                </p>
               </div>
-              
             </Link>
           );
         })}
         {subMenu.map((item, index) => {
           var Icon = item.icon;
           return (
-            <Menu.SubMenu key={'Sb'+index} icon={<Icon />} title={item.parent}>
-              {item.child.map((child,keyChild) =>{
-                return <Menu.Item ><Link   style={{ textDecoration: "none" }} key={'Sb'+ index+''+keyChild } to={child.url}>{child.name}</Link></Menu.Item>
+            <Menu.SubMenu
+              key={"Sb" + index}
+              icon={<Icon />}
+              title={item.parent}
+            >
+              {item.child.map((child, keyChild) => {
+                return (
+                  <Menu.Item>
+                    <Link
+                      style={{ textDecoration: "none" }}
+                      key={"Sb" + index + "" + keyChild}
+                      to={child.url}
+                    >
+                      {child.name}
+                    </Link>
+                  </Menu.Item>
+                );
               })}
             </Menu.SubMenu>
           );

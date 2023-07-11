@@ -10,6 +10,7 @@ export const addressSlice = createSlice({
     },
     reducers: {
       addAddress: (state, action) => {
+        console.log("AddSize Action");
         state.address.value.unshift(action.payload);
       },
       addAllAddress: (state, action) => {
