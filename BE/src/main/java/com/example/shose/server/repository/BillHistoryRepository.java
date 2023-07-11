@@ -15,7 +15,7 @@ import java.util.List;
 public interface BillHistoryRepository extends JpaRepository<BillHistory, String> {
 
     @Query(value = """
-            select bihi.id, bihi.status_bill, bihi.created_date, bihi.action_description from bill_history bihi
+            select  ROW_NUMBER() OVER( ORDER BY bihi.created_date DESC ) AS stt, bihi.id, bihi.status_bill, bihi.created_date, bihi.action_description from bill_history bihi
             LEFT JOIN bill bi ON bi.id = bihi.id_bill
             WHERE bi.id LIKE :idBill
             ORDER BY bihi.created_date

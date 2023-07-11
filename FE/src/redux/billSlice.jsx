@@ -14,6 +14,12 @@ export const billSlice = createSlice({
       },
       billWait:{
         value: []
+      },
+      bill: {
+        value: {},
+        billDetail: [],
+        billHistory: [],
+        status: -1,
       }
 
     },
@@ -40,6 +46,18 @@ export const billSlice = createSlice({
       deletebillWait:(state, action) => {
         state.search.users = []
       },
+      addBill:(state, action) => {
+        state.bill.value = action.payload
+      },
+      addBillDetail: (state, action) => {
+        state.bill.billDetail = [...action.payload]
+      },
+      addBillHistory: (state, action) => {
+        state.bill.billHistory = [...action.payload]
+      },
+      addStatusPresent:  (state, action) => {
+        state.bill.status = action.payload
+      },
     },
   });
   
@@ -50,7 +68,10 @@ export const billSlice = createSlice({
     addAll,
     addAllDataUsers,
     deletebillWait,
-    addbillWait
+    addbillWait,
+    addBillDetail,
+    addBillHistory,
+    addStatusPresent
   } = billSlice.actions;
   
   export default billSlice.reducer;

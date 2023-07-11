@@ -12,6 +12,7 @@ function Employee() {
       <div className="homeContainer">
         <Navbar />
        
+       
       </div>
     </div>
   )
