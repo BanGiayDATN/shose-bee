@@ -1,8 +1,8 @@
 import axios from "axios";
 import { addAllProduct, addProduct } from "../redux/productSlice";
 
-var api = "http://localhost:8080/api";
-var apiPost = api + `/product`;
+var api = "http://localhost:8080/admin/product-detail";
+var apiPost = api + `/product-detail`;
 
 const fetchAllProductDetail = (page) => {
   return  axios.get(`http://localhost:8080/admin/product-detail?page=${page}`)
@@ -12,7 +12,6 @@ const create = (dispatch, data) => {
     axios.post(apiPost, data)
       .then(response => {
         console.log(response);
-        // dispatch(addProduct(data));
       })
     // const res = await axios.post(apiPost);
    
@@ -22,10 +21,15 @@ const create = (dispatch, data) => {
   return
 };
 
+const findAllProductDetail = () =>{
+  return axios.get(api +"/list")
+}
 
-const ProductService = {
+
+const ProductDetailService = {
   create,
-  fetchAllProductDetail
+  fetchAllProductDetail,
+  findAllProductDetail
 };
 
-export default ProductService;
+export default ProductDetailService;

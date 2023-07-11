@@ -1,5 +1,6 @@
 package com.example.shose.server.dto.request.color;
 
+import com.example.shose.server.infrastructure.constant.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +15,5 @@ public abstract class BaseColorRequest {
 
     private String name;
 
-    private Integer status;
+    private Status status;
 }

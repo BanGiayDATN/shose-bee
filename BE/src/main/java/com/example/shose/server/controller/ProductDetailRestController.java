@@ -23,8 +23,13 @@ public class ProductDetailRestController {
     private ProductDetailService productDetailService;
 
     @GetMapping("")
-    public ResponseObject view(@ModelAttribute final FindProductDetailRequest request) {
+    public ResponseObject view( final FindProductDetailRequest request) {
         return new ResponseObject(productDetailService.getAllProduct(request));
+    }
+
+    @GetMapping("/list")
+    public ResponseObject getAll( final FindProductDetailRequest request) {
+        return new ResponseObject(productDetailService.getAll(request));
     }
 
     @GetMapping("/{id}")

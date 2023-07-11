@@ -42,7 +42,7 @@ const addCategory = (category) => {
     });
 };
 
-// add category
+// update category
 const updateCategory = (id,category) => {
   return axios
     .put(api+`/${id}`, {
@@ -53,6 +53,7 @@ const updateCategory = (id,category) => {
       console.log(err);
     });
 };
+
 const CategoryService = {
   getDataCategory,
   fetchAllCategory,
