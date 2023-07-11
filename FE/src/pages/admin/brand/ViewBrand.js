@@ -1,11 +1,11 @@
 import { useSelector } from "react-redux";
 import Navbar from "../../../components/navbar/Navbar";
 import SidebarProject from "../../../components/sidebar/SidebarProject";
-import TableSole from "./TableSole";
+import TableBrand from "./TableBrand";
 
-const Sole = () => {
+const Brand = () => {
 
-  const soles = useSelector((state) => state.sole.soles.value);
+  const brands = useSelector((state) => state.brand.brands.value);
 
   return (
     <div>
@@ -17,7 +17,7 @@ const Sole = () => {
             <div className="row"></div>
             <div className="row">
                 {/* hiển thị table */}
-                <TableSole rows={soles} />
+                <TableBrand  rows={brands} />
                 </div>
           </div>
         </div>
@@ -25,4 +25,4 @@ const Sole = () => {
     </div>
   );
 };
-export default Sole;
+export default Brand;

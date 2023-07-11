@@ -14,6 +14,9 @@ import ViewCategory from "./pages/admin/category/ViewCategory";
 import ViewSole from "./pages/admin/sole/ViewSole";
 import CreateBill from "./pages/admin/bill/CreateBill";
 // import DetailBill from "./pages/admin/bill/DetailBill";
+import ViewBrand from "./pages/admin/brand/ViewBrand";
+import ViewColor from "./pages/admin/color/ViewColor";
+
 
 const publicRouters = [
   { path: "/", element: Home },
@@ -33,6 +36,10 @@ const publicRouters = [
   { path: "/sole", element: ViewSole },
   // { path: "/bill/:id", element: DetailBill },
   { path: "/sale", element: CreateBill },
+  { path: "/brand", element: ViewBrand },
+  { path: "/color", element: ViewColor },
+
+
 ];
 
 const privateRouters = [];

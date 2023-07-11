@@ -24,7 +24,7 @@ const subMenu = [
       { name: "Sản Phẩm", url: "/products" },
       { name: "Thể loại ", url: "/category" },
       { name: "Đế giày", url: "/sole" },
-      { name: "Màu", url: "/mau" },
+      { name: "Màu", url: "/color" },
     ],
     icon: LaptopOutlined,
   },

@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -34,6 +35,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         Pageable pageable = PageRequest.of(request.getPage(),request.getSize());
         Page<ProductDetailReponse> list = productDetailRepository.getAllProductDetail(pageable,request);
         return new PageableObject<>(list);
+    }
+
+    @Override
+    public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
+        return productDetailRepository.getAll(findProductDetailRequest);
     }
 
     @Override

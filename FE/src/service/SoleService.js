@@ -16,7 +16,7 @@ const fetchAllSole = (page) => {
 
 // list all Sole
 const listAllSole = () => {
-  return axios.get(api +"/list");
+  return axios.get(api + "/list");
 };
 
 // get one Sole
@@ -33,8 +33,20 @@ const addSole = (Sole) => {
     })
     .then((response) => {
       if (response.status === 200) {
-        alert(response.data);
+        console.log(response.data.data.data);
       }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+// update sole
+const updateSole = (id, sole) => {
+  return axios
+    .put(api + `/${id}`, {
+      name: sole.name,
+      status: sole.status,
     })
     .catch((err) => {
       console.log(err);
@@ -47,5 +59,6 @@ const SoleService = {
   listAllSole,
   getOneById,
   addSole,
+  updateSole,
 };
 export default SoleService;
