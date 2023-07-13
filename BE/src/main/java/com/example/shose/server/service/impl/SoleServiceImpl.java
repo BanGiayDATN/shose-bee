@@ -48,7 +48,7 @@ public class SoleServiceImpl implements SoleService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Sole add = Sole.builder().name(req.getName()).status(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG).build();
+        Sole add = Sole.builder().name(req.getName()).status(req.getStatus()).build();
         return soleRepository.save(add);
     }
 
@@ -64,7 +64,7 @@ public class SoleServiceImpl implements SoleService {
         }
         Sole update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(req.getStatus());
         return soleRepository.save(update);
     }
 

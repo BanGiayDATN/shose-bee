@@ -11,6 +11,9 @@ import org.springframework.data.rest.core.config.Projection;
 @Projection(types = {Bill.class, User.class})
 public interface UserBillResponse {
 
+    @Value("#{target.stt}")
+    String getStt();
+
     @Value("#{target.id}")
     String getId();
 

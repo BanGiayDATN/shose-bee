@@ -47,7 +47,7 @@ public class BrandServiceImpl implements BrandService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Brand add = Brand.builder().name(req.getName()).status(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG).build();
+        Brand add = Brand.builder().name(req.getName()).status(req.getStatus()).build();
         return brandRepository.save(add);
     }
 
@@ -59,7 +59,7 @@ public class BrandServiceImpl implements BrandService {
         }
         Brand update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(req.getStatus() );
         return brandRepository.save(update);
     }
 

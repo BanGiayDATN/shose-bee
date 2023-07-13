@@ -35,9 +35,10 @@ public class ProductDetail extends PrimaryEntity {
 
     private BigDecimal price;
 
+    private Integer quantity;
+
     private Status status;
 
-    private long quantity;
 
     @ManyToOne
     @JoinColumn(name = "id_category",referencedColumnName = "id")

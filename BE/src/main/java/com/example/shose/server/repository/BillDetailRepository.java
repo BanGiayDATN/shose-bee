@@ -14,7 +14,7 @@ import java.util.List;
 public interface BillDetailRepository extends JpaRepository<Bill, String> {
 
     @Query(value = """
-            select bide.id, pr.code, pr.name AS product_name, si.name AS size_name, bide.price, bide.quantity  , prde.quantity AS quantity_product_detail from bill_detail bide
+            select  ROW_NUMBER() OVER( ORDER BY bide.created_date DESC ) AS stt, bide.id, pr.code, pr.name AS product_name, si.name AS size_name, bide.price, bide.quantity  , prde.quantity AS quantity_product_detail from bill_detail bide
             LEFT JOIN product_detail prde ON bide.id_product_detail = prde.id
             LEFT JOIN size si ON si.id = prde.id_size
             LEFT JOIN product pr ON pr.id = prde.id_product
