@@ -35,6 +35,8 @@ public class ProductDetail extends PrimaryEntity {
 
     private BigDecimal price;
 
+    private Integer quantity;
+
     private Status status;
 
 

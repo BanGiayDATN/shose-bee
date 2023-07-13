@@ -17,7 +17,7 @@ public interface BaseResponse {
     String getName();
 
     @Value("#{target.status}")
-    Integer getStatus();
+    String getStatus();
 
     @Value("#{target.createdDate}")
     Long getCreatedDate();

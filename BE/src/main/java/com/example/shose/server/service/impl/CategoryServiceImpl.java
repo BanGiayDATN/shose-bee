@@ -30,15 +30,8 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public List<Category> getList() {
-        return categoryRepository.findAll();
-    }
-
-    @Override
-    public PageableObject<CategoryResponse> findAll(FindCategoryRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<CategoryResponse> listPage = categoryRepository.getAll(pageable, req);
-        return new PageableObject<>(listPage);
+    public List<CategoryResponse> getList(FindCategoryRequest req) {
+        return categoryRepository.getAll(req);
     }
 
     @Override

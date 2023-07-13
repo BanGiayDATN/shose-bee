@@ -14,9 +14,7 @@ import java.util.List;
  */
 public interface CategoryService {
 
-    List<Category> getList ();
-
-    PageableObject<CategoryResponse> findAll (final FindCategoryRequest req);
+    List<CategoryResponse> getList (FindCategoryRequest req);
 
     Category create (final CreateCategoryRequest req);
 
