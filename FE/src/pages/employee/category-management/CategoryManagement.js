@@ -6,8 +6,6 @@ import {
   Select,
   Table,
   Modal,
-  Row,
-  Col,
   Popconfirm,
 } from "antd";
 import "./style-category.css";

@@ -22,13 +22,17 @@ const categorySlice = createSlice({
       state.unshift(newCategory);
     },
     UpdateCategory: (state, action) => {
-      const updatedCategory = action.payload;
-      state.map((category) => {
-        if (category.id === updatedCategory.id) {
-          return updatedCategory;
-        }
-        return category;
-      });
+      const updatedCategory = action.payload; // backend
+      const index = state.findIndex(
+        (period) => period.id === updatedCategory.id
+      );
+      console.log(index);
+      if (index !== -1) {
+        state[index].name = updatedCategory.name;
+        state[index].status = updatedCategory.status;
+        state[index].createdDate = updatedCategory.createdDate;
+        state[index].lastModifiedDate = updatedCategory.lastModifiedDate;
+      }
     },
   },
 });
