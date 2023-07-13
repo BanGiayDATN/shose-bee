@@ -1,0 +1,12 @@
+.layout-employee {
+    height: calc(100vh);
+    overflow: hidden;
+}
+
+.logo {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.logo-content{
+    width: 90%;
+}
