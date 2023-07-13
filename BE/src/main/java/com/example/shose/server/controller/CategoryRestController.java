@@ -28,14 +28,9 @@ public class CategoryRestController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/list")
-    public ResponseObject getList() {
-        return new ResponseObject(categoryService.getList());
-    }
-
     @GetMapping()
-    public ResponseObject view( final FindCategoryRequest req) {
-        return new ResponseObject(categoryService.findAll(req));
+    public ResponseObject getList(final FindCategoryRequest req) {
+        return new ResponseObject(categoryService.getList(req));
     }
 
     @GetMapping("/{id}")

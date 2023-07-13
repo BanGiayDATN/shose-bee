@@ -15,14 +15,9 @@ const Employee = () => {
       <SidebarProject />
       <div className="homeContainer">
         <Navbar />
-<<<<<<< HEAD
         <div className="row">
           <TableEmployee rows={employees} />
         </div>
-=======
-       
-       
->>>>>>> 21295480e028d5228983bc5c92f5e25a1908aa5b
       </div>
     </div>
   );
