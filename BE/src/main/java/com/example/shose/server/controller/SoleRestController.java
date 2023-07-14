@@ -28,11 +28,6 @@ public class SoleRestController {
     @Autowired
     private SoleService soleService;
 
-    @GetMapping("/list")
-    public ResponseObject getList() {
-        return new ResponseObject(soleService.getList());
-    }
-
     @GetMapping()
     public ResponseObject view(@ModelAttribute final FindSoleRequest req) {
         return new ResponseObject(soleService.findAll(req));

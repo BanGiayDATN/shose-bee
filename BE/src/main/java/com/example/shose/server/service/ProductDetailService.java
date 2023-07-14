@@ -13,8 +13,6 @@ import java.util.List;
  */
 public interface ProductDetailService {
 
-    PageableObject<ProductDetailReponse> getAllProduct(FindProductDetailRequest findProductDetailRequest);
-
     List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest);
 
     ProductDetail create(final CreateProductDetailRequest req);

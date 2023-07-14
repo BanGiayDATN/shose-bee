@@ -28,10 +28,6 @@ public class BrandRestController {
     @Autowired
     private BrandService brandService;
 
-    @GetMapping("/list")
-    public ResponseObject getList() {
-        return new ResponseObject(brandService.getList());
-    }
 
     @GetMapping()
     public ResponseObject view(@ModelAttribute final FindBrandRequest req) {

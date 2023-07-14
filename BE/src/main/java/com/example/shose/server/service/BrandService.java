@@ -5,7 +5,6 @@ import com.example.shose.server.dto.request.brand.FindBrandRequest;
 import com.example.shose.server.dto.request.brand.UpdateBrandRequest;
 import com.example.shose.server.dto.response.BrandResponse;
 import com.example.shose.server.entity.Brand;
-import com.example.shose.server.infrastructure.common.PageableObject;
 
 import java.util.List;
 
@@ -14,9 +13,7 @@ import java.util.List;
  */
 public interface BrandService {
 
-    List<Brand> getList();
-
-    PageableObject<BrandResponse> findAll(final FindBrandRequest req);
+    List<BrandResponse> findAll(final FindBrandRequest req);
 
     Brand create(final CreateBrandRequest req);
 

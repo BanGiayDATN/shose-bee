@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 /**
  * @author Nguyễn Vinh
@@ -37,21 +39,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                     OR name LIKE %:#{#req.name}% ) 
             GROUP BY p.id
             ORDER BY p.last_modified_date DESC  
-            """, countQuery = """
-            SELECT count(1)            
-            FROM product p
-            WHERE 
-                ( :#{#req.code} IS NULL 
-                    OR :#{#req.code} LIKE '' 
-                    OR code LIKE %:#{#req.code}% ) 
-            AND 
-                ( :#{#req.name} IS NULL 
-                    OR :#{#req.name} LIKE '' 
-                    OR name LIKE %:#{#req.name}% ) 
-            GROUP BY p.id
-            ORDER BY p.last_modified_date DESC
             """, nativeQuery = true)
-    Page<ProductResponse> getAll(Pageable pageable,@Param("req") FindProductRequest req);
+    List<ProductResponse> getAll(@Param("req") FindProductRequest req);
 
     @Query("SELECT p FROM Product p WHERE p.code =:code")
     Product getOneByCode (@Param("code") String code);

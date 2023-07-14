@@ -5,7 +5,6 @@ import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.color.UpdateColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
 import com.example.shose.server.entity.Color;
-import com.example.shose.server.infrastructure.common.PageableObject;
 
 import java.util.List;
 
@@ -14,9 +13,7 @@ import java.util.List;
  */
 public interface ColorService {
 
-    List<Color> getList();
-
-    PageableObject<ColorResponse> findAll(final FindColorRequest req);
+    List<ColorResponse> findAll(final FindColorRequest req);
 
     Color create(final CreateColorRequest req);
 

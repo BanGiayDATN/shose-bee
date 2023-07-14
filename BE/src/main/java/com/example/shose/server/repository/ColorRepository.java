@@ -3,12 +3,12 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
 import com.example.shose.server.entity.Color;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Nguyễn Vinh
@@ -35,21 +35,8 @@ public interface ColorRepository extends JpaRepository<Color, String> {
                     OR name LIKE %:#{#req.name}% )
             GROUP BY m.id
             ORDER BY m.last_modified_date DESC  
-            """, countQuery = """
-            SELECT count(1)            
-            FROM color m
-            WHERE 
-                    ( :#{#req.code} IS NULL 
-                    OR :#{#req.code} LIKE '' 
-                    OR code LIKE %:#{#req.code}% )
-            AND 
-                    ( :#{#req.name} IS NULL 
-                    OR :#{#req.name} LIKE '' 
-                    OR name LIKE %:#{#req.name}% )
-            GROUP BY m.id
-            ORDER BY m.last_modified_date DESC
             """, nativeQuery = true)
-    Page<ColorResponse> getAll(Pageable pageable, @Param("req") FindColorRequest req);
+    List<ColorResponse> getAll(@Param("req") FindColorRequest req);
 
     @Query("SELECT a FROM Color a WHERE a.code =:code")
     Color getOneByCode(@Param("code") String code);

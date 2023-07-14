@@ -29,11 +29,6 @@ public class ColorRestController {
     @Autowired
     private ColorService colorService;
 
-    @GetMapping("/list")
-    public ResponseObject getList() {
-        return new ResponseObject(colorService.getList());
-    }
-
     @GetMapping()
     public ResponseObject view(@ModelAttribute final FindColorRequest req) {
         return new ResponseObject(colorService.findAll(req));

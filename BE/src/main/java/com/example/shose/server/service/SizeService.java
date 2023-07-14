@@ -14,9 +14,7 @@ import java.util.List;
  */
 public interface SizeService {
 
-    List<Size> getList ();
-
-    PageableObject<SizeResponse> findAll (final FindSizeRequest req);
+    List<SizeResponse> findAll (final FindSizeRequest req);
 
     Size create (final CreateSizeRequest req);
 
