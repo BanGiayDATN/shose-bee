@@ -14,10 +14,21 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <div className="App">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <BrowserRouter basename={AppConfig.routerBase}>
         <Routes>
           <Route path="*" element={<NotFound />} />
@@ -94,7 +105,6 @@ function App() {
               </AuthGuard>
             }
           />
-          
         </Routes>
       </BrowserRouter>
     </div>

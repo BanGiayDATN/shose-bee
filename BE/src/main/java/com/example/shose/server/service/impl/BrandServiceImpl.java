@@ -26,7 +26,6 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public List<BrandResponse> findAll(FindBrandRequest req) {
-
         return brandRepository.getAll(req);
     }
 

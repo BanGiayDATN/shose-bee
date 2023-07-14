@@ -12,4 +12,6 @@ import lombok.Setter;
 public  class FindSizeRequest  extends PageableRequest {
 
     private String name;
+
+    private String status;
 }

@@ -14,12 +14,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
-import {
-  CreateSole,
-  GetSole,
-  SetSole,
-  UpdateSole,
-} from "../../../app/reducer/Sole.reducer";
+import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
+import ModalCreateSole from "./modal/ModalCreateSole";
+import ModalUpdateSole from "./modal/ModalUpdateSole";
+import ModalDetailSole from "./modal/ModalDetailSole";
 
 const { Option } = Select;
 
@@ -30,14 +28,6 @@ const SoleManagement = () => {
     keyword: "",
     status: "",
   });
-
-  const [soleId, setSoleId] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    status: " Vui lòng chọn trạng thái ",
-  });
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisibleUpdadte, setModalVisibleUpdate] = useState(false);
 
   // lấy mảng redux ra
   const data = useAppSelector(GetSole);
@@ -96,50 +86,25 @@ const SoleManagement = () => {
     );
   };
 
-  // thêm category
-  const handleAddSole = () => {
-    SoleApi.create(formData).then((res) => {
-     
-      dispatch(CreateSole(res.data.data));
-    });
+  const [idUpdate, setIdUpdate] = useState("");
+  const [idDetail, setIdDetail] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
+  const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
-    // Đóng modal
-    setFormData({ name: "", status: " Vui lòng chọn trạng thái " });
+  const handleCancel = () => {
     setModalVisible(false);
-  };
-
-  // upadte sole
-  const handleUpdateSole = () => {
-    SoleApi.update(soleId, formData).then((res) => {
-      console.log(res);
-      dispatch(UpdateSole(res.data.data));
-    });
-    // Đóng modal
-    setFormData({ name: "", status: " Vui lòng chọn trạng thái " });
     setModalVisibleUpdate(false);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setModalVisibleDetail(false);
   };
 
   // Xử lý logic chỉnh sửa
   const handleViewDetail = (id) => {
-    console.log(id);
+    setIdDetail(id);
+    setModalVisibleDetail(true)
   };
-
   const handleUpdate = (id) => {
-    setSoleId(id);
-    SoleApi.getOne(id).then(
-      (res) => {
-        setFormData({
-          name: res.data.data.name,
-          status: res.data.data.status,
-        });
-      },
-      (err) => console.log(err)
-    );
+    setIdUpdate(id);
     setModalVisibleUpdate(true);
   };
 
@@ -213,7 +178,7 @@ const SoleManagement = () => {
       <div className="title_sole">
         {" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
-        <span style={{ marginLeft: "10px" }}>Quản lý thể loại</span>
+        <span style={{ marginLeft: "10px" }}>Quản lý đế giày</span>
       </div>
       <div className="filter">
         <FontAwesomeIcon icon={faFilter} size="2x" />{" "}
@@ -271,7 +236,7 @@ const SoleManagement = () => {
             style={{ fontSize: "26px", marginRight: "10px" }}
           />
           <span style={{ fontSize: "18px", fontWeight: "500" }}>
-            Danh sách thể loại
+            Danh sách đế giày
           </span>
           <div style={{ marginLeft: "auto" }}>
             <Button
@@ -292,95 +257,20 @@ const SoleManagement = () => {
             className="category-table"
           />
         </div>
+        {/* modal thêm */}
+        <ModalCreateSole visible={modalVisible} onCancel={handleCancel} />
+        {/* modal update */}
+        <ModalUpdateSole
+          visible={modalVisibleUpdate}
+          id={idUpdate}
+          onCancel={handleCancel}
+        />
+        <ModalDetailSole
+          visible={modalVisibleDetail}
+          id={idDetail}
+          onCancel={handleCancel}
+        />
       </div>
-
-      {/* modal thêm category */}
-      <Modal
-        key="add"
-        title="Thêm thể loại"
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisible(false)}>
-            Hủy
-          </Button>,
-          <Popconfirm
-            title="Xóa việc cần làm"
-            description="Bạn có chắc chắn muốn xóa việc cần làm này không ?"
-            onConfirm={() => {
-              handleAddSole();
-            }}
-            okText="Có"
-            cancelText="Không"
-          >
-            <Button key="submit" type="primary">
-              Thêm
-            </Button>
-          </Popconfirm>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Tên thể loại" style={{ marginTop: "40px" }}>
-            <Input
-              placeholder="Tên thể loại"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </Form.Item>
-
-          <Form.Item label="Trạng thái">
-            <Select
-              placeholder="Trạng thái thể loại"
-              name="status"
-              value={formData.status}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            >
-              <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* modal updatedCategory */}
-      <Modal
-        key="update"
-        title="Update Thể Loại"
-        visible={modalVisibleUpdadte}
-        onCancel={() => setModalVisibleUpdate(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisibleUpdate(false)}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleUpdateSole}>
-            update
-          </Button>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Tên thể loại" style={{ marginTop: "40px" }}>
-            <Input
-              placeholder="Tên thể loại"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </Form.Item>
-
-          <Form.Item label="Trạng thái">
-            <Select
-              placeholder="Trạng thái thể loại"
-              name="status"
-              value={formData.status}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            >
-              <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
     </>
   );
 };
