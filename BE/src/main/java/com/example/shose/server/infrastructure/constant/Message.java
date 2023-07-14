@@ -11,6 +11,7 @@ public enum Message {
 
     NAME_EXISTS("Tên đã tồn tại"),
     CODE_EXISTS("Mã đã tồn tại"),
+    CHANGED_STATUS_ERROR("không thể xác nhận hóa đơn"),
 
     BILL_NOT_EXIT(""),
     ACCOUNT_NOT_EXIT(""),

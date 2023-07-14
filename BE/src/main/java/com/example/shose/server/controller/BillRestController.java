@@ -1,6 +1,7 @@
 package com.example.shose.server.controller;
 
 import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,4 +42,15 @@ public class BillRestController {
     public ResponseObject saveOFFLINE(){
         return  new ResponseObject(billService.saveOFFLINE(userId));
     }
+
+    @PutMapping("/change-status/{id}")
+    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.changedStatusbill(id, request));
+    }
+
+    @PutMapping("/cancel-status/{id}")
+    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.cancelBill(id, request));
+    }
+
 }

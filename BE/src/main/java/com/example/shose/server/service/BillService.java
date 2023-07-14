@@ -1,6 +1,7 @@
 package com.example.shose.server.service;
 
 
+import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.request.bill.BillRequest;
@@ -28,5 +29,7 @@ public interface BillService {
 
     Bill detail(String id);
 
+    Bill changedStatusbill(String id, ChangStatusBillRequest request);
 
+    Bill cancelBill(String id, ChangStatusBillRequest request);
 }

@@ -1,6 +1,7 @@
 package com.example.shose.server.service.impl;
 
 
+import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
@@ -102,5 +103,38 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         return bill.get();
+    }
+
+    @Override
+    public Bill changedStatusbill(String id, ChangStatusBillRequest request) {
+        Optional<Bill> bill = billRepository.findById(id);
+        if(!bill.isPresent()){
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        StatusBill statusBill[] = StatusBill.values();
+        int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
+        if(nextIndex >= 4){
+            throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+        }
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill.get());
+        billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        billHistory.setActionDescription(request.getActionDescription());
+        billHistoryRepository.save(billHistory);
+        return billRepository.save(bill.get());
+    }
+
+    @Override
+    public Bill cancelBill(String id, ChangStatusBillRequest request) {
+        Optional<Bill> bill = billRepository.findById(id);
+        if(!bill.isPresent()){
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        bill.get().setStatusBill(StatusBill.DA_HUY);
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill.get());
+        billHistory.setStatusBill(bill.get().getStatusBill());
+        billHistory.setActionDescription(request.getActionDescription());
+        return billRepository.save(bill.get());
     }
 }

@@ -1,12 +1,39 @@
 import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-// var size = [{name:"36", status:1}, {name:"37", status:0}]
+const host = "https://provinces.open-api.vn/api/";
+
+var callAPI = (api) => {
+     axios.get(api)
+        .then((response) => {
+          return response.data;
+        });
+        return [];
+}
+var callApiDistrict = (api) => {
+     axios.get(api)
+        .then((response) => {
+          return response.data.districts;
+        });
+        return [];
+}
+var callApiWard = (api) => {
+     axios.get(api)
+        .then((response) => {
+             return response.data.wards;
+        });
+        return [];
+}
 export const addressSlice = createSlice({
     name: "address",
     initialState: {
         address: {
         value: [] 
-      }
+      },
+      city: callAPI,
+      district: callApiDistrict,
+      ward: callApiWard,
+
     },
     reducers: {
       addAddress: (state, action) => {

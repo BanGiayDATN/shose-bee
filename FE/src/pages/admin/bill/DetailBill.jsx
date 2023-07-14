@@ -23,6 +23,7 @@ function DetailBill() {
   const billHistory = useSelector((state) => state.bill.bill.billHistory);
   const bill = useSelector((state) => state.bill.bill.value);
   const statusPresent = useSelector((state) => state.bill.bill.status);
+  const [statusBill, setStatusBill] = useState({ idbill: id, actionDescription: "" })
   const dispatch = useDispatch();
   useEffect(() => {
     BillService.getBillDetail(dispatch, id);
@@ -44,6 +45,38 @@ function DetailBill() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const [isModalOpenChangeStatus, setIsModalOpenChangeStatus] = useState(false);
+  const [title, setTitle] =  useState("");
+  const [actionBill, setActionBill] =  useState(0);
+
+  const showModalChangeStatus = (action,title) => {
+    setActionBill(action)
+    setTitle(title)
+    setIsModalOpenChangeStatus(true);
+  };
+
+  const handleOkChangeStatus = () => {
+    setIsModalOpenChangeStatus(false);
+  };
+
+  const handleCancelChangeStatus = () => {
+    setIsModalOpenChangeStatus(false);
+  };
+
+  const changeStatusBill = () => {
+    BillService.changeStatusBill(dispatch, statusBill )
+    setIsModalOpenChangeStatus(false);
+  }
+
+  const cancelStatusBill = () => {
+    BillService.cancelBill(dispatch, statusBill )
+    setIsModalOpenChangeStatus(false);
+  }
+
+  const onChangeDescStatusBill = event => {
+    setStatusBill({ ...statusBill, [event.target.name]: event.target.value })
+  }
 
   const columns = [
     {
@@ -122,12 +155,23 @@ function DetailBill() {
           </div>
           <div className="row mt-3">
             <div className="col-2">
-              <Button type="Xác nhận" className='btn btn-primary'>
+              <Button type="Xác nhận" className='btn btn-primary' onClick={showModalChangeStatus(0, "Xác nhận")}>
                 {listStatus[statusPresent + 1].name}
               </Button>
+              <Modal title="Basic Modal" open={isModalOpenChangeStatus} onOk={handleOkChangeStatus} onCancel={handleCancelChangeStatus}>
+                <h2 className='row'> {title} Mã Hóa đơn: {bill.code}</h2>
+                <p></p>
+                <p className='row'>
+                  <div className="mb-3">
+                    <label className="form-label">Nhập mô tả</label>
+                    <input type="text" className="form-control" name="actionDescription" value={statusBill.actionDescription} onChange={(e) => onChangeDescStatusBill(e)} id="exampleInputEmail1" />
+                  </div>
+                </p>
+                <button type="submit" className="btn btn-primary" onClick={actionBill == 0 ? changeStatusBill : cancelStatusBill }>Xác nhận</button>
+              </Modal>
             </div>
             <div className="col-2">
-              <Button type="Hủy" className='btn btn-danger'>
+              <Button type="Hủy" className='btn btn-danger' onClick={showModalChangeStatus(1, "Xác nhận hủy")}>
                 Hủy
               </Button>
             </div>

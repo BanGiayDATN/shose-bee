@@ -133,6 +133,39 @@ const createBillWait = (dispatch) => {
   return
 }
 
+const changeStatusBill = (dispatch, statusBill) => {
+  try {
+    axios.put(apiBill+ "/change-status/" + statusBill.idbill + "?actionDescription=" + statusBill.actionDescription)
+      .then(response => {
+        dispatch(addBillDetail(response.data.data));
+      })
+      axios.get("http://localhost:8080/admin/bill-history/"+ statusBill.idbill)
+      .then(response => {
+        
+        dispatch(addBillHistory(response.data.data));
+        dispatch(addStatusPresent(response.data.data[response.data.data.length - 1].statusBill))
+      })
+  } catch {
+  }
+  return
+}
+
+const cancelBill = (dispatch, statusBill) => {
+  try {
+    axios.put(apiBill+ "/cancel-status/" + statusBill.idbill + "?actionDescription=" + statusBill.actionDescription)
+      .then(response => {
+        dispatch(addBillDetail(response.data.data));
+      })
+      axios.get("http://localhost:8080/admin/bill-history/"+ statusBill.idbill)
+      .then(response => {
+        
+        dispatch(addBillHistory(response.data.data));
+        dispatch(addStatusPresent(response.data.data[response.data.data.length - 1].statusBill))
+      })
+  } catch {
+  }
+  return
+}
 
 const BillService = {
   getAll,
@@ -144,7 +177,9 @@ const BillService = {
   createBillWait,
   getBillDetail,
   getBillHistory,
-  getBill
+  getBill,
+  changeStatusBill,
+  cancelBill
 };
 
 export default BillService;
