@@ -5,7 +5,6 @@ import com.example.shose.server.dto.request.material.FindMaterialRequest;
 import com.example.shose.server.dto.request.material.UpdateMaterialRequest;
 import com.example.shose.server.dto.response.MaterialResponse;
 import com.example.shose.server.entity.Material;
-import com.example.shose.server.infrastructure.common.PageableObject;
 
 import java.util.List;
 
@@ -14,9 +13,7 @@ import java.util.List;
  */
 public interface MaterialService {
 
-    List<Material> getList();
-
-    PageableObject<MaterialResponse> findAll(final FindMaterialRequest req);
+    List<MaterialResponse> findAll(final FindMaterialRequest req);
 
     Material create(final CreateMaterialRequest req);
 

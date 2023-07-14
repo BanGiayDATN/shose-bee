@@ -5,16 +5,12 @@ import com.example.shose.server.dto.request.product.FindProductRequest;
 import com.example.shose.server.dto.request.product.UpdateProductRequest;
 import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ProductRepository;
 import com.example.shose.server.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,16 +25,10 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Override
-    public List<Product> getAll() {
-        return productRepository.findAll();
-    }
 
     @Override
-    public PageableObject<ProductResponse> findAll(FindProductRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<ProductResponse> list = productRepository.getAll(pageable, req);
-        return new PageableObject<>(list);
+    public List<ProductResponse> findAll(FindProductRequest req) {
+        return productRepository.getAll(req);
     }
 
     @Override

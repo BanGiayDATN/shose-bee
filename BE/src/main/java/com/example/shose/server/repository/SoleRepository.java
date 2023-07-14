@@ -3,12 +3,12 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.sole.FindSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
 import com.example.shose.server.entity.Sole;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Nguyễn Vinh
@@ -31,17 +31,8 @@ public interface SoleRepository extends JpaRepository<Sole, String> {
                     OR name LIKE %:#{#req.name}% ) 
             GROUP BY s.id
             ORDER BY s.last_modified_date DESC         
-            """, countQuery = """
-            SELECT count(1)            
-            FROM sole s 
-            WHERE 
-                ( :#{#req.name} IS NULL 
-                    OR :#{#req.name} LIKE '' 
-                    OR name LIKE %:#{#req.name}% ) 
-            GROUP BY s.id
-            ORDER BY s.last_modified_date DESC
             """, nativeQuery = true)
-    Page<SoleResponse> getAll(Pageable pageable, @Param(("req")) FindSoleRequest req);
+    List<SoleResponse> getAll(@Param(("req")) FindSoleRequest req);
 
     @Query("SELECT s FROM Sole s WHERE s.name =:name")
     Sole getByName(@Param("name") String name);

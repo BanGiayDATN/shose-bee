@@ -5,16 +5,12 @@ import com.example.shose.server.dto.request.size.FindSizeRequest;
 import com.example.shose.server.dto.request.size.UpdateSizeRequest;
 import com.example.shose.server.dto.response.SizeResponse;
 import com.example.shose.server.entity.Size;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.service.SizeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,16 +25,10 @@ public class SizeServiceImpl implements SizeService {
     @Autowired
     private SizeRepository sizeRepository;
 
-    @Override
-    public List<Size> getList() {
-        return sizeRepository.findAll();
-    }
 
     @Override
-    public PageableObject<SizeResponse> findAll(FindSizeRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<SizeResponse> listPage = sizeRepository.getAll(pageable, req);
-        return new PageableObject<>(listPage);
+    public List<SizeResponse> findAll(FindSizeRequest req) {
+       return sizeRepository.getAll(req);
     }
 
     @Override

@@ -12,9 +12,7 @@ import {
   Button,
   theme,
   Dropdown,
-  Avatar,
   Badge,
-  Space,
 } from "antd";
 import "./style-dashboard-employee.css";
 import { Link } from "react-router-dom";
@@ -134,7 +132,7 @@ const DashBoardEmployee = ({ children }) => {
               <FontAwesomeIcon icon={faUserGroup} style={{ color: "white" }} />
             }
           >
-            <Link to="/product-management">Quản Lý Tài Khoản</Link>
+            <Link to="/accc-management">Quản Lý Tài Khoản</Link>
           </Menu.Item>
           <Menu.Item
             key="7"

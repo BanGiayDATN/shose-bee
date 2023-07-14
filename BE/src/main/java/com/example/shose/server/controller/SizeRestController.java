@@ -1,12 +1,8 @@
 package com.example.shose.server.controller;
 
-import com.example.shose.server.dto.request.material.CreateMaterialRequest;
-import com.example.shose.server.dto.request.material.FindMaterialRequest;
-import com.example.shose.server.dto.request.material.UpdateMaterialRequest;
 import com.example.shose.server.dto.request.size.CreateSizeRequest;
 import com.example.shose.server.dto.request.size.FindSizeRequest;
 import com.example.shose.server.dto.request.size.UpdateSizeRequest;
-import com.example.shose.server.service.MaterialService;
 import com.example.shose.server.service.SizeService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +28,6 @@ public class SizeRestController {
     @Autowired
     private SizeService sizeService;
 
-    @GetMapping("/list")
-    public ResponseObject getList() {
-        return new ResponseObject(sizeService.getList());
-    }
 
     @GetMapping()
     public ResponseObject view(@ModelAttribute final FindSizeRequest req) {
