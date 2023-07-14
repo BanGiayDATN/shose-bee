@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 @Projection(types = {Bill.class, User.class})
 public interface BillResponse {
 
+    @Value("#{target.stt}")
+    String getStt();
+
     @Value("#{target.id}")
     String getId();
 
@@ -35,7 +38,7 @@ public interface BillResponse {
     int getType();
 
     @Value("#{target.status_bill}")
-    int getStatusBill();
+    String getStatusBill();
 
     @Value("#{target.total_money}")
     BigDecimal getTotalMoney();

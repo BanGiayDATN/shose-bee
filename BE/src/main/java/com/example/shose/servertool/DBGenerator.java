@@ -1,47 +1,12 @@
 package com.example.shose.servertool;
 
-import com.example.shose.server.entity.Account;
-import com.example.shose.server.entity.AccountVoucher;
-import com.example.shose.server.entity.Bill;
-import com.example.shose.server.entity.Brand;
-import com.example.shose.server.entity.Category;
-import com.example.shose.server.entity.Color;
-import com.example.shose.server.entity.Customer;
-import com.example.shose.server.entity.Image;
-import com.example.shose.server.entity.Material;
-import com.example.shose.server.entity.Product;
-import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.entity.Size;
-import com.example.shose.server.entity.Sole;
-import com.example.shose.server.entity.User;
-import com.example.shose.server.entity.Voucher;
+import com.example.shose.server.entity.*;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
-import com.example.shose.server.repository.AccountRepository;
-import com.example.shose.server.repository.AccountVoucherRepository;
-import com.example.shose.server.repository.AddressRepository;
-import com.example.shose.server.repository.BillHistoryRepository;
-import com.example.shose.server.repository.BillRepository;
-import com.example.shose.server.repository.BrandRepository;
-import com.example.shose.server.repository.CartDetailRepository;
-import com.example.shose.server.repository.CartRepository;
-import com.example.shose.server.repository.CategoryRepository;
-import com.example.shose.server.repository.ColorRepository;
-import com.example.shose.server.repository.CustomerRepository;
-import com.example.shose.server.repository.ImageRepository;
-import com.example.shose.server.repository.MaterialRepository;
-import com.example.shose.server.repository.NotificationRepository;
-import com.example.shose.server.repository.PaymentsMethodRepository;
-import com.example.shose.server.repository.ProductDetailRepository;
-import com.example.shose.server.repository.ProductRepository;
-import com.example.shose.server.repository.SizeRepository;
-import com.example.shose.server.repository.SoleRepository;
-import com.example.shose.server.repository.UserReposiory;
-import com.example.shose.server.repository.VoucherDetailRepository;
-import com.example.shose.server.repository.VoucherRepository;
+import com.example.shose.server.repository.*;
 import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +37,9 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private BillHistoryRepository billHistoryRepository;
+
+    @Autowired
+    private BillDetailRepository billDetailRepository;
 
     @Autowired
     private BillRepository billRepository;
@@ -244,52 +212,52 @@ public class DBGenerator implements CommandLineRunner {
         soleRepository.save(sole4);
 
         ProductDetail productDetail1 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product1).size(size2)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product1).size(size2).quantity(5)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail2 = ProductDetail.builder()
-                .sole(sole2).category(category2).color(color2).material(material2).brand(brand2).product(product2).size(size3)
+                .sole(sole2).category(category2).color(color2).material(material2).brand(brand2).product(product2).size(size3).quantity(5)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail3 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product3).size(size3)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product3).size(size3).quantity(5)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail4 = ProductDetail.builder()
-                .sole(sole4).category(category3).color(color3).material(material3).brand(brand).product(product4).size(size4)
+                .sole(sole4).category(category3).color(color3).material(material3).brand(brand).product(product4).size(size4).quantity(5)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail5 = ProductDetail.builder()
-                .sole(sole3).category(category4).color(color7).material(material2).brand(brand).product(product5).size(size4)
+                .sole(sole3).category(category4).color(color7).material(material2).brand(brand).product(product5).size(size4).quantity(5)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail6 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product6).size(size4)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product6).size(size4).quantity(5)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail7 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product7).size(size3)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product7).size(size3).quantity(5)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail8 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product8).size(size2)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product8).size(size2).quantity(5)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail9 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product9).size(size4)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product9).size(size4).quantity(5)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail10 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product10).size(size2)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product10).size(size2).quantity(5)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
@@ -360,19 +328,52 @@ public class DBGenerator implements CommandLineRunner {
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000000"))
                 .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("10/05/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
                 .employees(account2).account(account3)
                 .build();
+
         Bill bill2 = Bill.builder().code("HD0002")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
                 .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/05/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_HUY)
                 .employees(account1).customer(customer1)
                 .build();
         billRepository.save(bill1);
         billRepository.save(bill2);
 
+        BillDetail billDetail = BillDetail.builder().bill(bill1).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
+        BillDetail billDetail1 = BillDetail.builder().bill(bill1).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail3).quantity(1).price(productDetail3.getPrice()).build();
+        BillDetail billDetail2 = BillDetail.builder().bill(bill1).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail9).quantity(1).price(productDetail9.getPrice()).build();
+        BillDetail billDetail3 = BillDetail.builder().bill(bill2).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail4 = BillDetail.builder().bill(bill2).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        billDetailRepository.save(billDetail);
+        billDetailRepository.save(billDetail1);
+        billDetailRepository.save(billDetail2);
+        billDetailRepository.save(billDetail3);
+        billDetailRepository.save(billDetail4);
+
+        BillHistory billHistory = BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill1)
+                .build();
+        BillHistory billHistory1 = BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(bill1)
+                .build();
+        BillHistory billHistory2 = BillHistory.builder().statusBill(StatusBill.VAN_CHUYEN).bill(bill1)
+                .build();
+        BillHistory billHistory3 = BillHistory.builder().statusBill(StatusBill.DA_THANH_TOAN).bill(bill1)
+                .build();
+        BillHistory billHistory5 = BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill2)
+                .build();
+        BillHistory billHistory6 = BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(bill2)
+                .build();
+        BillHistory billHistory7 = BillHistory.builder().statusBill(StatusBill.DA_HUY).bill(bill2)
+                .build();
+        billHistoryRepository.save(billHistory);
+        billHistoryRepository.save(billHistory1);
+        billHistoryRepository.save(billHistory2);
+        billHistoryRepository.save(billHistory3);
+        billHistoryRepository.save(billHistory5);
+        billHistoryRepository.save(billHistory6);
+        billHistoryRepository.save(billHistory7);
         Voucher voucher1 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC",5))
                 .name("Sale ngày khai trương").value(new BigDecimal(100000))
                 .startDate(new ConvertDateToLong().dateToLong("25/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))

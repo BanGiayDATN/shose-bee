@@ -1,23 +1,20 @@
 package com.example.shose.server.repository;
 
-import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.size.FindSizeRequest;
 import com.example.shose.server.dto.response.SizeResponse;
-import com.example.shose.server.entity.Material;
-import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.Size;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Nguyễn Vinh
  */
 @Repository
-public interface SizeRepository extends JpaRepository<Size,String> {
+public interface SizeRepository extends JpaRepository<Size, String> {
 
     @Query(value = """
             SELECT
@@ -34,17 +31,8 @@ public interface SizeRepository extends JpaRepository<Size,String> {
                     OR name LIKE %:#{#req.name}% ) 
             GROUP BY si.id
             ORDER BY si.last_modified_date DESC  
-            """, countQuery = """
-            SELECT count(1)            
-            FROM size si
-            WHERE 
-                ( :#{#req.name} IS NULL 
-                    OR :#{#req.name} LIKE '' 
-                    OR name LIKE %:#{#req.name}% ) 
-            GROUP BY si.id
-            ORDER BY si.last_modified_date DESC
             """, nativeQuery = true)
-    Page<SizeResponse> getAll(Pageable pageable, @Param("req") FindSizeRequest req);
+    List<SizeResponse> getAll(@Param("req") FindSizeRequest req);
 
     @Query("SELECT a FROM Size a WHERE a.name=:name")
     Size getOneByName(@Param("name") String name);

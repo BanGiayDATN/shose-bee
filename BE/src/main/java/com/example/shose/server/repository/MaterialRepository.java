@@ -3,12 +3,12 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.material.FindMaterialRequest;
 import com.example.shose.server.dto.response.MaterialResponse;
 import com.example.shose.server.entity.Material;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Nguyễn Vinh
@@ -31,17 +31,8 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
                     OR name LIKE %:#{#req.name}% ) 
             GROUP BY m.id
             ORDER BY m.last_modified_date DESC  
-            """, countQuery = """
-            SELECT count(1)            
-            FROM material m
-            WHERE 
-                ( :#{#req.name} IS NULL 
-                    OR :#{#req.name} LIKE '' 
-                    OR name LIKE %:#{#req.name}% ) 
-            GROUP BY m.id
-            ORDER BY m.last_modified_date DESC
             """, nativeQuery = true)
-    Page<MaterialResponse> getAll(Pageable pageable, @Param("req") FindMaterialRequest req);
+    List<MaterialResponse> getAll(@Param("req") FindMaterialRequest req);
 
     @Query("SELECT a FROM Material a WHERE a.name=:name")
     Material getOneByName(@Param("name") String name);

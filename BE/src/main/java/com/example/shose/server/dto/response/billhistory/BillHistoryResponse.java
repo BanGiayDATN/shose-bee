@@ -17,7 +17,7 @@ public interface BillHistoryResponse {
     String getId();
 
     @Value("#{target.status_bill}")
-    int getStatusBill();
+    String getStatusBill();
 
     @Value("#{target.created_date}")
     long getCreateDate();

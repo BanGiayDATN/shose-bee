@@ -10,6 +10,7 @@ import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public interface BillService {
 
-    PageableObject<BillResponse> getAll(BillRequest request);
+    List<BillResponse> getAll(BillRequest request);
 
     List<UserBillResponse> getAllUserInBill();
 
