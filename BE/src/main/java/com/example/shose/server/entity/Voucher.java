@@ -4,6 +4,8 @@ import com.example.shose.server.entity.base.PrimaryEntity;
 import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,5 +43,6 @@ public class Voucher extends PrimaryEntity {
     @Column(name = "end_date")
     private Long endDate;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 }

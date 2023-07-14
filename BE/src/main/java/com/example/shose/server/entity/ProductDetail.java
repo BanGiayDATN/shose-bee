@@ -4,6 +4,8 @@ import com.example.shose.server.entity.base.PrimaryEntity;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -37,6 +39,7 @@ public class ProductDetail extends PrimaryEntity {
 
     private Integer quantity;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
 

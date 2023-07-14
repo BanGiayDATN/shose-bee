@@ -5,7 +5,6 @@ import com.example.shose.server.dto.request.product.FindProductRequest;
 import com.example.shose.server.dto.request.product.UpdateProductRequest;
 import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
-import com.example.shose.server.infrastructure.common.PageableObject;
 
 import java.util.List;
 
@@ -14,14 +13,13 @@ import java.util.List;
  */
 public interface ProductService {
 
-    List<Product> getAll ();
-    PageableObject<ProductResponse> findAll(final FindProductRequest req);
+    List<ProductResponse> findAll(final FindProductRequest req);
 
     Product create(final CreateProductRequest req);
 
     Product update(final UpdateProductRequest req);
 
-    Boolean delete( String id);
+    Boolean delete(String id);
 
-    Product getOneById( String id);
+    Product getOneById(String id);
 }

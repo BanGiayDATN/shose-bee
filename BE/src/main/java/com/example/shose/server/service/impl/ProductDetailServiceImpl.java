@@ -4,16 +4,12 @@ import com.example.shose.server.dto.request.productdetail.CreateProductDetailReq
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.FormUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,13 +25,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private ProductDetailRepository productDetailRepository;
 
     private FormUtils formUtils = new FormUtils();
-
-    @Override
-    public PageableObject<ProductDetailReponse> getAllProduct(FindProductDetailRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(),request.getSize());
-        Page<ProductDetailReponse> list = productDetailRepository.getAllProductDetail(pageable,request);
-        return new PageableObject<>(list);
-    }
 
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
@@ -55,7 +44,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public Boolean delete(String id) {
         Optional<ProductDetail> optional = productDetailRepository.findById(id);
-        if(!optional.isPresent()){
+        if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         productDetailRepository.delete(optional.get());
@@ -65,7 +54,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public ProductDetail getOneById(String id) {
         Optional<ProductDetail> optional = productDetailRepository.findById(id);
-        if(!optional.isPresent()){
+        if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
