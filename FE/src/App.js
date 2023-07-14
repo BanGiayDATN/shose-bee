@@ -14,6 +14,7 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
+import VoucherManagement from "./pages/employee/voucher-management/VoucherManagement";
 
 function App() {
   return (
@@ -90,6 +91,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <SoleManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/voucher-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <VoucherManagement />
                 </DashBoardEmployee>
               </AuthGuard>
             }
