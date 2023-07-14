@@ -28,35 +28,31 @@ public class ProductRestController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/list")
-    public ResponseObject getList (){
-        return new ResponseObject(productService.getAll());
-    }
 
     @GetMapping()
-    public ResponseObject view (@ModelAttribute final FindProductRequest req){
+    public ResponseObject view(@ModelAttribute final FindProductRequest req) {
         return new ResponseObject(productService.findAll(req));
     }
 
     @GetMapping("/{id}")
-    public ResponseObject getOneById (@PathVariable("id") String id){
+    public ResponseObject getOneById(@PathVariable("id") String id) {
         return new ResponseObject(productService.getOneById(id));
     }
 
     @PostMapping
-    public ResponseObject add (@RequestBody CreateProductRequest req ){
+    public ResponseObject add(@RequestBody CreateProductRequest req) {
         return new ResponseObject(productService.create(req));
     }
 
     @PutMapping("/{id}")
-    public ResponseObject update (@PathVariable("id") String id ,
-                                  @RequestBody UpdateProductRequest req){
+    public ResponseObject update(@PathVariable("id") String id,
+                                 @RequestBody UpdateProductRequest req) {
         req.setId(id);
         return new ResponseObject(productService.update(req));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseObject delete (@PathVariable("id") String id){
+    public ResponseObject delete(@PathVariable("id") String id) {
         return new ResponseObject(productService.delete(id));
     }
 

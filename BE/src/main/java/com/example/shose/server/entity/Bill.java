@@ -6,6 +6,8 @@ import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -70,6 +72,7 @@ public class Bill extends PrimaryEntity {
     @Column(name = "money_ship ")
     private BigDecimal moneyShip;
 
+    @Enumerated(EnumType.STRING)
     private StatusBill statusBill;
 
     @ManyToOne

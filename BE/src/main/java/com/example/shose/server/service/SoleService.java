@@ -14,9 +14,7 @@ import java.util.List;
  */
 public interface SoleService {
 
-    List<Sole> getList ();
-
-    PageableObject<SoleResponse> findAll (final FindSoleRequest req);
+    List<SoleResponse> findAll (final FindSoleRequest req);
 
     Sole create (final CreateSoleRequest req);
 

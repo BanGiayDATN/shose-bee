@@ -28,11 +28,6 @@ public class MaterialRestController {
     @Autowired
     private MaterialService materialService;
 
-    @GetMapping("/list")
-    public ResponseObject getList() {
-        return new ResponseObject(materialService.getList());
-    }
-
     @GetMapping()
     public ResponseObject view(@ModelAttribute final FindMaterialRequest req) {
         return new ResponseObject(materialService.findAll(req));
