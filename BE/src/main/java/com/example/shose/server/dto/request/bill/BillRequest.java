@@ -9,13 +9,17 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class BillRequest extends PageableRequest {
+public class BillRequest {
 
     private long startTime;
+    private String startTimeString = new String("");
     private long endTime;
-    private int[] status = new int[]{};
+    private String endTimeString = new String("");
+    private String[] status = new String[]{};
     private long endDeliveryDate;
+    private String endDeliveryDateString = new String("");
     private long startDeliveryDate;
+    private String startDeliveryDateString = new String("");
     private String converStatus;
     private String code;
     private String employees;

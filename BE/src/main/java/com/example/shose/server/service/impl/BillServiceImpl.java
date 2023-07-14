@@ -25,6 +25,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,10 +51,26 @@ public class BillServiceImpl implements BillService {
     private FormUtils formUtils = new FormUtils();
 
     @Override
-    public PageableObject<BillResponse> getAll(BillRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+    public List<BillResponse> getAll(BillRequest request)  {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
         request.setConverStatus(Arrays.toString(request.getStatus()));
-        return new PageableObject<>(billRepository.getAll(pageable, request));
+        try {
+          if(!request.getStartTimeString().isEmpty()){
+              request.setStartTime(simpleDateFormat.parse(request.getStartTimeString()).getTime());
+          }
+          if(!request.getEndTimeString().isEmpty()){
+              request.setEndTime(simpleDateFormat.parse(request.getEndTimeString()).getTime());
+          }
+          if(!request.getStartDeliveryDateString().isEmpty()){
+              request.setStartDeliveryDate(simpleDateFormat.parse(request.getStartDeliveryDateString()).getTime());
+          }
+          if(!request.getEndDeliveryDateString().isEmpty()){
+              request.setEndDeliveryDate(simpleDateFormat.parse(request.getEndDeliveryDateString()).getTime());
+          }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return billRepository.getAll(request);
     }
 
     @Override

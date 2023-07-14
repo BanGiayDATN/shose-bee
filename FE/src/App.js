@@ -14,6 +14,8 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
+import BillManagement from "./pages/employee/bill-management/BillManagement";
+import DetailBill from "./pages/employee/bill-management/DetailBill";
 
 function App() {
   return (
@@ -32,6 +34,26 @@ function App() {
                   <Home />
                 </DashBoardCustomer>
               </GuestGuard>
+            }
+          />
+           <Route
+            path="/bill-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <BillManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+           <Route
+            path="/bill-management/detail-bill/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <DetailBill />
+                </DashBoardEmployee>
+              </AuthGuard>
             }
           />
           <Route

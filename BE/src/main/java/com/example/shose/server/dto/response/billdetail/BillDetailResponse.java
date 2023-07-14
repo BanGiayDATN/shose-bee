@@ -16,14 +16,26 @@ public interface BillDetailResponse {
     @Value("#{target.id}")
     String getId();
 
-    @Value("#{target.code}")
-    String getCode();
+    @Value("#{target.code_product}")
+    String getCodeProduct();
 
     @Value("#{target.product_name}")
     String getProductName();
 
-    @Value("#{target.size_name}")
-    String getSizeName();
+    @Value("#{target.name_color}")
+    String getNameColor();
+
+    @Value("#{target.name_size}")
+    String getNameSize();
+
+    @Value("#{target.name_sole}")
+    String getNameSole();
+
+    @Value("#{target.name_material}")
+    String getNameMaterial();
+
+    @Value("#{target.name_category}")
+    String getNameCategory();
 
     @Value("#{target.price}")
     String getPrice();
