@@ -5,16 +5,11 @@ import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.color.UpdateColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
 import com.example.shose.server.entity.Color;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.service.ColorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,15 +25,8 @@ public class ColorServiceImpl implements ColorService {
     private ColorRepository colorRepository;
 
     @Override
-    public List<Color> getList() {
-        return colorRepository.findAll();
-    }
-
-    @Override
-    public PageableObject<ColorResponse> findAll(FindColorRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<ColorResponse> listPage = colorRepository.getAll(pageable, req);
-        return new PageableObject<>(listPage);
+    public List<ColorResponse> findAll(FindColorRequest req) {
+        return colorRepository.getAll(req);
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,5 +49,6 @@ public class User extends PrimaryEntity {
     @Column(name = "points")
     private Integer points;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 }

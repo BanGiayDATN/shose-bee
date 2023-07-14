@@ -5,6 +5,8 @@ import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -37,6 +39,7 @@ public class PaymentsMethod extends PrimaryEntity {
     @Column(name = "total_money")
     private BigDecimal totalMoney;
 
+    @Enumerated(EnumType.STRING)
     private StatusMethod status;
 
     @ManyToOne
