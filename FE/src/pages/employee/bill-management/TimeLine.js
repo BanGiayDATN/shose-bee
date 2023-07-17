@@ -4,7 +4,6 @@ import moment from "moment";
 
 function TimeLine({ listStatus, data, statusPresent }) {
   console.log(data);
-  console.log(statusPresent);
   return (
     <div class="container">
       <div class="row text-center justify-content-center mb-5">
@@ -51,7 +50,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
             ))}
 
             {listStatus.map((item) => {
-              if (item.id <= statusPresent) {
+              if (item.id <= statusPresent ) {
                 return;
               }
               return (
