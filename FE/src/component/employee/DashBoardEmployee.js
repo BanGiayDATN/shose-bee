@@ -85,7 +85,7 @@ const DashBoardEmployee = ({ children }) => {
             <Link to="/sale-counter">Bán Hàng Tại Quầy</Link>
           </Menu.Item>
           <Menu.Item
-            key="4"
+            key="4.1"
             icon={
               <FontAwesomeIcon
                 icon={faMoneyBill1Wave}
