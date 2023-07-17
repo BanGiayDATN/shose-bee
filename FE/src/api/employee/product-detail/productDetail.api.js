@@ -1,9 +1,9 @@
 import { request } from "../../../helper/request";
-export class ProductApi {
+export class ProducDetailtApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/admin/product`,
+      url: `/admin/product-detail`,
       params: filter,
     });
   };
@@ -11,7 +11,7 @@ export class ProductApi {
   static create = (data) => {
     return request({
       method: "POST",
-      url: `/admin/product`,
+      url: `/admin/product-detail`,
       data: data,
     });
   };
@@ -19,14 +19,14 @@ export class ProductApi {
   static getOne = (id) => {
     return request({
       method: "GET",
-      url: `/admin/product/${id}`,
+      url: `/admin/product-detail/${id}`,
     });
   };
 
   static update = (id, data) => {
     return request({
       method: "PUT",
-      url: `/admin/product/${id}`,
+      url: `/admin/product-detail/${id}`,
       data: data,
     });
   };

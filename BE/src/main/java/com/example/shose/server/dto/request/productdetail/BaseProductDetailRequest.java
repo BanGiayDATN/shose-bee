@@ -12,7 +12,7 @@ public abstract class BaseProductDetailRequest {
 
     private String description;
 
-    private Integer gender;
+    private String gender;
 
     private String price;
 
@@ -28,6 +28,6 @@ public abstract class BaseProductDetailRequest {
 
     private String soleId;
 
-    private String sizeId;
+    private String brandId;
 
 }
