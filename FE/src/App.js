@@ -119,7 +119,6 @@ function App() {
             }
           />
           <Route
-<<<<<<< HEAD
             path="/address"
             element={
               <AuthGuard>
@@ -129,7 +128,7 @@ function App() {
               </AuthGuard>
             }
           />{" "}
-=======
+          <Route
             path="/account-management"
             element={
               <AuthGuard>
@@ -139,7 +138,6 @@ function App() {
               </AuthGuard>
             }
           />
->>>>>>> develop
           <Route
             path="/voucher-management"
             element={
