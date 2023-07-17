@@ -21,6 +21,7 @@ import VoucherManagement from "./pages/employee/voucher-management/VoucherManage
 import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
+import AddressManagement from "./pages/customer/address-management/AddressManagement";
 
 function App() {
   return (
@@ -39,7 +40,6 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
-
           <Route path="/" element={<Navigate replace to="/dashboard" />} />
           <Route
             path="/home"
@@ -151,6 +151,16 @@ function App() {
               </AuthGuard>
             }
           />
+          <Route
+            path="/address"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <AddressManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />{" "}
           <Route
             path="/account-management"
             element={
