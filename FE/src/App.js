@@ -15,12 +15,9 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
-<<<<<<< HEAD
-import AddressManagement from "./pages/customer/address-management/AddressManagement";
-=======
 import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
 import VoucherManagement from "./pages/employee/voucher-management/VoucherManagement";
->>>>>>> develop
+import AddressManagement from "./pages/customer/address-management/AddressManagement";
 
 function App() {
   return (
@@ -39,7 +36,6 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
-
           <Route path="/" element={<Navigate replace to="/dashboard" />} />
           <Route
             path="/home"
@@ -122,19 +118,21 @@ function App() {
             }
           />
           <Route
-<<<<<<< HEAD
             path="/address"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
                   <AddressManagement />
-=======
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />{" "}
+          <Route
             path="/voucher-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
                   <VoucherManagement />
->>>>>>> develop
                 </DashBoardEmployee>
               </AuthGuard>
             }

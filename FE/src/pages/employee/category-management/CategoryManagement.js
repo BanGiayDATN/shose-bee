@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-<<<<<<< HEAD
-import { Form, Input, Button, Select, Table, Modal, Popconfirm } from "antd";
-=======
+
 import { Form, Input, Button, Select, Table } from "antd";
->>>>>>> develop
+
 import "./style-category.css";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
@@ -111,21 +109,6 @@ const CategoryManagement = () => {
     setModalVisibleDetail(true);
   };
   const handleUpdate = (id) => {
-<<<<<<< HEAD
-    setCategoryId(id);
-    CategoryApi.getOne(id).then(
-      (res) => {
-        setFormData({
-          name: res.data.data.name,
-          status: res.data.data.status,
-        });
-        console.log(res);
-      },
-      (err) => console.log(err)
-    );
-=======
-    setIdUpdate(id);
->>>>>>> develop
     setModalVisibleUpdate(true);
   };
 
