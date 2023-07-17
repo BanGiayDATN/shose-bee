@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+
 import { Form, Input, Button, Select, Table } from "antd";
+
 import "./style-category.css";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
@@ -62,6 +64,7 @@ const CategoryManagement = () => {
       name: searchCategory.keyword,
       status: searchCategory.status,
     }).then((res) => {
+      console.log(res.data.data);
       setListcategory(res.data.data);
       dispatch(SetCategory(res.data.data));
     });
@@ -106,7 +109,6 @@ const CategoryManagement = () => {
     setModalVisibleDetail(true);
   };
   const handleUpdate = (id) => {
-    setIdUpdate(id);
     setModalVisibleUpdate(true);
   };
 
