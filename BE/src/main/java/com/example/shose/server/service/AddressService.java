@@ -17,7 +17,7 @@ public interface AddressService {
 
     List<Address> getAll();
 
-    PageableObject<AddressResponse> findAll(final FindAddressRequest req);
+    List<AddressResponse> getList(FindAddressRequest req);
 
     Address create(final CreateAddressRequest req);
 

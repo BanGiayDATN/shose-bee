@@ -40,18 +40,14 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public PageableObject<AddressResponse> findAll(FindAddressRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<AddressResponse> list = addressRepository.getAll(pageable, req);
-        return new PageableObject<>(list);
+    public List<AddressResponse> getList(FindAddressRequest req) {
+
+        return addressRepository.getAll(req);
     }
 
     @Override
     public Address create(CreateAddressRequest req) {
         Optional<User> user = userReposiory.findById(req.getUserId());
-        if (!user.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
         Address address = Address.builder().line(req.getLine()).city(req.getCity()).province(req.getProvince())
                 .country(req.getCountry()).user(user.get()).build();
         return addressRepository.save(address);
@@ -60,14 +56,9 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address update(UpdateAddressRequest req) {
         Optional<Address> optional = addressRepository.findById(req.getId());
-        if (optional.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
-//        User user = userReposiory.getById(req.getUserId());
+
         Optional<User> user = userReposiory.findById(req.getUserId());
-        if (!user.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
+      
         Address address = optional.get();
         address.setLine(req.getLine());
         address.setCity(req.getCity());

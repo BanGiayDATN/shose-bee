@@ -6,14 +6,7 @@ import {
   MenuUnfoldOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import {
-  Layout,
-  Menu,
-  Button,
-  theme,
-  Dropdown,
-  Badge,
-} from "antd";
+import { Layout, Menu, Button, theme, Dropdown, Badge } from "antd";
 import "./style-dashboard-employee.css";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
@@ -25,6 +18,7 @@ import {
   faMoneyBill1Wave,
   faTags,
   faUserGroup,
+  faMap,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
 
@@ -139,6 +133,12 @@ const DashBoardEmployee = ({ children }) => {
             icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
           >
             <Link to="/admin/label-management">Khuyến Mại</Link>
+          </Menu.Item>
+          <Menu.Item
+            key="9"
+            icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
+          >
+            <Link to="/address">Quản lý địa chỉ</Link>
           </Menu.Item>
         </Menu>
       </Sider>

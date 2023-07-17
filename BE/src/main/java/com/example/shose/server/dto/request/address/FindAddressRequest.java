@@ -19,6 +19,6 @@ public class FindAddressRequest extends PageableRequest {
 
     private String country;
 
-    private String user;
+    private String id_user;
 
 }

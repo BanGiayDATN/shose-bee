@@ -22,14 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/admin/address")
+@RequestMapping("/customer/address")
 public class AddressRestController {
     @Autowired
     private AddressService addressService;
 
-    @GetMapping("/list")
+    @GetMapping()
     public ResponseObject view(@ModelAttribute final FindAddressRequest request) {
-        return new ResponseObject(addressService.findAll(request));
+        return new ResponseObject(addressService.getList(request));
+    }
+    @GetMapping("/list")
+    public ResponseObject view() {
+        return new ResponseObject(addressService.getAll());
     }
 
     @GetMapping("/{id}")

@@ -14,10 +14,6 @@ public interface AddressResponse {
 
     @Value("#{target.id}")
     String getId();
-
-    @Value("#{target.nameUser}")
-    String getNameUser();
-
     @Value("#{target.line}")
     String getLine();
 
@@ -35,5 +31,8 @@ public interface AddressResponse {
 
     @Value("#{target.lastModifiedDate}")
     Long getLastModifiedDate();
+
+    @Value("#{target.idUser}")
+    String getIdUser();
 
 }
