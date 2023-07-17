@@ -32,7 +32,7 @@ public interface VoucherRespone extends BaseResponse {
     @Value("#{target.endDate}")
     Long getEndDate();
     @Value("#{target.status}")
-    Integer getStatus();
+    String getStatus();
 
     @Value("#{target.createdDate}")
     Long getCreateDate();

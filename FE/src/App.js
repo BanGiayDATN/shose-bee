@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppConfig } from "./AppConfig";
+import { ToastContainer } from 'react-toastify';
 import NotFound from "./pages/403";
 import NotAuthorized from "./pages/404";
 import AuthGuard from "./guard/AuthGuard";
@@ -95,7 +96,7 @@ function App() {
               </AuthGuard>
             }
           />
-<<<<<<< HEAD
+
           <Route
             path="/voucher-management"
             element={
@@ -106,13 +107,13 @@ function App() {
               </AuthGuard>
             }
           />
-=======
-          
->>>>>>> develop
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </div>
+
   );
+
 }
 
 export default App;

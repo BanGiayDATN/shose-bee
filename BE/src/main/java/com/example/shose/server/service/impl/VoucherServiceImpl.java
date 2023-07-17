@@ -7,9 +7,12 @@ import com.example.shose.server.dto.request.voucher.CreateVoucherRequest;
 import com.example.shose.server.dto.request.voucher.FindVoucherRequest;
 import com.example.shose.server.dto.request.voucher.UpdateVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
+import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.common.PageableObject;
+import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.VoucherService;
 import com.example.shose.server.util.ConvertDateToLong;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,16 +30,18 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
     @Override
-    public PageableObject<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest) {
-
-        Pageable pageable = PageRequest.of(findVoucherRequest.getPage(), findVoucherRequest.getSize());
-        Page<VoucherRespone> page = voucherRepository.getAllVoucher(pageable,findVoucherRequest);
-        return new PageableObject<>(page);
+    public List<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest) {
+        return voucherRepository.getAllVoucher(findVoucherRequest);
     }
 
     @Override
     public Voucher add(CreateVoucherRequest request) {
 
+
+        Voucher checkCode = voucherRepository.getByCode(request.getCode());
+        if (checkCode != null) {
+            throw new RestApiException(Message.CODE_EXISTS);
+        }
         Voucher voucher = Voucher.builder()
                 .code(request.getCode())
                 .name(request.getName())
@@ -43,14 +49,20 @@ public class VoucherServiceImpl implements VoucherService {
                 .quantity(request.getQuantity())
                 .startDate(new ConvertDateToLong().dateToLong(request.getStartDate()))
                 .endDate(new ConvertDateToLong().dateToLong(request.getEndDate()))
-                .status(Status.DANG_SU_DUNG).build();
+                .status(request.getStatus()).build();
         return voucherRepository.save(voucher);
     }
 
     @Override
     public Voucher update(UpdateVoucherRequest request) {
         Optional<Voucher> optional = voucherRepository.findById(request.getId());
-
+        if (!optional.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Voucher checkCode = voucherRepository.getByCode(request.getCode());
+        if (checkCode != null ) {
+            throw new RestApiException(Message.CODE_EXISTS);
+        }
         Voucher voucher = optional.get();
         voucher.setCode(request.getCode());
         voucher.setName(request.getName());
@@ -61,6 +73,8 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setStatus(request.getStatus());
         return voucherRepository.save(voucher);
     }
+
+
 
     @Override
     public Boolean delete(String id) {

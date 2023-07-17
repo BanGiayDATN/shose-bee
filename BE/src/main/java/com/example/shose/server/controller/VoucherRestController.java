@@ -7,6 +7,7 @@ import com.example.shose.server.dto.response.voucher.VoucherRespone;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.service.VoucherService;
+import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,40 +20,42 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /*
  *  @author diemdz
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/admin/voucher/")
+@RequestMapping("/admin/voucher")
 public class VoucherRestController {
     @Autowired
     private VoucherService voucherService;
 
-    @GetMapping("list")
-    public PageableObject<VoucherRespone> getAll(@ModelAttribute final FindVoucherRequest findVoucherRequest) {
-        return voucherService.getAll(findVoucherRequest);
+    @GetMapping()
+    public ResponseObject getAll(@ModelAttribute final FindVoucherRequest findVoucherRequest) {
+        return new ResponseObject(voucherService.getAll(findVoucherRequest));
     }
 
-    @GetMapping("{id}")
-    public Voucher getById(@PathVariable("id") String id) {
-        return voucherService.getById(id);
+    @GetMapping("/{id}")
+    public ResponseObject getById(@PathVariable("id") String id) {
+        return new ResponseObject(voucherService.getById(id));
     }
 
-    @PostMapping("add")
-    public Voucher add(@RequestBody CreateVoucherRequest request) {
-        return voucherService.add(request);
+    @PostMapping
+    public ResponseObject add(@RequestBody CreateVoucherRequest request) {
+        return new ResponseObject(voucherService.add(request));
     }
 
-    @PutMapping("update/{id}")
-    public Voucher update(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
+    @PutMapping("/{id}")
+    public ResponseObject update(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
         request.setId(id);
-        return voucherService.update(request);
+        return new ResponseObject(voucherService.update(request));
     }
 
-    @DeleteMapping("delete/{id}")
-    public Boolean delete(@PathVariable("id") String id) {
+    @DeleteMapping("/{id}")
+    public ResponseObject delete(@PathVariable("id") String id) {
 
-        return voucherService.delete(id);
+        return new ResponseObject(voucherService.delete(id));
     }
 }

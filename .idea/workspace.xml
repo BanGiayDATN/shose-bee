@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d0abcb6f-82ce-4957-9346-c269be5e31e0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/VoucherRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/VoucherRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/response/voucher/VoucherRespone.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/response/voucher/VoucherRespone.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/resources/banner.txt" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/resources/banner.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/app/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/app/store.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/employee/category-management/CategoryManagement.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/employee/category-management/CategoryManagement.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/VoucherManagement.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/VoucherManagement.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/style-voucher.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/style-voucher.css" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2SbkOISUlk6gW67yCIYZHy77k3y" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "E:/duantotnghiep/shose",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d0abcb6f-82ce-4957-9346-c269be5e31e0" name="Changes" comment="" />
+      <created>1689422634570</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1689422634570</updated>
+      <workItem from="1689422636377" duration="168000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Nguyễn Vinh
  */
@@ -35,77 +37,28 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
                         
                 (:#{#req.code} IS NULL 
                 or :#{#req.code} LIKE '' 
-                or code like  %:#{#req.code}%)
+                or vo.code like  %:#{#req.code}%)
             and 
                 (:#{#req.name} IS NULL 
                 or :#{#req.name} LIKE '' 
-                or name like %:#{#req.name}% )
+                or vo.name like %:#{#req.name}% )
             and 
                 (:#{#req.value} IS NULL 
                 or :#{#req.value} LIKE '' 
-                or value = :#{#req.value})
+                or vo.value = :#{#req.value})
             and
                 (:#{#req.quantity} IS NULL 
                 or :#{#req.quantity} LIKE ''
-                or quantity = :#{#req.quantity})
-            and 
-                (:#{#req.startDate} IS NULL 
-                or :#{#req.startDate} LIKE ''
-                or start_date>=:#{#req.startDateStart})
-            and 
-                (:#{#req.startDate} IS NULL 
-                or :#{#req.startDate} LIKE ''
-                or start_date<=:#{#req.startDateEnd})
-            and 
-                (:#{#req.endDate} IS NULL 
-                or :#{#req.endDate} LIKE ''
-                or end_date >=:#{#req.endDateStart})
-            and 
-                (:#{#req.endDate} IS NULL 
-                or :#{#req.endDate} LIKE ''
-                or end_date <=:#{#req.endDateEnd})
+                or vo.quantity = :#{#req.quantity})
             and 
                 (:#{#req.status} IS NULL 
-                or :#{#req.startDate} LIKE ''
-                or status like %:#{#req.status}% )
-            GROUP BY vo.id
-            ORDER BY vo.last_modified_date DESC  
-            """, countQuery = """
-            SELECT count(1)            
-            FROM voucher vo
-            WHERE 
-                 (:#{#req.code} IS NULL 
-                or :#{#req.code} LIKE '' 
-                or code like  %:#{#req.code}%)
-            and 
-                (:#{#req.name} IS NULL 
-                or :#{#req.name} LIKE '' 
-                or name like %:#{#req.name}% )
-            and 
-                (:#{#req.startDate} IS NULL 
-                or :#{#req.startDate} LIKE ''
-                or start_date>=:#{#req.startDateStart})
-            and 
-                (:#{#req.startDate} IS NULL 
-                or :#{#req.startDate} LIKE ''
-                or start_date<=:#{#req.startDateEnd})
-            and 
-                (:#{#req.endDate} IS NULL 
-                or :#{#req.endDate} LIKE ''
-                or end_date >=:#{#req.endDateStart})
-            and 
-                (:#{#req.endDate} IS NULL 
-                or :#{#req.endDate} LIKE ''
-                or end_date <=:#{#req.endDateEnd})
-            and 
-                (:#{#req.status} IS NULL 
-                or :#{#req.startDate} LIKE ''
-                or status like %:#{#req.status}% )
+                or :#{#req.status} LIKE ''
+                or vo.status = :#{#req.status} )
             GROUP BY vo.id
             ORDER BY vo.last_modified_date DESC  
             """,
             nativeQuery = true )
-
-
-    Page<VoucherRespone> getAllVoucher(Pageable pageable, @Param("req") FindVoucherRequest req);
+    List<VoucherRespone> getAllVoucher( @Param("req") FindVoucherRequest req);
+    @Query("SELECT vo FROM Voucher vo WHERE vo.code like %:code%")
+    Voucher getByCode(@Param("code") String code);
 }
