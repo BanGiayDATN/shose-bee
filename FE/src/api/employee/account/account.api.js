@@ -39,20 +39,10 @@ export class AccountApi {
       data: data,
     });
   };
-}
-
-
-    static fetchDataSimpleEntityEmployees = () => {
-      return request({
-        method: "GET",
-        url: `/account/simple-employess`
-      });
-    };
-
-  //   static getOne = (id) => {
-  //     return request({
-  //       method: "GET",
-  //       url: `/admin/category/${id}`,
-  //     });
-  //   };
+  static fetchDataSimpleEntityEmployees = () => {
+    return request({
+      method: "GET",
+      url: `/account/simple-employess`
+    });
+  };
 }

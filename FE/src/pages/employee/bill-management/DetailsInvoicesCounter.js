@@ -11,33 +11,33 @@ import {
   getCity,
   getDistrict,
   getWard,
-} from "../../../app/reducer/address.reducer";
+} from "../../../app/reducer/Address.reducer";
 import Search from "antd/es/input/Search";
 
 function DetailsInvoicesCounter({ detailBill }) {
   var vouchers = [];
-  const city = useSelector((state) => state.address.city);
-  const district = useSelector((state) => state.address.district);
-  const ward = useSelector((state) => state.address.ward);
+  const city = [];
+  const district = [];
+  const ward = [];
   const dispatch = useAppDispatch();
 
   const onChangCity = (e) => {
     AddressApi.fetchDistrict(e.target.value).then((res) => {
-      console.log(res.data.districts);
-      dispatch(getDistrict(res.data.districts));
+      // console.log(res.data.districts);
+      // dispatch(getDistrict(res.data.districts));
     });
   };
 
   const onChangDistrict = (e) => {
-    AddressApi.fetchWard(e.target.value).then((res) => {
-      dispatch(getWard(res.data.wards));
-    });
+    // AddressApi.fetchWard(e.target.value).then((res) => {
+    //   dispatch(getWard(res.data.wards));
+    // });
   };
 
   useEffect(() => {
-    AddressApi.fetchCity().then((res) => {
-      dispatch(getCity(res.data));
-    });
+    // AddressApi.fetchCity().then((res) => {
+    //   dispatch(getCity(res.data));
+    // });
   }, []);
 
   // begin sreach khach hang
