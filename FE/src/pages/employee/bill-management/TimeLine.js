@@ -3,7 +3,6 @@ import "./timeline.css";
 import moment from "moment";
 
 function TimeLine({ listStatus, data, statusPresent }) {
-  console.log(data);
   return (
     <div class="container">
       <div class="row text-center justify-content-center mb-5">
