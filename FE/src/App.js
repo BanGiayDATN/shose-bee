@@ -15,12 +15,9 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
-<<<<<<< HEAD
 import AccountManagement from "./pages/employee/account-management/AccountManagement";
-=======
 import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
 import VoucherManagement from "./pages/employee/voucher-management/VoucherManagement";
->>>>>>> develop
 
 function App() {
   return (
@@ -121,21 +118,22 @@ function App() {
               </AuthGuard>
             }
           />
-<<<<<<< HEAD
-           <Route
+          <Route
             path="/account-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
                   <AccountManagement />
-=======
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
           <Route
             path="/voucher-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
                   <VoucherManagement />
->>>>>>> develop
                 </DashBoardEmployee>
               </AuthGuard>
             }
