@@ -41,7 +41,7 @@ const CategoryManagement = () => {
   const [categoryId, setCategoryId] = useState("");
   const [formData, setFormData] = useState({
     name: "",
-    status: " Vui lòng chọn trạng thái ",
+    status: "Vui lòng chọn trạng thái ",
   });
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleUpdadte, setModalVisibleUpdate] = useState(false);
@@ -142,6 +142,7 @@ const CategoryManagement = () => {
           name: res.data.data.name,
           status: res.data.data.status,
         });
+       
         console.log(res);
       },
       (err) => console.log(err)
