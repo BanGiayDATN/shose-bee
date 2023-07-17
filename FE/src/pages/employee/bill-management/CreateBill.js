@@ -5,8 +5,9 @@ import {
   PlusCircleOutlined,
   BarcodeOutlined,
   AndroidOutlined,
+  RetweetOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Row, Tabs } from "antd";
+import { Button, Col, Row, Tabs, Tooltip } from "antd";
 import Search from "antd/es/input/Search";
 import React, { useEffect } from "react";
 import "./create-bill.css";
@@ -48,15 +49,20 @@ function CreateBill() {
               width: "80%",
             }}
           />
-          <Button
-            type="primary"
-            icon={<BarcodeOutlined />}
-            //   loading={loadings[2]}
-            //   onClick={() => enterLoading(2)}
-          />
+          <Tooltip title="Quét mã">
+            <Button
+              type="primary"
+              icon={<BarcodeOutlined />}
+              //   loading={loadings[2]}
+              //   onClick={() => enterLoading(2)}
+            />
+          </Tooltip>
         </Col>
-
-        <Col span={6}>0338957590</Col>
+        <Col span={6}>
+          <Tooltip title="Trả hàng">
+            <Button type="primary" icon={<RetweetOutlined />} />
+          </Tooltip>
+        </Col>
       </Row>
       <Row className="content">
         <Col span={24} style={{ marginTop: "5px", padding: "0px" }}>

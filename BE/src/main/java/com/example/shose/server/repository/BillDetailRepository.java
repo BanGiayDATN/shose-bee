@@ -39,6 +39,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             LEFT JOIN material ma ON ma.id = prde.id_material
             LEFT JOIN category ca ON ca.id = prde.id_category
             WHERE bi.type = 1 AND bi.status_bill = 'TAO_HOA_DON'
+              AND (:#{#request.startCreateBill} <= bi.created_date)
             AND ( :#{#request.nameUser} IS NULL
                      OR :#{#request.nameUser} LIKE ''
                      OR bi.user_name LIKE :#{#request.nameUser})

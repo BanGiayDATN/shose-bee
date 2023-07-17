@@ -1,6 +1,6 @@
 import { background } from "@chakra-ui/react";
-import { Button, Col, Row, Select, Table } from "antd";
-import React, { useEffect } from "react";
+import { Button, Col, InputNumber, Row, Select, Table } from "antd";
+import React, { useEffect, useState } from "react";
 import "./style-bill.css";
 import moment from "moment";
 import { PlusCircleOutlined } from "@ant-design/icons";
@@ -39,6 +39,12 @@ function DetailsInvoicesCounter({ detailBill }) {
       dispatch(getCity(res.data));
     });
   }, []);
+
+  // begin sreach khach hang
+  const OPTIONS = ["Apples", "Nails", "Bananas", "Helicopters"];
+  const [selectedItems, setSelectedItems] = useState([]);
+  const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
+  //  end sreach khach hang
 
   const columns = [
     {
@@ -95,21 +101,21 @@ function DetailsInvoicesCounter({ detailBill }) {
       key: "quantity",
     },
     {
-      title: <div className="title-product">Số lượng còn lại</div>,
-      dataIndex: "quantityProductDetail",
-      key: "quantityProductDetail",
+      title: <div className="title-product">Hành động</div>,
+      render: <InputNumber addonBefore="+" addonAfter="-" defaultValue={100} />,
     },
   ];
 
   return (
     <div>
       <Row style={{ backgroundColor: "white" }}>
-        <Col span={16}>
+        <Col span={18}>
           <Row>
             <Table
               dataSource={detailBill.children}
               columns={columns}
               rowKey="id"
+              style={{ height: " 349px" }}
               pagination={false} // Disable default pagination
               className="product-table"
             />
@@ -123,6 +129,7 @@ function DetailsInvoicesCounter({ detailBill }) {
                   name=""
                   id=""
                   rows="10"
+                  placeholder="ghi chú"
                 ></textarea>
               </div>
             </Col>
@@ -165,10 +172,10 @@ function DetailsInvoicesCounter({ detailBill }) {
             </Col>
           </Row>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Row style={{ margin: "5px 0 5px 5px" }}>
-            <Col span={12}> Mã hóa đơn: {detailBill.father.code}</Col>
-            <Col span={12}>
+            <Col span={8}> Mã : {detailBill.father.code}</Col>
+            <Col span={16}>
               {" "}
               Ngày tạo:{" "}
               {moment(detailBill.father.createdDate).format("DD-MM-YYYY")}
@@ -176,13 +183,19 @@ function DetailsInvoicesCounter({ detailBill }) {
           </Row>
           <Row style={{ margin: "5px 0 5px 5px" }}>
             <Col span={22}>
-              {/* <Search
-                placeholder="Tìm khách hàng"
-                //   onSearch={onSearch}
+              <Select
+                mode="multiple"
+                placeholder="Inserted are removed"
+                value={selectedItems}
+                onChange={setSelectedItems}
                 style={{
                   width: "100%",
                 }}
-              /> */}
+                options={filteredOptions.map((item) => ({
+                  value: item,
+                  label: item,
+                }))}
+              />
             </Col>
             <Col span={2}>
               <Button
@@ -198,8 +211,14 @@ function DetailsInvoicesCounter({ detailBill }) {
             <Col span={12}> 0 đ </Col>
           </Row>
           <Row style={{ margin: "5px 0 5px 5px" }}>
-            <Col span={12}> Hình thức: </Col>
-            <Col span={12}> 0 đ </Col>
+            <Col span={12}> Giao hàng: </Col>
+            <Col span={12}>
+              {" "}
+              <label class="switch" for="checkbox">
+                <input type="checkbox" id="checkbox" /> 
+                <div class="slider round"></div>
+              </label>{" "}
+            </Col>
           </Row>
           <Row style={{ margin: "5px 0 5px 5px" }}>
             <input
@@ -226,50 +245,59 @@ function DetailsInvoicesCounter({ detailBill }) {
             />
           </Row>
           <Row style={{ margin: "5px 0 5px 5px" }}>
-            <Col span={4}>Tỉnh</Col>
-            <Col span={20}>
-              <select
-                class="form-select"
-                aria-label="Default select example"
-                onChange={(e) => {
-                  onChangCity(e);
-                }}
-              >
-                <option selected disabled>
-                  Open this select menu
-                </option>
-                {city.map((item) => (
-                  <option value={item.code}>{item.name}</option>
-                ))}
-              </select>
-            </Col>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              onChange={(e) => {
+                onChangCity(e);
+              }}
+            >
+              <option selected disabled className="selectOption">
+                Chọn tỉnh
+              </option>
+              {city.map((item) => (
+                <option value={item.code}>{item.name}</option>
+              ))}
+            </select>
           </Row>
           <Row style={{ margin: "5px 0 5px 5px" }}>
-            <Col span={4}>Quận</Col>
-            <Col span={20}>
-              <select
-                class="form-select"
-                aria-label="Default select example"
-                onChange={(e) => {
-                  onChangDistrict(e);
-                }}
-              >
-                <option selected>Open this select menu</option>
-                {district.map((item) => (
-                  <option value={item.code}>{item.name}</option>
-                ))}
-              </select>
-            </Col>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              onChange={(e) => {
+                onChangDistrict(e);
+              }}
+            >
+              <option selected disabled className="selectOption">
+                Chọn Quận
+              </option>
+              {district.map((item) => (
+                <option value={item.code}>{item.name}</option>
+              ))}
+            </select>
           </Row>
           <Row style={{ margin: "5px 0 5px 5px" }}>
-            <Col span={4}>Phường xã</Col>
-            <Col span={20}>
-              <select class="form-select" aria-label="Default select example">
-                <option selected>Open this select menu</option>
-                {ward.map((item) => (
-                  <option value={item.code}>{item.name}</option>
-                ))}
-              </select>
+            <select class="form-select" aria-label="Default select example">
+              <option selected disabled className="selectOption">
+                Chọn Phường xã
+              </option>
+              {ward.map((item) => (
+                <option value={item.code}>{item.name}</option>
+              ))}
+            </select>
+          </Row>
+          <Row style={{ margin: "5px 0 5px 5px" }}>
+            <Col span={12}>
+              <Button block>Giao hàng</Button>
+            </Col>
+            <Col span={12}>
+              <Button
+                style={{ marginLeft: "10px", width: "83%" }}
+                type="primary"
+                block
+              >
+                Thanh toán
+              </Button>
             </Col>
           </Row>
         </Col>

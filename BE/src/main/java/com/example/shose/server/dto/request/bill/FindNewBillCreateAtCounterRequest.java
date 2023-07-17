@@ -1,5 +1,6 @@
 package com.example.shose.server.dto.request.bill;
 
+import com.example.shose.server.util.ConvertDateToLong;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,9 +13,9 @@ import java.util.Calendar;
 @Setter
 public class FindNewBillCreateAtCounterRequest {
 
-    private Long startCreateBill = Calendar.getInstance().getTimeInMillis();
+    private Long startCreateBill = new ConvertDateToLong().getLongDateNow();
 
-    private Long endCreateBill = Calendar.getInstance().getTimeInMillis();
+    private Long endCreateBill =  new ConvertDateToLong().getLongDateNow();
 
     private String nameUser;
 
