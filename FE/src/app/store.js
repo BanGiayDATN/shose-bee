@@ -2,10 +2,9 @@ import { configureStore } from "@reduxjs/toolkit";
 import CategoryReducer from "./reducer/Category.reducer";
 import SoleReducer from "./reducer/Sole.reducer";
 import MaterailReducer from "./reducer/Materail.reducer";
-
+import BillReducer from "./reducer/Bill.reducer";
 import AddressReducer from "./reducer/Address.reducer";
 import AccountReducer from "./reducer/Account.reducer";
-
 import BrandReducer from "./reducer/Brand.reducer";
 import ProductReducer from "./reducer/Product.reducer";
 import SizeReducer from "./reducer/Size.reducer";
@@ -18,6 +17,8 @@ export const store = configureStore({
     material: MaterailReducer,
     address: AddressReducer,
     account: AccountReducer,
+    bill: BillReducer,
+    address: AddressReducer,
     brand: BrandReducer,
     product: ProductReducer,
     size: SizeReducer,

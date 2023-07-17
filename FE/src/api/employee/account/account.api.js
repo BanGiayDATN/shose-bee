@@ -39,4 +39,10 @@ export class AccountApi {
       data: data,
     });
   };
+  static fetchDataSimpleEntityEmployees = () => {
+    return request({
+      method: "GET",
+      url: `/account/simple-employess`
+    });
+  };
 }

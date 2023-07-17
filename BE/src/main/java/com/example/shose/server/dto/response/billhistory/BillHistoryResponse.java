@@ -1,6 +1,7 @@
 package com.example.shose.server.dto.response.billhistory;
 
-import com.example.shose.server.entity.*;
+import com.example.shose.server.entity.Bill;
+import com.example.shose.server.entity.BillHistory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -17,7 +18,7 @@ public interface BillHistoryResponse {
     String getId();
 
     @Value("#{target.status_bill}")
-    int getStatusBill();
+    String getStatusBill();
 
     @Value("#{target.created_date}")
     long getCreateDate();

@@ -2,8 +2,6 @@ package com.example.shose.server.dto.response.bill;
 
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.User;
-import com.example.shose.server.infrastructure.constant.StatusBill;
-import com.example.shose.server.infrastructure.constant.TypeBill;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -15,6 +13,9 @@ import java.math.BigDecimal;
 
 @Projection(types = {Bill.class, User.class})
 public interface BillResponse {
+
+    @Value("#{target.stt}")
+    String getStt();
 
     @Value("#{target.id}")
     String getId();
@@ -35,7 +36,7 @@ public interface BillResponse {
     int getType();
 
     @Value("#{target.status_bill}")
-    int getStatusBill();
+    String getStatusBill();
 
     @Value("#{target.total_money}")
     BigDecimal getTotalMoney();

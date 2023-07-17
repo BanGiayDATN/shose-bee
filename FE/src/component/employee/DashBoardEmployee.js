@@ -15,6 +15,7 @@ import {
   faBagShopping,
   faChartLine,
   faDumpsterFire,
+  faFileInvoiceDollar,
   faMoneyBill1Wave,
   faTags,
   faUserGroup,
@@ -81,7 +82,7 @@ const DashBoardEmployee = ({ children }) => {
               />
             }
           >
-            <Link to="/product-management">Bán Hàng Tại Quầy</Link>
+            <Link to="/sale-counter">Bán Hàng Tại Quầy</Link>
           </Menu.Item>
           <Menu.Item
             key="4"
@@ -94,11 +95,22 @@ const DashBoardEmployee = ({ children }) => {
           >
             <Link to="/product-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
+          <Menu.Item
+            key="4"
+            icon={
+              <FontAwesomeIcon
+                icon={faMoneyBill1Wave}
+                style={{ color: "white" }}
+              />
+            }
+          >
+            <Link to="/bill-management">Quản Lý Hóa đơn</Link>
+          </Menu.Item>
           <SubMenu
             key="5"
             icon={
               <FontAwesomeIcon
-                icon={faDumpsterFire}
+                icon={faFileInvoiceDollar}
                 style={{ color: "white" }}
               />
             }
