@@ -15,4 +15,6 @@ public class FindColorRequest extends PageableRequest {
     private String code;
 
     private String name;
+
+    private String status;
 }

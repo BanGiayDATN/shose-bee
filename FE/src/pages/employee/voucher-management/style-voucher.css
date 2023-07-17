@@ -1,0 +1,53 @@
+.title-voucher{
+  font-size:40px;
+  text-align:center;
+  color:#15043c;
+  margin-bottom:100px;
+}
+.voucher{
+  border: 0.1px solid #e4e1e1;
+  border-radius: 4px;
+  padding: 30px;
+}
+.voucher-table {
+    margin-top: 25px;
+  
+  }
+
+  .button-submit{
+    margin-left: 20px;
+    background-color:  #001529;
+   color:#ffffff;
+  }
+  .even-row {
+    background-color: #e1ebe2;
+  }
+  
+  .odd-row {
+    background-color: #e8e6ee;
+  }
+  .form-search {
+    padding: 30px;
+    margin-bottom:50px;
+  }
+
+  .input-search{
+    margin-right: 50px;
+    width:150px;
+    
+  }
+  .row{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+.reset-form-search{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  .manager-voucher{
+    padding: 10px;
+   
+  }
