@@ -15,7 +15,8 @@ public enum Message {
 
     BILL_NOT_EXIT("hóa đơn không tồn tại "),
     ACCOUNT_NOT_EXIT("tài khoản không tồn tại"),
-    ACCOUNT_NOT_PERMISSION("tài khoản không có quyền tạo hóa đơn");
+    ACCOUNT_NOT_PERMISSION("tài khoản không có quyền tạo hóa đơn"),
+    BILL_NOT_REFUND("hóa đơn không thể trả hàng");
 
 
 

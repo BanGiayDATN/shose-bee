@@ -25,4 +25,9 @@ public class BillDetailRestController {
     public ResponseObject findAllByIdBill(@PathVariable("id") String id){
         return  new ResponseObject(billDetailService.findAllByIdBill(id));
     }
+
+    @GetMapping("/detail/{id}")
+    public ResponseObject findBillById(@PathVariable("id") String id){
+        return  new ResponseObject(billDetailService.findBillById(id));
+    }
 }
