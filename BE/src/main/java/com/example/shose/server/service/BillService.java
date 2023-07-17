@@ -2,15 +2,14 @@ package com.example.shose.server.service;
 
 
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
-import com.example.shose.server.infrastructure.common.PageableObject;
+import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 
-
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -21,6 +20,8 @@ public interface BillService {
     List<BillResponse> getAll(BillRequest request);
 
     List<UserBillResponse> getAllUserInBill();
+
+    List<CustomDetalBillResponse> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
 
     Bill  saveONLINE(CreateBillRequest request);
 

@@ -1,6 +1,7 @@
 package com.example.shose.server.dto.response.billhistory;
 
-import com.example.shose.server.entity.*;
+import com.example.shose.server.entity.Bill;
+import com.example.shose.server.entity.BillHistory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 

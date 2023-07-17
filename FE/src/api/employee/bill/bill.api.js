@@ -35,6 +35,36 @@ export class BillApi {
       });
     };
 
+    static changeStatusBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/change-status/`+ id,
+        params: data,
+      });
+    };
+
+    static changeCancelStatusBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/cancel-status/`+ id,
+        params: data,
+      });
+    };
+
+    static createBillWait = () => {
+      return request({
+        method: "POST",
+        url: `/admin/bill/offline`
+      });
+    };
+
+    static getAllBillWait = () => {
+      return request({
+        method: "GET",
+        url: `/admin/bill/details-invoices-counter`
+      });
+    };
+
   //   static getOne = (id) => {
   //     return request({
   //       method: "GET",

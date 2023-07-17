@@ -29,16 +29,22 @@ const data = [
   {
     id: "TRA_HANG",
     name: "Trả hàng",
-  }
+  },
 ];
 
-function Search({ fillter, changFillter, onChangeStatusBillInFillter,  users, employess }) {
+function FormSearch({
+  fillter,
+  changFillter,
+  onChangeStatusBillInFillter,
+  users,
+  employess,
+}) {
   const { Option } = Select;
   const handleChange = (value) => {
     var arr = Object.keys(value).map(function (key) {
       return value[key];
     });
-    onChangeStatusBillInFillter(arr)
+    onChangeStatusBillInFillter(arr);
   };
 
   // begin check outslide
@@ -125,7 +131,6 @@ function Search({ fillter, changFillter, onChangeStatusBillInFillter,  users, em
           </Col>
         </Row>
         <Row>
-         
           <Col span={12}>
             <Row className="text">Nhân viên:</Row>
             <Row>
@@ -218,4 +223,4 @@ function Search({ fillter, changFillter, onChangeStatusBillInFillter,  users, em
   );
 }
 
-export default Search;
+export default FormSearch;

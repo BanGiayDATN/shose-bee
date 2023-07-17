@@ -3,6 +3,7 @@ import CategoryReducer from "./reducer/Category.reducer";
 import SoleReducer from "./reducer/Sole.reducer";
 import MaterailReducer from "./reducer/Materail.reducer";
 import BillReducer from "./reducer/Bill.reducer";
+import AddressReducer from "./reducer/address.reducer";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     sole: SoleReducer,
     material: MaterailReducer,
     bill: BillReducer,
+    address: AddressReducer,
   },
 });
 

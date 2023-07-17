@@ -12,6 +12,7 @@ import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -30,7 +31,6 @@ function DetailBill() {
   const bill = useSelector((state) => state.bill.bill.value);
   const statusPresent = useSelector((state) => state.bill.bill.status);
   const [statusBill, setStatusBill] = useState({
-    idbill: id,
     actionDescription: "",
   });
   const dispatch = useDispatch();
@@ -46,18 +46,136 @@ function DetailBill() {
         (item) => item.status == res.data.data.statusBill
       );
       if (res.data.data.statusBill == "TRA_HANG") {
-        index = 5;
+        index = 6;
       }
       if (res.data.data.statusBill == "DA_HUY") {
-        index = 6;
+        index = 7;
       }
       dispatch(addStatusPresent(index));
     });
     BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
       dispatch(getBillHistory(res.data.data));
+      console.log("data");
       console.log(res);
     });
   }, []);
+
+  // begin cancelBill
+  const [isModalCanCelOpen, setIsModalCanCelOpen] = useState(false);
+  const showModalCanCel = () => {
+    setIsModalCanCelOpen(true);
+  };
+  const handleCanCelOk = () => {
+    BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+      dispatch(getBill(res.data.data));
+      var index = listStatus.findIndex(
+        (item) => item.status == res.data.data.statusBill
+      );
+      if (res.data.data.statusBill == "TRA_HANG") {
+        index = 5;
+      }
+      if (res.data.data.statusBill == "DA_HUY") {
+        index = 6;
+      }
+      var history = {
+        stt: billHistory.length + 1,
+        statusBill: res.data.data.statusBill,
+        actionDesc: statusBill.actionDescription,
+        id: "",
+        createDate: new Date().getTime(),
+      };
+      dispatch(addStatusPresent(index));
+      dispatch(addBillHistory(history));
+    });
+    setIsModalCanCelOpen(false);
+  };
+  const handleCanCelClose = () => {
+    setIsModalCanCelOpen(false);
+  };
+  // end  cancelBill
+  //  begin modal change status
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const [isModalOpenChangeStatus, setIsModalOpenChangeStatus] = useState(false);
+
+  const showModalChangeStatus = () => {
+    setIsModalOpenChangeStatus(true);
+  };
+
+  const handleOkChangeStatus = () => {
+    BillApi.changeStatusBill(id, statusBill).then((res) => {
+      dispatch(getBill(res.data.data));
+      var index = listStatus.findIndex(
+        (item) => item.status == res.data.data.statusBill
+      );
+      if (res.data.data.statusBill == "TRA_HANG") {
+        index = 5;
+      }
+      if (res.data.data.statusBill == "DA_HUY") {
+        index = 6;
+      }
+      console.log(res.data.data.statusBill);
+      console.log(index);
+      var history = {
+        stt: billHistory.length + 1,
+        statusBill: res.data.data.statusBill,
+        actionDesc: statusBill.actionDescription,
+        id: "",
+        createDate: new Date().getTime(),
+      };
+      dispatch(addStatusPresent(index));
+      dispatch(addBillHistory(history));
+    });
+    setIsModalOpenChangeStatus(false);
+  };
+
+  const handleCancelChangeStatus = () => {
+    setIsModalOpenChangeStatus(false);
+  };
+
+  const cancelStatusBill = () => {
+    BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+      dispatch(getBill(res.data.data));
+      var index = listStatus.findIndex(
+        (item) => item.status == res.data.data.statusBill
+      );
+      if (res.data.data.statusBill == "TRA_HANG") {
+        index = 5;
+      }
+      if (res.data.data.statusBill == "DA_HUY") {
+        index = 6;
+      }
+      var history = {
+        stt: billHistory.length + 1,
+        statusBill: res.data.data.statusBill,
+        actionDesc: statusBill.actionDescription,
+        id: "",
+        createDate: new Date().getTime(),
+      };
+      dispatch(addStatusPresent(index));
+      dispatch(addBillHistory(history));
+    });
+    setIsModalOpenChangeStatus(false);
+  };
+
+  const onChangeDescStatusBill = (event) => {
+    setStatusBill({ ...statusBill, [event.target.name]: event.target.value });
+  };
+
+  // end modal change statust
 
   const columns = [
     {
@@ -167,7 +285,7 @@ function DetailBill() {
   return (
     <div>
       <div className="row">
-        <div className="row">
+        <div className="row" style={{ backgroundColor: "white" }}>
           <TimeLine
             listStatus={listStatus}
             data={billHistory}
@@ -176,43 +294,103 @@ function DetailBill() {
         </div>
         <div className="row mt-3">
           <div className="col-2">
-            {/* <Button type="Xác nhận" className='btn btn-primary' onClick={showModalChangeStatus(0, "Xác nhận")}>
-                  {listStatus[statusPresent + 1].name}
+            <Row>
+              <Col span={statusPresent < 4 ? 3 : 0}>
+                {statusPresent < 4 ? (
+                  <Button
+                    type="primary"
+                    className="btn btn-primary"
+                    onClick={() => showModalChangeStatus()}
+                  >
+                    {listStatus[statusPresent + 1].name}
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
+              </Col>
+              <Col span={statusPresent < 4 ? 3 : 0}>
+                {statusPresent < 4 ? (
+                  <Button
+                    type="danger"
+                    onClick={() => showModalCanCel()}
+                    style={{backgroundColor: "red"}}
+                  >
+                    Hủy
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
+              </Col>
+              <Col span={3}>
+                <Button type="primary" onClick={showModal}>
+                  Lịch sử
                 </Button>
-                <Modal title="Basic Modal" open={isModalOpenChangeStatus} onOk={handleOkChangeStatus} onCancel={handleCancelChangeStatus}>
-                  <h2 className='row'> {title} Mã Hóa đơn: {bill.code}</h2>
-                  <p></p>
-                  <p className='row'>
-                    <div className="mb-3">
-                      <label className="form-label">Nhập mô tả</label>
-                      <input type="text" className="form-control" name="actionDescription" value={statusBill.actionDescription} onChange={(e) => onChangeDescStatusBill(e)} id="exampleInputEmail1" />
-                    </div>
-                  </p>
-                  <button type="submit" className="btn btn-primary" onClick={actionBill == 0 ? changeStatusBill : cancelStatusBill }>Xác nhận</button>
-                </Modal> */}
+              </Col>
+            </Row>
+            <Modal
+              title="Basic Modal"
+              open={isModalOpenChangeStatus}
+              onOk={handleOkChangeStatus}
+              onCancel={handleCancelChangeStatus}
+            >
+              <p className="row"> Mã Hóa đơn: {bill.code}</p>
+              <p className="row">
+                <div className="mb-3">
+                  <label className="form-label">Nhập mô tả</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="actionDescription"
+                    value={statusBill.actionDescription}
+                    onChange={(e) => onChangeDescStatusBill(e)}
+                    id="exampleInputEmail1"
+                  />
+                </div>
+              </p>
+            </Modal>
           </div>
           <div className="col-2">
-            {/* <Button type="Hủy" className='btn btn-danger' onClick={showModalChangeStatus(1, "Xác nhận hủy")}>
-                  Hủy
-                </Button>
-              </div>
-              <div className="offset-6 col-2">
-                <Button type="primary" onClick={showModal}>
-                  Open Modal
-                </Button>
-                <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                  <Table
-                    dataSource={billHistory}
-                    columns={columnsHistory}
-                    rowKey="id"
-                    pagination={false} // Disable default pagination
-                    className="product-table"
+            <Modal
+              title="Hủy đơn hàng"
+              open={isModalCanCelOpen}
+              onOk={handleCanCelOk}
+              onCancel={handleCanCelClose}
+            >
+              <p className="row"> Mã Hóa đơn: {bill.code}</p>
+              <p className="row">
+                <div className="mb-3">
+                  <label className="form-label">Nhập mô tả</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="actionDescription"
+                    value={statusBill.actionDescription}
+                    onChange={(e) => onChangeDescStatusBill(e)}
+                    id="exampleInputEmail1"
                   />
-                </Modal> */}
+                </div>
+              </p>
+            </Modal>
+          </div>
+          <div className="offset-6 col-2">
+            <Modal
+              title="Basic Modal"
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+            >
+              <Table
+                dataSource={billHistory}
+                columns={columnsHistory}
+                rowKey="id"
+                pagination={false} // Disable default pagination
+                className="product-table"
+              />
+            </Modal>
           </div>
         </div>
       </div>
-      <div className="row mt-4">
+      <div className="row mt-4" style={{ backgroundColor: "white" }}>
         <h2 className="text-center"> Thông tin hóa đơn</h2>
         <Row>
           <Col span={12} className="text">

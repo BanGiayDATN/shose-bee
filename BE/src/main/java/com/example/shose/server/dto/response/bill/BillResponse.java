@@ -2,8 +2,6 @@ package com.example.shose.server.dto.response.bill;
 
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.User;
-import com.example.shose.server.infrastructure.constant.StatusBill;
-import com.example.shose.server.infrastructure.constant.TypeBill;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 

@@ -20,8 +20,9 @@ import {
 import "./style-bill.css";
 import { useRef } from "react";
 import { AccountApi } from "../../../api/employee/account/account.api";
-import Search from "./Search";
+import FormSearch from "./FormSearch";
 import { Link } from "react-router-dom";
+import { AddressApi } from "../../../api/employee/address/address.api";
 
 function BillManagement() {
   var listCategory = useSelector((state) => state.bill.bills.value);
@@ -34,11 +35,9 @@ function BillManagement() {
 
   useEffect(() => {
     BillApi.fetchAll(fillter).then((res) => {
-      console.log(res);
       dispatch(getAllBill(res.data.data));
     });
     BillApi.fetchDataUsers().then((res) => {
-      console.log(res);
       dispatch(getUsers(res.data.data));
     });
     AccountApi.fetchDataSimpleEntityEmployees().then((res) => {
@@ -51,14 +50,14 @@ function BillManagement() {
   };
 
   const onChangeStatusBillInFillter = (value) => {
-    setStatus(value)
+    setStatus(value);
     console.log(value);
   };
 
   const handleSubmitSearch = () => {
     var data = fillter;
     data.status = status;
-    setFillter(data)
+    setFillter(data);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
@@ -66,22 +65,22 @@ function BillManagement() {
 
   const clearFillter = () => {
     setFillter({
-        startTimeString: "",
-        endTimeString: "",
-        status: [],
-        endDeliveryDateString: "",
-        startDeliveryDateString: "",
-        code: "",
-        employees: "",
-        user: "",
-        phoneNumber: "",
-        type: -1,
-        page: 0,
-      })
+      startTimeString: "",
+      endTimeString: "",
+      status: [],
+      endDeliveryDateString: "",
+      startDeliveryDateString: "",
+      code: "",
+      employees: "",
+      user: "",
+      phoneNumber: "",
+      type: -1,
+      page: 0,
+    });
     //   BillApi.fetchAll(fillter).then((res) => {
     //     dispatch(getAllBill(res.data.data));
     //   });
-  }
+  };
 
   const [fillter, setFillter] = useState({
     startTimeString: "",
@@ -173,10 +172,12 @@ function BillManagement() {
       key: "itemDiscount",
       render: (itemDiscount) => (
         <span>
-          {itemDiscount.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })}
+          {itemDiscount >= 1000
+            ? itemDiscount.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+            : itemDiscount}
         </span>
       ),
     },
@@ -186,10 +187,12 @@ function BillManagement() {
       key: "totalMoney",
       render: (totalMoney) => (
         <span>
-          {totalMoney.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })}
+          {totalMoney >= 1000
+            ? totalMoney.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+            : totalMoney}
         </span>
       ),
     },
@@ -218,7 +221,7 @@ function BillManagement() {
         <hr />
         <div className="content">
           <div className="">
-            <Search
+            <FormSearch
               fillter={fillter}
               changFillter={onChangeFillter}
               users={users}
@@ -235,7 +238,9 @@ function BillManagement() {
           >
             Tìm kiếm
           </Button>
-          <Button className="btn_clear" onClick={clearFillter}>Làm mới bộ lọc</Button>
+          <Button className="btn_clear" onClick={clearFillter}>
+            Làm mới bộ lọc
+          </Button>
         </div>
       </div>
 

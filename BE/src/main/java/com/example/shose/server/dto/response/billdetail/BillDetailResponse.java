@@ -1,8 +1,14 @@
 package com.example.shose.server.dto.response.billdetail;
 
-import com.example.shose.server.entity.*;
+import com.example.shose.server.entity.Bill;
+import com.example.shose.server.entity.BillDetail;
+import com.example.shose.server.entity.Product;
+import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Size;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
+
+import java.math.BigDecimal;
 
 /**
  * @author thangdt
@@ -12,6 +18,9 @@ public interface BillDetailResponse {
 
     @Value("#{target.stt}")
     String getStt();
+
+    @Value("#{target.id_bill}")
+    String getIdBill();
 
     @Value("#{target.id}")
     String getId();
@@ -38,11 +47,11 @@ public interface BillDetailResponse {
     String getNameCategory();
 
     @Value("#{target.price}")
-    String getPrice();
+    BigDecimal getPrice();
 
     @Value("#{target.quantity}")
-    String getQuantity();
+    Integer getQuantity();
 
     @Value("#{target.quantity_product_detail}")
-    String getQuantityProductDetail();
+    Integer getQuantityProductDetail();
 }

@@ -16,6 +16,7 @@ import MaterialManagement from "./pages/employee/material-management/MaterialMan
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
 import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
+import CreateBill from "./pages/employee/bill-management/CreateBill";
 
 function App() {
   return (
@@ -52,6 +53,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <DetailBill />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/sale-counter"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <CreateBill />
                 </DashBoardEmployee>
               </AuthGuard>
             }

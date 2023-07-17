@@ -88,7 +88,7 @@ const DashBoardEmployee = ({ children }) => {
               />
             }
           >
-            <Link to="/product-management">Bán Hàng Tại Quầy</Link>
+            <Link to="/sale-counter">Bán Hàng Tại Quầy</Link>
           </Menu.Item>
           <Menu.Item
             key="4"
