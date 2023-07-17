@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Select, Table, Modal, Popconfirm } from "antd";
+import { Form, Input, Button, Select, Table } from "antd";
 import "./style-category.css";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import {
-  CreateCategory,
   GetCategory,
   SetCategory,
-  UpdateCategory,
 } from "../../../app/reducer/Category.reducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,17 +31,6 @@ const CategoryManagement = () => {
     status: "",
   });
 
-<<<<<<< HEAD
-=======
-  const [categoryId, setCategoryId] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    status: "Vui lòng chọn trạng thái ",
-  });
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisibleUpdadte, setModalVisibleUpdate] = useState(false);
-
->>>>>>> develop
   // lấy mảng redux ra
   const data = useAppSelector(GetCategory);
   useEffect(() => {
@@ -119,23 +106,7 @@ const CategoryManagement = () => {
     setModalVisibleDetail(true);
   };
   const handleUpdate = (id) => {
-<<<<<<< HEAD
     setIdUpdate(id);
-=======
-    setCategoryId(id);
-    CategoryApi.getOne(id).then(
-      (res) => {
-        
-        setFormData({
-          name: res.data.data.name,
-          status: res.data.data.status,
-        });
-       
-        console.log(res);
-      },
-      (err) => console.log(err)
-    );
->>>>>>> develop
     setModalVisibleUpdate(true);
   };
 
