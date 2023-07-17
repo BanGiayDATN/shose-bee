@@ -12,7 +12,7 @@ import lombok.Setter;
 public abstract class BaseEmployeeRequest {
     private String fullName;
 
-    private String dateOfBirth;
+    private Long dateOfBirth;
 
     private String phoneNumber;
 
@@ -27,4 +27,7 @@ public abstract class BaseEmployeeRequest {
     private Long startTime;
 
     private Long endTime;
+
+    private String id;
+
 }

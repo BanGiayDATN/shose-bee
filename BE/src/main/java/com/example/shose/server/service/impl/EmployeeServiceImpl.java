@@ -7,7 +7,6 @@ import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -15,11 +14,7 @@ import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.EmployeeService;
-import com.example.shose.server.util.ConvertDateToLong;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,49 +30,43 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private AccountRepository accountRepository;
+
     @Override
-    public List<User> getAll() {
-        return userReposiory.findAll();
+    public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
+        return userReposiory.getAll(req);
     }
 
     @Override
-    public PageableObject<EmployeeResponse> findAll(FindEmployeeRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<EmployeeResponse> list = userReposiory.getAll(pageable, req);
-        return new PageableObject<>(list);
-    }
-
-    @Override
-    public PageableObject<EmployeeResponse> search(FindEmployeeRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<EmployeeResponse> list = userReposiory.findByName(pageable, req);
-        return new PageableObject<>(list);
-    }
-
-    @Override
-    public PageableObject<EmployeeResponse> searchDate(FindEmployeeRequest req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-        Page<EmployeeResponse> list = userReposiory.findByDate(pageable, req);
-        return new PageableObject<>(list);
+    public List<EmployeeResponse> searchDate(FindEmployeeRequest req) {
+        return userReposiory.findByDate(req);
     }
 
     @Override
     public User create(CreateEmployeeRequest req) {
-        Account account = new Account();
-        account.setEmail(req.getEmail());
-        account.setPassword("123");
-        account.setRoles(Roles.NHAN_VIEN);
+        List<Account> accounts = accountRepository.findAll();
+        Optional<Account> adminAccount = accounts.stream()
+                .filter(account -> account.getRoles().equals(Roles.ADMIN))
+                .findFirst();
+        if (!adminAccount.isPresent()) {
+            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
+        }
+
+        Account employeeAccount = new Account();
+        employeeAccount.setEmail(req.getEmail());
+        employeeAccount.setPassword("123");
+        employeeAccount.setRoles(Roles.NHAN_VIEN);
+
         User user = User.builder()
                 .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
                 .email(req.getEmail())
                 .status(Status.DANG_SU_DUNG)
-                .gender(req.getGender())
+                .dateOfBirth(req.getDateOfBirth())
                 .build();
-        user = userReposiory.save(user);
-        account.setUser(user);
-        account = accountRepository.save(account);
 
+        user = userReposiory.save(user);
+        employeeAccount.setUser(user);
+        employeeAccount = accountRepository.save(employeeAccount);
         return user;
     }
 
@@ -87,12 +76,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        User update = optional.get();
-        update.setFullName(req.getFullName());
-        update.setPhoneNumber(req.getPhoneNumber());
-        update.setEmail(req.getEmail());
-        update.setStatus(req.getStatus());
-        return userReposiory.save(update);
+        User user = optional.get();
+        user.setFullName(req.getFullName());
+        user.setPhoneNumber(req.getPhoneNumber());
+        user.setDateOfBirth(req.getDateOfBirth());
+        user.setEmail(req.getEmail());
+        user.setStatus(req.getStatus());
+        return userReposiory.save(user);
     }
 
     @Override
@@ -106,8 +96,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public User getOneById(String id) {
-        Optional<User> optional = userReposiory.findById(id);
+    public EmployeeResponse getOneById(String id) {
+        Optional<EmployeeResponse> optional = userReposiory.getOneWithPassword(id);
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }

@@ -14,6 +14,7 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
+import AccountManagement from "./pages/employee/account-management/AccountManagement";
 
 function App() {
   return (
@@ -94,7 +95,16 @@ function App() {
               </AuthGuard>
             }
           />
-          
+           <Route
+            path="/account-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <AccountManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </div>

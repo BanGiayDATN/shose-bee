@@ -4,9 +4,12 @@ package com.example.shose.server.controller;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
+import com.example.shose.server.entity.Account;
+import com.example.shose.server.entity.User;
 import com.example.shose.server.service.EmployeeService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,27 +31,18 @@ public class EmployeeRestController {
     @Autowired
     private EmployeeService userService;
 
-    @GetMapping("/index")
-    public ResponseObject getAll() {
-        return new ResponseObject(userService.getAll());
-    }
-
     @GetMapping()
     public ResponseObject view(final FindEmployeeRequest req) {
         return new ResponseObject(userService.findAll(req));
     }
 
-    @GetMapping("/search")
-    public ResponseObject search(final FindEmployeeRequest rep) {
-        return new ResponseObject(userService.search(rep));
-    }
     @GetMapping("/search-date")
     public ResponseObject searchDate(final FindEmployeeRequest rep) {
         return new ResponseObject(userService.searchDate(rep));
     }
 
     @PostMapping
-    public ResponseObject add(@RequestBody CreateEmployeeRequest req) {
+    public ResponseObject add( @RequestBody CreateEmployeeRequest req) {
         return new ResponseObject(userService.create(req));
     }
     @GetMapping("/{id}")

@@ -31,7 +31,7 @@ public interface EmployeeResponse {
     String getPhoneNumber();
 
     @Value("#{target.status}")
-    Integer getStatus();
+    String getStatus();
 
     @Value("#{target.createdBy}")
     String getCreateBy();
@@ -44,6 +44,9 @@ public interface EmployeeResponse {
 
     @Value("#{target.fullName}")
     String getFullName();
+
+    @Value("#{target.passWord}")
+    String getPassWord();
 
     @Value("#{target.gender}")
     Boolean getGender();

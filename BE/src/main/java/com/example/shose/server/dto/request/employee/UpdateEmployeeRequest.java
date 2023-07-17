@@ -1,5 +1,6 @@
 package com.example.shose.server.dto.request.employee;
 
+import com.example.shose.server.entity.Account;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,5 +11,9 @@ import lombok.Setter;
 @Getter
 public class UpdateEmployeeRequest extends BaseEmployeeRequest {
     private String id;
+
+    private String password;
+
+    private String email;
 
 }

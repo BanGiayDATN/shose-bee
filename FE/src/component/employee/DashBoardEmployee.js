@@ -132,7 +132,7 @@ const DashBoardEmployee = ({ children }) => {
               <FontAwesomeIcon icon={faUserGroup} style={{ color: "white" }} />
             }
           >
-            <Link to="/accc-management">Quản Lý Tài Khoản</Link>
+            <Link to="/account-management">Quản Lý Tài Khoản</Link>
           </Menu.Item>
           <Menu.Item
             key="7"
