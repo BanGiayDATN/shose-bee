@@ -1,17 +1,24 @@
 import { request } from "../../../helper/request";
-export class ProductApi {
+export class ColorApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/admin/product`,
+      url: `/admin/color`,
       params: filter,
+    });
+  };
+
+  static getAllCode = () => {
+    return request({
+      method: "GET",
+      url: `/admin/color/code`,
     });
   };
 
   static create = (data) => {
     return request({
       method: "POST",
-      url: `/admin/product`,
+      url: `/admin/color`,
       data: data,
     });
   };
@@ -19,14 +26,14 @@ export class ProductApi {
   static getOne = (id) => {
     return request({
       method: "GET",
-      url: `/admin/product/${id}`,
+      url: `/admin/color/${id}`,
     });
   };
 
   static update = (id, data) => {
     return request({
       method: "PUT",
-      url: `/admin/product/${id}`,
+      url: `/admin/color/${id}`,
       data: data,
     });
   };

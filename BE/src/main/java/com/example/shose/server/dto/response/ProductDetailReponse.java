@@ -32,8 +32,8 @@ public interface ProductDetailReponse {
     Long getCreateDate();
 
     @Value("#{target.gender}")
-    Integer getGender();
+    String getGender();
 
     @Value("#{target.status}")
-    Integer getStatus();
+    String getStatus();
 }

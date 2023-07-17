@@ -25,4 +25,8 @@ public class FindProductDetailRequest extends PageableRequest {
 
     private String category;
 
+    private String status;
+
+    private String gender;
+
 }

@@ -33,6 +33,7 @@ public class ProductDetail extends PrimaryEntity {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private GenderProductDetail gender;
 
     private BigDecimal price;

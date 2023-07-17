@@ -15,6 +15,7 @@ import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
 import { ToastContainer } from "react-toastify";
+import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
 
 function App() {
   return (
@@ -51,6 +52,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <ProductManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-product-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <CreateProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }

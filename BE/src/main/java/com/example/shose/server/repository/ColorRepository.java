@@ -43,4 +43,7 @@ public interface ColorRepository extends JpaRepository<Color, String> {
 
     @Query("SELECT s FROM Color s WHERE s.code =:code AND s.id <> :id")
     Color getByNameExistence(@Param("code") String code, @Param("id") String id);
+
+    @Query("SELECT DISTINCT  c.code FROM  Color c ")
+    List<String> getAllCode ();
 }
