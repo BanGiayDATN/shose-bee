@@ -22,4 +22,6 @@ public interface ColorService {
     Boolean delete(String id);
 
     Color getOneById(String id);
+
+    List<String> getAllCode();
 }

@@ -29,6 +29,10 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
                 ( :#{#req.name} IS NULL 
                     OR :#{#req.name} LIKE '' 
                     OR name LIKE %:#{#req.name}% ) 
+             AND 
+                ( :#{#req.status} IS NULL 
+                    OR :#{#req.status} LIKE '' 
+                    OR status LIKE :#{#req.status} )
             GROUP BY m.id
             ORDER BY m.last_modified_date DESC  
             """, nativeQuery = true)

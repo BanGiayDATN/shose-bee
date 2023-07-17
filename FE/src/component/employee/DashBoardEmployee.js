@@ -132,7 +132,7 @@ const DashBoardEmployee = ({ children }) => {
             key="7"
             icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
           >
-            <Link to="/admin/label-management">Khuyến Mại</Link>
+            <Link to="/voucher-management">Khuyến Mại</Link>
           </Menu.Item>
           <Menu.Item
             key="9"

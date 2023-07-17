@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { Form, Input, Button, Select, Table, Modal, Popconfirm } from "antd";
+=======
+import { Form, Input, Button, Select, Table } from "antd";
+>>>>>>> develop
 import "./style-category.css";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import {
-  CreateCategory,
   GetCategory,
   SetCategory,
-  UpdateCategory,
 } from "../../../app/reducer/Category.reducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,6 +21,9 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
+import ModalCreateCategory from "./modal/ModalCreateCategory";
+import ModalDetailCategory from "./modal/ModalDetailCategory";
+import ModalUpdateCategory from "./modal/ModalUpdateCategory";
 
 const { Option } = Select;
 
@@ -29,14 +34,6 @@ const CategoryManagement = () => {
     keyword: "",
     status: "",
   });
-
-  const [categoryId, setCategoryId] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    status: " Vui lòng chọn trạng thái ",
-  });
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisibleUpdadte, setModalVisibleUpdate] = useState(false);
 
   // lấy mảng redux ra
   const data = useAppSelector(GetCategory);
@@ -95,38 +92,26 @@ const CategoryManagement = () => {
     );
   };
 
-  // thêm category
-  const handleAddCategory = () => {
-    CategoryApi.create(formData).then((res) => {
-      dispatch(CreateCategory(res.data.data));
-    });
+  // Xử lý logic chỉnh sửa
+  const [idUpdate, setIdUpdate] = useState("");
+  const [idDetail, setIdDetail] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
+  const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
-    // Đóng modal
-    setFormData({ name: "", status: " Vui lòng chọn trạng thái " });
+  const handleCancel = () => {
     setModalVisible(false);
-  };
-
-  // upadte category
-  const handleUpdateCategory = () => {
-    CategoryApi.update(categoryId, formData).then((res) => {
-      dispatch(UpdateCategory(res.data.data));
-    });
-    // Đóng modal
-    setFormData({ name: "", status: " Vui lòng chọn trạng thái " });
     setModalVisibleUpdate(false);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setModalVisibleDetail(false);
   };
 
   // Xử lý logic chỉnh sửa
   const handleViewDetail = (id) => {
-    console.log(id);
+    setIdDetail(id);
+    setModalVisibleDetail(true);
   };
-
   const handleUpdate = (id) => {
+<<<<<<< HEAD
     setCategoryId(id);
     CategoryApi.getOne(id).then(
       (res) => {
@@ -138,6 +123,9 @@ const CategoryManagement = () => {
       },
       (err) => console.log(err)
     );
+=======
+    setIdUpdate(id);
+>>>>>>> develop
     setModalVisibleUpdate(true);
   };
 
@@ -290,95 +278,20 @@ const CategoryManagement = () => {
             className="category-table"
           />
         </div>
+        {/* modal thêm */}
+        <ModalCreateCategory visible={modalVisible} onCancel={handleCancel} />
+        {/* modal update */}
+        <ModalUpdateCategory
+          visible={modalVisibleUpdate}
+          id={idUpdate}
+          onCancel={handleCancel}
+        />
+        <ModalDetailCategory
+          visible={modalVisibleDetail}
+          id={idDetail}
+          onCancel={handleCancel}
+        />
       </div>
-
-      {/* modal thêm category */}
-      <Modal
-        key="add"
-        title="Thêm thể loại"
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisible(false)}>
-            Hủy
-          </Button>,
-          <Popconfirm
-            title="Xóa việc cần làm"
-            description="Bạn có chắc chắn muốn xóa việc cần làm này không ?"
-            onConfirm={() => {
-              handleAddCategory();
-            }}
-            okText="Có"
-            cancelText="Không"
-          >
-            <Button key="submit" type="primary">
-              Thêm
-            </Button>
-          </Popconfirm>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Tên thể loại" style={{ marginTop: "40px" }}>
-            <Input
-              placeholder="Tên thể loại"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </Form.Item>
-
-          <Form.Item label="Trạng thái">
-            <Select
-              placeholder="Trạng thái thể loại"
-              name="status"
-              value={formData.status}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            >
-              <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* modal updatedCategory */}
-      <Modal
-        key="update"
-        title="Update Thể Loại"
-        visible={modalVisibleUpdadte}
-        onCancel={() => setModalVisibleUpdate(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisibleUpdate(false)}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleUpdateCategory}>
-            update
-          </Button>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Tên thể loại" style={{ marginTop: "40px" }}>
-            <Input
-              placeholder="Tên thể loại"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </Form.Item>
-
-          <Form.Item label="Trạng thái">
-            <Select
-              placeholder="Trạng thái thể loại"
-              name="status"
-              value={formData.status}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            >
-              <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
     </>
   );
 };

@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppConfig } from "./AppConfig";
+import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/403";
 import NotAuthorized from "./pages/404";
 import AuthGuard from "./guard/AuthGuard";
@@ -14,11 +15,26 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
+<<<<<<< HEAD
 import AddressManagement from "./pages/customer/address-management/AddressManagement";
+=======
+import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
+import VoucherManagement from "./pages/employee/voucher-management/VoucherManagement";
+>>>>>>> develop
 
 function App() {
   return (
     <div className="App">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <BrowserRouter basename={AppConfig.routerBase}>
         <Routes>
           <Route path="*" element={<NotFound />} />
@@ -41,6 +57,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <ProductManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-product-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <CreateProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }
@@ -96,17 +122,26 @@ function App() {
             }
           />
           <Route
+<<<<<<< HEAD
             path="/address"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
                   <AddressManagement />
+=======
+            path="/voucher-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <VoucherManagement />
+>>>>>>> develop
                 </DashBoardEmployee>
               </AuthGuard>
             }
           />
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </div>
   );
 }

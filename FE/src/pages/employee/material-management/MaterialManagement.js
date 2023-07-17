@@ -20,6 +20,9 @@ import {
   UpdateMaterail,
 } from "../../../app/reducer/Materail.reducer";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
+import ModalCreateMaterial from "./modal/ModalCreateManterial";
+import ModalUpdateMaterial from "./modal/ModalUpdateManterial";
+import ModalDetailMaterial from "./modal/ModalDetailManterial";
 
 const { Option } = Select;
 
@@ -30,14 +33,6 @@ const MaterialManagement = () => {
     keyword: "",
     status: "",
   });
-
-  const [materailId, setMaterailId] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    status: " Vui lòng chọn trạng thái ",
-  });
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisibleUpdadte, setModalVisibleUpdate] = useState(false);
 
   // lấy mảng redux ra
   const data = useAppSelector(GetMaterail);
@@ -96,49 +91,25 @@ const MaterialManagement = () => {
     );
   };
 
-  // thêm category
-  const handleAddMaterail = () => {
-    MaterialApi.create(formData).then((res) => {
-      dispatch(CreateMaterail(res.data.data));
-    });
+  const [idUpdate, setIdUpdate] = useState("");
+  const [idDetail, setIdDetail] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
+  const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
-    // Đóng modal
-    setFormData({ name: "", status: " Vui lòng chọn trạng thái " });
+  const handleCancel = () => {
     setModalVisible(false);
-  };
-
-  // upadte sole
-  const handleUpdateMaterail = () => {
-    MaterialApi.update(materailId, formData).then((res) => {
-      console.log(res);
-      dispatch(UpdateMaterail(res.data.data));
-    });
-    // Đóng modal
-    setFormData({ name: "", status: " Vui lòng chọn trạng thái " });
     setModalVisibleUpdate(false);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setModalVisibleDetail(false);
   };
 
   // Xử lý logic chỉnh sửa
   const handleViewDetail = (id) => {
-    console.log(id);
+    setIdDetail(id);
+    setModalVisibleDetail(true);
   };
-
   const handleUpdate = (id) => {
-    setMaterailId(id);
-    MaterialApi.getOne(id).then(
-      (res) => {
-        setFormData({
-          name: res.data.data.name,
-          status: res.data.data.status,
-        });
-      },
-      (err) => console.log(err)
-    );
+    setIdUpdate(id);
     setModalVisibleUpdate(true);
   };
 
@@ -291,95 +262,20 @@ const MaterialManagement = () => {
             className="category-table"
           />
         </div>
+        {/* modal thêm */}
+        <ModalCreateMaterial visible={modalVisible} onCancel={handleCancel} />
+        {/* modal update */}
+        <ModalUpdateMaterial
+          visible={modalVisibleUpdate}
+          id={idUpdate}
+          onCancel={handleCancel}
+        />
+        <ModalDetailMaterial
+          visible={modalVisibleDetail}
+          id={idDetail}
+          onCancel={handleCancel}
+        />
       </div>
-
-      {/* modal thêm category */}
-      <Modal
-        key="add"
-        title="Thêm thể loại"
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisible(false)}>
-            Hủy
-          </Button>,
-          <Popconfirm
-            title="Xóa việc cần làm"
-            description="Bạn có chắc chắn muốn xóa việc cần làm này không ?"
-            onConfirm={() => {
-              handleAddMaterail();
-            }}
-            okText="Có"
-            cancelText="Không"
-          >
-            <Button key="submit" type="primary">
-              Thêm
-            </Button>
-          </Popconfirm>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Tên thể loại" style={{ marginTop: "40px" }}>
-            <Input
-              placeholder="Tên thể loại"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </Form.Item>
-
-          <Form.Item label="Trạng thái">
-            <Select
-              placeholder="Trạng thái thể loại"
-              name="status"
-              value={formData.status}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            >
-              <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* modal updatedCategory */}
-      <Modal
-        key="update"
-        title="Update Thể Loại"
-        visible={modalVisibleUpdadte}
-        onCancel={() => setModalVisibleUpdate(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisibleUpdate(false)}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleUpdateMaterail}>
-            update
-          </Button>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Tên thể loại" style={{ marginTop: "40px" }}>
-            <Input
-              placeholder="Tên thể loại"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </Form.Item>
-
-          <Form.Item label="Trạng thái">
-            <Select
-              placeholder="Trạng thái thể loại"
-              name="status"
-              value={formData.status}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            >
-              <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
     </>
   );
 };
