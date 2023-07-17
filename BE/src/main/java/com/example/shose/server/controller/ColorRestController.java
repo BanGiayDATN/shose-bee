@@ -39,6 +39,11 @@ public class ColorRestController {
         return new ResponseObject(colorService.getOneById(id));
     }
 
+    @GetMapping("/code")
+    public ResponseObject getAllCode() {
+        return new ResponseObject(colorService.getAllCode());
+    }
+
     @PostMapping
     public ResponseObject add(@RequestBody CreateColorRequest req) {
         return new ResponseObject(colorService.create(req));

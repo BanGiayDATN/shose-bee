@@ -37,7 +37,7 @@ public class SizeServiceImpl implements SizeService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Size add = Size.builder().name(req.getName()).status(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG).build();
+        Size add = Size.builder().name(req.getName()).status(req.getStatus()).build();
         return sizeRepository.save(add);
     }
 
@@ -49,7 +49,7 @@ public class SizeServiceImpl implements SizeService {
         }
         Size update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(req.getStatus());
         return sizeRepository.save(update);
     }
 
