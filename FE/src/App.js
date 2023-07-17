@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppConfig } from "./AppConfig";
+import { ToastContainer } from 'react-toastify';
 import NotFound from "./pages/403";
 import NotAuthorized from "./pages/404";
 import AuthGuard from "./guard/AuthGuard";
@@ -14,8 +15,12 @@ import CategoryManagement from "./pages/employee/category-management/CategoryMan
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
 import MaterialManagement from "./pages/employee/material-management/MaterialManagement";
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
+<<<<<<< HEAD
 import { ToastContainer } from "react-toastify";
 import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
+=======
+import VoucherManagement from "./pages/employee/voucher-management/VoucherManagement";
+>>>>>>> develop
 
 function App() {
   return (
@@ -116,10 +121,27 @@ function App() {
               </AuthGuard>
             }
           />
+<<<<<<< HEAD
+=======
+
+          <Route
+            path="/voucher-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <VoucherManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+>>>>>>> develop
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </div>
+
   );
+
 }
 
 export default App;

@@ -11,7 +11,7 @@ public class ConvertDateToLong {
 
     public Long dateToLong(String date) {
         long milliseconds = -1;
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         format.setTimeZone(TimeZone.getDefault());
         try {
             Date d = format.parse(date);

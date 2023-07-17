@@ -33,6 +33,17 @@ const CategoryManagement = () => {
     status: "",
   });
 
+<<<<<<< HEAD
+=======
+  const [categoryId, setCategoryId] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    status: "Vui lòng chọn trạng thái ",
+  });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleUpdadte, setModalVisibleUpdate] = useState(false);
+
+>>>>>>> develop
   // lấy mảng redux ra
   const data = useAppSelector(GetCategory);
   useEffect(() => {
@@ -108,7 +119,23 @@ const CategoryManagement = () => {
     setModalVisibleDetail(true);
   };
   const handleUpdate = (id) => {
+<<<<<<< HEAD
     setIdUpdate(id);
+=======
+    setCategoryId(id);
+    CategoryApi.getOne(id).then(
+      (res) => {
+        
+        setFormData({
+          name: res.data.data.name,
+          status: res.data.data.status,
+        });
+       
+        console.log(res);
+      },
+      (err) => console.log(err)
+    );
+>>>>>>> develop
     setModalVisibleUpdate(true);
   };
 
