@@ -6,7 +6,6 @@ import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
-import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
