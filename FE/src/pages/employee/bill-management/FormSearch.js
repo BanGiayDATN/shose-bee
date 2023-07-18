@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Col, Form, Row, Button, Select, Space } from "antd";
+import { Col, Form, Row, Button, Select, Space, Input, DatePicker } from "antd";
+import { values } from "lodash";
+import { RightOutlined } from "@ant-design/icons";
 
 const data = [
   {
@@ -46,142 +48,196 @@ function FormSearch({
     });
     onChangeStatusBillInFillter(arr);
   };
+  console.log(users);
 
   // begin check outslide
+  const { RangePicker } = DatePicker;
 
   return (
     <div>
       <div>
-        <Row>
+        <Row style={{ marginTop: "10px" }}>
           <Col span={12}>
-            <Row className="text">Mã hóa đơn: </Row>
             <Row>
-              <input
-                type="text"
-                className="form-control"
-                id="exampleFormControlInput1"
-                onChange={(e) => changFillter(e)}
-                value={fillter.code}
-                name="code"
-              />
-            </Row>
-          </Col>
-          <Col span={12}>
-            <Row className="text">Số điện thoại: </Row>
-            <Row>
-              <input
-                type="text"
-                className="form-control "
-                id="phone"
-                name={"phoneNumber"}
-                onChange={(e) => changFillter(e)}
-                value={fillter.phoneNumber}
-              />
-            </Row>
-          </Col>
-          <Col span={12}>
-            <Row className="text">Ngày tạo:</Row>
-            <Row>
-              <Col span={12}>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="exampleFormControlInput1"
-                  onChange={(e) => changFillter(e)}
-                  name="startTimeString"
-                  value={fillter.startTime}
-                />
+              <Col span={6} className="text">
+                {" "}
+                Mã hóa đơn:
               </Col>
-              <Col span={12}>
-                <input
-                  type="date"
-                  className="form-control "
-                  id="exampleFormControlInput1"
-                  onChange={(e) => changFillter(e)}
-                  name="endTimeString"
-                  value={fillter.endTime}
+              <Col span={18}>
+                <Input
+                  value={fillter.code}
+                  onChange={(value) => changFillter(value.target.value, "code")}
+                  placeholder="Nhập mã hóa đơn"
+                  style={{ width: "98%" }}
                 />
               </Col>
             </Row>
           </Col>
           <Col span={12}>
-            <Row className="text">Ngày thanh toán:</Row>
             <Row>
-              <Col span={12}>
-                <input
-                  type="date"
-                  className="form-control "
-                  id="exampleFormControlInput1"
-                  onChange={(e) => changFillter(e)}
-                  value={fillter.startDeliveryDate}
-                  name={"startDeliveryDateString"}
-                />
+              <Col span={6} className="text">
+                {" "}
+                Số điện thoại:
               </Col>
-              <Col span={12}>
-                <input
-                  type="date"
-                  className="form-control "
-                  id="exampleFormControlInput1"
-                  onChange={(e) => changFillter(e)}
-                  value={fillter.endDeliveryDate}
-                  name={"endDeliveryDateString"}
+              <Col span={18}>
+                <Input
+                  value={fillter.phoneNumber}
+                  onChange={(value) =>
+                    changFillter(value.target.value, "phoneNumber")
+                  }
+                  placeholder="Nhập số điện thoại"
+                  style={{ width: "98%" }}
                 />
               </Col>
             </Row>
           </Col>
         </Row>
-        <Row>
+        <Row style={{ marginTop: "10px" }}>
           <Col span={12}>
-            <Row className="text">Nhân viên:</Row>
             <Row>
-              <select
-                value={fillter.employees}
-                className="form-select"
-                aria-label="Default select example"
-                name={"employees"}
-                onChange={(e) => changFillter(e)}
-              >
-                <option value={""} disabled>
-                  Open this select menu
-                </option>
-                {employess.map((item, index) => (
-                  <option value={item.id} key={item.id}>
-                    {item.userName}
-                  </option>
-                ))}
-              </select>
+              <Col span={6} className="text">
+                {" "}
+                Ngày tạo:
+              </Col>
+              <Col span={18}>
+                <Row>
+                  <Col span={11}>
+                    <Input
+                      type="date"
+                      style={{ width: "98%" }}
+                      value={fillter.startTimeString}
+                      onChange={(value) =>
+                        changFillter(value.target.value, "startTimeString")
+                      }
+                    />
+                  </Col>
+                  <Col
+                    span={1}
+                    style={{ textAlign: "center", margin: "6px 4px 0px 4px" }}
+                  >
+                    <RightOutlined />
+                  </Col>
+                  <Col span={11}>
+                    <Input
+                      type="date"
+                      style={{ width: "98%" }}
+                      value={fillter.endTimeString}
+                      onChange={(value) =>
+                        changFillter(value.target.value, "endTimeString")
+                      }
+                    />
+                  </Col>
+                </Row>
+              </Col>
             </Row>
           </Col>
           <Col span={12}>
-            <Row className="text">Khách hàng:</Row>
             <Row>
-              <select
-                value={fillter.user}
-                className="form-select"
-                aria-label="Default select example"
-                name={"user"}
-                onChange={(e) => changFillter(e)}
-              >
-                <option value={""} disabled>
-                  Open this select menu
-                </option>
-                {users.map((item, index) => (
-                  <option value={item.id} key={item.id}>
-                    {item.userName}
-                  </option>
-                ))}
-              </select>
+              <Col span={6} className="text">
+                {" "}
+                Ngày thanh toán:
+              </Col>
+              <Col span={18}>
+                <Row>
+                  <Col span={11}>
+                    <Input
+                      type="date"
+                      style={{ width: "98%" }}
+                      value={fillter.startDeliveryDateString}
+                      onChange={(value) =>
+                        changFillter(
+                          value.target.value,
+                          "startDeliveryDateString"
+                        )
+                      }
+                    />
+                  </Col>
+                  <Col
+                    span={1}
+                    style={{ textAlign: "center", margin: "6px 4px 0px 4px" }}
+                  >
+                    <RightOutlined />
+                  </Col>
+                  <Col span={11}>
+                    <Input
+                      type="date"
+                      style={{ width: "98%" }}
+                      value={fillter.endDeliveryDateString}
+                      onChange={(value) =>
+                        changFillter(
+                          value.target.value,
+                          "endDeliveryDateString"
+                        )
+                      }
+                    />
+                  </Col>
+                </Row>
+              </Col>
             </Row>
           </Col>
+        </Row>
+        <Row style={{ marginTop: "10px" }}>
+          <Col span={12}>
+            <Row>
+              <Col span={6} className="text">
+                {" "}
+                Nhân viên:
+              </Col>
+              <Col span={18}>
+                <Select
+                 style={{ width: "98%" }}
+                  value={fillter.employees}
+                  onChange={(value) =>
+                    changFillter(value, "employees")
+                  }
+                  defaultValue=""
+                >
+                  <Option value="">Tất cả</Option>
+                  {employess.map((employee, index) => (
+                    <Option key={index} value={employee.id}>
+                      {employee.userName}
+                    </Option>
+                  ))}
+                </Select>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={12}>
+            <Row>
+              <Col span={6} className="text">
+                {" "}
+                Khách hàng:
+              </Col>
+              <Col span={18}>
+              <Select
+                  style={{ width: "98%" }}
+                  value={fillter.user}
+                  onChange={(value) =>
+                    changFillter(value, "user")
+                  }
+                  defaultValue=""
+                >
+                  <Option value="">Tất cả</Option>
+                  {users.map((user, index) => (
+                    <Option key={index} value={user.id}>
+                      {user.userName}
+                    </Option>
+                  ))}
+                </Select>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: "10px" }}>
           <Col span={12}>
             <Row className="text">Trạng thái: </Row>
             <Row>
               <Select
                 mode="multiple"
-                style={{ width: "95%" }}
+                style={{ width: "98%" }}
                 placeholder="Chọn trạng thái"
                 defaultValue={fillter.status}
-                onChange={handleChange}
+                onChange={(value) => handleChange(value)}
                 optionLabelProp="label"
               >
                 {data.map((item, index) => (
@@ -193,28 +249,38 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row className="text">Phương thức:</Row>
             <Row>
-              <input
-                type="radio"
-                className=" "
-                id="exampleFormControlInput1"
-                name={"type"}
-                onChange={(e) => changFillter(e)}
-                value={1}
-              />{" "}
-              Tại quầy
-            </Row>
-            <Row>
-              <input
-                type="radio"
-                className=" "
-                id="exampleFormControlInput1"
-                name={"type"}
-                onChange={(e) => changFillter(e)}
-                value={0}
-              />{" "}
-              Online
+              <Col span={6} className="text">
+                Phương thức:
+              </Col>
+              <Col span={18}>
+                <Row>
+                  <input
+                    type="radio"
+                    className=" "
+                    id="exampleFormControlInput1"
+                    name={"type"}
+                    onChange={(value) =>
+                      changFillter(value.target.value, "type")
+                    }
+                    value={1}
+                  />{" "}
+                  Tại quầy
+                </Row>
+                <Row>
+                  <input
+                    type="radio"
+                    className=" "
+                    id="exampleFormControlInput1"
+                    name={"type"}
+                    onChange={(value) =>
+                      changFillter(value.target.value, "type")
+                    }
+                    value={0}
+                  />{" "}
+                  Online
+                </Row>
+              </Col>
             </Row>
           </Col>
         </Row>
