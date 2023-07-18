@@ -1,12 +1,9 @@
 package com.example.shose.server.service;
 
 
-import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
-import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.*;
 import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
 import com.example.shose.server.entity.Bill;
-import com.example.shose.server.dto.request.bill.BillRequest;
-import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 
@@ -23,11 +20,11 @@ public interface BillService {
 
     List<CustomDetalBillResponse> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
 
-    Bill  saveONLINE(CreateBillRequest request);
+    Bill  saveOnline(CreateBillRequest request);
 
-    Bill  saveOFFLINE(String idEmployee);
+    Bill  saveOffline(String idEmployee);
 
-    Bill update(String id, Bill bill);
+    Bill updateBillOffline(String id, UpdateBillRequest bill);
 
     Bill detail(String id);
 

@@ -252,7 +252,7 @@ function DetailBill() {
         <span>
           {statusBill == "TAO_HOA_DON"
             ? "Tạo Hóa đơn"
-            : statusBill == "CHO_THANH_TOAN"
+            : statusBill == "CHO_XAC_NHAN"
             ? "Chờ xác nhận"
             : statusBill === "VAN_CHUYEN"
             ? "Đang vận chuyển"
@@ -284,7 +284,7 @@ function DetailBill() {
 
   return (
     <div>
-      <div className="row">
+      <Row>
         <div className="row" style={{ backgroundColor: "white" }}>
           <TimeLine
             listStatus={listStatus}
@@ -292,6 +292,8 @@ function DetailBill() {
             statusPresent={statusPresent}
           />
         </div>
+      </Row>
+      <Row>
         <div className="row mt-3">
           <div className="col-2">
             <Row>
@@ -313,7 +315,7 @@ function DetailBill() {
                   <Button
                     type="danger"
                     onClick={() => showModalCanCel()}
-                    style={{backgroundColor: "red"}}
+                    style={{ backgroundColor: "red" }}
                   >
                     Hủy
                   </Button>
@@ -389,55 +391,120 @@ function DetailBill() {
             </Modal>
           </div>
         </div>
-      </div>
-      <div className="row mt-4" style={{ backgroundColor: "white" }}>
-        <h2 className="text-center"> Thông tin hóa đơn</h2>
-        <Row>
-          <Col span={12} className="text">
-            <div className="row">Mã: {bill.code}</div>
-          </Col>
-          <Col span={12} className="text">
-            <div className="row">
-              Trạng thái:{" "}
-              {bill.statusBill == "TAO_HOA_DON"
-                ? "Tạo Hóa đơn"
-                : bill.statusBill == "CHO_THANH_TOAN"
-                ? "Chờ xác nhận"
-                : bill.statusBill === "VAN_CHUYEN"
-                ? "Đang vận chuyển"
-                : bill.statusBill === "DA_THANH_TOAN"
-                ? "Đã thanh toán"
-                : bill.statusBill === "KHONG_TRA_HANG"
-                ? "Thành công"
-                : bill.statusBill === "TRA_HANG"
-                ? "Trả hàng"
-                : "Đã hủy"}
-            </div>
-          </Col>
-          <Col span={12} className="text">
-            <div className="row">Loại: {bill.typeBill}</div>
-          </Col>
-          <Col span={12} className="text">
-            <div className="row">Tổng tiền: {bill.totalMoney}</div>
-          </Col>
-        </Row>
-        <div className="row">
+      </Row>
+      <Row>
+        <div style={{ backgroundColor: "white" }}>
+          <Row>
+            <h2
+              className="text-center"
+              style={{ width: "100%", textAlign: "center" }}
+            >
+              {" "}
+              Thông tin hóa đơn
+            </h2>
+          </Row>
           <Row>
             <Col span={12} className="text">
-              <div className="row">Tên khách hàng: {bill.userName}</div>
+              <div style={{ marginLeft: "20px" }}>Mã: {bill.code}</div>
             </Col>
             <Col span={12} className="text">
-              <div className="row">Số điện thoại: {bill.phoneNumber}</div>
+              <div style={{ marginLeft: "20px" }}>
+                Trạng thái:{" "}
+                {bill.statusBill == "TAO_HOA_DON"
+                  ? "Tạo Hóa đơn"
+                  : bill.statusBill == "CHO_THANH_TOAN"
+                  ? "Chờ xác nhận"
+                  : bill.statusBill === "VAN_CHUYEN"
+                  ? "Đang vận chuyển"
+                  : bill.statusBill === "DA_THANH_TOAN"
+                  ? "Đã thanh toán"
+                  : bill.statusBill === "KHONG_TRA_HANG"
+                  ? "Thành công"
+                  : bill.statusBill === "TRA_HANG"
+                  ? "Trả hàng"
+                  : "Đã hủy"}
+              </div>
             </Col>
             <Col span={12} className="text">
-              <div className="row">Địa chỉ: {bill.address}</div>
+              <div style={{ marginLeft: "20px" }}>Loại: {bill.typeBill}</div>
             </Col>
             <Col span={12} className="text">
-              <div className="row">ghi chú: {bill.note}</div>
+                <div style={{ marginLeft: "20px" }}>
+                  Tên khách hàng: {bill.userName}
+                </div>
+              </Col>
+              <Col span={12} className="text">
+                <div style={{ marginLeft: "20px" }}>
+                  Số điện thoại: {bill.phoneNumber}
+                </div>
+              </Col>
+              <Col span={12} className="text">
+                <div style={{ marginLeft: "20px" }}>
+                  Địa chỉ: {bill.address}
+                </div>
+              </Col>
+              <Col span={12} className="text">
+                <div style={{ marginLeft: "20px" }}>ghi chú: {bill.note}</div>
+              </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>
+                Tiền giảm:{" "}
+                {bill.itemDiscount >= 1000
+                  ? bill.itemDiscount.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : bill.itemDiscount}
+              </div>
+            </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>
+                Tổng tiền:{" "}
+                {bill.totalMoney >= 1000
+                  ? bill.totalMoney.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : bill.totalMoney}
+              </div>
+            </Col>
+
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>
+                Ngày xác nhận:{" "}
+                {bill.confirmationDate != null
+                  ? moment(bill.confirmationDate).format("DD-MM-YYYY")
+                  : ""}{" "}
+              </div>
+            </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>
+                Ngày nhận:{" "}
+                {bill.receiveDate != null
+                  ? moment(bill.receiveDate).format("DD-MM-YYYY")
+                  : ""}
+              </div>
+            </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>
+                Ngày giao hàng:{" "}
+                {bill.deliveryDate != null
+                  ? moment(bill.deliveryDate).format("DD-MM-YYYY")
+                  : ""}
+              </div>
+            </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>
+                ngày hoàn thành:{" "}
+                {bill.completionDate != null
+                  ? moment(bill.completionDate).format("DD-MM-YYYY")
+                  : ""}
+              </div>
             </Col>
           </Row>
+
         </div>
-      </div>
+      </Row>
       <div className="row mt-4">
         <Table
           dataSource={detailProductInBill}

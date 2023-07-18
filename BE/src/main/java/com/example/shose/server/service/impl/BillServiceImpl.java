@@ -1,8 +1,7 @@
 package com.example.shose.server.service.impl;
 
 
-import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
-import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.*;
 import com.example.shose.server.dto.response.bill.ChildrenBillResponse;
 import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
@@ -18,8 +17,6 @@ import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
-import com.example.shose.server.dto.request.bill.BillRequest;
-import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.service.BillService;
@@ -55,7 +52,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<BillResponse> getAll(BillRequest request)  {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         request.setConverStatus(Arrays.toString(request.getStatus()));
         try {
           if(!request.getStartTimeString().isEmpty()){
@@ -100,7 +97,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill  saveOFFLINE(String idEmployee) {
+    public Bill  saveOffline(String idEmployee) {
         Optional<Account> account = accountRepository.findById(idEmployee);
         if(!account.isPresent()){
             throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
@@ -114,7 +111,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill  saveONLINE(CreateBillRequest request) {
+    public Bill  saveOnline(CreateBillRequest request) {
         Optional<Account> account = accountRepository.findById(request.getIdUser());
         if(!account.isPresent()){
             throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
@@ -125,12 +122,16 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill update(String id, Bill request) {
+    public Bill updateBillOffline(String id, UpdateBillRequest request) {
         Optional<Bill> updateBill = billRepository.findById(id);
         if(!updateBill.isPresent()){
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         Bill bill = formUtils.convertToObject(Bill.class, request);
+        bill.setItemDiscount(new BigDecimal(request.getItemDiscount()));
+        bill.setMoneyShip(new BigDecimal(request.getMoneyShip()));
+        bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+        bill.setCompletionDate(Calendar.getInstance().getTimeInMillis());
         return billRepository.save(bill);
     }
 
@@ -154,6 +155,18 @@ public class BillServiceImpl implements BillService {
         bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
         if(nextIndex > 4){
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+        }
+        if(bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN){
+            bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
+        }
+        if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN){
+            bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
+        }
+        if(bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN){
+            bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
+        }
+        if(bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG){
+            bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
