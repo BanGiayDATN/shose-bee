@@ -36,7 +36,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             JOIN category c on detail.id_category = c.id
             JOIN brand b on detail.id_brand = b.id
             JOIN color col on detail.id_color = col.id
-            WHERE i.status = '0'
+            WHERE i.status LIKE '%DANG_SU_DUNG%'
             AND 
                 ( :#{#req.color} IS NULL 
                     OR :#{#req.color} LIKE '' 
@@ -56,7 +56,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             AND 
                 ( :#{#req.sizeProduct} IS NULL 
                     OR :#{#req.sizeProduct} LIKE '' 
-                    OR si.name LIKE %:#{#req.sizeProduct}% ) 
+                    OR si.name LIKE :#{#req.sizeProduct} ) 
             AND 
                 ( :#{#req.sole} IS NULL 
                     OR :#{#req.sole} LIKE '' 
@@ -65,6 +65,14 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 ( :#{#req.category} IS NULL 
                     OR :#{#req.category} LIKE '' 
                     OR c.name LIKE %:#{#req.category}% )
+            AND 
+                ( :#{#req.status} IS NULL 
+                    OR :#{#req.status} LIKE '' 
+                    OR detail.status LIKE :#{#req.status} )
+            AND 
+                ( :#{#req.gender} IS NULL 
+                    OR :#{#req.gender} LIKE '' 
+                    OR detail.gender LIKE :#{#req.gender} )
             GROUP BY detail.id, i.name, p.name,s.name,m.name,si.name,c.name,b.name,col.code, detail.price, detail.created_date, detail.gender, detail.status
             ORDER BY detail.last_modified_date DESC 
             """, nativeQuery = true)

@@ -70,4 +70,9 @@ public class ColorServiceImpl implements ColorService {
         }
         return optional.get();
     }
+
+    @Override
+    public List<String> getAllCode() {
+        return colorRepository.getAllCode();
+    }
 }

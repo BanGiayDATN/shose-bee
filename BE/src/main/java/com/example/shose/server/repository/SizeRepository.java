@@ -28,7 +28,11 @@ public interface SizeRepository extends JpaRepository<Size, String> {
             WHERE 
                 ( :#{#req.name} IS NULL 
                     OR :#{#req.name} LIKE '' 
-                    OR name LIKE %:#{#req.name}% ) 
+                    OR name LIKE %:#{#req.name}% )
+             AND 
+                ( :#{#req.status} IS NULL 
+                    OR :#{#req.status} LIKE '' 
+                    OR status LIKE :#{#req.status} )
             GROUP BY si.id
             ORDER BY si.last_modified_date DESC  
             """, nativeQuery = true)

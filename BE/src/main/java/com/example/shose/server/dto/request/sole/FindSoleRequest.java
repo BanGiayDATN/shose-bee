@@ -12,4 +12,6 @@ import lombok.Setter;
 public class FindSoleRequest extends PageableRequest {
 
     private String name;
+
+    private String status;
 }

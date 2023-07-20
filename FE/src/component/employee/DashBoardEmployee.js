@@ -6,14 +6,7 @@ import {
   MenuUnfoldOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import {
-  Layout,
-  Menu,
-  Button,
-  theme,
-  Dropdown,
-  Badge,
-} from "antd";
+import { Layout, Menu, Button, theme, Dropdown, Badge } from "antd";
 import "./style-dashboard-employee.css";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
@@ -22,9 +15,11 @@ import {
   faBagShopping,
   faChartLine,
   faDumpsterFire,
+  faFileInvoiceDollar,
   faMoneyBill1Wave,
   faTags,
   faUserGroup,
+  faMap,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
 
@@ -87,7 +82,7 @@ const DashBoardEmployee = ({ children }) => {
               />
             }
           >
-            <Link to="/product-management">Bán Hàng Tại Quầy</Link>
+            <Link to="/sale-counter">Bán Hàng Tại Quầy</Link>
           </Menu.Item>
           <Menu.Item
             key="4"
@@ -100,11 +95,22 @@ const DashBoardEmployee = ({ children }) => {
           >
             <Link to="/product-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
+          <Menu.Item
+            key="4"
+            icon={
+              <FontAwesomeIcon
+                icon={faMoneyBill1Wave}
+                style={{ color: "white" }}
+              />
+            }
+          >
+            <Link to="/bill-management">Quản Lý Hóa đơn</Link>
+          </Menu.Item>
           <SubMenu
             key="5"
             icon={
               <FontAwesomeIcon
-                icon={faDumpsterFire}
+                icon={faFileInvoiceDollar}
                 style={{ color: "white" }}
               />
             }
@@ -132,13 +138,19 @@ const DashBoardEmployee = ({ children }) => {
               <FontAwesomeIcon icon={faUserGroup} style={{ color: "white" }} />
             }
           >
-            <Link to="/accc-management">Quản Lý Tài Khoản</Link>
+            <Link to="/account-management">Quản Lý Tài Khoản</Link>
           </Menu.Item>
           <Menu.Item
             key="7"
             icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
           >
             <Link to="/voucher-management">Khuyến Mại</Link>
+          </Menu.Item>
+          <Menu.Item
+            key="9"
+            icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
+          >
+            <Link to="/address">Quản lý địa chỉ</Link>
           </Menu.Item>
         </Menu>
       </Sider>

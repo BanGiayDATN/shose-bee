@@ -1,16 +1,21 @@
 package com.example.shose.server.service.impl;
 
 
+import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.response.bill.ChildrenBillResponse;
+import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
+import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
+import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.dto.request.bill.BillRequest;
@@ -21,13 +26,11 @@ import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.FormUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Pageable;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author thangdt
@@ -45,19 +48,55 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private BillHistoryRepository billHistoryRepository;
 
+    @Autowired
+    private BillDetailRepository billDetailRepository;
 
     private FormUtils formUtils = new FormUtils();
 
     @Override
-    public PageableObject<BillResponse> getAll(BillRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+    public List<BillResponse> getAll(BillRequest request)  {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
         request.setConverStatus(Arrays.toString(request.getStatus()));
-        return new PageableObject<>(billRepository.getAll(pageable, request));
+        try {
+          if(!request.getStartTimeString().isEmpty()){
+              request.setStartTime(simpleDateFormat.parse(request.getStartTimeString()).getTime());
+          }
+          if(!request.getEndTimeString().isEmpty()){
+              request.setEndTime(simpleDateFormat.parse(request.getEndTimeString()).getTime());
+          }
+          if(!request.getStartDeliveryDateString().isEmpty()){
+              request.setStartDeliveryDate(simpleDateFormat.parse(request.getStartDeliveryDateString()).getTime());
+          }
+          if(!request.getEndDeliveryDateString().isEmpty()){
+              request.setEndDeliveryDate(simpleDateFormat.parse(request.getEndDeliveryDateString()).getTime());
+          }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return billRepository.getAll(request);
     }
 
     @Override
     public List<UserBillResponse> getAllUserInBill() {
         return billRepository.getAllUserInBill();
+    }
+
+    @Override
+    public List<CustomDetalBillResponse> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
+        Map<String, CustomDetalBillResponse> list = new HashMap<>();
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllBillAtCounterAndStatusNewBill(request);
+        List<BillResponse> billResponses = billRepository.findAllBillAtCounterAndStatusNewBill(request);
+        billResponses.forEach(bill -> {
+            List<ChildrenBillResponse> children = new ArrayList<>();
+            billDetailResponse.forEach( billDetail -> {
+                if(billDetail.getIdBill().equals(bill.getId())){
+                    children.add(new ChildrenBillResponse(billDetail));
+                }
+            });
+            list.put(bill.getId(), new CustomDetalBillResponse(bill, children));
+        });
+        List<CustomDetalBillResponse> responses = new ArrayList<>(list.values());
+        return responses;
     }
 
     @Override
@@ -69,7 +108,7 @@ public class BillServiceImpl implements BillService {
         if(account.get().getRoles() == Roles.USER){
             throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION );
         }
-        Bill bill = billRepository.save(Bill.builder().employees(account.get()).statusBill(StatusBill.TAO_HOA_DON).typeBill(TypeBill.OFFLINE).code("HD"+ RandomStringUtils.randomNumeric(6)).build());
+        Bill bill = billRepository.save(Bill.builder().employees(account.get()).statusBill(StatusBill.TAO_HOA_DON).typeBill(TypeBill.OFFLINE).code("HD"+ RandomStringUtils.randomNumeric(6)).itemDiscount(BigDecimal.valueOf(0)).totalMoney(BigDecimal.valueOf(0)).moneyShip(BigDecimal.valueOf(0)).build());
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).build());
         return bill;
     }
@@ -103,4 +142,40 @@ public class BillServiceImpl implements BillService {
         }
         return bill.get();
     }
+
+    @Override
+    public Bill changedStatusbill(String id, ChangStatusBillRequest request) {
+        Optional<Bill> bill = billRepository.findById(id);
+        if(!bill.isPresent()){
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        StatusBill statusBill[] = StatusBill.values();
+        int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
+        bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        if(nextIndex > 4){
+            throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+        }
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill.get());
+        billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        billHistory.setActionDescription(request.getActionDescription());
+        billHistoryRepository.save(billHistory);
+        return billRepository.save(bill.get());
+    }
+
+    @Override
+    public Bill cancelBill(String id, ChangStatusBillRequest request) {
+        Optional<Bill> bill = billRepository.findById(id);
+        if(!bill.isPresent()){
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        bill.get().setStatusBill(StatusBill.DA_HUY);
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill.get());
+        billHistory.setStatusBill(bill.get().getStatusBill());
+        billHistory.setActionDescription(request.getActionDescription());
+        billHistoryRepository.save(billHistory);
+        return billRepository.save(bill.get());
+    }
+
 }

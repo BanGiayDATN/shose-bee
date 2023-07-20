@@ -11,10 +11,12 @@ public enum Message {
 
     NAME_EXISTS("Tên đã tồn tại"),
     CODE_EXISTS("Mã đã tồn tại"),
+    CHANGED_STATUS_ERROR("không thể xác nhận hóa đơn"),
 
-    BILL_NOT_EXIT(""),
-    ACCOUNT_NOT_EXIT(""),
-    ACCOUNT_NOT_PERMISSION("");
+    BILL_NOT_EXIT("hóa đơn không tồn tại "),
+    ACCOUNT_NOT_EXIT("tài khoản không tồn tại"),
+    ACCOUNT_NOT_PERMISSION("tài khoản không có quyền tạo hóa đơn"),
+    BILL_NOT_REFUND("hóa đơn không thể trả hàng");
 
 
 

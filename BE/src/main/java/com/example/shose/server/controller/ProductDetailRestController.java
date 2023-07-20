@@ -21,7 +21,7 @@ public class ProductDetailRestController {
     @Autowired
     private ProductDetailService productDetailService;
 
-    @GetMapping("/list")
+    @GetMapping()
     public ResponseObject view( final FindProductDetailRequest request) {
         return new ResponseObject(productDetailService.getAll(request));
     }
