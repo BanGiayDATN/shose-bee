@@ -4,6 +4,7 @@ import {
   addStatusPresent,
   getBill,
   getBillHistory,
+  getPaymentsMethod,
   getProductInBillDetail,
 } from "../../../app/reducer/Bill.reducer";
 import moment from "moment";
@@ -13,6 +14,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -28,6 +30,7 @@ function DetailBill() {
     (state) => state.bill.bill.billDetail
   );
   const billHistory = useSelector((state) => state.bill.bill.billHistory);
+  const paymentsMethod = useSelector((state) => state.bill.bill.paymentsMethod);
   const bill = useSelector((state) => state.bill.bill.value);
   const statusPresent = useSelector((state) => state.bill.bill.status);
   const [statusBill, setStatusBill] = useState({
@@ -55,8 +58,10 @@ function DetailBill() {
     });
     BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
       dispatch(getBillHistory(res.data.data));
-      console.log("data");
-      console.log(res);
+      console.log(res.data.data);
+    });
+    PaymentsMethodApi.findByIdBill(id).then((res) => {
+      dispatch(getPaymentsMethod(res.data.data));
     });
   }, []);
 
@@ -127,8 +132,6 @@ function DetailBill() {
       if (res.data.data.statusBill == "DA_HUY") {
         index = 6;
       }
-      console.log(res.data.data.statusBill);
-      console.log(index);
       var history = {
         stt: billHistory.length + 1,
         statusBill: res.data.data.statusBill,
@@ -232,9 +235,34 @@ function DetailBill() {
       key: "quantity",
     },
     {
-      title: <div className="title-product">Số lượng còn lại</div>,
-      dataIndex: "quantityProductDetail",
-      key: "quantityProductDetail",
+      title:
+        bill.statusBill == "DA_THANH_TOAN" ||  bill.statusBill == "TAO_HOA_DON" ? (
+          <div className="title-product">hành động</div>
+        ) : (
+          <div></div>
+        ),
+      dataIndex: "action",
+      key: "id",
+      render: (id) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+          {bill.statusBill == "TAO_HOA_DON" ? (<Button
+            type="primary"
+            title="Hủy"
+            style={{ backgroundColor: "red" }}
+            // onClick={() => handleViewDetail(record.id)}
+          >
+            Xóa
+          </Button>)  : bill.statusBill == "DA_THANH_TOAN" ? (<Button
+            type="primary"
+            title="Hủy"
+            style={{ backgroundColor: "red" }}
+            // onClick={() => handleViewDetail(record.id)}
+          >
+            Hủy
+          </Button>) : (<div></div>)}
+          
+        </div>
+      ),
     },
   ];
 
@@ -282,6 +310,52 @@ function DetailBill() {
     },
   ];
 
+  const columnsPayments = [
+    {
+      title: <div className="title-product">Số tiền</div>,
+      dataIndex: "totalMoney",
+      key: "totalMoney",
+      render: (totalMoney) => (
+        <span>
+          {totalMoney >= 1000
+            ? totalMoney.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+            : totalMoney}
+        </span>
+      ),
+    },
+    {
+      title: <div className="title-product">Trạng thái</div>,
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <span>
+          {status == "TIEN_MAT"
+            ? "Tiền mặt"
+            : status == "CHUYEN_KHOAN"
+            ? "Chuyển khoản"
+            : "Tiền mặt và chuyển khoản"}
+        </span>
+      ),
+    },
+    {
+      title: <div className="title-product">thời gian</div>,
+      dataIndex: "createdDate",
+      key: "createdDate",
+      render: (text) => {
+        const formattedDate = moment(text).format("DD-MM-YYYY"); // Định dạng ngày
+        return formattedDate;
+      },
+    },
+    {
+      title: <div className="title-product">Ghi chú</div>,
+      dataIndex: "description",
+      key: "description",
+    },
+  ];
+
   return (
     <div>
       <Row>
@@ -293,104 +367,136 @@ function DetailBill() {
           />
         </div>
       </Row>
-      <Row>
-        <div className="row mt-3">
-          <div className="col-2">
-            <Row>
-              <Col span={statusPresent < 4 ? 3 : 0}>
-                {statusPresent < 4 ? (
-                  <Button
-                    type="primary"
-                    className="btn btn-primary"
-                    onClick={() => showModalChangeStatus()}
-                  >
-                    {listStatus[statusPresent + 1].name}
-                  </Button>
-                ) : (
-                  <div></div>
-                )}
-              </Col>
-              <Col span={statusPresent < 4 ? 3 : 0}>
-                {statusPresent < 4 ? (
-                  <Button
-                    type="danger"
-                    onClick={() => showModalCanCel()}
-                    style={{ backgroundColor: "red" }}
-                  >
-                    Hủy
-                  </Button>
-                ) : (
-                  <div></div>
-                )}
-              </Col>
-              <Col span={3}>
-                <Button type="primary" onClick={showModal}>
-                  Lịch sử
-                </Button>
-              </Col>
-            </Row>
-            <Modal
-              title="Basic Modal"
-              open={isModalOpenChangeStatus}
-              onOk={handleOkChangeStatus}
-              onCancel={handleCancelChangeStatus}
-            >
-              <p className="row"> Mã Hóa đơn: {bill.code}</p>
-              <p className="row">
-                <div className="mb-3">
-                  <label className="form-label">Nhập mô tả</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="actionDescription"
-                    value={statusBill.actionDescription}
-                    onChange={(e) => onChangeDescStatusBill(e)}
-                    id="exampleInputEmail1"
-                  />
-                </div>
-              </p>
-            </Modal>
-          </div>
-          <div className="col-2">
-            <Modal
-              title="Hủy đơn hàng"
-              open={isModalCanCelOpen}
-              onOk={handleCanCelOk}
-              onCancel={handleCanCelClose}
-            >
-              <p className="row"> Mã Hóa đơn: {bill.code}</p>
-              <p className="row">
-                <div className="mb-3">
-                  <label className="form-label">Nhập mô tả</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="actionDescription"
-                    value={statusBill.actionDescription}
-                    onChange={(e) => onChangeDescStatusBill(e)}
-                    id="exampleInputEmail1"
-                  />
-                </div>
-              </p>
-            </Modal>
-          </div>
-          <div className="offset-6 col-2">
-            <Modal
-              title="Basic Modal"
-              open={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-            >
-              <Table
-                dataSource={billHistory}
-                columns={columnsHistory}
-                rowKey="id"
-                pagination={false} // Disable default pagination
-                className="product-table"
+      <Row style={{ width: "100%", marginBottom: "20px" }}>
+        <Row style={{ width: "100%" }}>
+          <Col style={{ width: "100%" }} span={statusPresent < 4 ? 3 : 0}>
+            {statusPresent < 4 ? (
+              <Button
+                type="primary"
+                className="btn btn-primary"
+                onClick={() => showModalChangeStatus()}
+              >
+                {listStatus[statusPresent + 1].name}
+              </Button>
+            ) : (
+              <div></div>
+            )}
+          </Col>
+          <Col span={statusPresent < 4 ? 2 : 0}>
+            {statusPresent < 4 ? (
+              <Button
+                type="danger"
+                onClick={() => showModalCanCel()}
+                style={{ backgroundColor: "red" }}
+              >
+                Hủy
+              </Button>
+            ) : (
+              <div></div>
+            )}
+          </Col>
+          <Col span={3}>
+            <Button type="primary" onClick={showModal}>
+              Lịch sử
+            </Button>
+          </Col>
+        </Row>
+        <Modal
+          title="Basic Modal"
+          open={isModalOpenChangeStatus}
+          onOk={handleOkChangeStatus}
+          onCancel={handleCancelChangeStatus}
+        >
+          <p className="row"> Mã Hóa đơn: {bill.code}</p>
+          <p className="row">
+            <div className="mb-3">
+              <label className="form-label">Nhập mô tả</label>
+              <input
+                type="text"
+                className="form-control"
+                name="actionDescription"
+                value={statusBill.actionDescription}
+                onChange={(e) => onChangeDescStatusBill(e)}
+                id="exampleInputEmail1"
               />
-            </Modal>
-          </div>
+            </div>
+          </p>
+        </Modal>
+        <div className="col-2">
+          <Modal
+            title="Hủy đơn hàng"
+            open={isModalCanCelOpen}
+            onOk={handleCanCelOk}
+            onCancel={handleCanCelClose}
+          >
+            <p className="row"> Mã Hóa đơn: {bill.code}</p>
+            <p className="row">
+              <div className="mb-3">
+                <label className="form-label">Nhập mô tả</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="actionDescription"
+                  value={statusBill.actionDescription}
+                  onChange={(e) => onChangeDescStatusBill(e)}
+                  id="exampleInputEmail1"
+                />
+              </div>
+            </p>
+          </Modal>
         </div>
+        <div className="offset-6 col-2">
+          <Modal
+            title="Basic Modal"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <Table
+              dataSource={billHistory}
+              columns={columnsHistory}
+              rowKey="id"
+              pagination={false} // Disable default pagination
+              className="product-table"
+            />
+          </Modal>
+        </div>
+      </Row>
+      <Row
+        style={{
+          width: "100%",
+          marginBottom: "20px",
+          backgroundColor: "white",
+        }}
+      >
+        <Row style={{ width: "100%" }}>
+          <Col span={20}>
+            <h2
+              className="text-center"
+              style={{ width: "100%", marginLeft: "20px" }}
+            >
+              Lịch sử thanh toán
+            </h2>
+          </Col>
+          <Col span={4}>
+            <Button
+              type="dashed"
+              align={"end"}
+              style={{ margin: "17.430px 0" }}
+            >
+              Xác nhận thanh toán
+            </Button>
+          </Col>
+        </Row>
+        <Row style={{ width: "100%" }}>
+          <Table
+            dataSource={paymentsMethod}
+            columns={columnsPayments}
+            rowKey="id"
+            pagination={false} // Disable default pagination
+            className="product-table"
+          />
+        </Row>
       </Row>
       <Row>
         <div style={{ backgroundColor: "white" }}>
@@ -429,23 +535,21 @@ function DetailBill() {
               <div style={{ marginLeft: "20px" }}>Loại: {bill.typeBill}</div>
             </Col>
             <Col span={12} className="text">
-                <div style={{ marginLeft: "20px" }}>
-                  Tên khách hàng: {bill.userName}
-                </div>
-              </Col>
-              <Col span={12} className="text">
-                <div style={{ marginLeft: "20px" }}>
-                  Số điện thoại: {bill.phoneNumber}
-                </div>
-              </Col>
-              <Col span={12} className="text">
-                <div style={{ marginLeft: "20px" }}>
-                  Địa chỉ: {bill.address}
-                </div>
-              </Col>
-              <Col span={12} className="text">
-                <div style={{ marginLeft: "20px" }}>ghi chú: {bill.note}</div>
-              </Col>
+              <div style={{ marginLeft: "20px" }}>
+                Tên khách hàng: {bill.userName}
+              </div>
+            </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>
+                Số điện thoại: {bill.phoneNumber}
+              </div>
+            </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>Địa chỉ: {bill.address}</div>
+            </Col>
+            <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>ghi chú: {bill.note}</div>
+            </Col>
             <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>
                 Tiền giảm:{" "}
@@ -502,18 +606,22 @@ function DetailBill() {
               </div>
             </Col>
           </Row>
-
         </div>
       </Row>
-      <div className="row mt-4">
-        <Table
-          dataSource={detailProductInBill}
-          columns={columns}
-          rowKey="id"
-          pagination={false} // Disable default pagination
-          className="product-table"
-        />
-      </div>
+      <Row style={{ width: "100%", backgroundColor: "white" , marginTop: "20px" }}>
+        {bill.statusBill == "TAO_HOA_DON" ? (<Row style={{ width: "100%" }} justify="end">
+          <Button type="primary" style={{margin: "10px 20px 0 0 "}}>Thêm sản phẩm</Button>
+        </Row>) : (<div></div>)}
+        <Row style={{ width: "100%" }}>
+          <Table
+            dataSource={detailProductInBill}
+            columns={columns}
+            rowKey="id"
+            pagination={false} // Disable default pagination
+            className="product-table"
+          />
+        </Row>
+      </Row>
     </div>
   );
 }

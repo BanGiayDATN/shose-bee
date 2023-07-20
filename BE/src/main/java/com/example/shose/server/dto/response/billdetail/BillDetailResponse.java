@@ -19,6 +19,9 @@ public interface BillDetailResponse {
     @Value("#{target.stt}")
     String getStt();
 
+    @Value("#{target.id_product}")
+    String getIdProduct();
+
     @Value("#{target.id_bill}")
     String getIdBill();
 

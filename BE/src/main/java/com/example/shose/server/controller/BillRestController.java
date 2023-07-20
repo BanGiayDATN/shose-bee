@@ -2,6 +2,7 @@ package com.example.shose.server.controller;
 
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.service.BillService;
@@ -48,8 +49,8 @@ public class BillRestController {
     }
 
     @PostMapping("/offline")
-    public ResponseObject saveOffline(){
-        return  new ResponseObject(billService.saveOffline(userId));
+    public ResponseObject saveOffline(@RequestBody  CreateBillOfflineRequest request){
+        return  new ResponseObject(billService.saveOffline(userId, request));
     }
 
     @PutMapping("/change-status/{id}")

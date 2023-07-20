@@ -3,6 +3,7 @@ package com.example.shose.server.service;
 
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
@@ -26,7 +27,7 @@ public interface BillService {
 
     Bill  saveOnline(CreateBillRequest request);
 
-    Bill  saveOffline(String idEmployee);
+    Bill  saveOffline(String idEmployee, CreateBillOfflineRequest request);
 
     Bill updateBillOffline(String id, UpdateBillRequest bill);
 

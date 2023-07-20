@@ -3,6 +3,7 @@ package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
@@ -11,7 +12,10 @@ import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
+import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
+import com.example.shose.server.entity.PaymentsMethod;
+import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.StatusBill;
@@ -23,11 +27,14 @@ import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
+import com.example.shose.server.repository.PaymentsMethodRepository;
+import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.FormUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,25 +66,31 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private BillDetailRepository billDetailRepository;
 
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
+
+    @Autowired
+    private PaymentsMethodRepository paymentsMethodRepository;
+
     private FormUtils formUtils = new FormUtils();
 
     @Override
-    public List<BillResponse> getAll(BillRequest request)  {
+    public List<BillResponse> getAll(BillRequest request) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         request.setConverStatus(Arrays.toString(request.getStatus()));
         try {
-          if(!request.getStartTimeString().isEmpty()){
-              request.setStartTime(simpleDateFormat.parse(request.getStartTimeString()).getTime());
-          }
-          if(!request.getEndTimeString().isEmpty()){
-              request.setEndTime(simpleDateFormat.parse(request.getEndTimeString()).getTime());
-          }
-          if(!request.getStartDeliveryDateString().isEmpty()){
-              request.setStartDeliveryDate(simpleDateFormat.parse(request.getStartDeliveryDateString()).getTime());
-          }
-          if(!request.getEndDeliveryDateString().isEmpty()){
-              request.setEndDeliveryDate(simpleDateFormat.parse(request.getEndDeliveryDateString()).getTime());
-          }
+            if (!request.getStartTimeString().isEmpty()) {
+                request.setStartTime(simpleDateFormat.parse(request.getStartTimeString()).getTime());
+            }
+            if (!request.getEndTimeString().isEmpty()) {
+                request.setEndTime(simpleDateFormat.parse(request.getEndTimeString()).getTime());
+            }
+            if (!request.getStartDeliveryDateString().isEmpty()) {
+                request.setStartDeliveryDate(simpleDateFormat.parse(request.getStartDeliveryDateString()).getTime());
+            }
+            if (!request.getEndDeliveryDateString().isEmpty()) {
+                request.setEndDeliveryDate(simpleDateFormat.parse(request.getEndDeliveryDateString()).getTime());
+            }
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -96,8 +109,8 @@ public class BillServiceImpl implements BillService {
         List<BillResponse> billResponses = billRepository.findAllBillAtCounterAndStatusNewBill(request);
         billResponses.forEach(bill -> {
             List<ChildrenBillResponse> children = new ArrayList<>();
-            billDetailResponse.forEach( billDetail -> {
-                if(billDetail.getIdBill().equals(bill.getId())){
+            billDetailResponse.forEach(billDetail -> {
+                if (billDetail.getIdBill().equals(bill.getId())) {
                     children.add(new ChildrenBillResponse(billDetail));
                 }
             });
@@ -108,26 +121,52 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill  saveOffline(String idEmployee) {
+    public Bill saveOffline(String idEmployee, CreateBillOfflineRequest request) {
         Optional<Account> account = accountRepository.findById(idEmployee);
-        if(!account.isPresent()){
+        if (!account.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
         }
-        if(account.get().getRoles() == Roles.USER){
-            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION );
+        if (account.get().getRoles() == Roles.USER) {
+            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
         }
-        Bill bill = billRepository.save(Bill.builder().employees(account.get()).statusBill(StatusBill.TAO_HOA_DON).typeBill(TypeBill.OFFLINE).code("HD"+ RandomStringUtils.randomNumeric(6)).itemDiscount(BigDecimal.valueOf(0)).totalMoney(BigDecimal.valueOf(0)).moneyShip(BigDecimal.valueOf(0)).build());
+        Bill bill = billRepository.save(Bill.builder()
+                .employees(account.get())
+                .statusBill(StatusBill.TAO_HOA_DON)
+                .typeBill(TypeBill.OFFLINE)
+                .code("HD" + RandomStringUtils.randomNumeric(6))
+                .note(request.getNote())
+                .userName(request.getUserName())
+                .address(request.getAddress())
+                .phoneNumber(request.getPhoneNumber())
+                .itemDiscount(new BigDecimal(request.getItemDiscount()))
+                .totalMoney(new BigDecimal(request.getTotalMoney()))
+                .moneyShip(new BigDecimal(request.getMoneyShip())).build());
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).build());
+
+        request.getBillDetailRequests().forEach(billDetailRequest -> {
+            Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
+            if (!productDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            if(productDetail.get().getQuantity() < billDetailRequest.getQuantity()){
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+            billDetailRepository.save(billDetail);
+
+            productDetail.get().setQuantity(billDetailRequest.getQuantity());
+            productDetailRepository.save(productDetail.get());
+        });
         return bill;
     }
 
     @Override
-    public Bill  saveOnline(CreateBillRequest request) {
+    public Bill saveOnline(CreateBillRequest request) {
         Optional<Account> account = accountRepository.findById(request.getIdUser());
-        if(!account.isPresent()){
+        if (!account.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
         }
-        Bill bill = billRepository.save(Bill.builder().account(account.get()).userName(request.getName()).address(request.getAddress()).phoneNumber(request.getPhoneNumber()).statusBill(StatusBill.TAO_HOA_DON).typeBill(TypeBill.OFFLINE).code("HD"+ RandomStringUtils.randomNumeric(6)).build());
+        Bill bill = billRepository.save(Bill.builder().account(account.get()).userName(request.getName()).address(request.getAddress()).phoneNumber(request.getPhoneNumber()).statusBill(StatusBill.TAO_HOA_DON).typeBill(TypeBill.OFFLINE).code("HD" + RandomStringUtils.randomNumeric(6)).build());
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).build());
         return bill;
     }
@@ -135,7 +174,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill updateBillOffline(String id, UpdateBillRequest request) {
         Optional<Bill> updateBill = billRepository.findById(id);
-        if(!updateBill.isPresent()){
+        if (!updateBill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         Bill bill = formUtils.convertToObject(Bill.class, request);
@@ -149,7 +188,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill detail(String id) {
         Optional<Bill> bill = billRepository.findById(id);
-        if(!bill.isPresent()){
+        if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         return bill.get();
@@ -158,25 +197,27 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill changedStatusbill(String id, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
-        if(!bill.isPresent()){
+        if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
         bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
-        if(nextIndex > 4){
+        if (nextIndex > 4) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
-        if(bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN){
+        if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-        }
-        if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN){
+        }else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
-        }
-        if(bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN){
+        }else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
             bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
-        }
-        if(bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG){
+            if(bill.get().getTotalMoney().compareTo(new BigDecimal(request.getTotalMoney())) > 0){
+                throw new RestApiException(Message.ERROR_TOTALMONEY);
+            }
+            PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
+            paymentsMethodRepository.save(paymentsMethod);
+        }else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
         BillHistory billHistory = new BillHistory();
@@ -190,7 +231,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill cancelBill(String id, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
-        if(!bill.isPresent()){
+        if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         bill.get().setStatusBill(StatusBill.DA_HUY);
