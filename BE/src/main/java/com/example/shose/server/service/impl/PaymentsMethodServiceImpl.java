@@ -47,8 +47,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public PaymentsMethod create(CreatePaymentsMethodRequest request) {
-        Optional<Bill> bill = billRepository.findById(request.getIdBill());
+    public PaymentsMethod create(String idBill, CreatePaymentsMethodRequest request) {
+        Optional<Bill> bill = billRepository.findById(idBill);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }

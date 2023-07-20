@@ -19,11 +19,10 @@ import java.math.BigDecimal;
 @Setter
 public class CreatePaymentsMethodRequest {
 
-    private String description;
+    private String actionDescription;
 
     private BigDecimal totalMoney;
 
-    private StatusMethod status;
+    private StatusMethod method;
 
-    private String idBill;
 }

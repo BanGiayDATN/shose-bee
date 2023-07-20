@@ -10,20 +10,21 @@ const billSlice = createSlice({
       users: [],
       employees: [],
     },
-    billWait: {
+    billWaitProduct: {
       value: [],
     },
     bill: {
       value: {},
       billDetail: [],
       billHistory: [],
+      paymentsMethod: [],
       status: -1,
     },
+  
   },
   reducers: {
-    addbillWait: (state, action) => {
-      var billWait = { father: action.payload, children: [] };
-      state.billWait.value.unshift(billWait);
+    addProductBillWait: (state, action) => {
+      state.billWaitProduct.value.unshift(action.payload);
     },
     addBills: (state, action) => {
       state.bills.value = [...action.payload];
@@ -53,6 +54,12 @@ const billSlice = createSlice({
     getBillHistory: (state, action) => {
       state.bill.billHistory = [...action.payload];
     },
+    getPaymentsMethod: (state, action) => {
+      state.bill.paymentsMethod = [...action.payload];
+    },
+    addPaymentsMethod: (state, action) => {
+      state.bill.paymentsMethod.unshift(action.payload);
+    },
     addStatusPresent: (state, action) => {
       state.bill.status = action.payload;
     },
@@ -72,7 +79,9 @@ export const {
   getBill,
   addStatusPresent,
   addBillHistory,
-  addbillWait,
+  addProductBillWait,
+  getPaymentsMethod,
+  addPaymentsMethod
 } = billSlice.actions;
 export default billSlice.reducer;
 export const GetBill = (state) => state.bill;

@@ -12,5 +12,5 @@ public interface PaymentsMethodService {
 
     List<PaymentsMethod> findByAllIdBill(String idBill);
 
-    PaymentsMethod create(CreatePaymentsMethodRequest request);
+    PaymentsMethod create(String idBill, CreatePaymentsMethodRequest request);
 }

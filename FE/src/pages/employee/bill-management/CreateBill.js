@@ -1,11 +1,4 @@
 import {
-  PoweroffOutlined,
-  LeftCircleOutlined,
-  RightCircleOutlined,
-  PlusCircleOutlined,
-  BarcodeOutlined,
-  AndroidOutlined,
-  RetweetOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import {
@@ -13,37 +6,47 @@ import {
   Col,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
   Table,
   Tabs,
   Tooltip,
 } from "antd";
-import Search from "antd/es/input/Search";
 import React, { useEffect, useState } from "react";
 // import "./create-bill.css";
 import "./style-bill.css";
 import { useSelector } from "react-redux";
-import { useAppDispatch } from "../../../app/hook";
 import { BillApi } from "../../../api/employee/bill/bill.api";
-import { addbillWait, getAllBillWait } from "../../../app/reducer/Bill.reducer";
-import DetailsInvoicesCounter from "./DetailsInvoicesCounter";
 import TextArea from "antd/es/input/TextArea";
+import { useNavigate } from "react-router";
 
 function CreateBill() {
-  // const listBillWait = useSelector((state) => state.bill.billWait.value);
+  const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
+
   const user = null;
 
-  // console.log(user !== {});
-  // const onSearch = () => {
-  //   console.log(123);
-  // };
-
-  const test = (e) => {
-    setIsOpenDelivery(!isOpenDelivery);
+  const [bill, setBill] = useState({
+    phoneNumber: "",
+    address: "",
+    userName: "",
+    itemDiscount: 0,
+    totalMoney: 0,
+    note: "",
+    moneyShip: 0,
+    billDetailRequests: listProduct
+  });
+  const navigate = useNavigate();
+  const orderBill = (e) => {
+    console.log(e);
+    BillApi.createBillWait(bill).then((res) => {
+      navigate("/bill-management/detail-bill/"+ res.data.data.id)
+    })
   };
+
+
 
   // useEffect(() => {
   //   BillApi.getAllBillWait().then((res) => {
@@ -51,13 +54,31 @@ function CreateBill() {
   //   });
   // }, []);
 
-  // const createBillWait = () => {
-  //   BillApi.createBillWait().then((res) => {
-  //     dispatch(addbillWait(res.data.data));
-  //   });
-  // };
+  // begin modal product
+  const [isModalProductOpen, setIsModalProductOpen] = useState(false);
+  const showModalProduct = (e) => {
+    setIsModalProductOpen(true);
+  };
+  const handleOkProduct = () => {
+    setIsModalProductOpen(false);
+  };
+  const handleCancelProduct = () => {
+    setIsModalProductOpen(false);
+  };
+  //  end modal product
 
-  // begin update code
+  // begin modal Account
+  const [isModalAccountOpen, setIsModalAccountOpen] = useState(false);
+  const showModalAccount = (e) => {
+    setIsModalAccountOpen(true);
+  };
+  const handleOkAccount = () => {
+    setIsModalAccountOpen(false);
+  };
+  const handleCancelAccount = () => {
+    setIsModalAccountOpen(false);
+  };
+  //  end modal Account
 
   const columns = [
     {
@@ -119,16 +140,15 @@ function CreateBill() {
     },
   ];
 
-  // end update code
   return (
     <div>
       <Row>
         <Col span={3}>
-          <Button type="primary">Danh sách hóa đơn</Button>
+          <Button type="primary" onClick={e => navigate("/bill-management") }>Danh sách hóa đơn</Button>
         </Col>
         <Col span={18}></Col>
         <Col span={3}>
-          <Button type="primary">Thêm sản phẩm</Button>
+          <Button type="primary" onClick={e => showModalProduct(e)}>Thêm sản phẩm</Button>
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
@@ -151,11 +171,11 @@ function CreateBill() {
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
         <Row style={{ width: "100%" }}>
           <Col span={8}>
-            <h2 style={{ margin: "10px 0 0 10px" }}>Tài khoản</h2>
+            <h2 style={{ margin: "10px 0 0 10px" }} >Tài khoản</h2>
           </Col>
           <Col span={12}></Col>
           <Col span={3}>
-            <Button style={{ margin: "10px 10px 0px 0" }}>
+            <Button style={{ margin: "10px 10px 0px 0" }} onClick={e => showModalAccount(e)}>
               Chọn tài khoản
             </Button>
           </Col>
@@ -389,11 +409,27 @@ function CreateBill() {
               </Col>
             </Row>
             <Row style={{ marginTop: "20px" }} justify="end">
-              <Button type="primary">Xác nhận đặt hàng</Button>
+              <Button type="primary" onClick={e => orderBill(e)} >Xác nhận đặt hàng</Button>
             </Row>
           </Col>
         </Row>
       </Row>
+
+      {/* begin modal product */}
+      <Modal title="Basic Modal" open={isModalProductOpen} onOk={handleOkProduct} onCancel={handleCancelProduct}>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+      {/* end bigin modal product */}
+
+      {/* begin modal product */}
+      <Modal title="Basic Modal" open={isModalAccountOpen} onOk={handleOkAccount} onCancel={handleCancelAccount}>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+      {/* end bigin modal product */}
     </div>
   );
 }
