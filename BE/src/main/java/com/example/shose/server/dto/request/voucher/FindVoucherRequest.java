@@ -23,4 +23,6 @@ public class FindVoucherRequest extends PageableRequest {
     private Integer quantity;
 
     private String status;
+    private Long startDate;
+    private Long endDate;
 }

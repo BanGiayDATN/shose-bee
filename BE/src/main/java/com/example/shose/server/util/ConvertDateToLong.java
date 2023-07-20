@@ -1,5 +1,9 @@
 package com.example.shose.server.util;
 
+import com.example.shose.server.service.VoucherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -7,11 +11,12 @@ import java.util.TimeZone;
 /**
  * @author Nguyễn Vinh
  */
+@Component
 public class ConvertDateToLong {
 
     public Long dateToLong(String date) {
         long milliseconds = -1;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         format.setTimeZone(TimeZone.getDefault());
         try {
             Date d = format.parse(date);
@@ -27,4 +32,5 @@ public class ConvertDateToLong {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         return format.format(date);
     }
+
 }

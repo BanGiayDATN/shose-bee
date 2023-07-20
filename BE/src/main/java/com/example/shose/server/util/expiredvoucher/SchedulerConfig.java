@@ -1,4 +1,4 @@
-package com.example.shose.server.infrastructure.config.expiredvoucher;
+package com.example.shose.server.util.expiredvoucher;
 /*
  *  @author diemdz
  */
