@@ -545,7 +545,7 @@ const VoucherManagement = () => {
         title={
           showDetail === true
             ? "Chi tiết khuyễn mại"
-            : "Thêm hoặc cập nhập khuyến mại"
+            : id ? " Cập nhập khuyến mại" : "Thêm khuyến mại"
         }
         visible={modal}
         onCancel={closeModal}
@@ -579,6 +579,7 @@ const VoucherManagement = () => {
                   style={{
                     display: field.hidden && !showDetail ? "none" : "block",
                   }}
+                
                 >
                   {field.type === "number" && (
                     <InputNumber
@@ -593,6 +594,7 @@ const VoucherManagement = () => {
                         }
                       }}
                       min="1"
+                     
                     />
                   )}
                   {field.type === "date" &&
