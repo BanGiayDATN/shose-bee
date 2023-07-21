@@ -29,6 +29,10 @@ function CreateBill() {
   const user = useSelector((state) => state.bill.billWaitProduct.user);
   const vouchers = useSelector((state) => state.bill.billWaitProduct.vouchers);
 
+  var [provinces, setProvince] = useState([])
+  var [districts, setDistricts] = useState([])
+  var [Ward, setWards] = useState([])
+
   const [bill, setBill] = useState({
     phoneNumber: "",
     address: "",
@@ -49,11 +53,10 @@ function CreateBill() {
 
 
 
-  // useEffect(() => {
-  //   BillApi.getAllBillWait().then((res) => {
-  //     dispatch(getAllBillWait(res.data.data));
-  //   });
-  // }, []);
+  useEffect(() => {
+   
+
+  }, []);
 
   
   //  begin voucher 
@@ -198,7 +201,7 @@ function CreateBill() {
         </Row>
         <Row style={{ width: "100%" }}>
           {user != null ? (
-            <Row style={{marginLeft: "10px", width: "100%"}}>
+            <Row style={{marginLeft: "20px", width: "100%"}}>
               <Row style={{ width: "100%", marginBottom: " 20px" }}>
                 <Col span={5}>Tên khách hàng: </Col>
                 <Col span={19}>{}</Col>
@@ -213,7 +216,7 @@ function CreateBill() {
               </Row>
             </Row>
           ) : (
-            <div style={{marginLeft: "10px", marginBottom: " 20px"}}>Tên khách hàng:         <span style={{backgroundColor: "#ccc", padding: "5px", marginLeft: "30px"}}>khách lẻ</span></div>
+            <div style={{marginLeft: "20px", marginBottom: " 20px"}}>Tên khách hàng:         <span style={{backgroundColor: "#ccc", padding: "5px", marginLeft: "30px", borderRadius: '50px'}}>khách lẻ</span></div>
           )}
         </Row>
       </Row>
