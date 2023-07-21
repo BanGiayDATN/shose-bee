@@ -61,13 +61,23 @@ function CreateBill() {
 
   
   //  begin voucher 
-
+  const [voucher, setVoucher] = useState({
+    idVoucher: "",
+    beforPrice: 0,
+    afterPrice: 0,
+    discountPrice: 0
+  })
  // dispatch(addVoucherBillWait(res.data.data));
 
   // end voucher  
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
+  const [product, setProduct] = useState({
+    idProduct: "",
+    quantity: 0,
+    price: 0
+  })
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
   };

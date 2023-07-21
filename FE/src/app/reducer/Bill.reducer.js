@@ -26,7 +26,17 @@ const billSlice = createSlice({
   },
   reducers: {
     addProductBillWait: (state, action) => {
-      state.billWaitProduct.value.unshift(action.payload);
+      var index = state.billWaitProduct.value.findIndex(
+        (item) => item.status == action.payload.idProduct
+      );
+      if(index == -1){
+        state.billWaitProduct.value.unshift(action.payload);
+      }else{
+        var item = state.billWaitProduct.value[index]
+        item.quantity = action.payload.quantity + item.quantity
+        state.billWaitProduct.value.slice(index, 1, item);
+      }
+
     },
     addUserBillWait: (state, action) => {
       state.billWaitProduct.user = (action.payload);
