@@ -23,11 +23,9 @@ public abstract class BaseVoucherRequest {
 
     private Integer quantity;
 
+    private Long startDate;
 
-    private String startDate;
-
-
-    private String endDate;
+    private Long endDate;
 
     private Status status;
 }
