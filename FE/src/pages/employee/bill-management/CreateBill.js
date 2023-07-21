@@ -26,7 +26,8 @@ function CreateBill() {
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
 
-  const user = null;
+  const user = useSelector((state) => state.bill.billWaitProduct.user);
+  const vouchers = useSelector((state) => state.bill.billWaitProduct.vouchers);
 
   const [bill, setBill] = useState({
     phoneNumber: "",
@@ -54,6 +55,13 @@ function CreateBill() {
   //   });
   // }, []);
 
+  
+  //  begin voucher 
+
+ // dispatch(addVoucherBillWait(res.data.data));
+
+  // end voucher  
+
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
   const showModalProduct = (e) => {
@@ -65,6 +73,8 @@ function CreateBill() {
   const handleCancelProduct = () => {
     setIsModalProductOpen(false);
   };
+   // dispatch(addProductBillWait(res.data.data));
+
   //  end modal product
 
   // begin modal Account
@@ -78,6 +88,9 @@ function CreateBill() {
   const handleCancelAccount = () => {
     setIsModalAccountOpen(false);
   };
+
+  // dispatch(addUserBillWait(res.data.data));
+
   //  end modal Account
 
   const columns = [

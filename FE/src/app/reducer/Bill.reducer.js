@@ -12,6 +12,8 @@ const billSlice = createSlice({
     },
     billWaitProduct: {
       value: [],
+      user: null,
+      vouchers: []
     },
     bill: {
       value: {},
@@ -25,6 +27,12 @@ const billSlice = createSlice({
   reducers: {
     addProductBillWait: (state, action) => {
       state.billWaitProduct.value.unshift(action.payload);
+    },
+    addUserBillWait: (state, action) => {
+      state.billWaitProduct.user = (action.payload);
+    },
+    addVoucherBillWait: (state, action) => {
+      state.billWaitProduct.vouchers.unshift(action.payload);
     },
     addBills: (state, action) => {
       state.bills.value = [...action.payload];
@@ -81,7 +89,9 @@ export const {
   addBillHistory,
   addProductBillWait,
   getPaymentsMethod,
-  addPaymentsMethod
+  addPaymentsMethod,
+  addUserBillWait,
+  addVoucherBillWait
 } = billSlice.actions;
 export default billSlice.reducer;
 export const GetBill = (state) => state.bill;
