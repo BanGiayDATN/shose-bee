@@ -77,6 +77,7 @@ function BillManagement() {
       type: -1,
       page: 0,
     });
+    setStatus([]);
     //   BillApi.fetchAll(fillter).then((res) => {
     //     dispatch(getAllBill(res.data.data));
     //   });
@@ -227,6 +228,7 @@ function BillManagement() {
               users={users}
               employess={employees}
               onChangeStatusBillInFillter={onChangeStatusBillInFillter}
+              status={status}
             />
           </div>
         </div>

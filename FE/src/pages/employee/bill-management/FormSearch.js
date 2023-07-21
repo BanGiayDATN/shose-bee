@@ -40,6 +40,7 @@ function FormSearch({
   onChangeStatusBillInFillter,
   users,
   employess,
+  status
 }) {
   const { Option } = Select;
   const handleChange = (value) => {
@@ -48,15 +49,12 @@ function FormSearch({
     });
     onChangeStatusBillInFillter(arr);
   };
-  console.log(users);
-
-  // begin check outslide
   const { RangePicker } = DatePicker;
 
   return (
     <div>
       <div>
-        <Row style={{ marginTop: "10px" }}>
+        <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>
               <Col span={6} className="text">
@@ -74,7 +72,7 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row>
+            <Row style={{marginLeft: "15px"}}>
               <Col span={6} className="text">
                 {" "}
                 Số điện thoại:
@@ -92,7 +90,7 @@ function FormSearch({
             </Row>
           </Col>
         </Row>
-        <Row style={{ marginTop: "10px" }}>
+        <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>
               <Col span={6} className="text">
@@ -132,7 +130,7 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row>
+            <Row style={{marginLeft: "15px"}}>
               <Col span={6} className="text">
                 {" "}
                 Ngày thanh toán:
@@ -176,7 +174,7 @@ function FormSearch({
             </Row>
           </Col>
         </Row>
-        <Row style={{ marginTop: "10px" }}>
+        <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>
               <Col span={6} className="text">
@@ -203,7 +201,7 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row>
+            <Row style={{marginLeft: "15px"}}>
               <Col span={6} className="text">
                 {" "}
                 Khách hàng:
@@ -228,7 +226,7 @@ function FormSearch({
             </Row>
           </Col>
         </Row>
-        <Row style={{ marginTop: "10px" }}>
+        <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row className="text">Trạng thái: </Row>
             <Row>
@@ -239,6 +237,8 @@ function FormSearch({
                 defaultValue={fillter.status}
                 onChange={(value) => handleChange(value)}
                 optionLabelProp="label"
+                allowClear
+                value={status}
               >
                 {data.map((item, index) => (
                   <Option value={item.id} label={item.name} key={index}>
@@ -249,7 +249,7 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row>
+            <Row style={{marginLeft: "15px"}}>
               <Col span={6} className="text">
                 Phương thức:
               </Col>
