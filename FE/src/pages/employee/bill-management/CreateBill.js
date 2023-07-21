@@ -41,7 +41,8 @@ function CreateBill() {
     totalMoney: 0,
     note: "",
     moneyShip: 0,
-    billDetailRequests: listProduct
+    billDetailRequests: listProduct,
+    vouchers: vouchers
   });
   const navigate = useNavigate();
   const orderBill = (e) => {
