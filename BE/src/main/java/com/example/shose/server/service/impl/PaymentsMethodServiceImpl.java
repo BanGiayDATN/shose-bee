@@ -56,13 +56,14 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
         billHistory.setStatusBill(bill.get().getStatusBill());
-        billHistory.setActionDescription("");
+        billHistory.setActionDescription(request.getActionDescription());
 
         billHistoryRepository.save(billHistory);
         billRepository.save(bill.get());
 
         PaymentsMethod paymentsMethod = formUtils.convertToObject(PaymentsMethod.class, request);
         paymentsMethod.setBill(bill.get());
+        paymentsMethod.setDescription(request.getActionDescription());
         return paymentsMethodRepository.save(paymentsMethod);
     }
 }

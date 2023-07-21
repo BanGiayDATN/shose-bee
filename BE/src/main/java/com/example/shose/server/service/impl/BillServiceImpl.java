@@ -16,12 +16,15 @@ import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Voucher;
+import com.example.shose.server.entity.VoucherDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
+import com.example.shose.server.repository.AccountVoucherRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
@@ -29,6 +32,8 @@ import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
+import com.example.shose.server.repository.VoucherDetailRepository;
+import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.FormUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -71,6 +76,13 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private PaymentsMethodRepository paymentsMethodRepository;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
+
+    @Autowired
+    private VoucherDetailRepository voucherDetailRepository;
+
 
     private FormUtils formUtils = new FormUtils();
 
@@ -148,11 +160,26 @@ public class BillServiceImpl implements BillService {
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-            if(productDetail.get().getQuantity() < billDetailRequest.getQuantity()){
+            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
             }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
+
+            request.getVouchers().forEach(voucher -> {
+                Optional<Voucher> optional = voucherRepository.findById(voucher.getIdVoucher());
+                if (!optional.isPresent()) {
+                    throw new RestApiException(Message.NOT_EXISTS);
+                }
+                if (optional.get().getQuantity() <= 0 && optional.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
+                    throw new RestApiException(Message.VOUCHER_NOT_USE);
+                }
+                optional.get().setQuantity(optional.get().getQuantity() - 1);
+                voucherRepository.save(optional.get());
+
+                VoucherDetail voucherDetail = VoucherDetail.builder().voucher(optional.get()).bill(bill).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
+                voucherDetailRepository.save(voucherDetail);
+            });
 
             productDetail.get().setQuantity(billDetailRequest.getQuantity());
             productDetailRepository.save(productDetail.get());
@@ -208,16 +235,16 @@ public class BillServiceImpl implements BillService {
         }
         if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-        }else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
+        } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
-        }else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
+        } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
             bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
-            if(bill.get().getTotalMoney().compareTo(new BigDecimal(request.getTotalMoney())) > 0){
-                throw new RestApiException(Message.ERROR_TOTALMONEY);
-            }
+//            if(bill.get().getTotalMoney().compareTo(new BigDecimal(request.getTotalMoney())) > 0){
+//                throw new RestApiException(Message.ERROR_TOTALMONEY);
+//            }
             PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
             paymentsMethodRepository.save(paymentsMethod);
-        }else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
+        } else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
         BillHistory billHistory = new BillHistory();

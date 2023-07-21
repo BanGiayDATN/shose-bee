@@ -18,7 +18,8 @@ public enum Message {
     ACCOUNT_NOT_PERMISSION("Tài khoản không có quyền tạo hóa đơn"),
     BILL_NOT_REFUND("Hóa đơn không thể trả hàng"),
     ERROR_QUANTITY("Số lượng không đủ"),
-    ERROR_TOTALMONEY("Tiền trả phải lớn hơn hoặc bằng phải trả");
+    ERROR_TOTALMONEY("Tiền trả phải lớn hơn hoặc bằng phải trả"),
+    VOUCHER_NOT_USE("không thể sử dụng voucher");
 
 
 

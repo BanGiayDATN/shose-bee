@@ -1,6 +1,7 @@
 package com.example.shose.server.dto.request.bill;
 
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
+import com.example.shose.server.dto.request.voucherdetail.CreateVoucherDetailRequest;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;
@@ -34,5 +35,7 @@ public class CreateBillOfflineRequest {
     private String moneyShip;
 
     private List<CreateBillDetailRequest> billDetailRequests;
+
+    private List<CreateVoucherDetailRequest> vouchers;
 
 }
