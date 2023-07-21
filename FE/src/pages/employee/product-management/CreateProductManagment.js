@@ -5,9 +5,9 @@ import {
   Button,
   Col,
   Form,
-  Image,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
   Space,
@@ -39,7 +39,8 @@ import {
 } from "../../../app/reducer/Category.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
-import { UploadOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -63,6 +64,7 @@ const CreateProductManagment = () => {
     setModalAddCategory(false);
   };
 
+  const [productDetail, setProductDetail] = useState({});
   const [listMaterial, setListMaterial] = useState([]);
   const [listCategory, setListCategory] = useState([]);
   const [listBrand, setListBrand] = useState([]);
@@ -116,6 +118,7 @@ const CreateProductManagment = () => {
   const onFinish = (values) => {
     console.log("Submitted values:", values);
     // Xử lý dữ liệu sau khi biểu mẫu được gửi đi
+    setProductDetail(values);
   };
 
   const handleSearch = (value) => {
@@ -164,6 +167,59 @@ const CreateProductManagment = () => {
       item.id === record.id ? { ...item, soLuong: item.soLuong + 1 } : item
     );
     setListSizeAdd(updatedListSole);
+  };
+
+  // ảnh
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [fileList, setFileList] = useState([]);
+  const handleCancelImage = () => setPreviewOpen(false);
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
+  const handleUpload = () => {
+    const formData = new FormData();
+    fileList.forEach((file) => {
+      formData.append("multipartFiles", file.originFileObj);
+    });
+    formData.append("productDetail", productDetail);
+
+    axios
+      .post("http://localhost:8080/admin/image/upload", formData)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   useEffect(() => {
@@ -320,7 +376,7 @@ const CreateProductManagment = () => {
                   >
                     <Input
                       placeholder="Nhập giá sản phẩm"
-                      style={{ fontWeight: "bold" }}
+                      style={{ fontWeight: "bold", height: "40px" }}
                     />
                   </Form.Item>
                 </Col>
@@ -536,6 +592,7 @@ const CreateProductManagment = () => {
                   type="primary"
                   htmlType="submit"
                   className="form-submit-btn"
+                  onClick={handleUpload}
                 >
                   Xác nhận
                 </Button>
@@ -618,7 +675,31 @@ const CreateProductManagment = () => {
           </span>
         </div>
 
-        <div style={{ marginTop: "25px" }}></div>
+        <div style={{ marginTop: "25px" }}>
+          <Upload
+            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            listType="picture-card"
+            fileList={fileList}
+            onChange={handleChange}
+            onPreview={handlePreview}
+          >
+            {fileList.length >= 8 ? null : uploadButton}
+          </Upload>
+          <Modal
+            open={previewOpen}
+            title={previewTitle}
+            footer={null}
+            onCancel={handleCancelImage}
+          >
+            <img
+              alt="example"
+              style={{
+                width: "100%",
+              }}
+              src={previewImage}
+            />
+          </Modal>
+        </div>
       </div>
     </>
   );

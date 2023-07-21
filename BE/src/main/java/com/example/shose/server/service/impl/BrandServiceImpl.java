@@ -35,7 +35,9 @@ public class BrandServiceImpl implements BrandService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Brand add = Brand.builder().name(req.getName()).status(req.getStatus()).build();
+        Brand add = new Brand();
+        add.setName(req.getName());
+        add.setStatus(req.getStatus());
         return brandRepository.save(add);
     }
 
