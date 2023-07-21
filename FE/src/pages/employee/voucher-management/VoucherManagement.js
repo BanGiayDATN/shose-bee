@@ -138,19 +138,7 @@ const VoucherManagement = () => {
       setFormErrors(errors);
       return; 
     }
-    // if (formData.startDate && formData.endDate) {
-     
-    //   if (formData.startDate > formData.endDate) {
-    //     setFormErrors({
-    //       ...formErrors,
-    //       endDate:"Ngày kết thúc phải lớn hơn ngày bắt đầu!"
-    //   })
-    //       // toast.success("Ngày bắt đầu phải nhỏ hơn ngày két thúc!", {
-    //       //   autoClose: 5000,
-    //       // });
-    //   }
-    //   return;
-    // }
+   
     if (!id) {
       VoucherApi.create(convertToLong()).then((res) => {
         dispatch(CreateVoucher(res.data.data));
@@ -432,12 +420,13 @@ const VoucherManagement = () => {
         {" "}
         <FontAwesomeIcon icon={faKaaba} /> Quản lý khuyến mại
       </h1>
+     
+      <div className="form-search">
       <h1>
         {" "}
         <FontAwesomeIcon icon={faFilter} /> Bộ lọc
       </h1>
       <hr></hr>
-      <div className="form-search">
         <div className="row">
           {fieldsSearch.map((field, index) => {
             return (
@@ -524,7 +513,7 @@ const VoucherManagement = () => {
           className="button-add"
           onClick={openModal}
         >
-          Thêm +
+          + Thêm
         </Button>
         <div className="voucher-table">
           <Table
@@ -675,7 +664,7 @@ const VoucherManagement = () => {
             {showDetail === false ? (
               <Popconfirm
                 title="Thông báo"
-                description="Bạn có chắc chắn muốn thêm không ?"
+                description={id ? "Bạn có chắc chắn muốn cập nhập không ?" :"Bạn có chắc chắn muốn thêm không ?"}
                 onConfirm={() => {
                   handleSubmit(id);
                 }}

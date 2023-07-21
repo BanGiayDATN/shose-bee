@@ -58,8 +58,5 @@ public class VoucherRestController {
 
         return new ResponseObject(voucherService.delete(id));
     }
-    @GetMapping("/a")
-    public ResponseObject ex(){
-        return new ResponseObject((voucherService.expiredVouccher()));
-    }
+
 }

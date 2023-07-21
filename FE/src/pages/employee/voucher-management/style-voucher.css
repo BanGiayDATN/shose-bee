@@ -30,7 +30,7 @@
     background-color:  #4987f3;
    color:#ffffff;
    margin-top: 20px;
-  
+  margin-bottom: 30px;
   }
   /* .even-row {
     background-color: #e1ebe2;
@@ -40,7 +40,7 @@
     background-color: #e8e6ee;
   } */
   .form-search {
-    padding: 30px;
+    padding: 10px;
     margin-bottom:50px;
     background-color: #fcfbfb;
   }
@@ -58,7 +58,7 @@
     align-items: center;
     margin-bottom: 10px;
     flex-wrap: wrap;
-    
+    margin-top: 40px;
   }
 .reset-form-search{
   display: flex;
