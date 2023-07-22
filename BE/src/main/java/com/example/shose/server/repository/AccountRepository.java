@@ -2,7 +2,9 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
+import com.example.shose.server.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,10 +16,10 @@ import java.util.List;
  * @author Nguyễn Vinh
  */
 @Repository
-public interface AccountRepository extends JpaRepository<Account,String> {
+public interface AccountRepository extends JpaRepository<Account, String> {
 
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email")
-    Account getOneByEmail (@Param("email") String email);
+    Account getOneByEmail(@Param("email") String email);
 
     @Query(value = """
              SELECT ac.id, us.full_name FROM account ac
@@ -25,5 +27,14 @@ public interface AccountRepository extends JpaRepository<Account,String> {
                         WHERE roles IN (0,2)
             """, nativeQuery = true)
     List<SimpleEmployeeResponse> getAllSimpleEntityEmployess();
+
+    @Modifying
+    @Query("UPDATE Account a SET a.password = :password WHERE a.user.id = :id")
+    void updatePasswordByUserId(@Param("id") String id, @Param("password") String password);
+
+    @Modifying
+    @Query("UPDATE Account a SET a.email = :email WHERE a.user.id = :id")
+    void updateEmailByUserId(@Param("id") String id, @Param("email") String email);
+
 
 }

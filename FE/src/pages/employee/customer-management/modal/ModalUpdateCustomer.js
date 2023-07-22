@@ -4,24 +4,25 @@ import moment from "moment";
 import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AccountApi } from "../../../../api/employee/account/account.api";
-import { UpdateAccount } from "../../../../app/reducer/Account.reducer";
+import { CustomerApi } from "../../../../api/employee/account/customer.api";
+import { UpdateCustomer } from "../../../../app/reducer/Customer.reducer";
 import { useParams, useNavigate } from "react-router-dom";
 import "../style-account.css";
 import { faKaaba } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const { Option } = Select;
 
-const ModalUpdateAccount = ({ visible }) => {
+const ModalUpdateCustomer = ({ visible }) => {
   const { id } = useParams();
   const [form] = Form.useForm();
-  const [account, setAccount] = useState({});
+  const [customer, setCustomer] = useState({});
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const getOne = () => {
     if (id != null && id !== "") {
-      AccountApi.getOne(id).then((res) => {
-        setAccount(res.data.data);
+      CustomerApi.getOne(id).then((res) => {
+        setCustomer(res.data.data);
         form.setFieldsValue({
           ...res.data.data,
           dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
@@ -36,7 +37,7 @@ const ModalUpdateAccount = ({ visible }) => {
     }
     form.resetFields();
     return () => {
-      setAccount({});
+      setCustomer({});
     };
   }, [id, visible]);
 
@@ -61,10 +62,10 @@ const ModalUpdateAccount = ({ visible }) => {
           dateOfBirth: moment(values.dateOfBirth).valueOf(),
         };
         form.resetFields();
-        AccountApi.update(id, updatedValues).then((res) => {
-          dispatch(UpdateAccount(res.data.data));
+        CustomerApi.update(id, updatedValues).then((res) => {
+          dispatch(UpdateCustomer(res.data.data));
           toast.success("Cập nhật thành công");
-          navigate("/staff-management");
+          navigate("/customerr-management");
         });
       })
       .catch((error) => {
@@ -74,7 +75,7 @@ const ModalUpdateAccount = ({ visible }) => {
   };
 
   const handleCancel = () => {
-    navigate("/staff-management");
+    navigate("/customerr-management");
   };
   const validateAge = (rule, value) => {
     if (value) {
@@ -93,7 +94,7 @@ const ModalUpdateAccount = ({ visible }) => {
     <div>
       <div className="title_account">
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
-        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản nhân viên</span>
+        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản khách hàng</span>
       </div>
       <div className="filter">
         <div
@@ -113,21 +114,21 @@ const ModalUpdateAccount = ({ visible }) => {
         <div className="title_add">
           <Form form={form} layout="vertical">
             <Form.Item
-              label="Tên nhân viên"
+              label="Tên khách hàng"
               name="fullName"
               rules={[
-                { required: true, message: "Vui lòng nhập tên nhân viên" },
-                { max: 30, message: "Tên nhân viên tối đa 30 ký tự" },
+                { required: true, message: "Vui lòng nhập tên khách hàng" },
+                { max: 30, message: "Tên khách hàng tối đa 30 ký tự" },
               ]}
             >
-              <Input placeholder="Tên nhân viên" />
+              <Input placeholder="Tên khách hàng" />
             </Form.Item>
             <Form.Item
               label="Email"
               name="email"
               rules={[
                 { required: true, message: "Vui lòng nhập email" },
-                { max: 30, message: "Email tối đa 30 ký tự" },
+                { max: 20, message: "Email tối đa 20 ký tự" },
                 {
                   pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
                   message: "Email không đúng định dạng",
@@ -146,6 +147,7 @@ const ModalUpdateAccount = ({ visible }) => {
             >
               <Input type="password" placeholder="Mật khẩu" />
             </Form.Item>
+
             <Form.Item
               label="Số điện thoại"
               name="phoneNumber"
@@ -169,6 +171,13 @@ const ModalUpdateAccount = ({ visible }) => {
               ]}
             >
               <Input type="date" />
+            </Form.Item>
+            <Form.Item
+              label="Điểm"
+              name="points"
+              rules={[{ required: true, message: "Vui lòng nhập điểm" }]}
+            >
+              <Input type="number" placeholder="Điểm" />
             </Form.Item>
             <Form.Item
               label="Trạng thái"
@@ -197,5 +206,4 @@ const ModalUpdateAccount = ({ visible }) => {
     </div>
   );
 };
-
-export default ModalUpdateAccount;
+export default ModalUpdateCustomer;

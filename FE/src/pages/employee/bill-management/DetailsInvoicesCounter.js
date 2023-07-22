@@ -11,7 +11,7 @@ import {
   getCity,
   getDistrict,
   getWard,
-} from "../../../app/reducer/Address.reducer";
+} from "../../../app/reducer/address.reducer";
 import Search from "antd/es/input/Search";
 
 function DetailsInvoicesCounter({ detailBill }) {
@@ -215,7 +215,7 @@ function DetailsInvoicesCounter({ detailBill }) {
             <Col span={12}>
               {" "}
               <label class="switch" for="checkbox">
-                <input type="checkbox" id="checkbox" /> 
+                <input type="checkbox" id="checkbox" />
                 <div class="slider round"></div>
               </label>{" "}
             </Col>
