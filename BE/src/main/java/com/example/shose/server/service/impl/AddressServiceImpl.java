@@ -62,7 +62,7 @@ public class AddressServiceImpl implements AddressService {
         Address address = optional.get();
         address.setLine(req.getLine());
         address.setCity(req.getCity());
-        address.setProvince(req.getCity());
+        address.setProvince(req.getProvince());
         address.setCountry(req.getCountry());
         address.setUser(user.get());
         return addressRepository.save(address);
