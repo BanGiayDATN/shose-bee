@@ -157,7 +157,7 @@ const ProductManagement = () => {
         <img
           src={text}
           alt="Ảnh sản phẩm"
-          style={{ width: "130px", borderRadius: "20px", height: "130px" }}
+          style={{ width: "130px", borderRadius: "20px", height: "120px" }}
         />
       ),
     },
@@ -165,13 +165,11 @@ const ProductManagement = () => {
       title: "Tên Sản Phẩm",
       dataIndex: "nameProduct",
       key: "nameProduct",
-      sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
     },
     {
       title: "Giá ",
       dataIndex: "price",
       key: "price",
-      sorter: (a, b) => a.price - b.price,
       render: (text) => formatCurrency(text),
     },
     {
@@ -484,7 +482,7 @@ const ProductManagement = () => {
             dataSource={listProduct}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 5 }}
+            pagination={{ pageSize: 3 }}
             className="category-table"
           />
         </div>
