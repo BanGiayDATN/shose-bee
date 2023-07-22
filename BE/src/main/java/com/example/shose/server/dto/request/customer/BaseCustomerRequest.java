@@ -1,4 +1,4 @@
-package com.example.shose.server.dto.request.employee;
+package com.example.shose.server.dto.request.customer;
 
 import com.example.shose.server.infrastructure.constant.Status;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class BaseEmployeeRequest {
+public abstract class BaseCustomerRequest {
     private String fullName;
 
     private Long dateOfBirth;

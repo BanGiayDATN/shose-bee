@@ -27,6 +27,9 @@ public interface EmployeeResponse {
     @Value("#{target.avata}")
     String getAvata();
 
+    @Value("#{target.points}")
+    String getPoints();
+
     @Value("#{target.phoneNumber}")
     String getPhoneNumber();
 
@@ -45,8 +48,8 @@ public interface EmployeeResponse {
     @Value("#{target.fullName}")
     String getFullName();
 
-    @Value("#{target.passWord}")
-    String getPassWord();
+    @Value("#{target.password}")
+    String getPassword();
 
     @Value("#{target.gender}")
     Boolean getGender();

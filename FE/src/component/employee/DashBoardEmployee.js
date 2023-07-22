@@ -132,14 +132,21 @@ const DashBoardEmployee = ({ children }) => {
               <Link to="/material-management">Chất Liệu</Link>
             </Menu.Item>
           </SubMenu>
-          <Menu.Item
+
+          <SubMenu
             key="7"
             icon={
               <FontAwesomeIcon icon={faUserGroup} style={{ color: "white" }} />
             }
+            title="Quản Lý Tài Khoản"
           >
-            <Link to="/account-management">Quản Lý Tài Khoản</Link>
-          </Menu.Item>
+            <Menu.Item key="7.0">
+              <Link to="/staff-management">Nhân Viên</Link>
+            </Menu.Item>
+            <Menu.Item key="7.1">
+              <Link to="/customerr-management">Khách Hàng</Link>
+            </Menu.Item>
+          </SubMenu>
           <Menu.Item
             key="8"
             icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
