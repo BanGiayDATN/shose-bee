@@ -51,10 +51,11 @@ export class BillApi {
       });
     };
 
-    static createBillWait = () => {
+    static createBillWait = (data) => {
       return request({
         method: "POST",
-        url: `/admin/bill/offline`
+        url: `/admin/bill/offline`,
+        data: data
       });
     };
 

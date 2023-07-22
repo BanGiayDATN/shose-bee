@@ -10,20 +10,39 @@ const billSlice = createSlice({
       users: [],
       employees: [],
     },
-    billWait: {
+    billWaitProduct: {
       value: [],
+      user: null,
+      vouchers: []
     },
     bill: {
       value: {},
       billDetail: [],
       billHistory: [],
+      paymentsMethod: [],
       status: -1,
     },
+  
   },
   reducers: {
-    addbillWait: (state, action) => {
-      var billWait = { father: action.payload, children: [] };
-      state.billWait.value.unshift(billWait);
+    addProductBillWait: (state, action) => {
+      var index = state.billWaitProduct.value.findIndex(
+        (item) => item.status == action.payload.idProduct
+      );
+      if(index == -1){
+        state.billWaitProduct.value.unshift(action.payload);
+      }else{
+        var item = state.billWaitProduct.value[index]
+        item.quantity = action.payload.quantity + item.quantity
+        state.billWaitProduct.value.slice(index, 1, item);
+      }
+
+    },
+    addUserBillWait: (state, action) => {
+      state.billWaitProduct.user = (action.payload);
+    },
+    addVoucherBillWait: (state, action) => {
+      state.billWaitProduct.vouchers.unshift(action.payload);
     },
     addBills: (state, action) => {
       state.bills.value = [...action.payload];
@@ -53,6 +72,12 @@ const billSlice = createSlice({
     getBillHistory: (state, action) => {
       state.bill.billHistory = [...action.payload];
     },
+    getPaymentsMethod: (state, action) => {
+      state.bill.paymentsMethod = [...action.payload];
+    },
+    addPaymentsMethod: (state, action) => {
+      state.bill.paymentsMethod.unshift(action.payload);
+    },
     addStatusPresent: (state, action) => {
       state.bill.status = action.payload;
     },
@@ -72,7 +97,11 @@ export const {
   getBill,
   addStatusPresent,
   addBillHistory,
-  addbillWait,
+  addProductBillWait,
+  getPaymentsMethod,
+  addPaymentsMethod,
+  addUserBillWait,
+  addVoucherBillWait
 } = billSlice.actions;
 export default billSlice.reducer;
 export const GetBill = (state) => state.bill;
