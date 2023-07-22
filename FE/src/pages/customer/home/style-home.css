@@ -1,0 +1,42 @@
+.banner1 {
+  width: 100%;
+}
+
+.banner {
+  margin-bottom: 100px;
+}
+
+.choose-gender {
+  height: 320px;
+  width: 555px;
+}
+.type-gender {
+  position: relative;
+  height: 100%;
+}
+.button-choose-gender {
+  font-family: cursive;
+  border: 1px white solid;
+  background-color:white;
+  border-radius: 0px;
+  width: 120px;
+  height: 50px;
+  color: black;
+
+  bottom: 30%;
+
+  left: 30%;
+  transform: translate(-50%, -50%);
+  
+}
+.button-choose-gender:hover{
+    border: 1px white solid;
+    color: black;
+}
+.type-gender {
+  transition: transform 0.2s ease;
+}
+
+.type-gender:hover {
+  transform: scale(1.01);
+}

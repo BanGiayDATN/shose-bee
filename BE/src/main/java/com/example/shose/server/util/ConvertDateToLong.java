@@ -32,6 +32,7 @@ public class ConvertDateToLong {
         return milliseconds;
     }
 
+
     public String longToDate(Long milliseconds) {
         Date date = new Date(milliseconds);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");

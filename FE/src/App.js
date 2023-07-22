@@ -6,7 +6,7 @@ import NotAuthorized from "./pages/404";
 import AuthGuard from "./guard/AuthGuard";
 import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
-import Home from "./pages/Home";
+import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
 import Dashboard from "./pages/employee/dashboard/DashBoard";
@@ -51,7 +51,7 @@ function App() {
               </GuestGuard>
             }
           />
-           <Route
+          <Route
             path="/bill-management"
             element={
               <AuthGuard>
@@ -61,7 +61,7 @@ function App() {
               </AuthGuard>
             }
           />
-           <Route
+          <Route
             path="/bill-management/detail-bill/:id"
             element={
               <AuthGuard>
