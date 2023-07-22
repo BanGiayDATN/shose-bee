@@ -1,5 +1,4 @@
 import "./App.css";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppConfig } from "./AppConfig";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/403";
@@ -22,6 +21,7 @@ import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
 import AddressManagement from "./pages/customer/address-management/AddressManagement";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 function App() {
   return (

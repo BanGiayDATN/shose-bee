@@ -129,13 +129,61 @@
       margin-bottom: 10px;
   }
   .ant-upload-list-item-container{
-    width: 300px !important;
-    height: 300px !important;
+    width: 290px !important;
+    height: 290px !important;
   }
   .ant-upload.ant-upload-select{
-    width: 300px !important;
-    height: 300px !important;
+    width: 290px !important;
+    height: 290px !important;
   }
   .ant-select-selector{
     height: 40px !important;
   }
+  .custom-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 1; /* Make sure the button is on top of the image */
+  }
+  
+  .uploaded-file-container {
+    position: relative; /* Make sure the button and image are positioned relative to this container */
+  }
+  
+  .ant-upload-list-picture-card .ant-upload-list-item {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .ant-upload-list-picture-card .ant-upload-list-item-info {
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .ant-upload-list-picture-card .ant-upload-list-item-thumbnail {
+    width: 80px;
+    height: 80px;
+  }
+  /* Custom CSS for the buttons */
+.primary-btn {
+  background-color: blue;
+  color: white;
+  width: 100px;
+  border-radius: 15px;
+}
+
+.danger-btn {
+  background-color: rgb(168, 16, 110);
+  color: white;
+  width: 100px;
+  border-radius: 15px;
+}
+
+.default-btn {
+  background-color: gray;
+  color: black;
+  width: 100px;
+  border-radius: 15px;
+}
+
+  

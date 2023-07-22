@@ -32,11 +32,10 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             JOIN image i on detail.id = i.id_product_detail
             JOIN sole s on s.id = detail.id_sole
             JOIN material m on detail.id_material = m.id
-            JOIN size si on detail.id_size = si.id
             JOIN category c on detail.id_category = c.id
             JOIN brand b on detail.id_brand = b.id
             JOIN color col on detail.id_color = col.id
-            WHERE i.status LIKE '%DANG_SU_DUNG%'
+            WHERE i.status = true
             AND 
                 ( :#{#req.color} IS NULL 
                     OR :#{#req.color} LIKE '' 
@@ -54,10 +53,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                     OR :#{#req.product} LIKE '' 
                     OR p.name LIKE %:#{#req.product}% ) 
             AND 
-                ( :#{#req.sizeProduct} IS NULL 
-                    OR :#{#req.sizeProduct} LIKE '' 
-                    OR si.name LIKE :#{#req.sizeProduct} ) 
-            AND 
                 ( :#{#req.sole} IS NULL 
                     OR :#{#req.sole} LIKE '' 
                     OR s.name LIKE %:#{#req.sole}% )
@@ -73,7 +68,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 ( :#{#req.gender} IS NULL 
                     OR :#{#req.gender} LIKE '' 
                     OR detail.gender LIKE :#{#req.gender} )
-            GROUP BY detail.id, i.name, p.name,s.name,m.name,si.name,c.name,b.name,col.code, detail.price, detail.created_date, detail.gender, detail.status
             ORDER BY detail.last_modified_date DESC 
             """, nativeQuery = true)
     List<ProductDetailReponse> getAll(@Param("req") FindProductDetailRequest req);

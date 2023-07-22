@@ -6,6 +6,7 @@ import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -38,38 +39,34 @@ public class ProductDetail extends PrimaryEntity {
 
     private BigDecimal price;
 
-    private Integer quantity;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_category",referencedColumnName = "id")
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_product",referencedColumnName = "id")
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_brand",referencedColumnName = "id")
     private Brand brand;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_color",referencedColumnName = "id")
     private Color color;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_material",referencedColumnName = "id")
     private Material material;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sole",referencedColumnName = "id")
     private Sole sole;
 
-    @ManyToOne
-    @JoinColumn(name = "id_size",referencedColumnName = "id")
-    private Size size;
 
 }

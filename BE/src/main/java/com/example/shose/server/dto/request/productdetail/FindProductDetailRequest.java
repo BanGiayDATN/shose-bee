@@ -29,4 +29,6 @@ public class FindProductDetailRequest extends PageableRequest {
 
     private String gender;
 
+    private int size;
+
 }

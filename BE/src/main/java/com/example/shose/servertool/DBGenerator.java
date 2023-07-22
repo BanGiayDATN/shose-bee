@@ -147,24 +147,7 @@ public class DBGenerator implements CommandLineRunner {
         categoryRepository.save(category3);
         categoryRepository.save(category4);
 
-        Size size = Size.builder().name("44").status(Status.DANG_SU_DUNG).build();
-        Size size1 = Size.builder().name("43").status(Status.DANG_SU_DUNG).build();
-        Size size2 = Size.builder().name("42").status(Status.DANG_SU_DUNG).build();
-        Size size3 = Size.builder().name("41").status(Status.DANG_SU_DUNG).build();
-        Size size4 = Size.builder().name("40").status(Status.DANG_SU_DUNG).build();
-        Size size5 = Size.builder().name("39").status(Status.DANG_SU_DUNG).build();
-        Size size6 = Size.builder().name("38").status(Status.DANG_SU_DUNG).build();
-        Size size7 = Size.builder().name("37").status(Status.DANG_SU_DUNG).build();
-        Size size8 = Size.builder().name("36").status(Status.DANG_SU_DUNG).build();
-        sizeRepository.save(size);
-        sizeRepository.save(size1);
-        sizeRepository.save(size2);
-        sizeRepository.save(size3);
-        sizeRepository.save(size4);
-        sizeRepository.save(size5);
-        sizeRepository.save(size6);
-        sizeRepository.save(size7);
-        sizeRepository.save(size8);
+
 
         Material material = Material.builder().name("Da").status(Status.DANG_SU_DUNG).build();
         Material material1 = Material.builder().name("Thêu").status(Status.DANG_SU_DUNG).build();
@@ -250,52 +233,52 @@ public class DBGenerator implements CommandLineRunner {
         soleRepository.save(sole4);
 
         ProductDetail productDetail1 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product1).size(size2).quantity(5)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail2 = ProductDetail.builder()
-                .sole(sole2).category(category2).color(color2).material(material2).brand(brand2).product(product2).size(size3).quantity(5)
+                .sole(sole2).category(category2).color(color2).material(material2).brand(brand2).product(product2)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail3 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product3).size(size3).quantity(5)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product3)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail4 = ProductDetail.builder()
-                .sole(sole4).category(category3).color(color3).material(material3).brand(brand).product(product4).size(size4).quantity(5)
+                .sole(sole4).category(category3).color(color3).material(material3).brand(brand).product(product4)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail5 = ProductDetail.builder()
-                .sole(sole3).category(category4).color(color7).material(material2).brand(brand).product(product5).size(size4).quantity(5)
+                .sole(sole3).category(category4).color(color7).material(material2).brand(brand).product(product5)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail6 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product6).size(size4).quantity(5)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product6)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail7 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product7).size(size3).quantity(5)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product7)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail8 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product8).size(size2).quantity(5)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product8)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail9 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product9).size(size4).quantity(5)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product9)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail10 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product10).size(size2).quantity(5)
+                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product10)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
@@ -310,19 +293,38 @@ public class DBGenerator implements CommandLineRunner {
         productDetailRepository.save(productDetail9);
         productDetailRepository.save(productDetail10);
 
+        Size size = Size.builder().name(44).status(Status.DANG_SU_DUNG).quantity(13).productDetail(productDetail1).build();
+        Size size1 = Size.builder().name(43).status(Status.DANG_SU_DUNG).quantity(15).productDetail(productDetail2).build();
+        Size size2 = Size.builder().name(42).status(Status.DANG_SU_DUNG).quantity(34).productDetail(productDetail3).build();
+        Size size3 = Size.builder().name(41).status(Status.DANG_SU_DUNG).quantity(20).productDetail(productDetail4).build();
+        Size size4 = Size.builder().name(40).status(Status.DANG_SU_DUNG).quantity(11).productDetail(productDetail5).build();
+        Size size5 = Size.builder().name(39).status(Status.DANG_SU_DUNG).quantity(5).productDetail(productDetail5).build();
+        Size size6 = Size.builder().name(38).status(Status.DANG_SU_DUNG).quantity(10).productDetail(productDetail6).build();
+        Size size7 = Size.builder().name(37).status(Status.DANG_SU_DUNG).quantity(11).productDetail(productDetail7).build();
+        Size size8 = Size.builder().name(36).status(Status.DANG_SU_DUNG).quantity(14).productDetail(productDetail8).build();
+        sizeRepository.save(size);
+        sizeRepository.save(size1);
+        sizeRepository.save(size2);
+        sizeRepository.save(size3);
+        sizeRepository.save(size4);
+        sizeRepository.save(size5);
+        sizeRepository.save(size6);
+        sizeRepository.save(size7);
+        sizeRepository.save(size8);
+
 
         //image
-        Image image1 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
-        Image image2 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail2).status(Status.DANG_SU_DUNG).build();
-        Image image3 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail3).status(Status.DANG_SU_DUNG).build();
-        Image image4 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail4).status(Status.DANG_SU_DUNG).build();
-        Image image5 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail5).status(Status.DANG_SU_DUNG).build();
-        Image image6 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail6).status(Status.DANG_SU_DUNG).build();
-        Image image7 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail7).status(Status.DANG_SU_DUNG).build();
-        Image image8 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail8).status(Status.DANG_SU_DUNG).build();
-        Image image9 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail9).status(Status.DANG_SU_DUNG).build();
-        Image image10 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail10).status(Status.DANG_SU_DUNG).build();
-        Image image11 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail10).status(Status.DANG_SU_DUNG).build();
+        Image image1 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail1).status(true).build();
+        Image image2 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail2).status(true).build();
+        Image image3 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail3).status(true).build();
+        Image image4 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail4).status(true).build();
+        Image image5 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail5).status(true).build();
+        Image image6 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail6).status(true).build();
+        Image image7 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail7).status(true).build();
+        Image image8 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail8).status(true).build();
+        Image image9 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail9).status(true).build();
+        Image image10 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail10).status(true).build();
+        Image image11 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail10).status(true).build();
         imageRepository.save(image1);
         imageRepository.save(image2);
         imageRepository.save(image3);
