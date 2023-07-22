@@ -13,9 +13,11 @@ public class ExpiredVoucherScheduler {
     @Autowired
     private VoucherService voucherService;
 
-    @Scheduled(cron = "0 0 0 * * *") // Chạy vào mỗi ngày 00:00:00
+//    @Scheduled(cron = "0 0 0 * * *") // Chạy vào mỗi ngày 00:00:00
 //    @Scheduled(cron = "0 40 21 * * *") // Chạy vào lúc 9:40 PM mỗi ngày
+    @Scheduled(cron = "* * * * * *")
     public void updateExpiredVouchers() {
-        voucherService.expiredVouccher();
+        voucherService.startVoucher();
+        voucherService.expiredVoucher();
     }
 }
