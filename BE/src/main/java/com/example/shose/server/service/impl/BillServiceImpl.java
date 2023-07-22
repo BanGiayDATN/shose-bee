@@ -160,9 +160,9 @@ public class BillServiceImpl implements BillService {
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
-            }
+//            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
+//                throw new RestApiException(Message.ERROR_QUANTITY);
+//            }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
 
@@ -181,7 +181,7 @@ public class BillServiceImpl implements BillService {
                 voucherDetailRepository.save(voucherDetail);
             });
 
-            productDetail.get().setQuantity(billDetailRequest.getQuantity());
+//            productDetail.get().setQuantity(billDetailRequest.getQuantity());
             productDetailRepository.save(productDetail.get());
         });
         return bill;
