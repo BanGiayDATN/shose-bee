@@ -55,7 +55,7 @@ public class VoucherRestController {
 
     @DeleteMapping("/{id}")
     public ResponseObject delete(@PathVariable("id") String id) {
-
         return new ResponseObject(voucherService.delete(id));
     }
+
 }

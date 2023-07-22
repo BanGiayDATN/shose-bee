@@ -1,26 +1,51 @@
-import { Layout, Row, Col, Avatar, Badge } from "antd";
-import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+import "./style-header.css"
+import { FileSearchOutlined , ShoppingCartOutlined,UserOutlined,EnvironmentOutlined} from '@ant-design/icons';
+function SalesHeader() {
 
-const { Header } = Layout;
+    const fields =[
+        {
+            classIcon: "header-icon",
+            icon: <FileSearchOutlined /> ,
+            className: "title-header",
+            title: "Tra cứu đơn hàng"
+        },
+        {
+            classIcon: "header-icon",
+            icon: <EnvironmentOutlined /> ,
+            className: "title-header",
+            title: "Tìm kiếm cửa hàng"
+        },
+        {
+            classIcon: "header-icon",
+            icon: <UserOutlined /> ,
+            className: "title-header",
+            title: "Đăng nhập"
+        },
+        {
+            classIcon: "header-icon",
+            icon: <ShoppingCartOutlined /> ,
+            className: "title-header",
+            title: `Giỏ hàng (${1})`
+        },
+       
+    ]
+    return (
+        <div className="header">
+           
+           {fields.map((field,index) =>{
+           return(
+            <div key={index}>
+             <span className={field.classIcon}>{field.icon}</span>  
+            <Link to="#" className={field.className}> {field.title}</Link>
+           </div>
+           )
+           })}
+         
+        </div>
+        
+    );
+}
 
-const SalesHeader = () => {
-  return (
-    <Header className="sales-header">
-      <Row align="middle" justify="space-between">
-        <Col>
-          <div className="logo">Logo</div>
-        </Col>
-        <Col>
-          <div className="header-icons">
-            <Badge count={3}>
-              <ShoppingCartOutlined style={{ fontSize: "18px" }} />
-            </Badge>
-            <Avatar icon={<UserOutlined />} />
-          </div>
-        </Col>
-      </Row>
-    </Header>
-  );
-};
 
 export default SalesHeader;

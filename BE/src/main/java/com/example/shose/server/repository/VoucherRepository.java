@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,6 +55,12 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
                 (:#{#req.status} IS NULL 
                 or :#{#req.status} LIKE ''
                 or vo.status = :#{#req.status} )
+            and (
+                (:#{#req.startDate} IS NULL 
+                or :#{#req.startDate} LIKE ''
+                or :#{#req.endDate} IS NULL 
+                or :#{#req.endDate} LIKE '')           
+                or((vo.start_date>= :#{#req.startDate} and  vo.start_date<= :#{#req.endDate}) and(vo.end_date>= :#{#req.startDate} and vo.end_date<= :#{#req.endDate} )) )
             GROUP BY vo.id
             ORDER BY vo.last_modified_date DESC  
             """,
@@ -61,4 +68,8 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
     List<VoucherRespone> getAllVoucher( @Param("req") FindVoucherRequest req);
     @Query("SELECT vo FROM Voucher vo WHERE vo.code like %:code%")
     Voucher getByCode(@Param("code") String code);
+    @Query("SELECT vo FROM Voucher vo WHERE vo.endDate < :currentDate")
+    List<Voucher> findExpiredVouchers(@Param("currentDate") Long currentDate);
+    @Query("SELECT vo FROM Voucher vo WHERE vo.startDate = :currentDate")
+    List<Voucher> findStartVouchers(@Param("currentDate") Long currentDate);
 }

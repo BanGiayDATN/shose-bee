@@ -96,7 +96,7 @@ const DashBoardEmployee = ({ children }) => {
             <Link to="/product-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
           <Menu.Item
-            key="4"
+            key="5"
             icon={
               <FontAwesomeIcon
                 icon={faMoneyBill1Wave}
@@ -107,7 +107,7 @@ const DashBoardEmployee = ({ children }) => {
             <Link to="/bill-management">Quản Lý Hóa đơn</Link>
           </Menu.Item>
           <SubMenu
-            key="5"
+            key="6"
             icon={
               <FontAwesomeIcon
                 icon={faFileInvoiceDollar}
@@ -116,22 +116,23 @@ const DashBoardEmployee = ({ children }) => {
             }
             title="Quản Lý Sản Phẩm"
           >
-            <Menu.Item key="5.0">
+            <Menu.Item key="6.0">
               <Link to="/product-management">Sản Phẩm</Link>
             </Menu.Item>
-            <Menu.Item key="5.1">
+            <Menu.Item key="6.1">
               <Link to="/category-management">Thể Loại</Link>
             </Menu.Item>
-            <Menu.Item key="5.2">
+            <Menu.Item key="6.2">
               <Link to="/sole-management">Đế Giày</Link>
             </Menu.Item>
-            <Menu.Item key="5.3">
+            <Menu.Item key="6.3">
               <Link to="/brand-management">Thương Hiệu</Link>
             </Menu.Item>
-            <Menu.Item key="5.4">
+            <Menu.Item key="6.4">
               <Link to="/material-management">Chất Liệu</Link>
             </Menu.Item>
           </SubMenu>
+
           <SubMenu
             key="6"
             icon={
@@ -147,7 +148,7 @@ const DashBoardEmployee = ({ children }) => {
             </Menu.Item>
           </SubMenu>
           <Menu.Item
-            key="7"
+            key="8"
             icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
           >
             <Link to="/voucher-management">Khuyến Mại</Link>

@@ -11,6 +11,7 @@ import {
   Popconfirm,
   DatePicker,
 } from "antd";
+
 import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import {
   CreateVoucher,
@@ -30,8 +31,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import {  toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 dayjs.extend(utc);
 const VoucherManagement = () => {
   const dispatch = useAppDispatch();
@@ -45,7 +46,7 @@ const VoucherManagement = () => {
   const [showDetail, setShowDetail] = useState(false);
   const data = useAppSelector(GetVoucher);
 
-
+  
   useEffect(() => {
     if (data != null) {
       setList(data);
@@ -55,7 +56,12 @@ const VoucherManagement = () => {
   useEffect(() => {
     loadData();
   }, [showData, formDataSearch]);
+
+   
+  
+ 
   const openModal = () => {
+    setShowDetail(false);
     setShowData(true);
     setModal(true);
     console.log(formData);
@@ -71,9 +77,32 @@ const VoucherManagement = () => {
     setFormDataSearch({});
     loadData();
   };
+  const convertToLong =() => {
+    const convertedFormData = { ...formData };
+    if (formData.startDate) {
+      convertedFormData.startDate = dayjs(formData.startDate).unix() * 1000;
+    }
+    if (formData.endDate) {
+      convertedFormData.endDate = dayjs(formData.endDate).unix() * 1000;
+    }
+    return convertedFormData;
+  }
+  const convertToLongSearch =() => {
+    const convertedFormDataSearch = { ...formDataSearch };
+    if (formDataSearch.startDate) {
+      convertedFormDataSearch.startDate = dayjs(formDataSearch.startDate).unix() * 1000;
+    }
+    if (formDataSearch.endDate) {
+      convertedFormDataSearch.endDate = dayjs(formDataSearch.endDate).unix() * 1000;
+    }
+    return convertedFormDataSearch;
+  }
 
   const loadData = () => {
-    VoucherApi.fetchAll(formDataSearch).then(
+    
+  
+   
+    VoucherApi.fetchAll(convertToLongSearch()).then(
       (res) => {
         setList(res.data.data);
         dispatch(SetVoucher(res.data.data));
@@ -87,46 +116,44 @@ const VoucherManagement = () => {
   const handleSubmit = (id) => {
     console.log(formData);
     const isFormValid =
-      formData.code &&
       formData.name &&
       formData.quantity &&
       formData.value &&
       formData.startDate &&
       formData.endDate &&
-      formData.status;
+      formData.status &&
+      formData.startDate <formData.endDate
 
     if (!isFormValid) {
       openModal();
-      // Set form errors to display validation messages
+    
       const errors = {
-        code: !formData.code ? "Vui lòng nhập mã khuyễn mãi" : "",
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
         quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
         value: !formData.value ? "Vui lòng nhập giá giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        endDate: !formData.endDate ? "Vui lòng chọn ngày kết thúc" : "",
+        endDate: !formData.endDate ? "Vui lòng chọn ngày kết thúc" : formData.startDate >= formData.endDate ?"Ngày kết thúc phải lớn hơn ngày bắt đầu" :"",
         status: !formData.status ? "Vui lòng chọn trạng thái" : "",
       };
       setFormErrors(errors);
-      return; // Prevent submission
+      return; 
     }
-
+   
     if (!id) {
-      VoucherApi.create(formData).then((res) => {
+      VoucherApi.create(convertToLong()).then((res) => {
         dispatch(CreateVoucher(res.data.data));
         setShowData(false);
-        toast.success('Thêm thành công!', {
-          autoClose: 3000, 
+        toast.success("Thêm thành công!", {
+          autoClose: 5000,
         });
       });
     } else {
-      VoucherApi.update(id,formData
-      ).then((res) => {
+      VoucherApi.update(id, convertToLong()).then((res) => {
         dispatch(UpdateVoucher(res.data.data));
         setShowData(false);
         setId("");
-        toast.success('Cập nhập thành công!', {
-          autoClose: 3000, 
+        toast.success("Cập nhập thành công!", {
+          autoClose: 5000,
         });
       });
     }
@@ -134,6 +161,7 @@ const VoucherManagement = () => {
     setShowData(true);
     setFormData({});
     setModal(false);
+    console.log(showData);
   };
 
   const detailVoucher = (id) => {
@@ -149,6 +177,7 @@ const VoucherManagement = () => {
           startDate: dayjs(voucherData.startDate),
           endDate: dayjs(voucherData.endDate),
           status: voucherData.status,
+          createdDate: dayjs(voucherData.createdDate),
         });
 
         setModal(true);
@@ -164,14 +193,14 @@ const VoucherManagement = () => {
   const handleInputChangeSearch = (name, value) => {
     setFormDataSearch({ ...formDataSearch, [name]: value });
   };
-  const handleDetail = (id)=>{
+  const handleDetail = (id) => {
     setShowDetail(true);
-    detailVoucher(id)
-  }
-  const handleUpdate = (id)=>{
+    detailVoucher(id);
+  };
+  const handleUpdate = (id) => {
     setShowDetail(false);
-    detailVoucher(id)
-  }
+    detailVoucher(id);
+  };
   const columns = [
     {
       title: "STT",
@@ -180,13 +209,13 @@ const VoucherManagement = () => {
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Mã Voucher",
+      title: "Mã khuyến mại",
       dataIndex: "code",
       key: "code",
       sorter: (a, b) => a.code.localeCompare(b.code),
     },
     {
-      title: "Tên Voucher",
+      title: "Tên khuyến mại",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
@@ -198,7 +227,7 @@ const VoucherManagement = () => {
       sorter: (a, b) => a.quantity - b.quantity,
     },
     {
-      title: "Giá giảm",
+      title: "Giá trị giảm",
       dataIndex: "value",
       key: "value",
       sorter: (a, b) => a.value - b.value,
@@ -208,21 +237,21 @@ const VoucherManagement = () => {
       dataIndex: "startDate",
       key: "startDate",
       sorter: (a, b) => a.startDate - b.startDate,
-      render: (startDate) => dayjs(startDate).format("DD-MM-YYYY"),
+      render: (date) => dayjs(date).format("HH:mm:ss  DD-MM-YYYY "),
     },
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
       key: "endDate",
       sorter: (a, b) => a.endDate - b.endDate,
-      render: (endDate) => dayjs(endDate).format("DD-MM-YYYY"),
+      render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
       sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
-      render: (date) => dayjs(date).format("DD-MM-YYYY"),
+      render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
     },
     {
       title: "Trạng Thái",
@@ -247,8 +276,8 @@ const VoucherManagement = () => {
           <Button
             type="primary"
             title="Chi tiết thể loại"
-            style={{ backgroundColor: "#001529" }}
-            onClick={() =>handleDetail(record.id)}
+            style={{ backgroundColor: "#FF9900" }}
+            onClick={() => handleDetail(record.id)}
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
@@ -269,38 +298,45 @@ const VoucherManagement = () => {
     {
       name: "code",
       type: "text",
-      label: "Mã khuyễn mãi",
-      text: "mã khuyễn mãi",
+      label: "Mã khuyễn mại",
+      text: "mã khuyễn mại",
+      hidden: true,
+      class: "input-form",
     },
     {
       name: "name",
       type: "text",
-      label: "Tên khuyễn mãi",
-      text: "tên khuyễn mãi",
+      label: "Tên khuyễn mại",
+      text: "tên khuyễn mại",
+      class: "input-form",
     },
     {
       name: "quantity",
       type: "number",
       label: "Số lượng",
       text: "số lượng",
+      class: "input-form",
     },
     {
       name: "value",
       type: "number",
-      label: "Giá giảm",
-      text: "giá giảm",
+      label: "Giá trị giảm",
+      text: "giá trị giảm",
+      class: "input-form",
     },
     {
       name: "startDate",
       type: "date",
       label: "Ngày bắt đầu",
       text: "ngày bắt đầu",
+      class: "input-form",
     },
     {
       name: "endDate",
       type: "date",
       label: "Ngày kết thúc",
       text: "ngày kết thúc",
+      class: "input-form",
     },
     {
       name: "status",
@@ -311,32 +347,60 @@ const VoucherManagement = () => {
         { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
       ],
       text: "trạng thái",
+      class: "input-form",
+    },
+    {
+      name: "createdDate",
+      type: "date",
+      label: "Ngày tạo",
+      text: "ngày tạo",
+      hidden: true,
+      class: "input-form",
     },
   ];
+  
   const fieldsSearch = [
     {
       name: "code",
       type: "text",
-      label: "Mã khuyễn mãi",
+      label: "Mã khuyễn mại",
       class: "input-search",
+      placeholder:"Tìm kiếm"
     },
     {
       name: "name",
       type: "text",
-      label: "Tên khuyễn mãi",
+      label: "Tên khuyễn mại",
       class: "input-search",
+      placeholder:"Tìm kiếm"
     },
     {
       name: "quantity",
       type: "number",
       label: "Số lượng",
       class: "input-search",
+      placeholder:"Tìm kiếm"
     },
     {
       name: "value",
       type: "number",
-      label: "Giá giảm",
+      label: "Giá trị giảm",
       class: "input-search",
+      placeholder:"Tìm kiếm"
+    },
+    {
+      name: "startDate",
+      type: "date",
+      label: "Ngày bắt đầu sau",
+      class: "input-search",
+      placeholder:"Tìm kiếm"
+    },
+    {
+      name: "endDate",
+      type: "date",
+      label: "Ngày kết thúc trước",
+      class: "input-search",
+      placeholder:"Tìm kiếm"
     },
     {
       name: "status",
@@ -347,18 +411,25 @@ const VoucherManagement = () => {
         { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
       ],
       class: "input-search",
+      placeholder:"Tìm kiếm"
     },
   ];
   return (
     <div className="voucher">
-       <h1 className="title-voucher">Quản lý khuyến mãi</h1>
-      <h1>
+      <h1 className="title-voucher">
         {" "}
-        <FontAwesomeIcon icon={faFilter} /> Tìm kiếm khuyến mãi
+        <FontAwesomeIcon icon={faKaaba} /> Quản lý khuyến mại
       </h1>
-      <hr></hr>
+     
       <div className="form-search">
-        <div className="row">
+      <h3>
+       
+        <FontAwesomeIcon icon={faFilter} /> Bộ lọc
+      </h3>
+      <hr></hr>
+
+
+        <div className="row-search">
           {fieldsSearch.map((field, index) => {
             return (
               <div key={index}>
@@ -367,7 +438,7 @@ const VoucherManagement = () => {
                     <InputNumber
                       className={field.class}
                       name={field.name}
-                      placeholder={field.label}
+                      placeholder={field.placeholder}
                       value={formDataSearch[field.name] || ""}
                       onChange={(value) =>
                         handleInputChangeSearch(field.name, value)
@@ -375,18 +446,29 @@ const VoucherManagement = () => {
                       min="1"
                     />
                   )}
-
+                  {field.type === "date" &&
+                      <DatePicker
+                        className={field.class}
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        value={formDataSearch[field.name]}
+                        onChange={(value) => {
+                          handleInputChangeSearch(field.name, value);
+                        }}
+                      />
+                    }
+                    
                   {field.type === "select" && (
                     <Select
                       className={field.class}
                       name={field.name}
-                      placeholder={field.label}
+                      placeholder={field.placeholder}
                       value={formDataSearch[field.name] || ""}
                       onChange={(value) =>
                         handleInputChangeSearch(field.name, value)
                       }
                     >
-                      <Option value="">Chọn trạng thái</Option>
+                      <Option value="">Tất cả</Option>
                       {field.options.map((option, optionIndex) => (
                         <Option key={optionIndex} value={option.value}>
                           {option.label}
@@ -394,11 +476,11 @@ const VoucherManagement = () => {
                       ))}
                     </Select>
                   )}
-                  {field.type !== "select" && field.type !== "number" && (
+                  {field.type !== "date" &&field.type !== "select" && field.type !== "number" && (
                     <Input
                       className={field.class}
                       name={field.name}
-                      placeholder={field.label}
+                      placeholder={field.placeholder}
                       value={formDataSearch[field.name] || ""}
                       onChange={(e) =>
                         handleInputChangeSearch(field.name, e.target.value)
@@ -412,40 +494,57 @@ const VoucherManagement = () => {
         </div>
 
         <div className="reset-form-search">
-          <Button  title="Làm mới mục tìm kiếm" className="button-submit" onClick={resetFormSearch}>
+          <Button
+            title="Làm mới mục tìm kiếm"
+            className="button-submit"
+            onClick={resetFormSearch}
+          >
             Làm mới
           </Button>
         </div>
       </div>
-      <h1>
+      
+      <h3>
         {" "}
         <FontAwesomeIcon icon={faListAlt} /> Danh sách khuyến mãi{" "}
-      </h1>
+      </h3>
       <hr></hr>
       <div className="manager-voucher">
-        <Button  title="Thêm phiếu giảm giá" className="button-submit" onClick={openModal}>
-          Thêm +
+        <Button
+          title="Thêm phiếu giảm giá"
+          className="button-add"
+          onClick={openModal}
+        >
+          + Thêm
         </Button>
         <div className="voucher-table">
           <Table
             dataSource={list}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 5 ,
-              position: ["bottomCenter"]}}
-              rowClassName={(record, index) => index % 2 === 0 ? 'even-row' : 'odd-row'}
+            pagination={{ pageSize: 10 }}
+            rowClassName={(record, index) =>
+              index % 2 === 0 ? "even-row" : "odd-row"
+            }
           />
+         
         </div>
       </div>
 
       {/* modal */}
       <Modal
-        title="Thêm hoặc cập nhập"
+        title={
+          showDetail === true
+            ? "Chi tiết khuyễn mại"
+            : id ? " Cập nhập khuyến mại" : "Thêm khuyến mại"
+        }
         visible={modal}
         onCancel={closeModal}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
+        <hr></hr>
+        <br></br>
         <Form
           name="wrap"
           labelCol={{
@@ -460,7 +559,6 @@ const VoucherManagement = () => {
           style={{
             maxWidth: 600,
           }}
-          // initialValues={formData}
         >
           {fields.map((field, index) => {
             return (
@@ -469,30 +567,71 @@ const VoucherManagement = () => {
                   label={field.label}
                   validateStatus={formErrors[field.name] ? "error" : ""}
                   help={formErrors[field.name] || ""}
+                  style={{
+                    display: field.hidden && !showDetail ? "none" : "block",
+                  }}
+                
                 >
                   {field.type === "number" && (
                     <InputNumber
+                      className={field.class}
+                      readOnly={showDetail}
                       name={field.name}
                       placeholder={field.label}
                       value={formData[field.name] || ""}
-                      onChange={(value) => handleInputChange(field.name, value)}
+                      onChange={(value) => {
+                        if (!showDetail) {
+                          handleInputChange(field.name, value);
+                        }
+                      }}
                       min="1"
+                     
                     />
                   )}
-                  {field.type === "date" && (
-                    <DatePicker
-                      name={field.name}
-                      placeholder={field.label}
-                       value={formData[field.name]}
-                      onChange={(value) => handleInputChange(field.name, value)}
-                    />
-                  )}
-                  {field.type === "select" && (
-                    <Select
+                  {field.type === "date" &&
+                    (showDetail ? (
+                      <Input
+                        className={field.class}
+                        readOnly={true}
+                        name={field.name}
+                        placeholder={field.label}
+                        value={dayjs(formData[field.name]).format("DD-MM-YYYY")}
+                      />
+                    ) : (
+                      <DatePicker
+                        showTime 
+                        className={field.class}
+                        readOnly={showDetail}
+                        name={field.name}
+                        placeholder={field.label}
+                        value={formData[field.name]}
+                        onChange={(value) => {
+                          handleInputChange(field.name, value);
+                        }}
+                      />
+                     
+                    ))}
+                     {field.type === "select" &&
+                    (showDetail ? (
+                      <Input
+                        className={field.class}
+                        readOnly={true}
+                        name={field.name}
+                        placeholder={field.label}
+                        value={formData[field.name] === "DANG_SU_DUNG" ? "Đang sử dụng": "Không sử dụng"}
+                      />
+                    ) : (
+                      <Select
+                      className={field.class}
+                      readOnly={showDetail}
                       name={field.name}
                       placeholder={field.label}
                       value={formData[field.name] || ""}
-                      onChange={(value) => handleInputChange(field.name, value)}
+                      onChange={(value) => {
+                        if (!showDetail) {
+                          handleInputChange(field.name, value);
+                        }
+                      }}
                     >
                       <Option value="">Chọn trạng thái</Option>
                       {field.options.map((option, optionIndex) => (
@@ -501,17 +640,22 @@ const VoucherManagement = () => {
                         </Option>
                       ))}
                     </Select>
-                  )}
+                    ))}
+                 
                   {field.type !== "date" &&
                     field.type !== "select" &&
                     field.type !== "number" && (
                       <Input
+                        className={field.class}
+                        readOnly={showDetail}
                         name={field.name}
                         placeholder={field.label}
                         value={formData[field.name] || ""}
-                        onChange={(e) =>
-                          handleInputChange(field.name, e.target.value)
-                        }
+                        onChange={(e) => {
+                          if (!showDetail) {
+                            handleInputChange(field.name, e.target.value);
+                          }
+                        }}
                       />
                     )}
                 </Form.Item>
@@ -520,31 +664,34 @@ const VoucherManagement = () => {
           })}
 
           <Form.Item label=" ">
-            <Button  onClick={closeModal}>Hủy</Button>
-            {showDetail === false ?
-            <Popconfirm
-            title="Thông báo"
-            description="Bạn có chắc chắn muốn thêm không ?"
-            onConfirm={() => {
-              handleSubmit(id);
-            }}
-            okText="Có"
-            cancelText="Không"
-          >
-            <Button className="button-submit"  key="submit"  title={id ? "Cập nhập" : "Thêm"}>
-              {id ? "Cập nhập" : "Thêm"}
-            </Button>
-          </Popconfirm>
-         : ""
-           }
-            
-            
+            <Button onClick={closeModal}>Hủy</Button>
+            {showDetail === false ? (
+              <Popconfirm
+                title="Thông báo"
+                description={id ? "Bạn có chắc chắn muốn cập nhập không ?" :"Bạn có chắc chắn muốn thêm không ?"}
+                onConfirm={() => {
+                  handleSubmit(id);
+                }}
+                okText="Có"
+                cancelText="Không"
+              >
+                <Button
+                  className="button-submit"
+                  key="submit"
+                  title={id ? "Cập nhập" : "Thêm"}
+                >
+                  {id ? "Cập nhập" : "Thêm"}
+                </Button>
+              </Popconfirm>
+            ) : (
+              ""
+            )}
           </Form.Item>
         </Form>
       </Modal>
+
     </div>
   );
-  
 };
 
 export default VoucherManagement;

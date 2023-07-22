@@ -7,19 +7,14 @@ import com.example.shose.server.dto.request.voucher.CreateVoucherRequest;
 import com.example.shose.server.dto.request.voucher.FindVoucherRequest;
 import com.example.shose.server.dto.request.voucher.UpdateVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
-import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.Voucher;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.VoucherService;
-import com.example.shose.server.util.ConvertDateToLong;
+import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +24,12 @@ import java.util.Optional;
 public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
+
+    public static void main(String[] args) {
+        System.out.println(System.currentTimeMillis());
+
+    }
+
     @Override
     public List<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest) {
         return voucherRepository.getAllVoucher(findVoucherRequest);
@@ -38,17 +39,14 @@ public class VoucherServiceImpl implements VoucherService {
     public Voucher add(CreateVoucherRequest request) {
 
 
-        Voucher checkCode = voucherRepository.getByCode(request.getCode());
-        if (checkCode != null) {
-            throw new RestApiException(Message.CODE_EXISTS);
-        }
+        request.setCode(new RandomNumberGenerator().randomToString("KM"));
         Voucher voucher = Voucher.builder()
                 .code(request.getCode())
                 .name(request.getName())
                 .value(request.getValue())
                 .quantity(request.getQuantity())
-                .startDate(new ConvertDateToLong().dateToLong(request.getStartDate()))
-                .endDate(new ConvertDateToLong().dateToLong(request.getEndDate()))
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
                 .status(request.getStatus()).build();
         return voucherRepository.save(voucher);
     }
@@ -59,22 +57,17 @@ public class VoucherServiceImpl implements VoucherService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        Voucher checkCode = voucherRepository.getByCode(request.getCode());
-        if (checkCode != null ) {
-            throw new RestApiException(Message.CODE_EXISTS);
-        }
+
         Voucher voucher = optional.get();
         voucher.setCode(request.getCode());
         voucher.setName(request.getName());
         voucher.setValue(request.getValue());
         voucher.setQuantity(request.getQuantity());
-        voucher.setStartDate(new ConvertDateToLong().dateToLong(request.getStartDate()));
-        voucher.setEndDate(new ConvertDateToLong().dateToLong(request.getEndDate()));
+        voucher.setStartDate(request.getStartDate());
+        voucher.setEndDate(request.getEndDate());
         voucher.setStatus(request.getStatus());
         return voucherRepository.save(voucher);
     }
-
-
 
     @Override
     public Boolean delete(String id) {
@@ -89,13 +82,24 @@ public class VoucherServiceImpl implements VoucherService {
         return voucher;
     }
 
-    public static void main(String[] args) {
-//        CreateVoucherRequest request = new CreateVoucherRequest();
-//        request.setCode("1");
-//        request.setName("diem");
-//        request.setValue(BigDecimal.valueOf(1));
-//        request.setQuantity(1);
-//        request.setEndDate(new ConvertDateToLong().longToDate(new ConvertDateToLong().dateToLong("")));
-//        System.out.println(new ConvertDateToLong().dateToLong());
+    @Override
+    public List<Voucher> expiredVoucher() {
+        List<Voucher> expiredVouchers = voucherRepository.findExpiredVouchers(System.currentTimeMillis());
+
+        for (Voucher voucher : expiredVouchers) {
+            voucher.setStatus(Status.KHONG_SU_DUNG);
+            voucherRepository.save(voucher);
+        }
+        return expiredVouchers;
+    }
+
+    @Override
+    public List<Voucher> startVoucher() {
+        List<Voucher> startVouchers = voucherRepository.findStartVouchers(System.currentTimeMillis());
+        for (Voucher voucher : startVouchers) {
+            voucher.setStatus(Status.DANG_SU_DUNG);
+            voucherRepository.save(voucher);
+        }
+        return startVouchers;
     }
 }
