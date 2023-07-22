@@ -11,6 +11,7 @@ import {
   Popconfirm,
   DatePicker,
 } from "antd";
+
 import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import {
   CreateVoucher,
@@ -43,7 +44,6 @@ const VoucherManagement = () => {
   const [formDataSearch, setFormDataSearch] = useState({});
   const [showData, setShowData] = useState(true);
   const [showDetail, setShowDetail] = useState(false);
-
   const data = useAppSelector(GetVoucher);
 
   
@@ -237,21 +237,21 @@ const VoucherManagement = () => {
       dataIndex: "startDate",
       key: "startDate",
       sorter: (a, b) => a.startDate - b.startDate,
-      render: (date) => dayjs(date).format("DD-MM-YYYY"),
+      render: (date) => dayjs(date).format("HH:mm:ss  DD-MM-YYYY "),
     },
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
       key: "endDate",
       sorter: (a, b) => a.endDate - b.endDate,
-      render: (date) => dayjs(date).format("DD-MM-YYYY"),
+      render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
       sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
-      render: (date) => dayjs(date).format("DD-MM-YYYY"),
+      render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
     },
     {
       title: "Trạng Thái",
@@ -422,12 +422,14 @@ const VoucherManagement = () => {
       </h1>
      
       <div className="form-search">
-      <h1>
-        {" "}
+      <h3>
+       
         <FontAwesomeIcon icon={faFilter} /> Bộ lọc
-      </h1>
+      </h3>
       <hr></hr>
-        <div className="row">
+
+
+        <div className="row-search">
           {fieldsSearch.map((field, index) => {
             return (
               <div key={index}>
@@ -502,10 +504,10 @@ const VoucherManagement = () => {
         </div>
       </div>
       
-      <h1>
+      <h3>
         {" "}
         <FontAwesomeIcon icon={faListAlt} /> Danh sách khuyến mãi{" "}
-      </h1>
+      </h3>
       <hr></hr>
       <div className="manager-voucher">
         <Button
@@ -597,6 +599,7 @@ const VoucherManagement = () => {
                       />
                     ) : (
                       <DatePicker
+                        showTime 
                         className={field.class}
                         readOnly={showDetail}
                         name={field.name}
@@ -606,6 +609,7 @@ const VoucherManagement = () => {
                           handleInputChange(field.name, value);
                         }}
                       />
+                     
                     ))}
                      {field.type === "select" &&
                     (showDetail ? (

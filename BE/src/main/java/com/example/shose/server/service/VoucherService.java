@@ -20,5 +20,6 @@ public interface VoucherService {
 
     Boolean delete(String id);
     Voucher getById(String id);
-    List<Voucher> expiredVouccher();
+    List<Voucher> expiredVoucher();
+    List<Voucher> startVoucher();
 }

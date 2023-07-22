@@ -1,14 +1,14 @@
 .title-voucher{
-  font-size:25px;
-
+  font-size:30px;
   margin-bottom:30px;
+  margin-top: 20px;
 }
 .voucher{
   border: 0.1px solid #e4e1e1;
   border-radius: 4px;
   padding-left: 30px;
   padding-right: 30px;
- 
+
 }
 .voucher-table {
     margin-top: 25px;
@@ -17,6 +17,7 @@
   .input-form{
     width: 100%;
    margin-top: 10px;
+   height: 40px ;
   }
 .button-add{
   margin-left: 20px;
@@ -32,33 +33,29 @@
    margin-top: 20px;
   margin-bottom: 30px;
   }
-  /* .even-row {
-    background-color: #e1ebe2;
-  }
-  
-  .odd-row {
-    background-color: #e8e6ee;
-  } */
+
   .form-search {
     padding: 10px;
     margin-bottom:50px;
     background-color: #fcfbfb;
+  
   }
   .input-search{
     margin-right: 30px;
-    width:300px !important;
+    width:250px !important;
     height: 40px ;
   }
   .ant-select-selector{
     height: 40px !important;
   }
-  .row{
+  .row-search{
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 10px;
     flex-wrap: wrap;
     margin-top: 40px;
+    
   }
 .reset-form-search{
   display: flex;
