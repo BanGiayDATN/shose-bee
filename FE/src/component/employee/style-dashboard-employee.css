@@ -3,10 +3,16 @@
     overflow: hidden;
 }
 
-.logo {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.logo-content{
-    width: 90%;
-}
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 92%; /* Ví dụ: chiều rộng 100% của phần tử cha */
+    height: 200px; /* Ví dụ: chiều cao 200px */
+    margin-bottom: 20px;
+  }
+  
+  .logo-content {
+    
+  }
+  
