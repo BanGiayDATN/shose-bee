@@ -45,19 +45,19 @@ function BillManagement() {
     });
   }, []);
 
-  const onChangeFillter = (event) => {
-    setFillter({ ...fillter, [event.target.name]: event.target.value });
+  const onChangeFillter = (value, fileName) => {
+    setFillter({ ...fillter, [fileName]: value });
   };
 
   const onChangeStatusBillInFillter = (value) => {
     setStatus(value);
-    console.log(value);
   };
 
   const handleSubmitSearch = () => {
     var data = fillter;
     data.status = status;
     setFillter(data);
+    console.log(fillter);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
@@ -77,6 +77,7 @@ function BillManagement() {
       type: -1,
       page: 0,
     });
+    setStatus([]);
     //   BillApi.fetchAll(fillter).then((res) => {
     //     dispatch(getAllBill(res.data.data));
     //   });
@@ -227,6 +228,7 @@ function BillManagement() {
               users={users}
               employess={employees}
               onChangeStatusBillInFillter={onChangeStatusBillInFillter}
+              status={status}
             />
           </div>
         </div>

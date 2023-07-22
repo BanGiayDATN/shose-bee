@@ -1,5 +1,6 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Bill;
@@ -14,9 +15,11 @@ import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.service.BillDetailService;
+import com.example.shose.server.util.FormUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +41,7 @@ public class BillDetailServiceImpl implements BillDetailService {
     @Autowired
     private BillHistoryRepository billHistoryRepository;
 
+    private FormUtils formUtils = new FormUtils();
 
     @Override
     public List<BillDetailResponse> findAllByIdBill(String idBill) {
@@ -75,5 +79,23 @@ public class BillDetailServiceImpl implements BillDetailService {
         productDetailRepository.save(productDetail.get());
 
         return billDetailRepository.save(billDetail.get());
+    }
+
+    @Override
+    public BillDetail create(CreateBillDetailRequest request) {
+        Optional<Bill> bill = billRepository.findById(request.getIdBill());
+        Optional<ProductDetail> product = productDetailRepository.findById(request.getIdBill());
+
+        if(!bill.isPresent()){
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!product.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        BillDetail billDetail = formUtils.convertToObject(BillDetail.class, request);
+        billDetail.setPrice(new BigDecimal(request.getPrice()));
+        billDetail.setProductDetail(product.get());
+        billDetail.setBill(bill.get());
+        return billDetailRepository.save(billDetail);
     }
 }

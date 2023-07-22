@@ -43,7 +43,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
     BillDetailResponse findBillById(String id);
 
     @Query(value = """
-            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date DESC ) AS stt, bi.id AS id_bill, bide.id, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity  , prde.quantity AS quantity_product_detail  FROM bill_detail bide
+            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date DESC ) AS stt, bi.id AS id_bill, pr.id As id_product, bide.id, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity  , prde.quantity AS quantity_product_detail  FROM bill_detail bide
             LEFT JOIN bill bi ON bi.id = bide.id_bill
             LEFT JOIN product_detail prde ON prde.id = bide.id_product_detail
             LEFT JOIN product pr ON pr.id = prde.id_product

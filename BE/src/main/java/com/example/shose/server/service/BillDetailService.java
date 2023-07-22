@@ -1,5 +1,6 @@
 package com.example.shose.server.service;
 
+import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.BillDetail;
@@ -16,4 +17,6 @@ public interface BillDetailService {
     BillDetailResponse findBillById(String id);
 
     BillDetail refundProduct(RefundProductRequest request);
+
+    BillDetail create(CreateBillDetailRequest request);
 }
