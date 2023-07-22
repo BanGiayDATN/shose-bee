@@ -20,7 +20,7 @@ import {
   SetAddress,
   SetProvince,
   UpdateAddress,
-} from "../../../app/reducer/Address.reducer";
+} from "../../../app/reducer/address.reducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,

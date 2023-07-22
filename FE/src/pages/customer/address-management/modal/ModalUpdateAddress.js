@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Input, Select, Button, Form, Popconfirm } from "antd";
 import { useAppDispatch } from "../../../../app/hook";
-import { UpdateAddress } from "../../../../app/reducer/Address.reducer";
+import { UpdateAddress } from "../../../../app/reducer/address.reducer";
 import { toast } from "react-toastify";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 

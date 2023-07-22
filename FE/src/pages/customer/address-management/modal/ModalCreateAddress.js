@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Input, Select, Button, Form, Popconfirm } from "antd";
 import { useAppDispatch } from "../../../../app/hook";
-import {
-  CreateAddress,
-  SetAddress,
-} from "../../../../app/reducer/Address.reducer";
 import { toast } from "react-toastify";
 import { AddressApi } from "../../../../api/customer/address/address.api";
+import { CreateAddress } from "../../../../app/reducer/address.reducer";
 
 const { Option } = Select;
 
