@@ -73,8 +73,8 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
   const loadDataProvince = () => {
     AddressApi.fetchAllProvince().then(
       (res) => {
-        setListProvince(res.data);
-        console.log(res.data);
+        setListProvince(res.data.data);
+        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -85,7 +85,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
   const handleProvinceChange = (value, valueProvince) => {
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
-        setListDistricts(res.data.districts);
+        setListDistricts(res.data.data);
       }
     );
     console.log(listDistricts);
@@ -93,7 +93,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
 
   const handleCityChange = (value, valueDistrict) => {
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
-      setListWard(res.data.wards);
+      setListWard(res.data.data);
     });
   };
 
@@ -132,11 +132,11 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
             {listProvince?.map((item) => {
               return (
                 <Option
-                  key={item.code}
-                  value={item.name}
-                  valueProvince={item.code}
+                  key={item.ProvinceID}
+                  value={item.ProvinceName}
+                  valueProvince={item.ProvinceID}
                 >
-                  {item.name}
+                  {item.ProvinceName}
                 </Option>
               );
             })}
@@ -153,11 +153,11 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
             {listDistricts?.map((item) => {
               return (
                 <Option
-                  key={item.code}
-                  value={item.name}
-                  valueDistrict={item.code}
+                  key={item.DistrictID}
+                  value={item.DistrictName}
+                  valueDistrict={item.DistrictID}
                 >
-                  {item.name}
+                  {item.DistrictName}
                 </Option>
               );
             })}
@@ -173,8 +173,8 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
             {/* <Option value="">--Chọn Xã/Phường--</Option> */}
             {listWard?.map((item) => {
               return (
-                <Option key={item.code} value={item.name}>
-                  {item.name}
+                <Option key={item.WardCode} value={item.WardName}>
+                  {item.WardName}
                 </Option>
               );
             })}

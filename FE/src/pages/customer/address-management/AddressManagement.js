@@ -106,7 +106,7 @@ const AddressManagement = () => {
     handleInputChangeSearch("province", valueProvinceS.valueProvince);
     handleClearDistrictWardSearch(valueProvinceS.valueProvince);
     AddressApi.fetchAllProvinceDistricts(value).then((res) => {
-      setListDistrictsSearch(res.data.districts);
+      setListDistrictsSearch(res.data.data);
     });
     AddressApi.fetchAll({
       line: searchAddress.keyword,
@@ -123,7 +123,7 @@ const AddressManagement = () => {
     handleInputChangeSearch("city", valueDistrictS.valueDistrict);
     handleClearWardSearch(valueDistrictS.valueDistrict);
     AddressApi.fetchAllProvinceWard(value).then((res) => {
-      setListWardSearch(res.data.wards);
+      setListWardSearch(res.data.data);
     });
     AddressApi.fetchAll({
       line: searchAddress.keyword,
@@ -209,8 +209,8 @@ const AddressManagement = () => {
   const loadDataProvince = () => {
     AddressApi.fetchAllProvince().then(
       (res) => {
-        setListProvinceSearch(res.data);
-        console.log(res.data);
+        setListProvinceSearch(res.data.data);
+        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -253,13 +253,6 @@ const AddressManagement = () => {
       dataIndex: "province",
       key: "province",
       sorter: (a, b) => a.province.localeCompare(b.province),
-    },
-    {
-      title: "Ngày cập nhật",
-      dataIndex: "lastModifiedDate",
-      key: "lastModifiedDate",
-      sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
-      render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
       title: "Hành động",
@@ -354,11 +347,11 @@ const AddressManagement = () => {
                   {listProvinceSearch?.map((item) => {
                     return (
                       <Option
-                        key={item.code}
-                        value={item.code}
-                        valueProvince={item.name}
+                        key={item.ProvinceID}
+                        value={item.ProvinceID}
+                        valueProvince={item.ProvinceName}
                       >
-                        {item.name}
+                        {item.ProvinceName}
                       </Option>
                     );
                   })}
@@ -378,11 +371,11 @@ const AddressManagement = () => {
                   {listDistrictsSearch?.map((item) => {
                     return (
                       <Option
-                        key={item.code}
-                        value={item.code}
-                        valueDistrict={item.name}
+                        key={item.DistrictID}
+                        value={item.DistrictID}
+                        valueDistrict={item.DistrictName}
                       >
-                        {item.name}
+                        {item.DistrictName}
                       </Option>
                     );
                   })}
@@ -401,8 +394,8 @@ const AddressManagement = () => {
                   <Option value="">--Chọn Xã/Phường--</Option>
                   {listWardSearch?.map((item) => {
                     return (
-                      <Option key={item.code} value={item.name}>
-                        {item.name}
+                      <Option key={item.WardCode} value={item.WardName}>
+                        {item.WardName}
                       </Option>
                     );
                   })}
