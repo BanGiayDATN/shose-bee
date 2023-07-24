@@ -24,7 +24,6 @@ import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
-import com.example.shose.server.repository.AccountVoucherRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
@@ -166,23 +165,22 @@ public class BillServiceImpl implements BillService {
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
 
-            request.getVouchers().forEach(voucher -> {
-                Optional<Voucher> optional = voucherRepository.findById(voucher.getIdVoucher());
-                if (!optional.isPresent()) {
-                    throw new RestApiException(Message.NOT_EXISTS);
-                }
-                if (optional.get().getQuantity() <= 0 && optional.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
-                    throw new RestApiException(Message.VOUCHER_NOT_USE);
-                }
-                optional.get().setQuantity(optional.get().getQuantity() - 1);
-                voucherRepository.save(optional.get());
-
-                VoucherDetail voucherDetail = VoucherDetail.builder().voucher(optional.get()).bill(bill).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
-                voucherDetailRepository.save(voucherDetail);
-            });
-
-            productDetail.get().setQuantity(billDetailRequest.getQuantity());
+            productDetail.get().setQuantity( productDetail.get().getQuantity() - billDetailRequest.getQuantity());
             productDetailRepository.save(productDetail.get());
+        });
+        request.getVouchers().forEach(voucher -> {
+            Optional<Voucher> optional = voucherRepository.findById(voucher.getIdVoucher());
+            if (!optional.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            if (optional.get().getQuantity() <= 0 && optional.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
+                throw new RestApiException(Message.VOUCHER_NOT_USE);
+            }
+            optional.get().setQuantity(optional.get().getQuantity() - 1);
+            voucherRepository.save(optional.get());
+
+            VoucherDetail voucherDetail = VoucherDetail.builder().voucher(optional.get()).bill(bill).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
+            voucherDetailRepository.save(voucherDetail);
         });
         return bill;
     }

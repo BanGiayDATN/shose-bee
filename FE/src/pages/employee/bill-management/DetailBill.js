@@ -202,30 +202,6 @@ function DetailBill() {
     setIsModalOpenChangeStatus(false);
   };
 
-  const cancelStatusBill = () => {
-    BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
-      dispatch(getBill(res.data.data));
-      var index = listStatus.findIndex(
-        (item) => item.status == res.data.data.statusBill
-      );
-      if (res.data.data.statusBill == "TRA_HANG") {
-        index = 5;
-      }
-      if (res.data.data.statusBill == "DA_HUY") {
-        index = 6;
-      }
-      var history = {
-        stt: billHistory.length + 1,
-        statusBill: res.data.data.statusBill,
-        actionDesc: statusBill.actionDescription,
-        id: "",
-        createDate: new Date().getTime(),
-      };
-      dispatch(addStatusPresent(index));
-      dispatch(addBillHistory(history));
-    });
-    setIsModalOpenChangeStatus(false);
-  };
 
   const onChangeDescStatusBill = (fileName, value) => {
     setStatusBill({ ...statusBill, [fileName]: value });
@@ -417,9 +393,10 @@ function DetailBill() {
 
   return (
     <div>
-      <Row>
-        <div className="row" style={{ backgroundColor: "white" }}>
-          <TimeLine
+      <Row style={{ width: "100%"}}>
+        <div className="row" style={{ backgroundColor: "white" , width: "100%"}}>
+          <TimeLine 
+          style= {{with: "100%"}}
             listStatus={listStatus}
             data={billHistory}
             statusPresent={statusPresent}
