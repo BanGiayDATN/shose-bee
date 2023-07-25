@@ -22,6 +22,12 @@ export class ProducDetailtApi {
       url: `/admin/product-detail/${id}`,
     });
   };
+  static getByIdProduct = (id) => {
+    return request({
+      method: "GET",
+      url: `/admin/product-detail/byProduct/${id}`,
+    });
+  };
 
   static update = (id, data) => {
     return request({

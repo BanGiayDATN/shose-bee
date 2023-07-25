@@ -14,10 +14,12 @@
     margin-top: 25px;
   
   }
+
   .input-form{
+   
     width: 100%;
-   margin-top: 10px;
-   height: 40px ;
+   height: 40px;
+   border: 1px solid rgb(158, 155, 155);
   }
 .button-add{
   margin-left: 20px;
@@ -25,6 +27,13 @@
  color:#ffffff;
  float: right;
  margin-bottom: 20px;
+ 
+}
+.title-add-voucher{
+  font-size:25px;
+  margin-bottom:30px;
+  margin-top: 20px;
+  text-align: center;
 }
   .button-submit{
     margin-left: 20px;
@@ -33,7 +42,12 @@
    margin-top: 20px;
   margin-bottom: 30px;
   }
-
+.button-add-voucher{
+  /* margin-left: 250px; */
+  background-color:  #4987f3;
+ color:#ffffff;
+ margin-top: 10px;
+}
   .form-search {
     padding: 10px;
     margin-bottom:50px;
@@ -66,3 +80,16 @@
     padding: 10px;
    
   }
+
+
+
+.add-voucher{
+  border: 1px solid #f4efef;
+  padding:50px;
+  background-color: #fcfbfb;
+}
+.get-product{
+  border: 1px solid #f4efef;
+  padding:50px;
+  background-color: #fcfbfb;
+}

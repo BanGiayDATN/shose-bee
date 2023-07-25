@@ -47,4 +47,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT s FROM Product s WHERE s.code =:code AND s.id <> :id")
     Product getByNameExistence(@Param("code") String code, @Param("id") String id);
+
+    @Query("SELECT p FROM Product p where p.status = 'DANG_SU_DUNG'")
+    List<Product> getProductUse();
 }

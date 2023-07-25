@@ -3,6 +3,7 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -58,5 +59,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public List<GetProductDetailByProduct> getByIdProduct(String id) {
+        return productDetailRepository.getByIdProduct(id);
     }
 }

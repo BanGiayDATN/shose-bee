@@ -30,4 +30,8 @@ public class ProductDetailRestController {
     public ResponseObject getOneById(@PathVariable("id") String id) {
         return new ResponseObject(productDetailService.getOneById(id));
     }
+    @GetMapping("/byProduct/{id}")
+    public ResponseObject getByIdProduct(@PathVariable("id") String id) {
+        return new ResponseObject(productDetailService.getByIdProduct(id));
+    }
 }

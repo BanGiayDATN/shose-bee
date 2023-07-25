@@ -14,15 +14,15 @@ function HeaderMenu() {
   const fields = [
     {
       className: "title-menu",
-      title: "Trang chủ",
+      title: "TRANG CHỦ",
     },
     {
       className: "title-menu",
-      title: "Sản phẩm",
+      title: "SẢN PHẨM",
     },
     {
       className: "title-menu",
-      title: "Pages",
+      title: "ABOUT US",
       option: [
         { title: "Blog styte", className: "title-option" },
         { title: "About us", className: "title-option" },
@@ -31,7 +31,7 @@ function HeaderMenu() {
     },
     {
       className: "title-menu",
-      title: "Sale",
+      title: "SALE OFF",
     },
   ];
 
@@ -71,8 +71,8 @@ function HeaderMenu() {
               <div
                 key={index}
                 className={field.className}
-                onMouseEnter={field.title === "Pages" ? handleMenuHover : null}
-                onMouseLeave={field.title === "Pages" ? handleMenuLeave : null}
+                onMouseEnter={field.title === "ABOUT US" ? handleMenuHover : null}
+                onMouseLeave={field.title === "ABOUT US" ? handleMenuLeave : null}
               >
                 {field.option ? (
                   field.title
