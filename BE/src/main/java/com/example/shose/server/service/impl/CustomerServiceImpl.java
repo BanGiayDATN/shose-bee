@@ -1,6 +1,5 @@
 package com.example.shose.server.service.impl;
 
-
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
@@ -13,7 +12,7 @@ import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.UserReposiory;
-import com.example.shose.server.service.EmployeeService;
+import com.example.shose.server.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,7 @@ import java.util.Optional;
  * @author Phuong Oanh
  */
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private UserReposiory userReposiory;
 
@@ -34,7 +33,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
-        return userReposiory.getAll(req);
+        return userReposiory.getAllCustomer(req);
     }
 
     @Override
@@ -48,14 +47,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         Optional<Account> adminAccount = accounts.stream()
                 .filter(account -> account.getRoles().equals(Roles.ADMIN))
                 .findFirst();
+        Optional<Account> EmAccount = accounts.stream()
+                .filter(account -> account.getRoles().equals(Roles.NHAN_VIEN))
+                .findFirst();
         if (!adminAccount.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
         }
-
+        if (!EmAccount.isPresent()) {
+            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
+        }
         Account employeeAccount = new Account();
         employeeAccount.setEmail(req.getEmail());
         employeeAccount.setPassword(req.getPassword());
-        employeeAccount.setRoles(Roles.NHAN_VIEN);
+        employeeAccount.setRoles(Roles.USER);
 
         User user = User.builder()
                 .fullName(req.getFullName())
@@ -63,6 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .email(req.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .dateOfBirth(req.getDateOfBirth())
+                .points(req.getPoints())
                 .build();
 
         user = userReposiory.save(user);
@@ -83,6 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setPhoneNumber(req.getPhoneNumber());
         user.setDateOfBirth(req.getDateOfBirth());
         user.setEmail(req.getEmail());
+        user.setPoints(req.getPoints());
         user.setStatus(req.getStatus());
 
         if (req.getPassword() != null) {
@@ -113,5 +119,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return optional.get();
     }
-
 }

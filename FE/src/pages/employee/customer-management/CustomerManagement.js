@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Input, Button, Select, Table, Slider } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-account.css";
-import { AccountApi } from "../../../api/employee/account/account.api";
+import { CustomerApi } from "../../../api/employee/account/customer.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import { GetAccount, SetAccount } from "../../../app/reducer/Account.reducer";
 import { Link } from "react-router-dom";
+import {
+  GetCustomer,
+  SetCustomer,
+} from "../../../app/reducer/Customer.reducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -18,14 +21,14 @@ import {
 import moment from "moment/moment";
 const { Option } = Select;
 
-const AccountManagement = () => {
-  const [initialAccountList, setInitialAccountList] = useState([]);
+const CustomerManagement = () => {
+  const [initialCustomerList, setInitialCustomerList] = useState([]);
   const [listaccount, setListaccount] = useState([]);
   const [initialStartDate, setInitialStartDate] = useState(null);
   const [initialEndDate, setInitialEndDate] = useState(null);
   const dispatch = useAppDispatch();
   const [ageRange, setAgeRange] = useState([0, 100]);
-  const [searchAccount, setSearchAccount] = useState({
+  const [searchCustomer, setSearchCustomer] = useState({
     keyword: "",
     status: "",
   });
@@ -33,17 +36,17 @@ const AccountManagement = () => {
   const [endDate, setEndDate] = useState(null);
 
   // Lấy mảng redux ra
-  const data = useAppSelector(GetAccount);
+  const data = useAppSelector(GetCustomer);
   useEffect(() => {
     if (data != null) {
       setListaccount(data);
     }
   }, [data]);
 
-  // Search account
+  // Search customer
   const handleInputChangeSearch = (name, value) => {
-    setSearchAccount((prevSearchAccount) => ({
-      ...prevSearchAccount,
+    setSearchCustomer((prevSearchCustomer) => ({
+      ...prevSearchCustomer,
       [name]: value,
     }));
   };
@@ -56,59 +59,61 @@ const AccountManagement = () => {
   const handleStatusChange = (value) => {
     handleInputChangeSearch("status", value);
   };
-
+  const handleAgeRangeChange = (value) => {
+    setAgeRange(value);
+  };
   useEffect(() => {
-    const { keyword, status } = searchAccount;
-    AccountApi.fetchAll({ status }).then((res) => {
-      const filteredAccounts = res.data.data.filter(
-        (account) =>
-          account.fullName.includes(keyword) ||
-          account.email.includes(keyword) ||
-          account.phoneNumber.includes(keyword)
+    const { keyword, status } = searchCustomer;
+    CustomerApi.fetchAll({ status }).then((res) => {
+      const filteredCustomers = res.data.data.filter(
+        (customer) =>
+          customer.fullName.includes(keyword) ||
+          customer.email.includes(keyword) ||
+          customer.phoneNumber.includes(keyword)
       );
-      setListaccount(filteredAccounts);
-      dispatch(SetAccount(filteredAccounts));
+      setListaccount(filteredCustomers);
+      dispatch(SetCustomer(filteredCustomers));
     });
-  }, [searchAccount.status]);
+  }, [searchCustomer.status]);
 
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    const { keyword, status } = searchAccount;
+    const { keyword, status } = searchCustomer;
 
-    AccountApi.fetchAll({ status }).then((res) => {
-      const filteredAccounts = res.data.data
+    CustomerApi.fetchAll({ status }).then((res) => {
+      const filteredCustomers = res.data.data
         .filter(
-          (account) =>
-            account.fullName.toLowerCase().includes(keyword) ||
-            account.email.includes(keyword) ||
-            account.phoneNumber.includes(keyword)
+          (customer) =>
+            customer.fullName.toLowerCase().includes(keyword) ||
+            customer.email.includes(keyword) ||
+            customer.phoneNumber.includes(keyword)
         )
-        .map((account, index) => ({
-          ...account,
+        .map((customer, index) => ({
+          ...customer,
           stt: index + 1,
         }));
-      setListaccount(filteredAccounts);
-      dispatch(SetAccount(filteredAccounts));
+      setListaccount(filteredCustomers);
+      dispatch(SetCustomer(filteredCustomers));
     });
   };
 
   // Lọc danh sách theo khoảng ngày sinh
   const filterByDateOfBirthRange = (startDate, endDate) => {
     if (!startDate || !endDate) {
-      setListaccount(initialAccountList);
-      dispatch(SetAccount(initialAccountList));
+      setListaccount(initialCustomerList);
+      dispatch(SetCustomer(initialCustomerList));
       return;
     }
 
-    const filteredAccounts = initialAccountList.filter((account) => {
-      const accountDateOfBirth = moment(account.dateOfBirth).startOf("day");
+    const filteredCustomers = initialCustomerList.filter((customer) => {
+      const accountDateOfBirth = moment(customer.dateOfBirth).startOf("day");
       const start = moment(startDate).startOf("day");
       const end = moment(endDate).endOf("day");
       return accountDateOfBirth.isBetween(start, end, null, "[]");
     });
 
-    setListaccount(filteredAccounts);
-    dispatch(SetAccount(filteredAccounts));
+    setListaccount(filteredCustomers);
+    dispatch(SetCustomer(filteredCustomers));
   };
   const handleStartDateChange = (event) => {
     const startDate = event.target.value;
@@ -121,22 +126,9 @@ const AccountManagement = () => {
     setEndDate(endDate);
     filterByDateOfBirthRange(startDate, endDate);
   };
-  const filterByAgeRange = (minAge, maxAge) => {
-    if (minAge === 0 && maxAge === 100) {
-      setListaccount(initialAccountList);
-      dispatch(SetAccount(initialAccountList));
-    } else {
-      const filteredAccounts = initialAccountList.filter((account) => {
-        const age = moment().diff(account.dateOfBirth, "years");
-        return age >= minAge && age <= maxAge;
-      });
 
-      setListaccount(filteredAccounts);
-      dispatch(SetAccount(filteredAccounts));
-    }
-  };
   const handleClear = () => {
-    setSearchAccount({
+    setSearchCustomer({
       keyword: "",
       status: "",
     });
@@ -144,26 +136,39 @@ const AccountManagement = () => {
     setEndDate(initialEndDate);
     filterByDateOfBirthRange(initialStartDate, initialEndDate);
     setListaccount(
-      initialAccountList.map((account, index) => ({
-        ...account,
+      initialCustomerList.map((customer, index) => ({
+        ...customer,
         stt: index + 1,
       }))
     );
     loadData();
   };
+  const filterByAgeRange = (minAge, maxAge) => {
+    if (minAge === 0 && maxAge === 100) {
+      setListaccount(initialCustomerList);
+      dispatch(SetCustomer(initialCustomerList));
+    } else {
+      const filteredAccounts = initialCustomerList.filter((customer) => {
+        const age = moment().diff(customer.dateOfBirth, "years");
+        return age >= minAge && age <= maxAge;
+      });
 
+      setListaccount(filteredAccounts);
+      dispatch(SetCustomer(filteredAccounts));
+    }
+  };
   const loadData = () => {
-    AccountApi.fetchAll().then(
+    CustomerApi.fetchAll().then(
       (res) => {
-        const accounts = res.data.data.map((account, index) => ({
-          ...account,
+        const accounts = res.data.data.map((customer, index) => ({
+          ...customer,
           stt: index + 1,
         }));
         setListaccount(res.data.data);
-        setInitialAccountList(accounts);
+        setInitialCustomerList(accounts);
         setInitialStartDate(null);
         setInitialEndDate(null);
-        dispatch(SetAccount(res.data.data));
+        dispatch(SetCustomer(res.data.data));
       },
       (err) => {
         console.log(err);
@@ -194,15 +199,12 @@ const AccountManagement = () => {
     setModalVisibleUpdate(true);
   };
 
-  const handleAgeRangeChange = (value) => {
-    setAgeRange(value);
-  };
   useEffect(() => {
     loadData();
   }, []);
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
-  }, [ageRange, initialAccountList]);
+  }, [ageRange, initialCustomerList]);
   const columns = [
     {
       title: "STT",
@@ -211,7 +213,7 @@ const AccountManagement = () => {
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Tên nhân viên",
+      title: "Tên khách hàng",
       dataIndex: "fullName",
       key: "fullName",
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
@@ -236,6 +238,12 @@ const AccountManagement = () => {
       render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
+      title: "Điểm",
+      dataIndex: "points",
+      key: "points",
+      sorter: (a, b) => a.points.localeCompare(b.points),
+    },
+    {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
@@ -255,21 +263,22 @@ const AccountManagement = () => {
       key: "hanhDong",
       render: (text, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-          <Link to={`/detail-staff-management/${record.id}`}>
+          <Link to={`/detail-customer-management/${record.id}`}>
             <Button
               type="primary"
-              title="Chi tiết nhân viên"
+              title="Chi tiết khách hàng"
               style={{ backgroundColor: "#FF9900" }}
               onClick={() => handleViewDetail(record.id)}
             >
               <FontAwesomeIcon icon={faEye} />
             </Button>
           </Link>
-          <Link to={`/update-staff-management/${record.id}`}>
+          <Link to={`/update-customer-management/${record.id}`}>
             <Button
               type="primary"
-              title="Chỉnh sửa nhân viên"
+              title="Chỉnh sửa khách hàng"
               style={{ backgroundColor: "green", borderColor: "green" }}
+              onClick={() => handleUpdate(record.id)}
             >
               <FontAwesomeIcon icon={faEdit} />
             </Button>
@@ -283,7 +292,7 @@ const AccountManagement = () => {
     <>
       <div className="title_account">
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
-        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản nhân viên</span>
+        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản khách hàng</span>
       </div>
       <div className="filter">
         <FontAwesomeIcon icon={faFilter} size="2x" />
@@ -302,7 +311,7 @@ const AccountManagement = () => {
                 placeholder="Tìm kiếm"
                 type="text"
                 name="keyword"
-                value={searchAccount.keyword}
+                value={searchCustomer.keyword}
                 onChange={handleKeywordChange}
               />
               <label>Trạng thái:</label>
@@ -312,7 +321,7 @@ const AccountManagement = () => {
                   width: "300px",
                 }}
                 name="status"
-                value={searchAccount.status}
+                value={searchCustomer.status}
                 onChange={handleStatusChange}
               >
                 <Option value="">Tất cả</Option>
@@ -377,10 +386,10 @@ const AccountManagement = () => {
             style={{ fontSize: "26px", marginRight: "10px" }}
           />
           <span style={{ fontSize: "18px", fontWeight: "500" }}>
-            Danh sách nhân viên
+            Danh sách khách hàng
           </span>
           <div style={{ marginLeft: "auto" }}>
-            <Link to="/create-staff-management">
+            <Link to="/create-customer-management">
               <Button
                 type="primary"
                 icon={<FontAwesomeIcon icon={faPlus} />}
@@ -397,11 +406,11 @@ const AccountManagement = () => {
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 3 }}
-            className="account-table"
+            className="customer-table"
           />
         </div>
       </div>
     </>
   );
 };
-export default AccountManagement;
+export default CustomerManagement;

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hào Ngô
  */
 @RestController
-@CrossOrigin("*")
+    @CrossOrigin("*")
 @RequestMapping("/customer/address")
 public class AddressRestController {
     @Autowired

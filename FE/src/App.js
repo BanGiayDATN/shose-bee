@@ -23,7 +23,13 @@ import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
 import AddressManagement from "./pages/customer/address-management/AddressManagement";
-
+import CustomerManagement from "./pages/employee/customer-management/CustomerManagement";
+import ModalCreateAccount from "./pages/employee/account-management/modal/ModalCreateAccount";
+import ModalUpdateAccount from "./pages/employee/account-management/modal/ModalUpdateAccount";
+import ModalDetailAccount from "./pages/employee/account-management/modal/ModalDetailAccount";
+import ModalCreateCustomer from "./pages/employee/customer-management/modal/ModalCreateCustomer";
+import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
+import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
 function App() {
   return (
     <div className="App">
@@ -163,11 +169,81 @@ function App() {
             }
           />{" "}
           <Route
-            path="/account-management"
+            path="/staff-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
                   <AccountManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-staff-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <ModalCreateAccount />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/update-staff-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <ModalUpdateAccount />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/detail-staff-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <ModalDetailAccount />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/customerr-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <CustomerManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-customer-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <ModalCreateCustomer />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/update-customer-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <ModalUpdateCustomer />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/detail-customer-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <ModalDetailCustomer />
                 </DashBoardEmployee>
               </AuthGuard>
             }

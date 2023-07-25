@@ -1,44 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Modal, Input, Select, Button, Form } from "antd";
-import moment from "moment";
 import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { AccountApi } from "../../../../api/employee/account/account.api";
-import { UpdateAccount } from "../../../../app/reducer/Account.reducer";
+import { CustomerApi } from "../../../../api/employee/account/customer.api";
+import { CreateCustomer } from "../../../../app/reducer/Customer.reducer";
 import { useParams, useNavigate } from "react-router-dom";
 import "../style-account.css";
 import { faKaaba } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import moment from "moment";
+
 const { Option } = Select;
 
-const ModalUpdateAccount = ({ visible }) => {
-  const { id } = useParams();
+const ModalCreateCustomer = ({ visible, onCancel }) => {
   const [form] = Form.useForm();
-  const [account, setAccount] = useState({});
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const getOne = () => {
-    if (id != null && id !== "") {
-      AccountApi.getOne(id).then((res) => {
-        setAccount(res.data.data);
-        form.setFieldsValue({
-          ...res.data.data,
-          dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
-        });
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (id != null && id !== "") {
-      getOne();
-    }
-    form.resetFields();
-    return () => {
-      setAccount({});
-    };
-  }, [id, visible]);
 
   const handleOk = () => {
     form
@@ -47,7 +24,7 @@ const ModalUpdateAccount = ({ visible }) => {
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
-            content: "Bạn có đồng ý cập nhật không?",
+            content: "Bạn có đồng ý thêm không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
             onOk: () => resolve(values),
@@ -56,25 +33,29 @@ const ModalUpdateAccount = ({ visible }) => {
         });
       })
       .then((values) => {
-        const updatedValues = {
-          ...values,
-          dateOfBirth: moment(values.dateOfBirth).valueOf(),
-        };
-        form.resetFields();
-        AccountApi.update(id, updatedValues).then((res) => {
-          dispatch(UpdateAccount(res.data.data));
-          toast.success("Cập nhật thành công");
-          navigate("/staff-management");
-        });
+        const formattedDate = moment(
+          values.dateOfBirth,
+          "YYYY-MM-DD"
+        ).valueOf();
+        const updatedValues = { ...values, dateOfBirth: formattedDate };
+        CustomerApi.create(updatedValues)
+          .then((res) => {
+            dispatch(CreateCustomer(res.data.data));
+            toast.success("Thêm thành công");
+            navigate("/customerr-management");
+          })
+          .catch((error) => {
+            toast.error("Thêm thất bại");
+            console.log("Create failed:", error);
+          });
       })
-      .catch((error) => {
-        toast.error("Cập nhật thất bại");
-        console.log("Validation failed:", error);
+      .catch(() => {
+        // Xử lý khi người dùng từ chối xác nhận
       });
   };
 
   const handleCancel = () => {
-    navigate("/staff-management");
+    navigate("/customerr-management");
   };
   const validateAge = (rule, value) => {
     if (value) {
@@ -93,7 +74,7 @@ const ModalUpdateAccount = ({ visible }) => {
     <div>
       <div className="title_account">
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
-        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản nhân viên</span>
+        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản khách hàng</span>
       </div>
       <div className="filter">
         <div
@@ -107,27 +88,27 @@ const ModalUpdateAccount = ({ visible }) => {
           <span
             style={{ fontSize: "25px", fontWeight: "bold", marginTop: "10px" }}
           >
-            CẬP NHẬT TÀI KHOẢN
+            TẠO TÀI KHOẢN
           </span>
         </div>
         <div className="title_add">
           <Form form={form} layout="vertical">
             <Form.Item
-              label="Tên nhân viên"
+              label="Tên khách hàng"
               name="fullName"
               rules={[
-                { required: true, message: "Vui lòng nhập tên nhân viên" },
-                { max: 30, message: "Tên nhân viên tối đa 30 ký tự" },
+                { required: true, message: "Vui lòng nhập tên khách hàng" },
+                { max: 30, message: "Tên khách hàng tối đa 30 ký tự" },
               ]}
             >
-              <Input placeholder="Tên nhân viên" />
+              <Input placeholder="Tên khách hàng" />
             </Form.Item>
             <Form.Item
               label="Email"
               name="email"
               rules={[
                 { required: true, message: "Vui lòng nhập email" },
-                { max: 30, message: "Email tối đa 30 ký tự" },
+                { max: 20, message: "Email tối đa 20 ký tự" },
                 {
                   pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
                   message: "Email không đúng định dạng",
@@ -144,8 +125,9 @@ const ModalUpdateAccount = ({ visible }) => {
                 { min: 8, message: "Mật khẩu phải 8 ký tự" },
               ]}
             >
-              <Input type="password" placeholder="Mật khẩu" />
+              <Input placeholder="Mật khẩu" />
             </Form.Item>
+
             <Form.Item
               label="Số điện thoại"
               name="phoneNumber"
@@ -171,11 +153,18 @@ const ModalUpdateAccount = ({ visible }) => {
               <Input type="date" />
             </Form.Item>
             <Form.Item
-              label="Trạng thái"
-              name="status"
-              rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+              label="Điểm"
+              name="points"
+              rules={[{ required: true, message: "Vui lòng nhập điểm" }]}
             >
-              <Select placeholder="Vui lòng chọn trạng thái">
+              <Input type="number" placeholder="Điểm" />
+            </Form.Item>
+            <Form.Item label="Trạng thái" name="status">
+              <Select
+                placeholder="Vui lòng chọn trạng thái"
+                defaultValue="DANG_SU_DUNG"
+                disabled
+              >
                 <Option value="DANG_SU_DUNG">Kích hoạt</Option>
                 <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
               </Select>
@@ -186,7 +175,7 @@ const ModalUpdateAccount = ({ visible }) => {
               onClick={handleOk}
               style={{ marginRight: "10px" }}
             >
-              Cập nhật
+              Thêm
             </Button>
             <Button key="cancel" onClick={handleCancel}>
               Hủy
@@ -197,5 +186,4 @@ const ModalUpdateAccount = ({ visible }) => {
     </div>
   );
 };
-
-export default ModalUpdateAccount;
+export default ModalCreateCustomer;
