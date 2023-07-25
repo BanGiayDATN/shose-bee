@@ -42,7 +42,7 @@ const billSlice = createSlice({
       state.billWaitProduct.user = (action.payload);
     },
     addVoucherBillWait: (state, action) => {
-      state.billWaitProduct.vouchers.unshift(action.payload);
+      state.billWaitProduct.vouchers.push(action.payload);
     },
     addBills: (state, action) => {
       state.bills.value = [...action.payload];
@@ -76,13 +76,13 @@ const billSlice = createSlice({
       state.bill.paymentsMethod = [...action.payload];
     },
     addPaymentsMethod: (state, action) => {
-      state.bill.paymentsMethod.unshift(action.payload);
+      state.bill.paymentsMethod.push(action.payload);
     },
     addStatusPresent: (state, action) => {
       state.bill.status = action.payload;
     },
     addBillHistory: (state, action) => {
-      state.bill.billHistory.unshift(action.payload);
+      state.bill.billHistory.push(action.payload);
     },
   },
 });

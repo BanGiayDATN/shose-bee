@@ -56,6 +56,7 @@ function DetailBill() {
       dispatch(getProductInBillDetail(res.data.data));
     });
     BillApi.fetchDetailBill(id).then((res) => {
+      console.log(res);
       dispatch(getBill(res.data.data));
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
@@ -116,15 +117,17 @@ function DetailBill() {
   const showModalPayMent = (e) => {
     setIsModalPayMentOpen(true);
   };
-  const handleOkPayMent = () => {
-    PaymentsMethodApi.payment(id, statusBill).then((res) => {
+   const handleOkPayMent = async () => {
+    await  PaymentsMethodApi.payment(id, statusBill).then((res) => {
       dispatch(addPaymentsMethod(res.data.data));
+      console.log(res.data.data)
     })
-    BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-      console.log(res);
+    await  BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+      console.log(res.data.data)
       dispatch(getProductInBillDetail(res.data.data));
     });
-    BillApi.fetchDetailBill(id).then((res) => {
+    await  BillApi.fetchDetailBill(id).then((res) => {
+      console.log(res.data.data)
       dispatch(getBill(res.data.data));
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
@@ -136,8 +139,9 @@ function DetailBill() {
         index = 7;
       }
       dispatch(addStatusPresent(index));
+      console.log(index)
     });
-    BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+    await   BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
       dispatch(getBillHistory(res.data.data));
       console.log(res.data.data);
     });
@@ -172,16 +176,20 @@ function DetailBill() {
 
   const handleOkChangeStatus = () => {
     BillApi.changeStatusBill(id, statusBill).then((res) => {
+      console.log("change");
+      console.log(res.data.data);
       dispatch(getBill(res.data.data));
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
       );
+      console.log(index);
       if (res.data.data.statusBill == "TRA_HANG") {
         index = 5;
       }
       if (res.data.data.statusBill == "DA_HUY") {
         index = 6;
       }
+      console.log(res.data.data.statusBill);
       var history = {
         stt: billHistory.length + 1,
         statusBill: res.data.data.statusBill,
@@ -195,6 +203,7 @@ function DetailBill() {
     PaymentsMethodApi.findByIdBill(id).then((res) => {
       dispatch(getPaymentsMethod(res.data.data));
     });
+
     setIsModalOpenChangeStatus(false);
   };
 
@@ -597,7 +606,7 @@ function DetailBill() {
           </Row>
           <Row>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>Mã: {bill.code}</div>
+              <div style={{ marginLeft: "20px" }}>Mã hóa đơn: {bill.code}</div>
             </Col>
             <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>
@@ -630,6 +639,9 @@ function DetailBill() {
                 Số điện thoại: {bill.phoneNumber}
               </div>
             </Col>
+            {/* <Col span={12} className="text">
+              <div style={{ marginLeft: "20px" }}>Gmail: {bill.account != null ? bill.account.email : bill.account.customer }</div>
+            </Col> */}
             <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>Địa chỉ: {bill.address}</div>
             </Col>

@@ -29,6 +29,7 @@ import ModalDetailAccount from "./pages/employee/account-management/modal/ModalD
 import ModalCreateCustomer from "./pages/employee/customer-management/modal/ModalCreateCustomer";
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
+import Sale from "./pages/employee/bill-management/Sale";
 function App() {
   return (
     <div className="App">
@@ -79,6 +80,16 @@ function App() {
           />
           <Route
             path="/sale-counter"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <Sale />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+           <Route
+            path="/create-bill"
             element={
               <AuthGuard>
                 <DashBoardEmployee>

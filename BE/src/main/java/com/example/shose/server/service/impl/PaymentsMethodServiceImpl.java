@@ -55,7 +55,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
-        billHistory.setStatusBill(bill.get().getStatusBill());
+        billHistory.setStatusBill(StatusBill.DA_THANH_TOAN);
         billHistory.setActionDescription(request.getActionDescription());
 
         billHistoryRepository.save(billHistory);
