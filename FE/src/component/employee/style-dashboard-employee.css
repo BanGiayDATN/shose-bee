@@ -3,16 +3,24 @@
     overflow: hidden;
 }
 
-.logo-container {
+  
+.logo {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 92%; /* Ví dụ: chiều rộng 100% của phần tử cha */
     height: 200px; /* Ví dụ: chiều cao 200px */
-    margin-bottom: 20px;
-  }
+    margin-bottom: 18px;
+    margin-top: 5px;
+
+    transition: all 0.2s; /* Add a transition effect for smooth resizing */
+}
   
-  .logo-content {
-    
-  }
+.logo-content {
+    height: 100%; 
+    object-fit: contain; 
+}
   
+.ant-layout-sider-collapsed .logo {
+    height: 70px; 
+}

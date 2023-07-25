@@ -31,13 +31,8 @@ public class Size extends PrimaryEntity {
 
     private Integer name;
 
-    private Integer quantity;
-
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_product_detail",referencedColumnName = "id")
-    private ProductDetail productDetail;
 
 }

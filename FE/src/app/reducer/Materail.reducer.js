@@ -20,6 +20,9 @@ const materialSlice = createSlice({
         lastModifiedDate: data.startTime,
       };
       state.unshift(newMaterail);
+      state.forEach((item, index) => {
+        item.stt = index + 1;
+      });
     },
     UpdateMaterail: (state, action) => {
       const update = action.payload; // backend

@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Table, Col, Select, Row, Space, Spin } from "antd";
+import {
+  Input,
+  Button,
+  Table,
+  Col,
+  Select,
+  Row,
+  Space,
+  Spin,
+  Slider,
+} from "antd";
 import "./style-product.css";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 
@@ -21,7 +31,7 @@ import { CategoryApi } from "../../../api/employee/category/category.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../api/employee/color/Color.api";
 import tinycolor from "tinycolor2";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 
 const ProductManagement = () => {
@@ -103,11 +113,13 @@ const ProductManagement = () => {
     brand: "",
     material: "",
     product: "",
-    sizeProduct: "",
+    sizeProduct: null,
     sole: "",
     category: "",
     gender: "",
     status: "",
+    minPrice: 0,
+    maxPrice: 50000000000,
   });
 
   const handleSelectChange = (value, fieldName) => {
@@ -117,7 +129,18 @@ const ProductManagement = () => {
     }));
   };
 
+  const handleChangeValuePrice = (value) => {
+    const [minPrice, maxPrice] = value;
+
+    setSelectedValues((prevValues) => ({
+      ...prevValues,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+    }));
+  };
+
   const loadData = () => {
+    console.log(selectedValues);
     ProducDetailtApi.fetchAll(selectedValues).then(
       (res) => {
         console.log(res);
@@ -132,7 +155,10 @@ const ProductManagement = () => {
   };
 
   // Xử lý logic chỉnh sửa
-  const handleViewDetail = (id) => {};
+  const navigate = useNavigate();
+  const handleViewDetail = (id) => {
+    navigate(`/detail-product-management/${id}`);
+  };
   const handleUpdate = (id) => {};
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -157,7 +183,7 @@ const ProductManagement = () => {
         <img
           src={text}
           alt="Ảnh sản phẩm"
-          style={{ width: "130px", borderRadius: "20px", height: "120px" }}
+          style={{ width: "130px", borderRadius: "20px", height: "110px" }}
         />
       ),
     },
@@ -165,12 +191,21 @@ const ProductManagement = () => {
       title: "Tên Sản Phẩm",
       dataIndex: "nameProduct",
       key: "nameProduct",
+      sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
     },
     {
       title: "Giá ",
       dataIndex: "price",
       key: "price",
+      sorter: (a, b) => a.price - b.price,
       render: (text) => formatCurrency(text),
+    },
+    {
+      title: "Số Lượng Tồn ",
+      dataIndex: "totalQuantity",
+      key: "totalQuantity",
+      sorter: (a, b) => a.totalQuantity - b.totalQuantity,
+      align: "center",
     },
     {
       title: "Ngày Tạo",
@@ -267,6 +302,7 @@ const ProductManagement = () => {
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý sản phẩm</span>
       </div>
+
       <div className="filter">
         <FontAwesomeIcon icon={faFilter} size="2x" />{" "}
         <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
@@ -361,9 +397,9 @@ const ProductManagement = () => {
                 style={{ width: "100%" }}
                 value={selectedValues.sizeProduct}
                 onChange={(value) => handleSelectChange(value, "sizeProduct")}
-                defaultValue=""
+                defaultValue={null}
               >
-                <Option value="">Tất cả</Option>
+                <Option value={null}>Tất cả</Option>
                 {listSize.map((size, index) => (
                   <Option key={index} value={size}>
                     {size}
@@ -402,7 +438,7 @@ const ProductManagement = () => {
         </div>
         <div className="box_btn_filter">
           <Row align="middle">
-            <Col span={6} style={{ textAlign: "right", paddingRight: 10 }}>
+            <Col span={4} style={{ textAlign: "right", paddingRight: 10 }}>
               <label>Thể Loại :</label>
             </Col>
             <Col span={3}>
@@ -450,9 +486,29 @@ const ProductManagement = () => {
                 <Option value="NU">Nữ</Option>
               </Select>
             </Col>
+
+            <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Khoảng giá :</label>
+            </Col>
+            <Col span={3}>
+              <Slider
+                range={{
+                  draggableTrack: true,
+                }}
+                defaultValue={[
+                  selectedValues.minPrice,
+                  selectedValues.maxPrice,
+                ]}
+                min={100000}
+                max={30000000}
+                tipFormatter={(value) => formatCurrency(value)}
+                onChange={handleChangeValuePrice}
+              />
+            </Col>
           </Row>
         </div>
       </div>
+
       <div className="product-table">
         <div
           className="title_product"

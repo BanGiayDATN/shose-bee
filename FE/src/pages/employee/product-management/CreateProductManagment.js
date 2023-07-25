@@ -11,7 +11,6 @@ import {
   Row,
   Select,
   Space,
-  Spin,
   Table,
   Upload,
 } from "antd";
@@ -61,6 +60,19 @@ const CreateProductManagment = () => {
   const dataCategory = useAppSelector(GetCategory);
   const dataMaterial = useAppSelector(GetMaterail);
   const dataBrand = useAppSelector(GetBrand);
+
+  const initialValues = {
+    description: "",
+    gender: "",
+    price: "",
+    status: "DANG_SU_DUNG",
+    categoryId: "",
+    productId: "",
+    materialId: "",
+    colorId: "",
+    soleId: "",
+    brandId: "",
+  };
 
   const handleCancel = () => {
     setModalAddSole(false);
@@ -149,51 +161,61 @@ const CreateProductManagment = () => {
   const [listSizeAdd, setListSizeAdd] = useState([]);
 
   const handleQuantityChange = (value, record) => {
-    // Cập nhật số lượng mới trong dữ liệu (listSole) dựa trên record
-    // Ví dụ:
+    // Ensure the value is at least 1
+    const newQuantity = Math.max(value, 1);
     const updatedListSole = listSizeAdd.map((item) =>
-      item.id === record.id ? { ...item, quantity: value } : item
+      item.size === record.size ? { ...item, quantity: newQuantity } : item
     );
     setListSizeAdd(updatedListSole);
   };
 
   const handleQuantityDecrease = (record) => {
     const updatedListSole = listSizeAdd.map((item) =>
-      item.id === record.id ? { ...item, quantity: item.quantity - 1 } : item
+      item.size === record.size
+        ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
+        : item
     );
     setListSizeAdd(updatedListSole);
   };
 
   const handleQuantityIncrease = (record) => {
     const updatedListSole = listSizeAdd.map((item) =>
-      item.id === record.id ? { ...item, quantity: item.quantity + 1 } : item
+      item.size === record.size
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
     );
     setListSizeAdd(updatedListSole);
   };
-  const handleSaveData = (newSize) => {
-    // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
-    const existingSize = listSizeAdd.find((item) => item.size === newSize.size);
 
-    if (existingSize) {
-      // Nếu kích thước đã tồn tại, cộng dồn số lượng
-      setListSizeAdd((prevList) =>
-        prevList.map((item) =>
-          item.size === newSize.size
-            ? { ...item, quantity: item.quantity + newSize.quantity }
-            : item
-        )
+  const handleSaveData = (selectedSizeData) => {
+    console.log(selectedSizeData);
+    selectedSizeData.forEach((selectedSizeData) => {
+      // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
+      const existingSize = listSizeAdd.find(
+        (item) => item.size === selectedSizeData.size
       );
-    } else {
-      setListSizeAdd((prevList) => [
-        ...prevList,
-        {
-          stt: prevList.length + 1,
-          size: newSize.size,
-          quantity: newSize.quantity,
-          status: "DANG_SU_DUNG",
-        },
-      ]);
-    }
+
+      if (existingSize) {
+        // Nếu kích thước đã tồn tại, cộng dồn số lượng
+        setListSizeAdd((prevList) =>
+          prevList.map((item) =>
+            item.size === selectedSizeData.size
+              ? { ...item, quantity: item.quantity + selectedSizeData.quantity }
+              : item
+          )
+        );
+      } else {
+        setListSizeAdd((prevList) => [
+          ...prevList,
+          {
+            stt: prevList.length + 1,
+            size: selectedSizeData.size,
+            quantity: selectedSizeData.quantity,
+            status: "DANG_SU_DUNG",
+          },
+        ]);
+      }
+    });
   };
   const handleDelete = (index) => {
     const updatedList = listSizeAdd.filter((item, i) => i !== index);
@@ -399,7 +421,7 @@ const CreateProductManagment = () => {
       render: (text, record) => (
         <Space>
           <Button
-            onClick={handleQuantityDecrease}
+            onClick={() => handleQuantityDecrease(record)}
             style={{ margin: "0 0 0 4px" }}
           >
             -
@@ -410,7 +432,7 @@ const CreateProductManagment = () => {
             onChange={(value) => handleQuantityChange(value, record)}
           />
           <Button
-            onClick={handleQuantityIncrease}
+            onClick={() => handleQuantityIncrease(record)}
             style={{ margin: "0 10px 0 0" }}
           >
             +
@@ -471,7 +493,18 @@ const CreateProductManagment = () => {
 
         <div style={{ marginTop: "25px" }}>
           <div className="content">
-            <Form onFinish={onFinish}>
+            <Form onFinish={onFinish} initialValues={initialValues}>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="form-submit-btn"
+                  onClick={handleUpload}
+                  disabled={isSubmitting}
+                >
+                  Hoàn Tất
+                </Button>
+              </Form.Item>
               <Form.Item
                 label="Tên sản phẩm"
                 name="productId"
@@ -535,9 +568,8 @@ const CreateProductManagment = () => {
                       },
                     ]}
                   >
-                    <Select placeholder="Chọn trạng thái sản phẩm">
+                    <Select>
                       <Option value="DANG_SU_DUNG">Kinh Doanh</Option>
-                      <Option value="KHONG_SU_DUNG">Không Kinh Doanh</Option>
                     </Select>
                   </Form.Item>
                 </Col>
@@ -614,7 +646,7 @@ const CreateProductManagment = () => {
                   >
                     <Select
                       placeholder="Chọn thương hiệu"
-                      style={{ marginLeft: "20px", width: "325px" }}
+                      style={{ marginLeft: "20px", width: "260px" }}
                     >
                       {listMaterial.map((material, index) => (
                         <Option key={index} value={material.id}>
@@ -676,7 +708,7 @@ const CreateProductManagment = () => {
                   >
                     <Select
                       placeholder="Chọn thương hiệu"
-                      style={{ marginLeft: "20px", width: "325px" }}
+                      style={{ marginLeft: "20px", width: "260px" }}
                     >
                       <Option value="NAM">Nam</Option>
                       <Option value="NU">Nữ</Option>
@@ -729,18 +761,6 @@ const CreateProductManagment = () => {
                   </Form.Item>
                 </Col>
               </Row>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="form-submit-btn"
-                  onClick={handleUpload}
-                  disabled={isSubmitting}
-                >
-                  Xác nhận
-                </Button>
-              </Form.Item>
             </Form>
           </div>
           <ModalCreateSole visible={modalAddSole} onCancel={handleCancel} />

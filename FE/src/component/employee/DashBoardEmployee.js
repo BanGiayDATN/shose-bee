@@ -20,6 +20,7 @@ import {
   faTags,
   faUserGroup,
   faMap,
+  faBoxesPacking,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
 
@@ -48,9 +49,11 @@ const DashBoardEmployee = ({ children }) => {
   return (
     <Layout className="layout-employee">
       <Sider trigger={null} collapsible width={225} collapsed={collapsed}>
-        <div className="logo">
-          <img src={Logo} className="logo-content" />
-        </div>
+        <Link to="/dashboard">
+          <div className="logo">
+            <img src={Logo} className="logo-content" alt="Logo" />
+          </div>
+        </Link>
         <div className="demo-logo-vertical" />
         <Menu theme="dark" mode="inline">
           <Menu.Item
@@ -110,7 +113,7 @@ const DashBoardEmployee = ({ children }) => {
             key="6"
             icon={
               <FontAwesomeIcon
-                icon={faFileInvoiceDollar}
+                icon={faBoxesPacking}
                 style={{ color: "white" }}
               />
             }

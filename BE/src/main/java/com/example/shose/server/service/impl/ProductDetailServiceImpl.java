@@ -8,6 +8,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
+import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -20,10 +21,12 @@ import com.example.shose.server.repository.ImageRepository;
 import com.example.shose.server.repository.MaterialRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
+import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.FormUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,6 +72,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private ProductRepository productRepository;
 
     @Autowired
+    private SizeProductDetailRepository sizeProductDetailRepository;
+
+    @Autowired
     private UploadImageToCloudinary imageToCloudinary;
 
     @Override
@@ -77,10 +83,13 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
+    @Transactional
     public ProductDetailDTO create(CreateProductDetailRequest req,
                                    List<MultipartFile> multipartFiles,
                                    List<CreateSizeData> listSize,
                                    List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException {
+        List<Image> images = new ArrayList<>();
+        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
         ProductDetail add = new ProductDetail();
         add.setBrand(brandRepository.getById(req.getBrandId()));
         add.setCategory(categoryRepository.getById(req.getCategoryId()));
@@ -95,41 +104,40 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         add.setStatus("DANG_SU_DUNG".equals(req.getStatus()) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
         productDetailRepository.save(add);
 
-        //  save Size
-        List<Size> sizes = new ArrayList<>();
+        List<SizeProductDetail> sizeProductDetails =  new ArrayList<>();
         for (CreateSizeData data : listSize) {
+            SizeProductDetail sizeProductDetail = new SizeProductDetail();
             Size size = sizeRepository.getOneByName(data.getSize());
             if (size == null) {
                 size = new Size();
                 size.setName(data.getSize());
-                size.setQuantity(data.getQuantity());
-                size.setProductDetail(add);
-            } else {
-                // Nếu kích thước đã tồn tại, hãy cập nhật số lượng của nó
-                size.setQuantity(data.getQuantity());
-                size.setProductDetail(add);
+                size.setStatus(Status.DANG_SU_DUNG);
+                sizeRepository.save(size);
             }
-            sizes.add(size);
-        }
-        sizeRepository.saveAll(sizes);
+            sizeProductDetail.setQuantity(data.getQuantity());
+            sizeProductDetail.setProductDetail(add);
+            sizeProductDetail.setSize(size);
+            sizeProductDetails.add(sizeProductDetail);
 
-        // Upload images to Cloudinary and get a list of URLs
-        // Save images to the Image entity and store in the database
-        List<Image> images = new ArrayList<>();
-        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
-        for (int i = 0; i < imageUrls.size(); i++) {
-            Image image = new Image();
-            String imageUrl = imageUrls.get(i);
-            boolean isStarred = listStatusImage.get(i);
-            image.setName(imageUrl);
-            image.setStatus(isStarred);
-            image.setProductDetail(add);
-            images.add(image);
+            // Process images for each size
+            for (int i = 0; i < imageUrls.size(); i++) {
+                Image image = new Image();
+                String imageUrl = imageUrls.get(i);
+                boolean isStarred = listStatusImage.get(i);
+                image.setName(imageUrl);
+                image.setStatus(isStarred);
+                image.setProductDetail(add);
+                images.add(image);
+            }
         }
+
+        sizeProductDetailRepository.saveAll(sizeProductDetails);
         imageRepository.saveAll(images);
-        ProductDetailDTO detailDTO = new ProductDetailDTO(add);
+
+        ProductDetailDTO detailDTO = new ProductDetailDTO(add); // Return the first item in the list as an example
         return detailDTO;
     }
+
 
 
     @Override

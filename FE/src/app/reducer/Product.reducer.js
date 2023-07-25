@@ -12,7 +12,7 @@ const productSlice = createSlice({
     CreateProduct: (state, action) => {
       const data = action.payload;
       const newProduct = {
-        stt: 1,
+        stt: state.length + 1,
         id: data.id,
         gender: data.gender,
         price: data.price,
@@ -29,7 +29,6 @@ const productSlice = createSlice({
     UpdateProduct: (state, action) => {
       const update = action.payload; // backend
       const index = state.findIndex((period) => period.id === update.id);
-      console.log(index);
       if (index !== -1) {
         state[index].nameProduct = update.nameProduct;
         state[index].gender = update.gender;

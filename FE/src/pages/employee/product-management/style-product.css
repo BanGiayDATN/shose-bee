@@ -96,12 +96,12 @@
 
   
   .form-input {
-    width: 1200px;
+    width: 1000px;
     height: 40px;
   }
   
   .form-textarea {
-    width: 1200px;
+    width: 1000px;
     margin-left: 50px;
   }
   
@@ -173,7 +173,7 @@
 }
 
 .danger-btn {
-  background-color: rgb(168, 16, 110);
+  background-color: red;
   color: white;
   width: 100px;
   border-radius: 15px;

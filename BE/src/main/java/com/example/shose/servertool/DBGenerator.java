@@ -14,6 +14,7 @@ import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
+import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
@@ -40,6 +41,7 @@ import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
+import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.repository.UserReposiory;
@@ -132,6 +134,9 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private UserReposiory userReposiory;
+
+    @Autowired
+    private SizeProductDetailRepository sizeProductDetailRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -232,54 +237,73 @@ public class DBGenerator implements CommandLineRunner {
         soleRepository.save(sole3);
         soleRepository.save(sole4);
 
+        Size size = Size.builder().name(44).status(Status.DANG_SU_DUNG).build();
+        Size size1 = Size.builder().name(43).status(Status.DANG_SU_DUNG).build();
+        Size size2 = Size.builder().name(42).status(Status.DANG_SU_DUNG).build();
+        Size size3 = Size.builder().name(41).status(Status.DANG_SU_DUNG).build();
+        Size size4 = Size.builder().name(40).status(Status.DANG_SU_DUNG).build();
+        Size size5 = Size.builder().name(39).status(Status.DANG_SU_DUNG).build();
+        Size size6 = Size.builder().name(38).status(Status.DANG_SU_DUNG).build();
+        Size size7 = Size.builder().name(37).status(Status.DANG_SU_DUNG).build();
+        Size size8 = Size.builder().name(36).status(Status.DANG_SU_DUNG).build();
+        sizeRepository.save(size);
+        sizeRepository.save(size1);
+        sizeRepository.save(size2);
+        sizeRepository.save(size3);
+        sizeRepository.save(size4);
+        sizeRepository.save(size5);
+        sizeRepository.save(size6);
+        sizeRepository.save(size7);
+        sizeRepository.save(size8);
+
         ProductDetail productDetail1 = ProductDetail.builder()
                 .sole(sole1).category(category).color(color).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail2 = ProductDetail.builder()
                 .sole(sole2).category(category2).color(color2).material(material2).brand(brand2).product(product2)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail3 = ProductDetail.builder()
                 .sole(sole1).category(category).color(color).material(material).brand(brand).product(product3)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail4 = ProductDetail.builder()
                 .sole(sole4).category(category3).color(color3).material(material3).brand(brand).product(product4)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail5 = ProductDetail.builder()
                 .sole(sole3).category(category4).color(color7).material(material2).brand(brand).product(product5)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail6 = ProductDetail.builder()
                 .sole(sole1).category(category).color(color).material(material).brand(brand).product(product6)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail7 = ProductDetail.builder()
                 .sole(sole1).category(category).color(color).material(material).brand(brand).product(product7)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail8 = ProductDetail.builder()
                 .sole(sole1).category(category).color(color).material(material).brand(brand).product(product8)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail9 = ProductDetail.builder()
                 .sole(sole1).category(category).color(color).material(material).brand(brand).product(product9)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail10 = ProductDetail.builder()
                 .sole(sole1).category(category).color(color).material(material).brand(brand).product(product10)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("1900000")).status(Status.DANG_SU_DUNG)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("19000010")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         productDetailRepository.save(productDetail1);
@@ -293,24 +317,31 @@ public class DBGenerator implements CommandLineRunner {
         productDetailRepository.save(productDetail9);
         productDetailRepository.save(productDetail10);
 
-        Size size = Size.builder().name(44).status(Status.DANG_SU_DUNG).quantity(13).productDetail(productDetail1).build();
-        Size size1 = Size.builder().name(43).status(Status.DANG_SU_DUNG).quantity(15).productDetail(productDetail2).build();
-        Size size2 = Size.builder().name(42).status(Status.DANG_SU_DUNG).quantity(34).productDetail(productDetail3).build();
-        Size size3 = Size.builder().name(41).status(Status.DANG_SU_DUNG).quantity(20).productDetail(productDetail4).build();
-        Size size4 = Size.builder().name(40).status(Status.DANG_SU_DUNG).quantity(11).productDetail(productDetail5).build();
-        Size size5 = Size.builder().name(39).status(Status.DANG_SU_DUNG).quantity(5).productDetail(productDetail5).build();
-        Size size6 = Size.builder().name(38).status(Status.DANG_SU_DUNG).quantity(10).productDetail(productDetail6).build();
-        Size size7 = Size.builder().name(37).status(Status.DANG_SU_DUNG).quantity(11).productDetail(productDetail7).build();
-        Size size8 = Size.builder().name(36).status(Status.DANG_SU_DUNG).quantity(14).productDetail(productDetail8).build();
-        sizeRepository.save(size);
-        sizeRepository.save(size1);
-        sizeRepository.save(size2);
-        sizeRepository.save(size3);
-        sizeRepository.save(size4);
-        sizeRepository.save(size5);
-        sizeRepository.save(size6);
-        sizeRepository.save(size7);
-        sizeRepository.save(size8);
+        SizeProductDetail sizeProductDetail1 = SizeProductDetail.builder().size(size).productDetail(productDetail1).quantity(12).build();
+        SizeProductDetail sizeProductDetail2 = SizeProductDetail.builder().size(size2).productDetail(productDetail2).quantity(12).build();
+        SizeProductDetail sizeProductDetail3 = SizeProductDetail.builder().size(size1).productDetail(productDetail3).quantity(12).build();
+        SizeProductDetail sizeProductDetail4 = SizeProductDetail.builder().size(size3).productDetail(productDetail4).quantity(12).build();
+        SizeProductDetail sizeProductDetail5 = SizeProductDetail.builder().size(size4).productDetail(productDetail5).quantity(12).build();
+        SizeProductDetail sizeProductDetail6 = SizeProductDetail.builder().size(size5).productDetail(productDetail6).quantity(12).build();
+        SizeProductDetail sizeProductDetail7 = SizeProductDetail.builder().size(size6).productDetail(productDetail7).quantity(12).build();
+        SizeProductDetail sizeProductDetail8 = SizeProductDetail.builder().size(size8).productDetail(productDetail8).quantity(12).build();
+        SizeProductDetail sizeProductDetail9 = SizeProductDetail.builder().size(size2).productDetail(productDetail9).quantity(12).build();
+        SizeProductDetail sizeProductDetail10 = SizeProductDetail.builder().size(size1).productDetail(productDetail10).quantity(12).build();
+        SizeProductDetail sizeProductDetail11 = SizeProductDetail.builder().size(size3).productDetail(productDetail10).quantity(13).build();
+        sizeProductDetailRepository.save(sizeProductDetail1);
+        sizeProductDetailRepository.save(sizeProductDetail2);
+        sizeProductDetailRepository.save(sizeProductDetail3);
+        sizeProductDetailRepository.save(sizeProductDetail4);
+        sizeProductDetailRepository.save(sizeProductDetail5);
+        sizeProductDetailRepository.save(sizeProductDetail6);
+        sizeProductDetailRepository.save(sizeProductDetail7);
+        sizeProductDetailRepository.save(sizeProductDetail8);
+        sizeProductDetailRepository.save(sizeProductDetail9);
+        sizeProductDetailRepository.save(sizeProductDetail10);
+        sizeProductDetailRepository.save(sizeProductDetail11);
+
+
+
 
 
         //image
@@ -324,7 +355,6 @@ public class DBGenerator implements CommandLineRunner {
         Image image8 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail8).status(true).build();
         Image image9 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail9).status(true).build();
         Image image10 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail10).status(true).build();
-        Image image11 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail10).status(true).build();
         imageRepository.save(image1);
         imageRepository.save(image2);
         imageRepository.save(image3);
@@ -335,7 +365,6 @@ public class DBGenerator implements CommandLineRunner {
         imageRepository.save(image8);
         imageRepository.save(image9);
         imageRepository.save(image10);
-        imageRepository.save(image11);
 
         User user1 = User.builder()
                 .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2000")).email("vinhnvph23845@fpt.edu.vn")

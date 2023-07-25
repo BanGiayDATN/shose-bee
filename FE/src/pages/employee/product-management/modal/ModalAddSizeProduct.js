@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSizes, setSelectedSizes] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [sizes, setSizes] = useState(
     Array.from({ length: 10 }, (_, index) => index + 35)
@@ -16,7 +16,7 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
   const handleOkAddSize = () => {
     if (inputValue) {
       setSizes([...sizes, parseInt(inputValue)]);
-      setInputValue(""); 
+      setInputValue("");
     }
     setInputValue("");
     setAddSizeModalVisible(false);
@@ -27,15 +27,26 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
   };
 
   const handleOk = () => {
-    if (selectedSize) {
-      const newSize = {
-        size: selectedSize,
+    if (selectedSizes.length > 0) {
+      // Check if there are selected sizes
+      const selectedSizeData = selectedSizes.map((size) => ({
+        size: size,
         quantity: quantity,
-      };
+      }));
 
-      onSaveData(newSize); // Gọi hàm onSaveData với thông tin kích thước và số lượng đã chọn
+      onSaveData(selectedSizeData); // Save the array of selected sizes and quantities
+      console.log(selectedSizeData);
+      setSelectedSizes([]); // Reset selected sizes after saving
+      setQuantity(1); // Reset quantity after saving
       onCancel();
     }
+  };
+  const toggleSizeSelection = (size) => {
+    setSelectedSizes((prevSelected) =>
+      prevSelected.includes(size)
+        ? prevSelected.filter((selected) => selected !== size)
+        : [...prevSelected, size]
+    );
   };
 
   const handleCancel = () => {
@@ -78,7 +89,12 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
               marginBottom: 16,
             }}
           >
-            <Button onClick={() => setAddSizeModalVisible(true)}  icon={<FontAwesomeIcon icon={faPlus} />}>Thêm kích thước</Button>
+            <Button
+              onClick={() => setAddSizeModalVisible(true)}
+              icon={<FontAwesomeIcon icon={faPlus} />}
+            >
+              Thêm kích thước
+            </Button>
           </div>
         </div>
         <Row gutter={[16, 16]}>
@@ -87,8 +103,8 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
             <Col key={size} span={6}>
               <Button
                 block
-                className={selectedSize === size ? "selected" : ""}
-                onClick={() => setSelectedSize(size)}
+                className={selectedSizes.includes(size) ? "selected" : ""}
+                onClick={() => toggleSizeSelection(size)} // Updated to use toggleSizeSelection function
               >
                 {size}
               </Button>
