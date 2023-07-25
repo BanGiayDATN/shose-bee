@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.entity.Image;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.SizeProductDetail;
@@ -25,7 +26,6 @@ import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.ProductDetailService;
-import com.example.shose.server.util.FormUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -164,5 +164,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         ProductDetailDTO detailDTO = new ProductDetailDTO(optional.get());
         System.out.println(detailDTO);
         return detailDTO;
+    }
+
+    @Override
+    public List<GetProductDetailByProduct> getByIdProduct(String id) {
+        return productDetailRepository.getByIdProduct(id);
     }
 }

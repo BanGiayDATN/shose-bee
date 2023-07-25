@@ -70,10 +70,14 @@ public class ProductDetailRestController {
         List<CreateSizeData> listSize = new ArrayList<>();
         for (int i = 0; i < jsonListSize.size(); i++) {
             JsonObject sizeDataObject = jsonListSize.get(i).getAsJsonObject();
-            CreateSizeData sizeData = formUtils.convertToObject( CreateSizeData.class,sizeDataObject);
+            CreateSizeData sizeData = formUtils.convertToObject(CreateSizeData.class, sizeDataObject);
             listSize.add(sizeData);
         }
 
-        return new ResponseObject(productDetailService.create(request, multipartFiles ,listSize , listStatusImage));
+        return new ResponseObject(productDetailService.create(request, multipartFiles, listSize, listStatusImage));
+    }
+    @GetMapping("/byProduct/{id}")
+    public ResponseObject getByIdProduct(@PathVariable("id") String id) {
+        return new ResponseObject(productDetailService.getByIdProduct(id));
     }
 }

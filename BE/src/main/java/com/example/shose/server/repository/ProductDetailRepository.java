@@ -2,6 +2,7 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -62,4 +63,22 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
              ORDER BY detail.last_modified_date DESC 
             """, nativeQuery = true)
     List<ProductDetailReponse> getAll(@Param("req") FindProductDetailRequest req);
+
+    @Query(value = """
+             SELECT 
+                               detail.id AS id,
+                               i.name AS image,
+                               p.code AS codeProduct,
+                               p.name AS nameProduct,
+                               detail.price AS price,
+                               detail.created_date AS created_date,
+                               detail.gender AS gender,
+                               detail.status AS status
+                        FROM product_detail detail
+                        JOIN product p on detail.id_product = p.id
+                        JOIN image i on detail.id = i.id_product_detail
+                        where p.id = :id
+            """,nativeQuery = true)
+    List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
+
 }

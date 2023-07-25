@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.productdetail.CreateProductDetailReq
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.infrastructure.common.PageableObject;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,9 @@ public interface ProductDetailService {
     Boolean delete(String id);
 
     ProductDetailDTO getOneById(String id);
+
+    List<GetProductDetailByProduct> getByIdProduct(String id);
+
 
 
 }

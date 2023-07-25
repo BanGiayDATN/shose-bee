@@ -78,4 +78,9 @@ public class ProductServiceImpl implements ProductService {
         }
         return optional.get();
     }
+
+    @Override
+    public List<Product> getProductUse() {
+        return productRepository.getProductUse();
+    }
 }
