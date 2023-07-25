@@ -72,15 +72,15 @@ function CreateVoucherManagement() {
   }, [listProductDetail]);
 
   useEffect(() => {
-    if(detailProduct){
+    if (detailProduct) {
       for (const key of selectedRowKeys) {
         getProdutDetailByproduct(key);
       }
-  
+
       setListProductDetail(updatedListProductDetail);
     }
 
-      console.log(selectedRowKeys);
+    console.log(selectedRowKeys);
   }, [selectedRowKeys]);
 
   const updatedListProductDetail = listProductDetail.filter((item) =>
@@ -106,7 +106,6 @@ function CreateVoucherManagement() {
           ...prevListProductDetail,
           ...res.data.data,
         ]);
-       
       },
       (err) => {
         console.log(err);
@@ -119,22 +118,18 @@ function CreateVoucherManagement() {
   };
 
   const onSelectChange = (newSelectedRowKeys) => {
-    if(!detailProduct){
+    if (!detailProduct) {
       console.log("diem");
       setSelectedRowKeys(newSelectedRowKeys);
-    }else{
+    } else {
       setSelectedRowKeys(newSelectedRowKeys);
     }
-   
   };
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-
-
-
 
   const onSelectChangeDetail = (newSelectedRowKeys) => {
     setSelectedRowKeysDetail(newSelectedRowKeys);
@@ -451,17 +446,17 @@ function CreateVoucherManagement() {
           </Col>
           <Col>
             {/* {selectedRowKeys.length > 0 && detailProduct && ( */}
-              <div>
-                <h1>Chi tiết sản phẩm</h1>
-                <br></br>
-                <Table
-                  rowKey="id"
-                  columns={columnsDetailproduct}
-                  rowSelection={rowSelectionDetail}
-                  dataSource={updatedListDetail}
-                  pagination={{ pageSize: 5 }}
-                />
-              </div>
+            <div>
+              <h1>Chi tiết sản phẩm</h1>
+              <br></br>
+              <Table
+                rowKey="id"
+                columns={columnsDetailproduct}
+                rowSelection={rowSelectionDetail}
+                dataSource={updatedListDetail}
+                pagination={{ pageSize: 5 }}
+              />
+            </div>
             {/* )} */}
           </Col>
         </Col>

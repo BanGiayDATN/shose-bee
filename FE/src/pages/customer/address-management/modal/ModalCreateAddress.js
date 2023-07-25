@@ -3,7 +3,7 @@ import { Modal, Input, Select, Button, Form, Popconfirm } from "antd";
 import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
 import { AddressApi } from "../../../../api/customer/address/address.api";
-import { CreateAddress } from "../../../../app/reducer/address.reducer";
+import { CreateAddress } from "../../../../app/reducer/Address.reducer";
 
 const { Option } = Select;
 

@@ -37,7 +37,9 @@ public class SoleServiceImpl implements SoleService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Sole add = Sole.builder().name(req.getName()).status(req.getStatus()).build();
+        Sole add = new Sole();
+        add.setStatus(req.getStatus());
+        add.setName(req.getName());
         return soleRepository.save(add);
     }
 

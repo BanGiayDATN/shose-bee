@@ -12,7 +12,7 @@ const soleSlice = createSlice({
     CreateSole: (state, action) => {
       const data = action.payload;
       const newSole = {
-        stt: state.length + 1,
+        stt: 1,
         id: data.id,
         name: data.name,
         status: data.status,
@@ -20,12 +20,13 @@ const soleSlice = createSlice({
         lastModifiedDate: data.startTime,
       };
       state.unshift(newSole);
+      state.forEach((item, index) => {
+        item.stt = index + 1;
+      });
     },
     UpdateSole: (state, action) => {
       const update = action.payload; // backend
-      const index = state.findIndex(
-        (period) => period.id === update.id
-      );
+      const index = state.findIndex((period) => period.id === update.id);
       console.log(index);
       if (index !== -1) {
         state[index].name = update.name;
@@ -37,7 +38,6 @@ const soleSlice = createSlice({
   },
 });
 
-export const { SetSole, CreateSole, UpdateSole } =
-  soleSlice.actions;
+export const { SetSole, CreateSole, UpdateSole } = soleSlice.actions;
 export default soleSlice.reducer;
 export const GetSole = (state) => state.sole;

@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Table, Col, Select, Row } from "antd";
+import {
+  Input,
+  Button,
+  Table,
+  Col,
+  Select,
+  Row,
+  Space,
+  Spin,
+  Slider,
+} from "antd";
 import "./style-product.css";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 
@@ -21,7 +31,7 @@ import { CategoryApi } from "../../../api/employee/category/category.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../api/employee/color/Color.api";
 import tinycolor from "tinycolor2";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 
 const ProductManagement = () => {
@@ -34,6 +44,7 @@ const ProductManagement = () => {
     const formatter = new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
+      currencyDisplay: "code",
     });
     return formatter.format(value);
   };
@@ -52,7 +63,6 @@ const ProductManagement = () => {
 
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    console.log("Đang tìm kiếm:", search);
     ProducDetailtApi.fetchAll({
       product: search,
     }).then((res) => {
@@ -64,6 +74,12 @@ const ProductManagement = () => {
   // Xử lý làm mới bộ lọc
   const handleClear = () => {
     setSearch("");
+    ProducDetailtApi.fetchAll({
+      product: "",
+    }).then((res) => {
+      setListProduct(res.data.data);
+      dispatch(SetProduct(res.data.data));
+    });
   };
 
   const [listMaterial, setListMaterial] = useState([]);
@@ -75,7 +91,7 @@ const ProductManagement = () => {
 
   const listSize = [];
   for (let size = 35; size <= 45; size++) {
-    listSize.push("" + size);
+    listSize.push(size);
   }
 
   const getColorName = (color) => {
@@ -97,11 +113,13 @@ const ProductManagement = () => {
     brand: "",
     material: "",
     product: "",
-    sizeProduct: "",
+    sizeProduct: null,
     sole: "",
     category: "",
     gender: "",
     status: "",
+    minPrice: 0,
+    maxPrice: 50000000000,
   });
 
   const handleSelectChange = (value, fieldName) => {
@@ -111,12 +129,24 @@ const ProductManagement = () => {
     }));
   };
 
+  const handleChangeValuePrice = (value) => {
+    const [minPrice, maxPrice] = value;
+
+    setSelectedValues((prevValues) => ({
+      ...prevValues,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+    }));
+  };
+
   const loadData = () => {
+    console.log(selectedValues);
     ProducDetailtApi.fetchAll(selectedValues).then(
       (res) => {
         console.log(res);
         setListProduct(res.data.data);
         dispatch(SetProduct(res.data.data));
+        setIsSubmitted(false);
       },
       (err) => {
         console.log(err);
@@ -125,10 +155,15 @@ const ProductManagement = () => {
   };
 
   // Xử lý logic chỉnh sửa
-  const handleViewDetail = (id) => {};
+  const navigate = useNavigate();
+  const handleViewDetail = (id) => {
+    navigate(`/detail-product-management/${id}`);
+  };
   const handleUpdate = (id) => {};
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
+    setIsSubmitted(true);
     getList();
     loadData();
   }, [selectedValues]);
@@ -148,7 +183,7 @@ const ProductManagement = () => {
         <img
           src={text}
           alt="Ảnh sản phẩm"
-          style={{ width: "130px", borderRadius: "20px" }}
+          style={{ width: "130px", borderRadius: "20px", height: "110px" }}
         />
       ),
     },
@@ -166,6 +201,13 @@ const ProductManagement = () => {
       render: (text) => formatCurrency(text),
     },
     {
+      title: "Số Lượng Tồn ",
+      dataIndex: "totalQuantity",
+      key: "totalQuantity",
+      sorter: (a, b) => a.totalQuantity - b.totalQuantity,
+      align: "center",
+    },
+    {
       title: "Ngày Tạo",
       dataIndex: "createDate",
       key: "createDate",
@@ -176,6 +218,19 @@ const ProductManagement = () => {
       title: "Giới Tính",
       dataIndex: "gender",
       key: "gender",
+      render: (gender) => (
+        <Button
+          className={
+            gender === "NAM"
+              ? "primary-btn"
+              : gender === "NU"
+              ? "danger-btn"
+              : "default-btn"
+          }
+        >
+          {gender === "NAM" ? "Nam" : gender === "NU" ? "Nữ" : "Nam và Nữ"}
+        </Button>
+      ),
     },
     {
       title: "Trạng Thái",
@@ -221,10 +276,33 @@ const ProductManagement = () => {
   return (
     <>
       <div className="title_sole">
-        {" "}
+        {isSubmitted && (
+          <Space
+            direction="vertical"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "white",
+              zIndex: 999999999,
+            }}
+          >
+            <Space>
+              <Spin tip="Loading" size="large">
+                <div className="content" />
+              </Spin>
+            </Space>
+          </Space>
+        )}{" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý sản phẩm</span>
       </div>
+
       <div className="filter">
         <FontAwesomeIcon icon={faFilter} size="2x" />{" "}
         <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
@@ -258,8 +336,8 @@ const ProductManagement = () => {
         </div>
         <div className="box_btn_filter">
           <Row align="middle">
-            <Col span={3} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Chất Liệu:</label>
+            <Col span={3} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Chất Liệu :</label>
             </Col>
             <Col span={2}>
               <Select
@@ -276,8 +354,8 @@ const ProductManagement = () => {
                 ))}
               </Select>
             </Col>
-            <Col span={3} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Thương Hiệu:</label>
+            <Col span={3} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Thương Hiệu :</label>
             </Col>
             <Col span={2}>
               <Select
@@ -293,8 +371,8 @@ const ProductManagement = () => {
                 ))}
               </Select>
             </Col>
-            <Col span={2} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Đế giày:</label>
+            <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Đế giày :</label>
             </Col>
             <Col span={2}>
               <Select
@@ -311,17 +389,17 @@ const ProductManagement = () => {
                 ))}
               </Select>
             </Col>
-            <Col span={2} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Kích cỡ:</label>
+            <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Kích cỡ :</label>
             </Col>
             <Col span={2}>
               <Select
                 style={{ width: "100%" }}
                 value={selectedValues.sizeProduct}
                 onChange={(value) => handleSelectChange(value, "sizeProduct")}
-                defaultValue=""
+                defaultValue={null}
               >
-                <Option value="">Tất cả</Option>
+                <Option value={null}>Tất cả</Option>
                 {listSize.map((size, index) => (
                   <Option key={index} value={size}>
                     {size}
@@ -329,8 +407,8 @@ const ProductManagement = () => {
                 ))}
               </Select>
             </Col>
-            <Col span={2} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Màu Sắc:</label>
+            <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Màu Sắc :</label>
             </Col>
             <Col span={2}>
               <Select
@@ -360,8 +438,8 @@ const ProductManagement = () => {
         </div>
         <div className="box_btn_filter">
           <Row align="middle">
-            <Col span={6} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Thể Loại:</label>
+            <Col span={4} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Thể Loại :</label>
             </Col>
             <Col span={3}>
               <Select
@@ -378,8 +456,8 @@ const ProductManagement = () => {
                 ))}
               </Select>
             </Col>
-            <Col span={2} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Trạng Thái:</label>
+            <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Trạng Thái :</label>
             </Col>
             <Col span={3}>
               <Select
@@ -393,8 +471,8 @@ const ProductManagement = () => {
                 <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
               </Select>
             </Col>
-            <Col span={2} style={{ textAlign: "right", paddingRight: 8 }}>
-              <label>Giới Tinh:</label>
+            <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Giới Tinh :</label>
             </Col>
             <Col span={3}>
               <Select
@@ -408,9 +486,29 @@ const ProductManagement = () => {
                 <Option value="NU">Nữ</Option>
               </Select>
             </Col>
+
+            <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
+              <label>Khoảng giá :</label>
+            </Col>
+            <Col span={3}>
+              <Slider
+                range={{
+                  draggableTrack: true,
+                }}
+                defaultValue={[
+                  selectedValues.minPrice,
+                  selectedValues.maxPrice,
+                ]}
+                min={100000}
+                max={30000000}
+                tipFormatter={(value) => formatCurrency(value)}
+                onChange={handleChangeValuePrice}
+              />
+            </Col>
           </Row>
         </div>
       </div>
+
       <div className="product-table">
         <div
           className="title_product"

@@ -20,6 +20,7 @@ import {
   faTags,
   faUserGroup,
   faMap,
+  faBoxesPacking,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
 
@@ -48,9 +49,11 @@ const DashBoardEmployee = ({ children }) => {
   return (
     <Layout className="layout-employee">
       <Sider trigger={null} collapsible width={225} collapsed={collapsed}>
-        <div className="logo">
-          <img src={Logo} className="logo-content" />
-        </div>
+        <Link to="/dashboard">
+          <div className="logo">
+            <img src={Logo} className="logo-content" alt="Logo" />
+          </div>
+        </Link>
         <div className="demo-logo-vertical" />
         <Menu theme="dark" mode="inline">
           <Menu.Item
@@ -85,7 +88,7 @@ const DashBoardEmployee = ({ children }) => {
             <Link to="/sale-counter">Bán Hàng Tại Quầy</Link>
           </Menu.Item>
           <Menu.Item
-            key="4"
+            key="4.1"
             icon={
               <FontAwesomeIcon
                 icon={faMoneyBill1Wave}
@@ -110,7 +113,7 @@ const DashBoardEmployee = ({ children }) => {
             key="6"
             icon={
               <FontAwesomeIcon
-                icon={faFileInvoiceDollar}
+                icon={faBoxesPacking}
                 style={{ color: "white" }}
               />
             }
@@ -134,16 +137,16 @@ const DashBoardEmployee = ({ children }) => {
           </SubMenu>
 
           <SubMenu
-            key="6"
+            key="7"
             icon={
               <FontAwesomeIcon icon={faUserGroup} style={{ color: "white" }} />
             }
             title="Quản Lý Tài Khoản"
           >
-            <Menu.Item key="6.0">
+            <Menu.Item key="7.0">
               <Link to="/staff-management">Nhân Viên</Link>
             </Menu.Item>
-            <Menu.Item key="6.1">
+            <Menu.Item key="7.1">
               <Link to="/customerr-management">Khách Hàng</Link>
             </Menu.Item>
           </SubMenu>

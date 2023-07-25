@@ -1,5 +1,4 @@
 import "./App.css";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppConfig } from "./AppConfig";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/403";
@@ -23,6 +22,7 @@ import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
 import AddressManagement from "./pages/customer/address-management/AddressManagement";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import CustomerManagement from "./pages/employee/customer-management/CustomerManagement";
 import ModalCreateAccount from "./pages/employee/account-management/modal/ModalCreateAccount";
 import ModalUpdateAccount from "./pages/employee/account-management/modal/ModalUpdateAccount";
@@ -30,6 +30,7 @@ import ModalDetailAccount from "./pages/employee/account-management/modal/ModalD
 import ModalCreateCustomer from "./pages/employee/customer-management/modal/ModalCreateCustomer";
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
+import DetailProductManagment from "./pages/employee/product-management/DetailProductManagment";
 function App() {
   return (
     <div className="App">
@@ -104,6 +105,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <CreateProductManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/detail-product-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <DetailProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }

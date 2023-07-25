@@ -5,6 +5,9 @@ import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,9 +29,10 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Size extends PrimaryEntity {
 
-    private String name;
+    private Integer name;
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
 
 }

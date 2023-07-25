@@ -20,6 +20,9 @@ const categorySlice = createSlice({
         lastModifiedDate: data.startTime,
       };
       state.unshift(newCategory);
+      state.forEach((item, index) => {
+        item.stt = index + 1;
+      });
     },
     UpdateCategory: (state, action) => {
       const updatedCategory = action.payload; // backend

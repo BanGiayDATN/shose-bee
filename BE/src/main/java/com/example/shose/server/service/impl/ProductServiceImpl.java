@@ -6,7 +6,6 @@ import com.example.shose.server.dto.request.product.UpdateProductRequest;
 import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ProductRepository;
 import com.example.shose.server.service.ProductService;
@@ -37,7 +36,10 @@ public class ProductServiceImpl implements ProductService {
         if (checkCode != null) {
             throw new RestApiException(Message.CODE_EXISTS);
         }
-        Product add = Product.builder().code(req.getCode()).name(req.getName()).status(Status.DANG_SU_DUNG).build();
+        Product add = new Product();
+        add.setStatus(req.getStatus());
+        add.setName(req.getName());
+        add.setCode(req.getCode());
         return productRepository.save(add);
     }
 
@@ -54,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
         Product update = optional.get();
         update.setCode(req.getCode());
         update.setName(req.getName());
-        update.setStatus(req.getStatus() == 0 ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(req.getStatus());
         return productRepository.save(update);
     }
 

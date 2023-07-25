@@ -109,6 +109,7 @@ const CategoryManagement = () => {
     setModalVisibleDetail(true);
   };
   const handleUpdate = (id) => {
+    setIdUpdate(id);
     setModalVisibleUpdate(true);
   };
 

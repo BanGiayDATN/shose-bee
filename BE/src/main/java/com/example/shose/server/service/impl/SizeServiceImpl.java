@@ -37,7 +37,9 @@ public class SizeServiceImpl implements SizeService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Size add = Size.builder().name(req.getName()).status(req.getStatus()).build();
+        Size add = new Size();
+        add.setStatus(req.getStatus());
+        add.setName(req.getName());
         return sizeRepository.save(add);
     }
 
