@@ -7,7 +7,7 @@ import AccountReducer from "./reducer/Account.reducer";
 import BrandReducer from "./reducer/Brand.reducer";
 import ProductReducer from "./reducer/Product.reducer";
 import SizeReducer from "./reducer/Size.reducer";
-import VoucherReducer from "./reducer/Voucher.reducer";
+import PromotionReducer from "./reducer/Promotion.reducer";
 import CustomerReducer from "./reducer/Customer.reducer";
 import AddressReducer from "./reducer/Address.reducer";
 export const store = configureStore({
@@ -22,7 +22,7 @@ export const store = configureStore({
     brand: BrandReducer,
     product: ProductReducer,
     size: SizeReducer,
-    voucher: VoucherReducer,
+    promotion: PromotionReducer,
   },
 });
 

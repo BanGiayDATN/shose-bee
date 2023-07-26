@@ -37,6 +37,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
             dispatch(CreateAddress(res.data.data));
             toast.success("Thêm thành công");
             onCancel();
+            form.resetFields();
           })
           .catch((error) => {
             toast.error("Thêm thất bại");
@@ -55,7 +56,6 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
     AddressApi.fetchAllProvince().then(
       (res) => {
         setListProvince(res.data.data);
-        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -69,10 +69,10 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         setListDistricts(res.data.data);
       }
     );
-    console.log(listDistricts);
   };
 
-  const handleCityChange = (value, valueDistrict) => {
+  const handleDistrictChange = (value, valueDistrict) => {
+    form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
     });
@@ -101,7 +101,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "7d27cbd0-6569-48f8-8286-378b956dab26",
+          userId: "8ae00573-7e45-4d07-a283-2c2a4a64e973",
         }}
       >
         <Form.Item
@@ -127,11 +127,11 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
 
         <Form.Item
           label="Quận/Huyện"
-          name="city"
+          name="district"
           rules={[{ required: true, message: "Vui lòng chọn Quận/Huyện" }]}
         >
-          <Select defaultValue="" onChange={handleCityChange}>
-            <Option value="">--Chọn Quận/Huyện--</Option>
+          <Select defaultValue=" " onChange={handleDistrictChange}>
+            <Option value=" ">--Chọn Quận/Huyện--</Option>
             {listDistricts?.map((item) => {
               return (
                 <Option
@@ -148,7 +148,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
 
         <Form.Item
           label="Xã/Phường"
-          name="country"
+          name="werd"
           rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
         >
           <Select defaultValue="">
@@ -173,7 +173,10 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="userId" hidden>
-          <Input defaultValue="7d27cbd0-6569-48f8-8286-378b956dab26" disabled />
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="toDistrictId" hidden>
+          <Input disabled />
         </Form.Item>
       </Form>
     </Modal>

@@ -1,7 +1,10 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
+import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -24,6 +27,9 @@ import lombok.ToString;
 public class SizeProductDetail extends PrimaryEntity {
 
     private Integer quantity;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_size",referencedColumnName = "id")

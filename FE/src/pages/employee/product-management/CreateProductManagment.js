@@ -26,6 +26,7 @@ import tinycolor from "tinycolor2";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
+import { GetSize, SetSize } from "../../../app/reducer/Size.reducer";
 import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
 import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
 import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
@@ -44,7 +45,6 @@ import axios from "axios";
 import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
 import NumberFormat from "react-number-format";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -60,18 +60,10 @@ const CreateProductManagment = () => {
   const dataCategory = useAppSelector(GetCategory);
   const dataMaterial = useAppSelector(GetMaterail);
   const dataBrand = useAppSelector(GetBrand);
+  const dataSize = useAppSelector(GetSize);
 
   const initialValues = {
-    description: "",
-    gender: "",
-    price: "",
     status: "DANG_SU_DUNG",
-    categoryId: "",
-    productId: "",
-    materialId: "",
-    colorId: "",
-    soleId: "",
-    brandId: "",
   };
 
   const handleCancel = () => {
@@ -90,11 +82,6 @@ const CreateProductManagment = () => {
   const [listColor, setListColor] = useState([]);
   const [listProduct, setListProduct] = useState([]);
   const [listSole, setListSole] = useState([]);
-
-  const listSize = [];
-  for (let size = 35; size <= 45; size++) {
-    listSize.push("" + size);
-  }
 
   const getColorName = (color) => {
     const colorObj = tinycolor(color);
@@ -188,7 +175,6 @@ const CreateProductManagment = () => {
   };
 
   const handleSaveData = (selectedSizeData) => {
-    console.log(selectedSizeData);
     selectedSizeData.forEach((selectedSizeData) => {
       // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
       const existingSize = listSizeAdd.find(
@@ -275,7 +261,6 @@ const CreateProductManagment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     if (isSubmitting) {
-      // Redirect to the new page after successful form submission
       window.location.href = "/product-management";
     }
   }, [isSubmitting]);
@@ -392,14 +377,15 @@ const CreateProductManagment = () => {
       dataSole != null ||
       dataBrand != null ||
       dataCategory != null ||
-      dataMaterial != null
+      dataMaterial != null ||
+      dataSize != null
     ) {
       setListSole(dataSole);
       setListCategory(dataCategory);
       setListMaterial(dataMaterial);
       setListBrand(dataBrand);
     }
-  }, [dataSole, dataBrand, dataCategory, dataMaterial]);
+  }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
 
   const columns = [
     {
@@ -518,7 +504,7 @@ const CreateProductManagment = () => {
                   placeholder="Nhập tên sản phẩm"
                   onSearch={handleSearch}
                 >
-                  <Input className="form-input" />
+                  <Input className="form-input" style={{ fontWeight: "bold" }}/>
                 </AutoComplete>
               </Form.Item>
 
@@ -569,13 +555,15 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select>
-                      <Option value="DANG_SU_DUNG">Kinh Doanh</Option>
+                      <Option value="DANG_SU_DUNG">
+                        <span style={{ fontWeight: "bold" }}>Kinh Doanh</span>
+                      </Option>
                     </Select>
                   </Form.Item>
                 </Col>
               </Row>
 
-              <Row gutter={7} justify="center">
+              <Row gutter={7} justify="space-around">
                 <Col span={8}>
                   <Form.Item
                     label="Thương hiệu"
@@ -588,13 +576,15 @@ const CreateProductManagment = () => {
                     <Select placeholder="Chọn thương hiệu">
                       {listBrand.map((brand, index) => (
                         <Option key={index} value={brand.id}>
-                          {brand.name}
+                          <span style={{ fontWeight: "bold" }}>
+                            {brand.name}
+                          </span>
                         </Option>
                       ))}
                     </Select>
                   </Form.Item>
                 </Col>
-                <Col span={2}>
+                <Col span={5}>
                   <Form.Item>
                     <Button
                       type="primary"
@@ -616,7 +606,9 @@ const CreateProductManagment = () => {
                     <Select placeholder="Chọn thể loại">
                       {listCategory.map((category, index) => (
                         <Option key={index} value={category.id}>
-                          {category.name}
+                          <span style={{ fontWeight: "bold" }}>
+                            {category.name}
+                          </span>
                         </Option>
                       ))}
                     </Select>
@@ -634,7 +626,7 @@ const CreateProductManagment = () => {
                 </Col>
               </Row>
 
-              <Row gutter={7} justify="center">
+              <Row gutter={7} justify="space-around">
                 <Col span={8}>
                   <Form.Item
                     label="Chất Liệu"
@@ -645,18 +637,20 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select
-                      placeholder="Chọn thương hiệu"
+                      placeholder="Chọn giới tính"
                       style={{ marginLeft: "20px", width: "260px" }}
                     >
                       {listMaterial.map((material, index) => (
                         <Option key={index} value={material.id}>
-                          {material.name}
+                          <span style={{ fontWeight: "bold" }}>
+                            {material.name}
+                          </span>
                         </Option>
                       ))}
                     </Select>
                   </Form.Item>
                 </Col>
-                <Col span={2}>
+                <Col span={5}>
                   <Form.Item>
                     <Button
                       type="primary"
@@ -678,7 +672,9 @@ const CreateProductManagment = () => {
                     <Select placeholder="Chọn thể loại">
                       {listSole.map((sole, index) => (
                         <Option key={index} value={sole.id}>
-                          {sole.name}
+                          <span style={{ fontWeight: "bold" }}>
+                            {sole.name}
+                          </span>
                         </Option>
                       ))}
                     </Select>
@@ -696,27 +692,35 @@ const CreateProductManagment = () => {
                 </Col>
               </Row>
 
-              <Row gutter={7} justify="center">
+              <Row gutter={7} justify="space-around">
                 <Col span={8}>
                   <Form.Item
                     label="Giới Tính"
                     name="gender"
                     style={{ fontWeight: "bold" }}
                     rules={[
-                      { required: true, message: "Vui lòng chọn thương hiệu" },
+                      { required: true, message: "Vui lòng chọn giới tính" },
                     ]}
                   >
                     <Select
-                      placeholder="Chọn thương hiệu"
+                      placeholder="Chọn chọn giới tính"
                       style={{ marginLeft: "20px", width: "260px" }}
                     >
-                      <Option value="NAM">Nam</Option>
-                      <Option value="NU">Nữ</Option>
-                      <Option value="NAM_VA_NU">Khác</Option>
+                      <Option value="NAM">
+                        <span style={{ fontWeight: "bold" }}>Nam</span>
+                      </Option>
+                      <Option value="NU">
+                        {" "}
+                        <span style={{ fontWeight: "bold" }}>Nữ</span>
+                      </Option>
+                      <Option value="NAM_VA_NU">
+                        {" "}
+                        <span style={{ fontWeight: "bold" }}>Nam và Nữ</span>
+                      </Option>
                     </Select>
                   </Form.Item>
                 </Col>
-                <Col span={2}>
+                <Col span={5}>
                   <Form.Item>
                     <Button
                       type="primary"

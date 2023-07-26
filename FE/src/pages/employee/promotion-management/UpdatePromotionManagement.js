@@ -46,7 +46,6 @@ function UpdateVoucherManagement() {
     console.log(formData);
     const isFormValid =
       formData.name &&
-      formData.quantity &&
       formData.value &&
       formData.startDate &&
       formData.endDate &&
@@ -56,7 +55,6 @@ function UpdateVoucherManagement() {
     if (!isFormValid) {
       const errors = {
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
         value: !formData.value ? "Vui lòng nhập giá giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
         endDate: !formData.endDate
@@ -85,13 +83,6 @@ function UpdateVoucherManagement() {
       type: "text",
       label: "Tên khuyễn mại",
       text: "tên khuyễn mại",
-      class: "input-form",
-    },
-    {
-      name: "quantity",
-      type: "number",
-      label: "Số lượng",
-      text: "số lượng",
       class: "input-form",
     },
     {

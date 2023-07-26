@@ -5,7 +5,6 @@ import com.example.shose.server.dto.request.size.FindSizeRequest;
 import com.example.shose.server.dto.request.size.UpdateSizeRequest;
 import com.example.shose.server.dto.response.SizeResponse;
 import com.example.shose.server.entity.Size;
-import com.example.shose.server.infrastructure.common.PageableObject;
 
 import java.util.List;
 
@@ -14,13 +13,17 @@ import java.util.List;
  */
 public interface SizeService {
 
-    List<SizeResponse> findAll (final FindSizeRequest req);
+    List<SizeResponse> findAll(final FindSizeRequest req);
 
-    Size create (final CreateSizeRequest req);
+    List<Size> getAll();
 
-    Size update (final UpdateSizeRequest req);
+    Size create(final CreateSizeRequest req);
 
-    Boolean delete (String id);
+    Size update(final UpdateSizeRequest req);
 
-    Size getOneById (String id);
+    Boolean delete(String id);
+
+    Size getOneById(String id);
+
+    Size getOneByName(int name);
 }

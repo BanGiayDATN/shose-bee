@@ -13,6 +13,7 @@ import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Promotion;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.entity.Sole;
@@ -41,6 +42,7 @@ import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
+import com.example.shose.server.repository.PromotionRepository;
 import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
@@ -128,6 +130,8 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private VoucherRepository voucherRepository;
+    @Autowired
+    private PromotionRepository promotionRepository;
 
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
@@ -317,17 +321,17 @@ public class DBGenerator implements CommandLineRunner {
         productDetailRepository.save(productDetail9);
         productDetailRepository.save(productDetail10);
 
-        SizeProductDetail sizeProductDetail1 = SizeProductDetail.builder().size(size).productDetail(productDetail1).quantity(12).build();
-        SizeProductDetail sizeProductDetail2 = SizeProductDetail.builder().size(size2).productDetail(productDetail2).quantity(12).build();
-        SizeProductDetail sizeProductDetail3 = SizeProductDetail.builder().size(size1).productDetail(productDetail3).quantity(12).build();
-        SizeProductDetail sizeProductDetail4 = SizeProductDetail.builder().size(size3).productDetail(productDetail4).quantity(12).build();
-        SizeProductDetail sizeProductDetail5 = SizeProductDetail.builder().size(size4).productDetail(productDetail5).quantity(12).build();
-        SizeProductDetail sizeProductDetail6 = SizeProductDetail.builder().size(size5).productDetail(productDetail6).quantity(12).build();
-        SizeProductDetail sizeProductDetail7 = SizeProductDetail.builder().size(size6).productDetail(productDetail7).quantity(12).build();
-        SizeProductDetail sizeProductDetail8 = SizeProductDetail.builder().size(size8).productDetail(productDetail8).quantity(12).build();
-        SizeProductDetail sizeProductDetail9 = SizeProductDetail.builder().size(size2).productDetail(productDetail9).quantity(12).build();
-        SizeProductDetail sizeProductDetail10 = SizeProductDetail.builder().size(size1).productDetail(productDetail10).quantity(12).build();
-        SizeProductDetail sizeProductDetail11 = SizeProductDetail.builder().size(size3).productDetail(productDetail10).quantity(13).build();
+        SizeProductDetail sizeProductDetail1 = SizeProductDetail.builder().size(size).productDetail(productDetail1).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail2 = SizeProductDetail.builder().size(size2).productDetail(productDetail2).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail3 = SizeProductDetail.builder().size(size1).productDetail(productDetail3).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail4 = SizeProductDetail.builder().size(size3).productDetail(productDetail4).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail5 = SizeProductDetail.builder().size(size4).productDetail(productDetail5).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail6 = SizeProductDetail.builder().size(size5).productDetail(productDetail6).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail7 = SizeProductDetail.builder().size(size6).productDetail(productDetail7).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail8 = SizeProductDetail.builder().size(size8).productDetail(productDetail8).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail9 = SizeProductDetail.builder().size(size2).productDetail(productDetail9).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail10 = SizeProductDetail.builder().size(size1).productDetail(productDetail10).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail11 = SizeProductDetail.builder().size(size3).productDetail(productDetail10).quantity(13).status(Status.DANG_SU_DUNG).build();
         sizeProductDetailRepository.save(sizeProductDetail1);
         sizeProductDetailRepository.save(sizeProductDetail2);
         sizeProductDetailRepository.save(sizeProductDetail3);
@@ -453,6 +457,17 @@ public class DBGenerator implements CommandLineRunner {
                 .quantity(100).status(Status.DANG_SU_DUNG).build();
         voucherRepository.save(voucher2);
         voucherRepository.save(voucher1);
+
+        Promotion promotion1 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
+                .name("diem").value(new BigDecimal(10))
+                .startDate(new ConvertDateToLong().dateToLong("25/04/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
+                .status(Status.DANG_SU_DUNG).build();
+        Promotion promotion2 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
+                .name("diem2003").value(new BigDecimal(100))
+                .startDate(new ConvertDateToLong().dateToLong("15/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/07/2023"))
+                .status(Status.KHONG_SU_DUNG).build();
+        promotionRepository.save(promotion1);
+        promotionRepository.save(promotion2);
 
         AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
         accountVoucherRepository.save(accountVoucher1);
