@@ -121,7 +121,13 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<UserBillResponse> getAllUserInBill() {
-        return billRepository.getAllUserInBill();
+
+        Map<String, UserBillResponse > list = new HashMap<>();
+        billRepository.getAllUserInBill().forEach(item ->{
+            list.put(item.getUserName(), item);
+        });
+        List<UserBillResponse> users = new ArrayList<>(list.values());
+        return users;
     }
 
     @Override
