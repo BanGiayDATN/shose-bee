@@ -1,10 +1,7 @@
 package com.example.shose.server.dto.request.voucherdetail;
 
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 /**
  * @author thangdt

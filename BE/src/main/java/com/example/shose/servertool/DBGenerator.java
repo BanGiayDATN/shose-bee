@@ -13,6 +13,7 @@ import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Promotion;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.entity.Sole;
@@ -41,6 +42,7 @@ import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
+import com.example.shose.server.repository.PromotionRepository;
 import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
@@ -128,6 +130,8 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private VoucherRepository voucherRepository;
+    @Autowired
+    private PromotionRepository promotionRepository;
 
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
@@ -453,6 +457,17 @@ public class DBGenerator implements CommandLineRunner {
                 .quantity(100).status(Status.DANG_SU_DUNG).build();
         voucherRepository.save(voucher2);
         voucherRepository.save(voucher1);
+
+        Promotion promotion1 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
+                .name("diem").value(new BigDecimal(10))
+                .startDate(new ConvertDateToLong().dateToLong("25/04/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
+                .status(Status.DANG_SU_DUNG).build();
+        Promotion promotion2 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
+                .name("diem2003").value(new BigDecimal(100))
+                .startDate(new ConvertDateToLong().dateToLong("15/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/07/2023"))
+                .status(Status.KHONG_SU_DUNG).build();
+        promotionRepository.save(promotion1);
+        promotionRepository.save(promotion2);
 
         AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
         accountVoucherRepository.save(accountVoucher1);

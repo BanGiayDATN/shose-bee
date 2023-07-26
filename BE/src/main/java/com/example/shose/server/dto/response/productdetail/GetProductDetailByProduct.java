@@ -25,9 +25,12 @@ public interface GetProductDetailByProduct {
     @Value("#{target.created_date}")
     Long getCreateDate();
 
+
     @Value("#{target.gender}")
     String getGender();
 
     @Value("#{target.status}")
     String getStatus();
+    @Value("#{target.idPromotion}")
+    String getIdPromotion();
 }

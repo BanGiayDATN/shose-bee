@@ -1,6 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
@@ -18,7 +19,7 @@ import java.util.List;
 public interface BillRepository extends JpaRepository<Bill, String> {
 
     @Query(value = """
-            SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
+            SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
             LEFT JOIN account ac ON ac.id = bi.id_account
             LEFT JOIN account em ON em.id = bi.id_employees
             LEFT JOIN customer cu ON cu.id = bi.id_customer
@@ -56,31 +57,33 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     List<BillResponse> getAll( BillRequest request);
 
     @Query(value = """
-            SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
-            LEFT JOIN account ac ON ac.id = bi.id_account
-            LEFT JOIN account em ON em.id = bi.id_employees
-            LEFT JOIN customer cu ON cu.id = bi.id_customer
-            LEFT JOIN user usac ON usac.id = ac.id_user
-            LEFT JOIN user usem ON usem.id = em.id_user
-            WHERE bi.type = 1 AND bi.status_bill = 'TAO_HOA_DON'
+            SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,   bi.status_bill, bi.total_money, bi.item_discount, COUNT(bide.quantity) AS quantity FROM bill bi
+                        LEFT JOIN account ac ON ac.id = bi.id_account
+                        LEFT JOIN bill_detail bide ON bide.id_bill = bi.id
+                        LEFT JOIN account em ON em.id = bi.id_employees
+                        LEFT JOIN customer cu ON cu.id = bi.id_customer
+                        LEFT JOIN user usac ON usac.id = ac.id_user
+                        LEFT JOIN user usem ON usem.id = em.id_user
+            WHERE bi.type = 1 
             AND (:#{#request.startCreateBill} <= bi.created_date)
-            AND ( :#{#request.nameUser} IS NULL
-                     OR :#{#request.nameUser} LIKE ''
-                     OR bi.user_name LIKE :#{#request.nameUser})
-            AND ( :#{#request.phoneNumber} IS NULL
-                     OR :#{#request.phoneNumber} LIKE ''
-                     OR bi.phone_number LIKE :#{#request.phoneNumber})
+            AND ( :#{#request.key} IS NULL
+                     OR :#{#request.key} LIKE ''
+                     OR bi.user_name LIKE :#{#request.key}
+                     OR bi.code LIKE :#{#request.key}
+                     OR bi.phone_number LIKE :#{#request.key})
+           GROUP BY   bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name ) ,   bi.status_bill, bi.total_money, bi.item_discount 
             ORDER BY bi.created_date           
             """, nativeQuery = true)
-    List<BillResponse> findAllBillAtCounterAndStatusNewBill( FindNewBillCreateAtCounterRequest request);
+    List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
 
 
     @Query(value = """
-             SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
-                        LEFT JOIN account ac ON ac.id = bi.id_account
-                        LEFT JOIN customer cu ON cu.id = bi.id_customer
-                        LEFT JOIN user usac ON usac.id = ac.id_user 
-                        ORDER BY bi.created_date
+             SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
+             LEFT JOIN account ac ON ac.id = bi.id_account
+             LEFT JOIN customer cu ON cu.id = bi.id_customer
+             LEFT JOIN user usac ON usac.id = ac.id_user\s
+             GROUP BY   IF(usac.full_name IS NULL, cu.full_name, usac.full_name )\s
+             ORDER BY bi.created_date
             """, nativeQuery = true)
     List<UserBillResponse> getAllUserInBill();
 }

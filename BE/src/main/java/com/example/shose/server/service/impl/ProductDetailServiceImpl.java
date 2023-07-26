@@ -23,6 +23,7 @@ import com.example.shose.server.repository.ImageRepository;
 import com.example.shose.server.repository.MaterialRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
+import com.example.shose.server.repository.PromotionRepository;
 import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
@@ -79,6 +80,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
     private UploadImageToCloudinary imageToCloudinary;
+    @Autowired
+    private PromotionRepository promotionRepository;
 
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
@@ -234,4 +237,5 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     public List<GetProductDetailByProduct> getByIdProduct(String id) {
         return productDetailRepository.getByIdProduct(id);
     }
+
 }

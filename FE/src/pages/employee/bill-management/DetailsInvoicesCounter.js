@@ -7,11 +7,7 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { AddressApi } from "../../../api/employee/address/address.api";
 import { useAppDispatch } from "../../../app/hook";
-import {
-  getCity,
-  getDistrict,
-  getWard,
-} from "../../../app/reducer/address.reducer";
+
 import Search from "antd/es/input/Search";
 
 function DetailsInvoicesCounter({ detailBill }) {

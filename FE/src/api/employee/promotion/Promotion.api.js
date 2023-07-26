@@ -1,10 +1,10 @@
 import { request } from "../../../helper/request";
 
-export class VoucherApi {
+export class PromotionApi {
     static fetchAll = (filter) => {
         return request({
           method: "GET",
-          url: `/admin/voucher`,
+          url: `/admin/promotion`,
           params: filter,
         });
       };
@@ -12,7 +12,7 @@ export class VoucherApi {
       static create = (data) => {
         return request({
           method: "POST",
-          url: `/admin/voucher`,
+          url: `/admin/promotion`,
           data: data,
         });
       };
@@ -20,14 +20,14 @@ export class VoucherApi {
       static getOne = (id) => {
         return request({
           method: "GET",
-          url: `/admin/voucher/${id}`,
+          url: `/admin/promotion/${id}`,
         });
       };
     
       static update = (id,data) => {
         return request({
           method: "PUT",
-          url: `/admin/voucher/${id}`,
+          url: `/admin/promotion/${id}`,
           data: data,
         });
       };

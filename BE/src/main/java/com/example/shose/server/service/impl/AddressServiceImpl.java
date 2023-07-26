@@ -47,27 +47,26 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address create(CreateAddressRequest req) {
-//        Optional<User> user = userReposiory.findById(req.getUserId());
-//        Address address = Address.builder().line(req.getLine()).city(req.getCity()).province(req.getProvince())
-//                .country(req.getCountry()).user(user.get()).build();
-//        return addressRepository.save(address);
-        return null;
+        Optional<User> user = userReposiory.findById(req.getUserId());
+        Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
+                .werd(req.getWerd()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
+        return addressRepository.save(address);
     }
 
     @Override
     public Address update(UpdateAddressRequest req) {
-//        Optional<Address> optional = addressRepository.findById(req.getId());
-//
-//        Optional<User> user = userReposiory.findById(req.getUserId());
-//
-//        Address address = optional.get();
-//        address.setLine(req.getLine());
-//        address.setCity(req.getCity());
-//        address.setProvince(req.getProvince());
-//        address.setCountry(req.getCountry());
-//        address.setUser(user.get());
-//        return addressRepository.save(address);
-        return null;
+        Optional<Address> optional = addressRepository.findById(req.getId());
+
+        Optional<User> user = userReposiory.findById(req.getUserId());
+
+        Address address = optional.get();
+        address.setLine(req.getLine());
+        address.setDistrict(req.getDistrict());
+        address.setProvince(req.getProvince());
+        address.setWerd(req.getWerd());
+        address.setToDistrictId(req.getToDistrictId());
+        address.setUser(user.get());
+        return addressRepository.save(address);
     }
 
     @Override

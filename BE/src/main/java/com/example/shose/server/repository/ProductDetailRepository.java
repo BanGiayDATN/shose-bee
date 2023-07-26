@@ -73,7 +73,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                                detail.price AS price,
                                detail.created_date AS created_date,
                                detail.gender AS gender,
-                               detail.status AS status
+                               detail.status AS status,
+                               detail.id_promotion AS idPromotion
                         FROM product_detail detail
                         JOIN product p on detail.id_product = p.id
                         JOIN image i on detail.id = i.id_product_detail

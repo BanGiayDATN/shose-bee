@@ -13,11 +13,11 @@ public class FindAddressRequest extends PageableRequest {
 
     private String line;
 
-    private String city;
+    private String district;
 
     private String province;
 
-    private String country;
+    private String ward;
 
     private String id_user;
 

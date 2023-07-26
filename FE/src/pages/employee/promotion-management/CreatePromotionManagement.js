@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Row,
   Col,
@@ -20,17 +21,19 @@ import {
   faListAlt,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import {LeftOutlined} from "@ant-design/icons"
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import { CreateVoucher } from "../../../app/reducer/Voucher.reducer";
+import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
 import {
   CreateProduct,
   SetProduct,
   GetProduct,
 } from "../../../app/reducer/Product.reducer";
-import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
+import {PromotionApi } from "../../../api/employee/promotion/Promotion.api";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 
@@ -72,12 +75,19 @@ function CreateVoucherManagement() {
   }, [listProductDetail]);
 
   useEffect(() => {
+
+    console.log(selectedRowKeysDetail);
+  }, [selectedRowKeysDetail]);
+
+  
+  useEffect(() => {
     if (detailProduct) {
       for (const key of selectedRowKeys) {
         getProdutDetailByproduct(key);
       }
-
       setListProductDetail(updatedListProductDetail);
+    }else{
+      
     }
 
     console.log(selectedRowKeys);
@@ -145,7 +155,7 @@ function CreateVoucherManagement() {
   };
 
   const convertToLong = () => {
-    const convertedFormData = { ...formData };
+    const convertedFormData = { ...formData,idProductDetails:selectedRowKeysDetail};
     if (formData.startDate) {
       convertedFormData.startDate = dayjs(formData.startDate).unix() * 1000;
     }
@@ -154,21 +164,19 @@ function CreateVoucherManagement() {
     }
     return convertedFormData;
   };
-  const handleSubmit = (id) => {
+  const handleSubmit = () => {
+    console.log(convertToLong());
     console.log(formData);
     const isFormValid =
       formData.name &&
-      formData.quantity &&
       formData.value &&
       formData.startDate &&
       formData.endDate &&
-      formData.status &&
       formData.startDate < formData.endDate;
 
     if (!isFormValid) {
       const errors = {
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
         value: !formData.value ? "Vui lòng nhập giá giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
         endDate: !formData.endDate
@@ -176,20 +184,26 @@ function CreateVoucherManagement() {
           : formData.startDate >= formData.endDate
           ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
           : "",
-        status: !formData.status ? "Vui lòng chọn trạng thái" : "",
+      
       };
       setFormErrors(errors);
       return;
     }
 
-    VoucherApi.create(convertToLong()).then((res) => {
-      dispatch(CreateVoucher(res.data.data));
-
+    PromotionApi.create(convertToLong()).then((res) => {
+      dispatch(CreatePromotion(res.data.data));
       toast.success("Thêm thành công!", {
         autoClose: 5000,
       });
     });
     setFormData({});
+    setListProductDetail([]);
+    onSelectChange("");
+    onSelectChangeDetail("")
+
+    // for (const key of selectedRowKeysDetail) {
+    //   getProdutDetailByproduct(key);
+    // }
   };
   const fields = [
     {
@@ -197,13 +211,6 @@ function CreateVoucherManagement() {
       type: "text",
       label: "Tên khuyễn mại",
       text: "tên khuyễn mại",
-      class: "input-form",
-    },
-    {
-      name: "quantity",
-      type: "number",
-      label: "Số lượng",
-      text: "số lượng",
       class: "input-form",
     },
     {
@@ -227,6 +234,17 @@ function CreateVoucherManagement() {
       text: "ngày kết thúc",
       class: "input-form",
     },
+    // {
+    //   name: "status",
+    //   type: "select",
+    //   label: "Trạng thái",
+    //   options: [
+    //     { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
+    //     { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
+    //   ],
+    //   text: "trạng thái",
+    //   class: "input-form",
+    // },
   ];
 
   const columns = [
@@ -307,7 +325,7 @@ function CreateVoucherManagement() {
       sorter: (a, b) => a.name - b.name,
     },
     {
-      title: "Trạng Thái",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (text) => {
@@ -320,6 +338,21 @@ function CreateVoucherManagement() {
         );
       },
     },
+    {
+      title: "Tình trạng",
+      dataIndex: "idPromotion",
+      key: "idPromotion",
+      render: (text) => {
+        const genderClass =
+          text  ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text ? "Có khuyến mại " : "Không khuyến mại"}
+          </button>
+        );
+      },
+    },
+   
   ];
   const updatedList = list.map((item, index) => ({
     ...item,
@@ -333,9 +366,12 @@ function CreateVoucherManagement() {
 
   return (
     <div>
+      
       <Row>
-        <Col className="add-voucher" lg={{ span: 7, offset: 0 }}>
-          <div className="title-add-voucher">
+        
+        <Col className="add-promotion" lg={{ span: 7, offset: 0 }}>
+        <Link to="/promotion-management"><LeftOutlined /> Quay lại</Link>
+          <div className="title-add-promotion">
             <h1>Thêm khuyến mại</h1>
           </div>
 
@@ -370,6 +406,7 @@ function CreateVoucherManagement() {
                         onChange={(value) => {
                           handleInputChange(field.name, value);
                         }}
+                        format="HH:mm:ss DD-MM-YYYY"
                       />
                     )}
                     {field.type === "select" && (
@@ -419,13 +456,16 @@ function CreateVoucherManagement() {
                 okText="Có"
                 cancelText="Không"
               >
+              
                 <Button
-                  className="button-add-voucher"
+                  className="button-add-promotion"
                   key="submit"
                   title="Thêm"
                 >
                   Thêm
                 </Button>
+               
+             
               </Popconfirm>
             </Form.Item>
           </Form>

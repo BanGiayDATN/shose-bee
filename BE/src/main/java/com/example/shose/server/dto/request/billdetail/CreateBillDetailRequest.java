@@ -14,6 +14,8 @@ public class CreateBillDetailRequest {
 
     private String idProduct;
 
+    private String idSize;
+
     private int quantity;
 
     private String price;

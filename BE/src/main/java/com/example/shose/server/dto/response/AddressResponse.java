@@ -17,14 +17,14 @@ public interface AddressResponse {
     @Value("#{target.line}")
     String getLine();
 
-    @Value("#{target.city}")
-    String getCity();
+    @Value("#{target.district}")
+    String getDistrict();
 
     @Value("#{target.province}")
     String getProvince();
 
-    @Value("#{target.country}")
-    String getCountry();
+    @Value("#{target.ward}")
+    String getWard();
 
     @Value("#{target.createdDate}")
     Long getCreatedDate();
