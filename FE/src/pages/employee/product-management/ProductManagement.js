@@ -159,7 +159,9 @@ const ProductManagement = () => {
   const handleViewDetail = (id) => {
     navigate(`/detail-product-management/${id}`);
   };
-  const handleUpdate = (id) => {};
+  const handleUpdate = (id) => {
+    navigate(`/product-management/${id}`);
+  };
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {

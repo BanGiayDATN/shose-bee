@@ -31,6 +31,7 @@ import ModalCreateCustomer from "./pages/employee/customer-management/modal/Moda
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
 import DetailProductManagment from "./pages/employee/product-management/DetailProductManagment";
+import UpdateProductManagment from "./pages/employee/product-management/UpdateProductManagment";
 function App() {
   return (
     <div className="App">
@@ -115,6 +116,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <DetailProductManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+           <Route
+            path="/product-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <UpdateProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }

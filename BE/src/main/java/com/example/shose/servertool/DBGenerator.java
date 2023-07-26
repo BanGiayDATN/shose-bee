@@ -317,17 +317,17 @@ public class DBGenerator implements CommandLineRunner {
         productDetailRepository.save(productDetail9);
         productDetailRepository.save(productDetail10);
 
-        SizeProductDetail sizeProductDetail1 = SizeProductDetail.builder().size(size).productDetail(productDetail1).quantity(12).build();
-        SizeProductDetail sizeProductDetail2 = SizeProductDetail.builder().size(size2).productDetail(productDetail2).quantity(12).build();
-        SizeProductDetail sizeProductDetail3 = SizeProductDetail.builder().size(size1).productDetail(productDetail3).quantity(12).build();
-        SizeProductDetail sizeProductDetail4 = SizeProductDetail.builder().size(size3).productDetail(productDetail4).quantity(12).build();
-        SizeProductDetail sizeProductDetail5 = SizeProductDetail.builder().size(size4).productDetail(productDetail5).quantity(12).build();
-        SizeProductDetail sizeProductDetail6 = SizeProductDetail.builder().size(size5).productDetail(productDetail6).quantity(12).build();
-        SizeProductDetail sizeProductDetail7 = SizeProductDetail.builder().size(size6).productDetail(productDetail7).quantity(12).build();
-        SizeProductDetail sizeProductDetail8 = SizeProductDetail.builder().size(size8).productDetail(productDetail8).quantity(12).build();
-        SizeProductDetail sizeProductDetail9 = SizeProductDetail.builder().size(size2).productDetail(productDetail9).quantity(12).build();
-        SizeProductDetail sizeProductDetail10 = SizeProductDetail.builder().size(size1).productDetail(productDetail10).quantity(12).build();
-        SizeProductDetail sizeProductDetail11 = SizeProductDetail.builder().size(size3).productDetail(productDetail10).quantity(13).build();
+        SizeProductDetail sizeProductDetail1 = SizeProductDetail.builder().size(size).productDetail(productDetail1).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail2 = SizeProductDetail.builder().size(size2).productDetail(productDetail2).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail3 = SizeProductDetail.builder().size(size1).productDetail(productDetail3).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail4 = SizeProductDetail.builder().size(size3).productDetail(productDetail4).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail5 = SizeProductDetail.builder().size(size4).productDetail(productDetail5).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail6 = SizeProductDetail.builder().size(size5).productDetail(productDetail6).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail7 = SizeProductDetail.builder().size(size6).productDetail(productDetail7).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail8 = SizeProductDetail.builder().size(size8).productDetail(productDetail8).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail9 = SizeProductDetail.builder().size(size2).productDetail(productDetail9).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail10 = SizeProductDetail.builder().size(size1).productDetail(productDetail10).quantity(12).status(Status.DANG_SU_DUNG).build();
+        SizeProductDetail sizeProductDetail11 = SizeProductDetail.builder().size(size3).productDetail(productDetail10).quantity(13).status(Status.DANG_SU_DUNG).build();
         sizeProductDetailRepository.save(sizeProductDetail1);
         sizeProductDetailRepository.save(sizeProductDetail2);
         sizeProductDetailRepository.save(sizeProductDetail3);

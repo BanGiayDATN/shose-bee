@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateSizeData {
 
-    private int size;
+    private int nameSize;
+
     private int quantity;
 }
