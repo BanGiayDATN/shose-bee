@@ -40,7 +40,7 @@ function FormSearch({
   onChangeStatusBillInFillter,
   users,
   employess,
-  status
+  status,
 }) {
   const { Option } = Select;
   const handleChange = (value) => {
@@ -49,6 +49,7 @@ function FormSearch({
     });
     onChangeStatusBillInFillter(arr);
   };
+  console.log(fillter.type);
   const { RangePicker } = DatePicker;
 
   return (
@@ -72,7 +73,7 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row style={{marginLeft: "15px"}}>
+            <Row style={{ marginLeft: "15px" }}>
               <Col span={6} className="text">
                 {" "}
                 Số điện thoại:
@@ -130,7 +131,7 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row style={{marginLeft: "15px"}}>
+            <Row style={{ marginLeft: "15px" }}>
               <Col span={6} className="text">
                 {" "}
                 Ngày thanh toán:
@@ -183,14 +184,12 @@ function FormSearch({
               </Col>
               <Col span={18}>
                 <Select
-                 style={{ width: "98%" }}
+                  style={{ width: "98%" }}
                   value={fillter.employees}
-                  onChange={(value) =>
-                    changFillter(value, "employees")
-                  }
+                  onChange={(value) => changFillter(value, "employees")}
                   defaultValue=""
                 >
-                  <Option value="">Tất cả</Option>
+                  <Option value="" disabled>Tất cả</Option>
                   {employess.map((employee, index) => (
                     <Option key={index} value={employee.id}>
                       {employee.userName}
@@ -201,21 +200,19 @@ function FormSearch({
             </Row>
           </Col>
           <Col span={12}>
-            <Row style={{marginLeft: "15px"}}>
+            <Row style={{ marginLeft: "15px" }}>
               <Col span={6} className="text">
                 {" "}
                 Khách hàng:
               </Col>
               <Col span={18}>
-              <Select
+                <Select
                   style={{ width: "98%" }}
                   value={fillter.user}
-                  onChange={(value) =>
-                    changFillter(value, "user")
-                  }
+                  onChange={(value) => changFillter(value, "user")}
                   defaultValue=""
                 >
-                  <Option value="">Tất cả</Option>
+                  <Option value="" disabled>Tất cả</Option>
                   {users.map((user, index) => (
                     <Option key={index} value={user.id}>
                       {user.userName}
@@ -228,58 +225,49 @@ function FormSearch({
         </Row>
         <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
-            <Row className="text">Trạng thái: </Row>
             <Row>
-              <Select
-                mode="multiple"
-                style={{ width: "98%" }}
-                placeholder="Chọn trạng thái"
-                defaultValue={fillter.status}
-                onChange={(value) => handleChange(value)}
-                optionLabelProp="label"
-                allowClear
-                value={status}
-              >
-                {data.map((item, index) => (
-                  <Option value={item.id} label={item.name} key={index}>
-                    <Space>{item.name}</Space>
-                  </Option>
-                ))}
-              </Select>
+              <Col span={6} className="text" style={{ margin: "0px" }}>
+                Trạng thái:
+              </Col>
+              <Col span={18} className="text"  style={{ margin: "0px" }}>
+                <Select
+                  mode="multiple"
+                  style={{ width: "98%" }}
+                  // className="select_multi"
+                  placeholder="Chọn trạng thái"
+                  defaultValue={fillter.status}
+                  onChange={(value) => handleChange(value)}
+                  optionLabelProp="label"
+                  allowClear
+                  value={status}
+                >
+                  {data.map((item, index) => (
+                    <Option value={item.id} label={item.name} key={index}>
+                      <Space>{item.name}</Space>
+                    </Option>
+                  ))}
+                </Select>
+              </Col>
             </Row>
           </Col>
           <Col span={12}>
-            <Row style={{marginLeft: "15px"}}>
+            <Row style={{ marginLeft: "15px" }}>
               <Col span={6} className="text">
                 Phương thức:
               </Col>
               <Col span={18}>
-                <Row>
-                  <input
-                    type="radio"
-                    className=" "
-                    id="exampleFormControlInput1"
-                    name={"type"}
-                    onChange={(value) =>
-                      changFillter(value.target.value, "type")
-                    }
-                    value={1}
-                  />{" "}
-                  Tại quầy
-                </Row>
-                <Row>
-                  <input
-                    type="radio"
-                    className=" "
-                    id="exampleFormControlInput1"
-                    name={"type"}
-                    onChange={(value) =>
-                      changFillter(value.target.value, "type")
-                    }
-                    value={0}
-                  />{" "}
-                  Online
-                </Row>
+                <Select
+                  style={{ width: "98%" }}
+                  value={fillter.type}
+                  onChange={(value) => changFillter(value, "type")}
+                  defaultValue=""
+                >
+                  <Option value={-1} disabled>
+                    Tất cả
+                  </Option>
+                  <Option value={1}>Tại quầy</Option>
+                  <Option value={0}>Online</Option>
+                </Select>
               </Col>
             </Row>
           </Col>
