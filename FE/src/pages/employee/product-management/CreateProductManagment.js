@@ -5,9 +5,9 @@ import {
   Button,
   Col,
   Form,
-  Image,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
   Space,
@@ -15,7 +15,7 @@ import {
   Upload,
 } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
@@ -39,7 +39,12 @@ import {
 } from "../../../app/reducer/Category.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
-import { UploadOutlined } from "@ant-design/icons";
+import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+import axios from "axios";
+import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
+import NumberFormat from "react-number-format";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -49,11 +54,25 @@ const CreateProductManagment = () => {
   const [modalAddMaterial, setModalAddMaterial] = useState(false);
   const [modalAddBrand, setModalAddBrand] = useState(false);
   const [modalAddColor, setModalAddColor] = useState(false);
+  const [modalAddSize, setModalAddSize] = useState(false);
 
   const dataSole = useAppSelector(GetSole);
   const dataCategory = useAppSelector(GetCategory);
   const dataMaterial = useAppSelector(GetMaterail);
   const dataBrand = useAppSelector(GetBrand);
+
+  const initialValues = {
+    description: "",
+    gender: "",
+    price: "",
+    status: "DANG_SU_DUNG",
+    categoryId: "",
+    productId: "",
+    materialId: "",
+    colorId: "",
+    soleId: "",
+    brandId: "",
+  };
 
   const handleCancel = () => {
     setModalAddSole(false);
@@ -61,8 +80,10 @@ const CreateProductManagment = () => {
     setModalAddMaterial(false);
     setModalAddColor(false);
     setModalAddCategory(false);
+    setModalAddSize(false);
   };
 
+  const [productDetail, setProductDetail] = useState({});
   const [listMaterial, setListMaterial] = useState([]);
   const [listCategory, setListCategory] = useState([]);
   const [listBrand, setListBrand] = useState([]);
@@ -110,12 +131,15 @@ const CreateProductManagment = () => {
     });
     ColorApi.getAllCode().then((res) => {
       setListColor(res.data.data);
+      console.log(res.data.data);
     });
   };
 
   const onFinish = (values) => {
-    console.log("Submitted values:", values);
-    // Xử lý dữ liệu sau khi biểu mẫu được gửi đi
+    const priceValue = values.price;
+    const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ""));
+    values.price = numericPrice + "";
+    setProductDetail(values);
   };
 
   const handleSearch = (value) => {
@@ -134,36 +158,229 @@ const CreateProductManagment = () => {
     }));
   };
 
-  const [listSizeAdd, setListSizeAdd] = useState([
-    // {
-    //   stt: 1,
-    //   numberSize: 45,
-    //   soLuong: 24,
-    //   status: "DANG_SU_DUNG",
-    // },
-  ]);
+  const [listSizeAdd, setListSizeAdd] = useState([]);
 
   const handleQuantityChange = (value, record) => {
-    // Cập nhật số lượng mới trong dữ liệu (listSole) dựa trên record
-    // Ví dụ:
+    // Ensure the value is at least 1
+    const newQuantity = Math.max(value, 1);
     const updatedListSole = listSizeAdd.map((item) =>
-      item.id === record.id ? { ...item, soLuong: value } : item
+      item.size === record.size ? { ...item, quantity: newQuantity } : item
     );
     setListSizeAdd(updatedListSole);
   };
 
   const handleQuantityDecrease = (record) => {
     const updatedListSole = listSizeAdd.map((item) =>
-      item.id === record.id ? { ...item, soLuong: item.soLuong - 1 } : item
+      item.size === record.size
+        ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
+        : item
     );
     setListSizeAdd(updatedListSole);
   };
 
   const handleQuantityIncrease = (record) => {
     const updatedListSole = listSizeAdd.map((item) =>
-      item.id === record.id ? { ...item, soLuong: item.soLuong + 1 } : item
+      item.size === record.size
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
     );
     setListSizeAdd(updatedListSole);
+  };
+
+  const handleSaveData = (selectedSizeData) => {
+    console.log(selectedSizeData);
+    selectedSizeData.forEach((selectedSizeData) => {
+      // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
+      const existingSize = listSizeAdd.find(
+        (item) => item.size === selectedSizeData.size
+      );
+
+      if (existingSize) {
+        // Nếu kích thước đã tồn tại, cộng dồn số lượng
+        setListSizeAdd((prevList) =>
+          prevList.map((item) =>
+            item.size === selectedSizeData.size
+              ? { ...item, quantity: item.quantity + selectedSizeData.quantity }
+              : item
+          )
+        );
+      } else {
+        setListSizeAdd((prevList) => [
+          ...prevList,
+          {
+            stt: prevList.length + 1,
+            size: selectedSizeData.size,
+            quantity: selectedSizeData.quantity,
+            status: "DANG_SU_DUNG",
+          },
+        ]);
+      }
+    });
+  };
+  const handleDelete = (index) => {
+    const updatedList = listSizeAdd.filter((item, i) => i !== index);
+    const updatedListWithStt = updatedList.map((item, i) => ({
+      ...item,
+      stt: i + 1,
+    }));
+    setListSizeAdd(updatedListWithStt);
+  };
+
+  // ảnh
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [fileList, setFileList] = useState([]);
+  const handleCancelImage = () => setPreviewOpen(false);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    const fileExists = fileList.find((f) => f.uid === file.uid);
+
+    // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
+    if (!fileExists) {
+      const newFile = { ...file, isStarred: false };
+      setFileList([...fileList, newFile]);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {
+    if (isSubmitting) {
+      // Redirect to the new page after successful form submission
+      window.location.href = "/product-management";
+    }
+  }, [isSubmitting]);
+
+  const handleUpload = () => {
+    console.log(productDetail);
+    if (Object.entries(productDetail).length != 0) {
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý thêm sản phẩm không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: () => {
+          if (listSizeAdd == null || listSizeAdd.length <= 0) {
+            toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
+          } else if (fileList == null || fileList.length <= 0) {
+            toast.error("Bạn cần thêm ảnh cho sản phẩm");
+          } else {
+            const formData = new FormData();
+            fileList.forEach((file) => {
+              formData.append(`multipartFiles`, file.originFileObj);
+              // Check if the file is starred and set the status accordingly
+              const isStarred = starredFiles[file.uid]?.isStarred || false;
+              formData.append(`status`, isStarred ? "true" : "false");
+              console.log(file);
+            });
+            const requestData = {
+              description: productDetail.description,
+              gender: productDetail.gender,
+              price: productDetail.price,
+              status: productDetail.status,
+              categoryId: productDetail.categoryId,
+              productId: productDetail.productId,
+              materialId: productDetail.materialId,
+              colorId: productDetail.colorId,
+              soleId: productDetail.soleId,
+              brandId: productDetail.brandId,
+            };
+
+            formData.append("listSize", JSON.stringify(listSizeAdd));
+            formData.append("data", JSON.stringify(requestData));
+            axios
+              .post("http://localhost:8080/admin/product-detail", formData)
+              .then((response) => {
+                console.log(response.data);
+                setIsSubmitting(true);
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          }
+        },
+      });
+    }
+  };
+
+  const [starredFiles, setStarredFiles] = useState({});
+
+  useEffect(() => {
+    const initialStarredState = fileList.reduce((acc, file) => {
+      acc[file.uid] = { ...file, isStarred: false };
+      return acc;
+    }, {});
+    setStarredFiles(initialStarredState);
+  }, [fileList]);
+
+  const renderUploadButton = (file) => {
+    const isStarred = starredFiles[file.uid]?.isStarred || false;
+
+    return (
+      <div className="custom-button">
+        <Button onClick={() => handleCustomButtonClick(file)}>
+          {isStarred ? (
+            <StarFilled style={{ fontSize: 24, color: "gold" }} />
+          ) : (
+            <StarOutlined style={{ fontSize: 24 }} />
+          )}
+        </Button>
+      </div>
+    );
+  };
+
+  const handleCustomButtonClick = (file) => {
+    setStarredFiles((prevStarredFiles) => {
+      return {
+        ...prevStarredFiles,
+        [file.uid]: {
+          ...prevStarredFiles[file.uid],
+          isStarred: !prevStarredFiles[file.uid]?.isStarred,
+        },
+      };
+    });
+  };
+
+  const customItemRender = (originNode, file) => {
+    const isUploadedFile = fileList.some((item) => item.uid === file.uid);
+    if (isUploadedFile) {
+      return (
+        <div className="uploaded-file-container">
+          {originNode}
+          {renderUploadButton(file)}
+        </div>
+      );
+    }
+    return originNode;
   };
 
   useEffect(() => {
@@ -193,32 +410,33 @@ const CreateProductManagment = () => {
     },
     {
       title: "Kích cỡ",
-      dataIndex: "numberSize",
-      key: "numberSize",
+      dataIndex: "size",
+      key: "size",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
       title: "Số Lượng",
-      dataIndex: "soLuong",
-      key: "soLuong",
-      sorter: (a, b) => a.stt - b.stt,
+      dataIndex: "quantity",
+      key: "quantity",
       render: (text, record) => (
         <Space>
           <Button
-            shape="circle"
-            icon="-"
             onClick={() => handleQuantityDecrease(record)}
-          />
+            style={{ margin: "0 0 0 4px" }}
+          >
+            -
+          </Button>
           <InputNumber
             min={1}
             value={text}
             onChange={(value) => handleQuantityChange(value, record)}
           />
           <Button
-            shape="circle"
-            icon="+"
             onClick={() => handleQuantityIncrease(record)}
-          />
+            style={{ margin: "0 10px 0 0" }}
+          >
+            +
+          </Button>
         </Space>
       ),
     },
@@ -240,15 +458,15 @@ const CreateProductManagment = () => {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
-      render: (text, record) => (
+      render: (text, record, index) => (
         <div style={{ display: "flex", gap: "10px" }}>
           <Button
             type="primary"
-            title="Chỉnh sửa thể loại"
-            style={{ backgroundColor: "green", borderColor: "green" }}
-            // onClick={() => handleUpdate(record.id)}
+            title="xóa "
+            style={{ backgroundColor: "Red", borderColor: "Red" }}
+            onClick={() => handleDelete(index)} // Gọi hàm xóa và truyền vị trí của phần tử
           >
-            <FontAwesomeIcon icon={faEdit} />
+            <FontAwesomeIcon icon={faTrash} />
           </Button>
         </div>
       ),
@@ -275,7 +493,18 @@ const CreateProductManagment = () => {
 
         <div style={{ marginTop: "25px" }}>
           <div className="content">
-            <Form onFinish={onFinish}>
+            <Form onFinish={onFinish} initialValues={initialValues}>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="form-submit-btn"
+                  onClick={handleUpload}
+                  disabled={isSubmitting}
+                >
+                  Hoàn Tất
+                </Button>
+              </Form.Item>
               <Form.Item
                 label="Tên sản phẩm"
                 name="productId"
@@ -318,9 +547,12 @@ const CreateProductManagment = () => {
                       { required: true, message: "Vui lòng nhập giá sản phẩm" },
                     ]}
                   >
-                    <Input
+                    <NumberFormat
+                      thousandSeparator={true}
+                      suffix=" VND"
                       placeholder="Nhập giá sản phẩm"
-                      style={{ fontWeight: "bold" }}
+                      style={{ fontWeight: "bold", height: "40px" }}
+                      customInput={Input}
                     />
                   </Form.Item>
                 </Col>
@@ -336,9 +568,8 @@ const CreateProductManagment = () => {
                       },
                     ]}
                   >
-                    <Select placeholder="Chọn trạng thái sản phẩm">
+                    <Select>
                       <Option value="DANG_SU_DUNG">Kinh Doanh</Option>
-                      <Option value="KHONG_SU_DUNG">Không Kinh Doanh</Option>
                     </Select>
                   </Form.Item>
                 </Col>
@@ -415,7 +646,7 @@ const CreateProductManagment = () => {
                   >
                     <Select
                       placeholder="Chọn thương hiệu"
-                      style={{ marginLeft: "20px", width: "325px" }}
+                      style={{ marginLeft: "20px", width: "260px" }}
                     >
                       {listMaterial.map((material, index) => (
                         <Option key={index} value={material.id}>
@@ -477,7 +708,7 @@ const CreateProductManagment = () => {
                   >
                     <Select
                       placeholder="Chọn thương hiệu"
-                      style={{ marginLeft: "20px", width: "325px" }}
+                      style={{ marginLeft: "20px", width: "260px" }}
                     >
                       <Option value="NAM">Nam</Option>
                       <Option value="NU">Nữ</Option>
@@ -530,16 +761,6 @@ const CreateProductManagment = () => {
                   </Form.Item>
                 </Col>
               </Row>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="form-submit-btn"
-                >
-                  Xác nhận
-                </Button>
-              </Form.Item>
             </Form>
           </div>
           <ModalCreateSole visible={modalAddSole} onCancel={handleCancel} />
@@ -552,7 +773,6 @@ const CreateProductManagment = () => {
             visible={modalAddMaterial}
             onCancel={handleCancel}
           />
-          {/* <ModalCreateBrand visible={modalAddBrand} onCancel={handleCancel} /> */}
         </div>
       </div>
 
@@ -578,7 +798,6 @@ const CreateProductManagment = () => {
             columns={columns}
             pagination={{ pageSize: 3 }}
             className="size-table"
-            showHeader={listSizeAdd.length > 0}
           />
           {!listSizeAdd.length && (
             <div
@@ -594,11 +813,16 @@ const CreateProductManagment = () => {
             <Button
               style={{ height: "40px" }}
               type="primary"
-              // onClick={() => setModalVisible(true)}
+              onClick={() => setModalAddSize(true)}
             >
               Thêm kích cỡ
             </Button>
           </div>
+          <ModalAddSizeProduct
+            visible={modalAddSize}
+            onCancel={handleCancel}
+            onSaveData={handleSaveData}
+          />
         </div>
       </div>
 
@@ -618,7 +842,36 @@ const CreateProductManagment = () => {
           </span>
         </div>
 
-        <div style={{ marginTop: "25px" }}></div>
+        <div style={{ marginTop: "25px" }}>
+          <Upload
+            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            listType="picture-card"
+            fileList={fileList}
+            onChange={handleChange}
+            onPreview={handlePreview}
+            itemRender={(originNode, file, currIndex) =>
+              customItemRender(originNode, file, currIndex)
+            }
+          >
+            {/* Render uploadButton if fileList length is less than 10 */}
+            {fileList.length >= 10 ? null : uploadButton}
+          </Upload>
+          <Modal
+            open={previewOpen}
+            title={previewTitle}
+            footer={null}
+            onCancel={handleCancelImage}
+          >
+            <img
+              alt="example"
+              style={{
+                width: "100%",
+              }}
+              src={previewImage}
+            />
+          </Modal>
+        </div>
+        {/* Display the loading spinner while submitting */}
       </div>
     </>
   );

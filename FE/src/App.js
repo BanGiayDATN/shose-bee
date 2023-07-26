@@ -1,5 +1,4 @@
 import "./App.css";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppConfig } from "./AppConfig";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/403";
@@ -10,6 +9,7 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
+import CreateVoucherManagement from "./pages/employee/voucher-management/CreateVoucherManagement"
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
@@ -22,6 +22,7 @@ import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
 import AddressManagement from "./pages/customer/address-management/AddressManagement";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import CustomerManagement from "./pages/employee/customer-management/CustomerManagement";
 import ModalCreateAccount from "./pages/employee/account-management/modal/ModalCreateAccount";
 import ModalUpdateAccount from "./pages/employee/account-management/modal/ModalUpdateAccount";
@@ -29,6 +30,7 @@ import ModalDetailAccount from "./pages/employee/account-management/modal/ModalD
 import ModalCreateCustomer from "./pages/employee/customer-management/modal/ModalCreateCustomer";
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
+import DetailProductManagment from "./pages/employee/product-management/DetailProductManagment";
 import Sale from "./pages/employee/bill-management/Sale";
 function App() {
   return (
@@ -114,6 +116,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <CreateProductManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/detail-product-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <DetailProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }
@@ -268,7 +280,18 @@ function App() {
               </AuthGuard>
             }
           />
+          <Route
+            path="/create-voucher-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <CreateVoucherManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
         </Routes>
+
       </BrowserRouter>
       <ToastContainer />
     </div>

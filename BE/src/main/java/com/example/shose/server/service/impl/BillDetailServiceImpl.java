@@ -75,7 +75,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         billHistory.setActionDescription(request.getNote());
         billHistoryRepository.save(billHistory);
 
-        productDetail.get().setQuantity(productDetail.get().getQuantity() + request.getQuantity());
+//        productDetail.get().setQuantity(productDetail.get().getQuantity() + request.getQuantity());
         productDetailRepository.save(productDetail.get());
 
         return billDetailRepository.save(billDetail.get());

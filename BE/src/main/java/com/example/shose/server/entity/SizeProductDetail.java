@@ -2,6 +2,7 @@ package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,30 +13,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * @author Nguyễn Vinh
- */
 @Entity
 @Getter
 @Setter
 @ToString
 @Builder
-@Table(name = "address")
+@Table(name = "size_product_detail")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Address extends PrimaryEntity {
+public class SizeProductDetail extends PrimaryEntity {
 
-    private String line;
+    private Integer quantity;
 
-    private String district;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_size",referencedColumnName = "id")
+    private Size size;
 
-    private String province;
-
-    private String werd;
-
-    private Integer toDistrictId;
-
-    @ManyToOne
-    @JoinColumn(name = "id_user",referencedColumnName = "id")
-    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_product_detail",referencedColumnName = "id")
+    private ProductDetail productDetail;
 }

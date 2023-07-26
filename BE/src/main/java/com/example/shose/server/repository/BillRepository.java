@@ -79,8 +79,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
              SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
                         LEFT JOIN account ac ON ac.id = bi.id_account
                         LEFT JOIN customer cu ON cu.id = bi.id_customer
-                        LEFT JOIN user usac ON usac.id = ac.id_user
-                        GROUP BY  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  
+                        LEFT JOIN user usac ON usac.id = ac.id_user 
                         ORDER BY bi.created_date
             """, nativeQuery = true)
     List<UserBillResponse> getAllUserInBill();

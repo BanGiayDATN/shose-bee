@@ -56,4 +56,8 @@ public class ProductRestController {
         return new ResponseObject(productService.delete(id));
     }
 
+    @GetMapping("/use")
+    public ResponseObject getProductUse(){
+        return  new ResponseObject(productService.getProductUse());
+    }
 }

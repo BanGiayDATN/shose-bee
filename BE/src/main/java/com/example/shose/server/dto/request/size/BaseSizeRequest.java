@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 public abstract class BaseSizeRequest {
 
-    private String name;
+    private int name;
 
     private Status status;
 }
