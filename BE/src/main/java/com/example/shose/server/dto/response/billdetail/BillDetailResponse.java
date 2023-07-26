@@ -55,6 +55,4 @@ public interface BillDetailResponse {
     @Value("#{target.quantity}")
     Integer getQuantity();
 
-    @Value("#{target.quantity_product_detail}")
-    Integer getQuantityProductDetail();
 }

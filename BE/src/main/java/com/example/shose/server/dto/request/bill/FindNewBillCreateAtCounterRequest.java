@@ -17,8 +17,6 @@ public class FindNewBillCreateAtCounterRequest {
 
     private Long endCreateBill =  new ConvertDateToLong().getLongDateNow();
 
-    private String nameUser;
-
-    private String phoneNumber;
+    private String key;
 
 }

@@ -366,19 +366,19 @@ function DetailBill() {
                 style: "currency",
                 currency: "VND",
               })
-            : totalMoney}
+            : totalMoney + " đ"}
         </span>
       ),
     },
     {
       title: <div className="title-product">Trạng thái</div>,
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
+      dataIndex: "method",
+      key: "method",
+      render: (method) => (
         <span>
-          {status == "TIEN_MAT"
+          {method == "TIEN_MAT"
             ? "Tiền mặt"
-            : status == "CHUYEN_KHOAN"
+            : method == "CHUYEN_KHOAN"
             ? "Chuyển khoản"
             : "Tiền mặt và chuyển khoản"}
         </span>

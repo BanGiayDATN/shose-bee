@@ -7,6 +7,13 @@ export class BillApi {
     });
   };
 
+  static fetchAllBillAtCounter = (value) => {
+    return request({
+      method: "GET",
+      url: `/admin/bill/details-invoices-counter?key=`+ value ,
+    });
+  };
+
     static fetchDataUsers = () => {
       return request({
         method: "GET",
@@ -66,10 +73,10 @@ export class BillApi {
       });
     };
 
-  //   static getOne = (id) => {
-  //     return request({
-  //       method: "GET",
-  //       url: `/admin/category/${id}`,
-  //     });
-  //   };
+    // static getOne = (id) => {
+    //   return request({
+    //     method: "GET",
+    //     url: `/admin/category/${id}`,
+    //   });
+    // };
 }

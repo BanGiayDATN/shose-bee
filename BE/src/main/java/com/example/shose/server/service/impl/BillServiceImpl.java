@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.ChildrenBillResponse;
 import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
@@ -16,6 +17,8 @@ import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Size;
+import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -31,6 +34,8 @@ import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
+import com.example.shose.server.repository.SizeProductDetailRepository;
+import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.VoucherDetailRepository;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
@@ -82,6 +87,12 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
 
+    @Autowired
+    private SizeRepository sizeRepository;
+
+    @Autowired
+    private SizeProductDetailRepository sizeProductDetailRepository;
+
 
     private FormUtils formUtils = new FormUtils();
 
@@ -114,21 +125,8 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<CustomDetalBillResponse> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
-        Map<String, CustomDetalBillResponse> list = new HashMap<>();
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllBillAtCounterAndStatusNewBill(request);
-        List<BillResponse> billResponses = billRepository.findAllBillAtCounterAndStatusNewBill(request);
-        billResponses.forEach(bill -> {
-            List<ChildrenBillResponse> children = new ArrayList<>();
-            billDetailResponse.forEach(billDetail -> {
-                if (billDetail.getIdBill().equals(bill.getId())) {
-                    children.add(new ChildrenBillResponse(billDetail));
-                }
-            });
-            list.put(bill.getId(), new CustomDetalBillResponse(bill, children));
-        });
-        List<CustomDetalBillResponse> responses = new ArrayList<>(list.values());
-        return responses;
+    public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
+        return billRepository.findAllBillAtCounterAndStatusNewBill(request);
     }
 
     @Override
@@ -156,17 +154,26 @@ public class BillServiceImpl implements BillService {
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
+            Optional<Size> size = sizeRepository.findById(billDetailRequest.getIdSize());
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
+            if (!size.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+
+            Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
+            if (!sizeProductDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            if (sizeProductDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
             }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
 
-            productDetail.get().setQuantity( productDetail.get().getQuantity() - billDetailRequest.getQuantity());
-            productDetailRepository.save(productDetail.get());
+            sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - billDetailRequest.getQuantity());
+            sizeProductDetailRepository.save(sizeProductDetail.get());
         });
         request.getVouchers().forEach(voucher -> {
             Optional<Voucher> optional = voucherRepository.findById(voucher.getIdVoucher());

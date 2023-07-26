@@ -178,7 +178,7 @@ function BillManagement() {
                 style: "currency",
                 currency: "VND",
               })
-            : itemDiscount}
+            : itemDiscount + " đ"}
         </span>
       ),
     },
@@ -193,7 +193,7 @@ function BillManagement() {
                 style: "currency",
                 currency: "VND",
               })
-            : totalMoney}
+            : totalMoney + " đ"}
         </span>
       ),
     },
