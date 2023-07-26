@@ -345,7 +345,7 @@ public class DBGenerator implements CommandLineRunner {
                 .build();
         User user3 = User.builder()
                 .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdt@fpt.edu.vn")
-                .gender(true).avata("/image/anh2").phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .gender(true).avata("https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg").phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
                 .build();
         userReposiory.save(user1);
         userReposiory.save(user2);

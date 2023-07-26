@@ -7,6 +7,7 @@ import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.infrastructure.common.PageableObject;
+import jakarta.mail.MessagingException;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface EmployeeService {
 
     List<EmployeeResponse> searchDate(final FindEmployeeRequest req);
 
-    User create( CreateEmployeeRequest req);
+    User create( CreateEmployeeRequest req) throws MessagingException;
 
     User update(final UpdateEmployeeRequest req);
 

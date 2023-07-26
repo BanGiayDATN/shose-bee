@@ -118,3 +118,7 @@
   height: 30px;
   pointer-events: none;
 }
+.title_add Input {
+  height: 40px;
+}
+

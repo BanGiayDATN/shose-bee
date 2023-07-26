@@ -118,16 +118,6 @@ const ModalCreateAccount = ({ visible }) => {
               <Input placeholder="Email" />
             </Form.Item>
             <Form.Item
-              label="Mật khẩu"
-              name="password"
-              rules={[
-                { required: true, message: "Vui lòng nhập mật khẩu" },
-                { min: 8, message: "Mật khẩu phải 8 ký tự" },
-              ]}
-            >
-              <Input type="password" placeholder="Mật khẩu" />
-            </Form.Item>
-            <Form.Item
               label="Số điện thoại"
               name="phoneNumber"
               rules={[

@@ -18,7 +18,7 @@ const accountSlice = createSlice({
         email: data.email,
         phoneNumber: data.phoneNumber,
         dateOfBirth: data.dateOfBirth,
-        password: data.password,
+        avata: data.avata,
         status: data.status,
       };
       state.unshift(newaccount);

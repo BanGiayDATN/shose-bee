@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider } from "antd";
+import { Input, Button, Select, Table, Slider, Image } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-account.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
@@ -31,6 +31,7 @@ const AccountManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [imageData, setImageData] = useState(null);
 
   // Lấy mảng redux ra
   const data = useAppSelector(GetAccount);
@@ -143,6 +144,7 @@ const AccountManagement = () => {
     setStartDate(initialStartDate);
     setEndDate(initialEndDate);
     filterByDateOfBirthRange(initialStartDate, initialEndDate);
+    // filterByAgeRange()
     setListaccount(
       initialAccountList.map((account, index) => ({
         ...account,
@@ -203,6 +205,54 @@ const AccountManagement = () => {
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
   }, [ageRange, initialAccountList]);
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [fileList, setFileList] = useState([]);
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    const fileExists = fileList.find((f) => f.uid === file.uid);
+
+    // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
+    if (!fileExists) {
+      const newFile = { ...file, isStarred: false };
+      setFileList([...fileList, newFile]);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+  useEffect(() => {
+    // Gọi API để lấy dữ liệu ảnh từ backend
+    fetch("http://localhost:8080/admin/employee")
+      .then((response) => response.json())
+      .then((data) => {
+        // Kiểm tra nếu data là một mảng trước khi sử dụng map
+        if (Array.isArray(data)) {
+          // Trích xuất URL của ảnh từ dữ liệu nhân viên (giả sử URL ảnh lưu trong trường "avata" của mỗi nhân viên)
+          const imageURLs = data.map((employee) => employee.avata);
+
+          // Set state với mảng URL ảnh
+          setImageData(imageURLs);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching image:", error);
+      });
+  }, []);
+
   const columns = [
     {
       title: "STT",
@@ -210,6 +260,15 @@ const AccountManagement = () => {
       key: "stt",
       sorter: (a, b) => a.stt - b.stt,
     },
+    {
+      title: "Ảnh",
+      dataIndex: "avata",
+      key: "avata",
+      render: (text) => (
+        <img src={text} alt="Ảnh sản phẩm" style={{ width: "60px" }} />
+      ),
+    },
+
     {
       title: "Tên nhân viên",
       dataIndex: "fullName",

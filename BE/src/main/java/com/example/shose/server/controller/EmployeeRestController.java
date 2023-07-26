@@ -4,12 +4,10 @@ package com.example.shose.server.controller;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
-import com.example.shose.server.entity.Account;
-import com.example.shose.server.entity.User;
 import com.example.shose.server.service.EmployeeService;
 import com.example.shose.server.util.ResponseObject;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
 
 /**
  * @author Phuong Oanh
@@ -42,13 +42,15 @@ public class EmployeeRestController {
     }
 
     @PostMapping
-    public ResponseObject add( @RequestBody CreateEmployeeRequest req) {
+    public ResponseObject add(@RequestBody CreateEmployeeRequest req) throws MessagingException {
         return new ResponseObject(userService.create(req));
     }
+
     @GetMapping("/{id}")
     public ResponseObject getOneById(@PathVariable("id") String id) {
         return new ResponseObject(userService.getOneById(id));
     }
+
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id,
                                  @RequestBody UpdateEmployeeRequest req) {

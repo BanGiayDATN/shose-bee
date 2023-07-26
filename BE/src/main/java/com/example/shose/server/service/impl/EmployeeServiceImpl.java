@@ -14,6 +14,9 @@ import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.EmployeeService;
+import com.example.shose.server.util.PasswordGenerator;
+import com.example.shose.server.util.SendEmail;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private PasswordGenerator passwordEncoder;
+
+    @Autowired
+    private SendEmail mail;
+
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
         return userReposiory.getAll(req);
@@ -43,7 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public User create(CreateEmployeeRequest req) {
+    public User create(CreateEmployeeRequest req) throws MessagingException {
         List<Account> accounts = accountRepository.findAll();
         Optional<Account> adminAccount = accounts.stream()
                 .filter(account -> account.getRoles().equals(Roles.ADMIN))
@@ -51,11 +60,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!adminAccount.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
         }
-
+        String randomPassword = passwordEncoder.generatePassword();
+        String email = req.getEmail();
+        mail.testMail(email, randomPassword);
         Account employeeAccount = new Account();
         employeeAccount.setEmail(req.getEmail());
-        employeeAccount.setPassword(req.getPassword());
         employeeAccount.setRoles(Roles.NHAN_VIEN);
+        employeeAccount.setPassword(randomPassword);
 
         User user = User.builder()
                 .fullName(req.getFullName())
@@ -63,8 +74,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .email(req.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .dateOfBirth(req.getDateOfBirth())
+                .avata(req.getAvata())
                 .build();
-
         user = userReposiory.save(user);
         employeeAccount.setUser(user);
         employeeAccount = accountRepository.save(employeeAccount);
@@ -83,6 +94,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setPhoneNumber(req.getPhoneNumber());
         user.setDateOfBirth(req.getDateOfBirth());
         user.setEmail(req.getEmail());
+        user.setAvata(String.valueOf(req.getAvata()));
         user.setStatus(req.getStatus());
 
         if (req.getPassword() != null) {

@@ -134,16 +134,16 @@ const DashBoardEmployee = ({ children }) => {
           </SubMenu>
 
           <SubMenu
-            key="6"
+            key="7"
             icon={
               <FontAwesomeIcon icon={faUserGroup} style={{ color: "white" }} />
             }
             title="Quản Lý Tài Khoản"
           >
-            <Menu.Item key="6.0">
+            <Menu.Item key="7.0">
               <Link to="/staff-management">Nhân Viên</Link>
             </Menu.Item>
-            <Menu.Item key="6.1">
+            <Menu.Item key="7.1">
               <Link to="/customerr-management">Khách Hàng</Link>
             </Menu.Item>
           </SubMenu>
