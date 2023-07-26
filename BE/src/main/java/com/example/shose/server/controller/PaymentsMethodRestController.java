@@ -34,4 +34,9 @@ public class PaymentsMethodRestController {
         return  new ResponseObject(paymentsMethodService.create(id, request));
     }
 
+    @GetMapping("/total-money/{id}")
+    public ResponseObject sumTotalMoneyByIdBill(@PathVariable("id")  String idBill){
+        return  new ResponseObject(paymentsMethodService.sumTotalMoneyByIdBill(idBill));
+    }
+
 }

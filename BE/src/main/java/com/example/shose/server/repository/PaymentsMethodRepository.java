@@ -3,8 +3,10 @@ package com.example.shose.server.repository;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.PaymentsMethod;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +17,12 @@ import java.util.Optional;
 public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,String> {
 
     List<PaymentsMethod> findAllByBill(Bill bill);
+
+    @Query(value = """
+            SELECT 
+            COALESCE(SUM(total_money), 0)
+             FROM payments_method
+             WHERE id_bill = :idBill
+            """, nativeQuery = true)
+    BigDecimal sumTotalMoneyByIdBill(String idBill);
 }

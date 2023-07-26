@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
-        if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN){
+        BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
+        if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN && bill.get().getTotalMoney().compareTo(payment) >= 0){
+
             bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
@@ -66,5 +69,10 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         paymentsMethod.setBill(bill.get());
         paymentsMethod.setDescription(request.getActionDescription());
         return paymentsMethodRepository.save(paymentsMethod);
+    }
+
+    @Override
+    public BigDecimal sumTotalMoneyByIdBill(String idBill) {
+        return paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
     }
 }
