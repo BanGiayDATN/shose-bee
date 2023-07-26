@@ -103,6 +103,6 @@ body{margin-top:20px;}
     opacity: .5
 }
 
-.DA_HUY{
+.timeline-steps .timeline-content .inner-circle:before .DA_HUY::before{
     background-color: red;
 }

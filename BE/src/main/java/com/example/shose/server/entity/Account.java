@@ -33,6 +33,7 @@ public class Account extends PrimaryEntity {
     @Column(name = "email")
     private String email;
 
+
     @Column(name = "password")
     private String password;
 

@@ -1,12 +1,17 @@
 package com.example.shose.server.service;
 
+import com.example.shose.server.dto.ProductDetailDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
+import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
+import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
-import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.infrastructure.common.PageableObject;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Nguyễn Vinh
@@ -15,13 +20,21 @@ public interface ProductDetailService {
 
     List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest);
 
-    ProductDetail create(final CreateProductDetailRequest req);
+    ProductDetailDTO create(final CreateProductDetailRequest req,
+                            List<MultipartFile> multipartFiles,
+                            List<CreateSizeData> listSize,
+                            List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException;
 
-    ProductDetail update(final CreateProductDetailRequest req);
+    ProductDetailDTO update(final UpdateProductDetailRequest req,
+                         List<MultipartFile> multipartFiles,
+                         List<CreateSizeData> listSize,
+                         List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException;
 
     Boolean delete(String id);
 
-    ProductDetail getOneById(String id);
+    ProductDetailDTO getOneById(String id);
+
+    List<GetProductDetailByProduct> getByIdProduct(String id);
 
 
 }

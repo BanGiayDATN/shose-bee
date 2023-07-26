@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //package com.example.shose.server.util.expiredvoucher;
 //
 //import com.example.shose.server.service.VoucherService;
@@ -15,9 +16,32 @@
 //
 ////    @Scheduled(cron = "0 0 0 * * *") // Chạy vào mỗi ngày 00:00:00
 ////    @Scheduled(cron = "0 40 21 * * *") // Chạy vào lúc 9:40 PM mỗi ngày
+=======
+package com.example.shose.server.util.expiredvoucher;
+
+import com.example.shose.server.service.VoucherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+/*
+ *  @author diemdz
+ */
+@Component
+public class ExpiredVoucherScheduler {
+    @Autowired
+    private VoucherService voucherService;
+
+//    @Scheduled(cron = "0 0 0 * * *") // Chạy vào mỗi ngày 00:00:00
+//    @Scheduled(cron = "0 40 21 * * *") // Chạy vào lúc 9:40 PM mỗi ngày
+>>>>>>> 38fbd95cfa4aceef465c41720a5563febef2c64d
 //    @Scheduled(cron = "* * * * * *")
 //    public void updateExpiredVouchers() {
 //        voucherService.startVoucher();
 //        voucherService.expiredVoucher();
 //    }
+<<<<<<< HEAD
 //}
+=======
+}
+>>>>>>> 38fbd95cfa4aceef465c41720a5563febef2c64d

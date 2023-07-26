@@ -1,5 +1,4 @@
 import "./App.css";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppConfig } from "./AppConfig";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/403";
@@ -10,6 +9,7 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
+import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
@@ -17,11 +17,12 @@ import MaterialManagement from "./pages/employee/material-management/MaterialMan
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
 import AccountManagement from "./pages/employee/account-management/AccountManagement";
 import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
-import VoucherManagement from "./pages/employee/voucher-management/VoucherManagement";
+import PromotionManagement from "./pages/employee/promotion-management/PromotionManagement";
 import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
 import AddressManagement from "./pages/customer/address-management/AddressManagement";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import CustomerManagement from "./pages/employee/customer-management/CustomerManagement";
 import ModalCreateAccount from "./pages/employee/account-management/modal/ModalCreateAccount";
 import ModalUpdateAccount from "./pages/employee/account-management/modal/ModalUpdateAccount";
@@ -29,6 +30,9 @@ import ModalDetailAccount from "./pages/employee/account-management/modal/ModalD
 import ModalCreateCustomer from "./pages/employee/customer-management/modal/ModalCreateCustomer";
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
+import DetailProductManagment from "./pages/employee/product-management/DetailProductManagment";
+import UpdateProductManagment from "./pages/employee/product-management/UpdateProductManagment";
+import Sale from "./pages/employee/bill-management/Sale";
 function App() {
   return (
     <div className="App">
@@ -82,6 +86,16 @@ function App() {
             element={
               <AuthGuard>
                 <DashBoardEmployee>
+                  <Sale />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-bill"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
                   <CreateBill />
                 </DashBoardEmployee>
               </AuthGuard>
@@ -103,6 +117,26 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <CreateProductManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/detail-product-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <DetailProductManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/product-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <UpdateProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }
@@ -248,11 +282,21 @@ function App() {
             }
           />
           <Route
-            path="/voucher-management"
+            path="/promotion-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
-                  <VoucherManagement />
+                  <PromotionManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-promotion-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <CreatePromotionManagement />
                 </DashBoardEmployee>
               </AuthGuard>
             }

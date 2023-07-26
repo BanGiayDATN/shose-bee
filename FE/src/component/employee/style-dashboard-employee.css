@@ -1,12 +1,32 @@
 .layout-employee {
-    height: calc(100vh);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow: hidden;
-}
+  }
+  
 
+
+  
 .logo {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 92%; /* Ví dụ: chiều rộng 100% của phần tử cha */
+    height: 200px; /* Ví dụ: chiều cao 200px */
+    margin-bottom: 18px;
+    margin-top: 5px;
+
+    transition: all 0.2s; /* Add a transition effect for smooth resizing */
 }
-.logo-content{
-    width: 90%;
+  
+.logo-content {
+    height: 100%; 
+    object-fit: contain; 
+}
+  
+.ant-layout-sider-collapsed .logo {
+    height: 70px; 
 }

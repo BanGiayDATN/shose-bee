@@ -20,6 +20,7 @@ import {
   faTags,
   faUserGroup,
   faMap,
+  faBoxesPacking,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
 
@@ -48,9 +49,11 @@ const DashBoardEmployee = ({ children }) => {
   return (
     <Layout className="layout-employee">
       <Sider trigger={null} collapsible width={225} collapsed={collapsed}>
-        <div className="logo">
-          <img src={Logo} className="logo-content" />
-        </div>
+        <Link to="/dashboard">
+          <div className="logo">
+            <img src={Logo} className="logo-content" alt="Logo" />
+          </div>
+        </Link>
         <div className="demo-logo-vertical" />
         <Menu theme="dark" mode="inline">
           <Menu.Item
@@ -85,7 +88,7 @@ const DashBoardEmployee = ({ children }) => {
             <Link to="/sale-counter">Bán Hàng Tại Quầy</Link>
           </Menu.Item>
           <Menu.Item
-            key="4"
+            key="4.1"
             icon={
               <FontAwesomeIcon
                 icon={faMoneyBill1Wave}
@@ -93,24 +96,14 @@ const DashBoardEmployee = ({ children }) => {
               />
             }
           >
-            <Link to="/product-management">Quản Lý Thu Chi</Link>
+            <Link to="/bill-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
-          <Menu.Item
-            key="5"
-            icon={
-              <FontAwesomeIcon
-                icon={faMoneyBill1Wave}
-                style={{ color: "white" }}
-              />
-            }
-          >
-            <Link to="/bill-management">Quản Lý Hóa đơn</Link>
-          </Menu.Item>
+         
           <SubMenu
             key="6"
             icon={
               <FontAwesomeIcon
-                icon={faFileInvoiceDollar}
+                icon={faBoxesPacking}
                 style={{ color: "white" }}
               />
             }
@@ -151,7 +144,7 @@ const DashBoardEmployee = ({ children }) => {
             key="8"
             icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
           >
-            <Link to="/voucher-management">Khuyến Mại</Link>
+            <Link to="/promotion-management">Khuyến Mại</Link>
           </Menu.Item>
           <Menu.Item
             key="9"

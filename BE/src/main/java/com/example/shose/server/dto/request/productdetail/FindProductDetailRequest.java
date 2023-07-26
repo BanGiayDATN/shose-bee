@@ -4,6 +4,8 @@ import com.example.shose.server.infrastructure.common.PageableRequest;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 /**
  * @author Nguyễn Vinh
  */
@@ -19,7 +21,7 @@ public class FindProductDetailRequest extends PageableRequest {
 
     private String product;
 
-    private String sizeProduct;
+    private int sizeProduct;
 
     private String sole;
 
@@ -28,5 +30,9 @@ public class FindProductDetailRequest extends PageableRequest {
     private String status;
 
     private String gender;
+
+    private BigDecimal minPrice;
+
+    private  BigDecimal maxPrice;
 
 }

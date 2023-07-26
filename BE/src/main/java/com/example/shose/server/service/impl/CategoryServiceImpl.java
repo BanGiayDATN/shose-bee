@@ -40,7 +40,9 @@ public class CategoryServiceImpl implements CategoryService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Category add = Category.builder().name(req.getName()).status(req.getStatus()).build();
+        Category add = new Category();
+        add.setName(req.getName());
+        add.setStatus(req.getStatus());
         return categoryRepository.save(add);
     }
 

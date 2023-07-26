@@ -27,11 +27,13 @@ public class Address extends PrimaryEntity {
 
     private String line;
 
-    private String city;
+    private String district;
 
     private String province;
 
-    private String country;
+    private String werd;
+
+    private Integer toDistrictId;
 
     @ManyToOne
     @JoinColumn(name = "id_user",referencedColumnName = "id")

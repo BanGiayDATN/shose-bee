@@ -8,6 +8,20 @@ export class SizeApi {
     });
   };
 
+  static getAll = () => {
+    return request({
+      method: "GET",
+      url: `/admin/size/list`,
+    });
+  };
+
+  static getOneByName = (name) => {
+    return request({
+      method: "GET",
+      url: `/admin/size/name/${name}`,
+    });
+  };
+
   static create = (data) => {
     return request({
       method: "POST",

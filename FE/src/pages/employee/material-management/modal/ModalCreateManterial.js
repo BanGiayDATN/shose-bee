@@ -10,6 +10,10 @@ const { Option } = Select;
 const ModalCreateMaterial = ({ visible, onCancel }) => {
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
+  const initialValues = {
+    name: "",
+    status: "DANG_SU_DUNG",
+  };
 
   // Trong hàm handleOk, chúng ta gọi form.validateFields() để kiểm tra và lấy giá trị
   // hàm onCreate để xử lý dữ liệu
@@ -33,6 +37,7 @@ const ModalCreateMaterial = ({ visible, onCancel }) => {
           .then((res) => {
             dispatch(CreateMaterail(res.data.data));
             toast.success("Thêm thành công");
+            form.resetFields();
             onCancel();
           })
           .catch((error) => {
@@ -64,7 +69,7 @@ const ModalCreateMaterial = ({ visible, onCancel }) => {
         </Button>,
       ]}
     >
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" initialValues={initialValues}>
         <Form.Item
           label="Tên chất liệu"
           name="name"
@@ -81,9 +86,8 @@ const ModalCreateMaterial = ({ visible, onCancel }) => {
           name="status"
           rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
         >
-          <Select placeholder=" Vui lòng chọn trạng thái ">
+          <Select defaultValue="DANG_SU_DUNG">
             <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-            <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
           </Select>
         </Form.Item>
       </Form>

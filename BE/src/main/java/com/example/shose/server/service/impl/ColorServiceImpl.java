@@ -35,7 +35,10 @@ public class ColorServiceImpl implements ColorService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Color add = Color.builder().code(req.getCode()).name(req.getName()).status(req.getStatus()).build();
+        Color add = new Color();
+        add.setName(req.getName());
+        add.setStatus(req.getStatus());
+        add.setCode(req.getCode());
         return colorRepository.save(add);
     }
 

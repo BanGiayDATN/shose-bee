@@ -4,7 +4,7 @@ import {
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Form, Table, Select, Space } from "antd";
+import { Button, Form, Table, Select, Space, Row, Col } from "antd";
 import moment from "moment";
 import React from "react";
 import { useEffect } from "react";
@@ -53,17 +53,16 @@ function BillManagement() {
     setStatus(value);
   };
 
-  const handleSubmitSearch = () => {
+  const handleSubmitSearch = (e) => {
     var data = fillter;
     data.status = status;
     setFillter(data);
-    console.log(fillter);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
   };
 
-  const clearFillter = () => {
+  const clearFillter = (e) => {
     setFillter({
       startTimeString: "",
       endTimeString: "",
@@ -78,9 +77,10 @@ function BillManagement() {
       page: 0,
     });
     setStatus([]);
-    //   BillApi.fetchAll(fillter).then((res) => {
-    //     dispatch(getAllBill(res.data.data));
-    //   });
+    BillApi.fetchAll(fillter).then((res) => {
+      console.log(res.data.data);
+      dispatch(getAllBill(res.data.data));
+    });
   };
 
   const [fillter, setFillter] = useState({
@@ -178,7 +178,7 @@ function BillManagement() {
                 style: "currency",
                 currency: "VND",
               })
-            : itemDiscount}
+            : itemDiscount + " đ"}
         </span>
       ),
     },
@@ -193,7 +193,7 @@ function BillManagement() {
                 style: "currency",
                 currency: "VND",
               })
-            : totalMoney}
+            : totalMoney + " đ"}
         </span>
       ),
     },
@@ -220,7 +220,7 @@ function BillManagement() {
         <FontAwesomeIcon icon={faFilter} size="2x" />{" "}
         <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
         <hr />
-        <div className="content">
+        <div className="">
           <div className="">
             <FormSearch
               fillter={fillter}
@@ -233,16 +233,27 @@ function BillManagement() {
           </div>
         </div>
         <div className="box_btn_filter">
-          <Button
-            className="btn_filter"
-            type="submit"
-            onClick={handleSubmitSearch}
-          >
-            Tìm kiếm
-          </Button>
-          <Button className="btn_clear" onClick={clearFillter}>
-            Làm mới bộ lọc
-          </Button>
+          <Row style={{ marginTop: "30px" }}>
+            <Col span={9}></Col>
+
+            <Col span={2}>
+              {" "}
+              <Button
+                className="btn_filter"
+                type="submit"
+                onClick={(e) => handleSubmitSearch(e)}
+              >
+                Tìm kiếm
+              </Button>
+            </Col>
+            <Col span={1}></Col>
+            <Col span={2}>
+              {" "}
+              <Button className="btn_clear" onClick={(e) => clearFillter(e)}>
+                Làm mới bộ lọc
+              </Button>
+            </Col>
+          </Row>
         </div>
       </div>
 

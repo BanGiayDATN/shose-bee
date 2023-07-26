@@ -52,15 +52,16 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
-        bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-        BillHistory billHistory = new BillHistory();
-        billHistory.setBill(bill.get());
-        billHistory.setStatusBill(bill.get().getStatusBill());
-        billHistory.setActionDescription(request.getActionDescription());
+        if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN){
+            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill.get());
+            billHistory.setStatusBill(StatusBill.DA_THANH_TOAN);
+            billHistory.setActionDescription(request.getActionDescription());
 
-        billHistoryRepository.save(billHistory);
-        billRepository.save(bill.get());
-
+            billHistoryRepository.save(billHistory);
+            billRepository.save(bill.get());
+        }
         PaymentsMethod paymentsMethod = formUtils.convertToObject(PaymentsMethod.class, request);
         paymentsMethod.setBill(bill.get());
         paymentsMethod.setDescription(request.getActionDescription());

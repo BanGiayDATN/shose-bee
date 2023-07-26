@@ -19,7 +19,7 @@
   margin-right: 300px;
    
 }
-.logo{
+.logo-img{
     width: 70px;
 }
 .title-menu {
@@ -57,10 +57,6 @@
   padding: 8px 16px;
   transition: background-color 0.3s;
 }
-
-
-
-
 
 .title-option {
   height:30px;

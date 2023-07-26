@@ -37,7 +37,9 @@ public class MaterialServiceImpl implements MaterialService {
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
         }
-        Material add = Material.builder().name(req.getName()).status(req.getStatus()).build();
+        Material add = new Material();
+        add.setName(req.getName());
+        add.setStatus(req.getStatus());
         return materialRepository.save(add);
     }
 

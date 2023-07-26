@@ -12,12 +12,14 @@ const productSlice = createSlice({
     CreateProduct: (state, action) => {
       const data = action.payload;
       const newProduct = {
-        stt: 1,
+        stt: state.length + 1,
         id: data.id,
-        name: data.name,
+        gender: data.gender,
+        price: data.price,
+        image: data.image,
+        nameProduct: data.nameProduct,
         status: data.status,
         createdDate: data.createdDate,
-        lastModifiedDate: data.startTime,
       };
       state.unshift(newProduct);
       state.forEach((item, index) => {
@@ -27,12 +29,13 @@ const productSlice = createSlice({
     UpdateProduct: (state, action) => {
       const update = action.payload; // backend
       const index = state.findIndex((period) => period.id === update.id);
-      console.log(index);
       if (index !== -1) {
-        state[index].name = update.name;
+        state[index].nameProduct = update.nameProduct;
+        state[index].gender = update.gender;
+        state[index].price = update.price;
+        state[index].image = update.image;
         state[index].status = update.status;
         state[index].createdDate = update.createdDate;
-        state[index].lastModifiedDate = update.lastModifiedDate;
       }
     },
   },

@@ -52,6 +52,6 @@ public class ChildrenBillResponse {
         this.nameCategory = response.getNameCategory();
         this.price = response.getPrice();
         this.quantity = response.getQuantity();
-        this.quantityProductDetail = response.getQuantityProductDetail();
+//        this.quantityProductDetail = response.getQuantityProductDetail();
     }
 }

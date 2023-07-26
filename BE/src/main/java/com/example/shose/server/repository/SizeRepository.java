@@ -39,8 +39,11 @@ public interface SizeRepository extends JpaRepository<Size, String> {
     List<SizeResponse> getAll(@Param("req") FindSizeRequest req);
 
     @Query("SELECT a FROM Size a WHERE a.name=:name")
-    Size getOneByName(@Param("name") String name);
+    Size getOneByName(@Param("name") int name);
 
     @Query("SELECT s FROM Size s WHERE s.name =:name AND s.id <> :id")
     Size getByNameExistence(@Param("name") String name, @Param("id") String id);
+
+    @Query("SELECT s FROM Size s ORDER BY s.name ASC ")
+    List<Size> findAll();
 }

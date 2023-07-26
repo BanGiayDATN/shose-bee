@@ -22,4 +22,5 @@ public interface ProductService {
     Boolean delete(String id);
 
     Product getOneById(String id);
+    List<Product> getProductUse();
 }
