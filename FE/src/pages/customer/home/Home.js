@@ -16,7 +16,7 @@ function Home() {
         <Row justify="center">
           <Col
            
-            lg={{ span: 7, offset: 0 }}
+            lg={{ span: 9, offset: 0 }}
           >
             <div className="type-gender">
               <Link>
@@ -28,7 +28,7 @@ function Home() {
 
           <Col
           
-            lg={{ span: 7, offset: 1 }}
+            lg={{ span: 9, offset: 1 }}
           >
             <div  className="type-gender">
               <Link className="hover-wrapper">

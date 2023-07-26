@@ -7,7 +7,6 @@ import com.example.shose.server.dto.request.productdetail.FindProductDetailReque
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,6 +29,7 @@ public interface ProductDetailService {
     ProductDetailDTO getOneById(String id);
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
+
 
 
 
