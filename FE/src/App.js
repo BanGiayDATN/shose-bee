@@ -9,7 +9,7 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
-import CreateVoucherManagement from "./pages/employee/voucher-management/CreateVoucherManagement"
+import CreateVoucherManagement from "./pages/employee/voucher-management/CreateVoucherManagement";
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
@@ -280,7 +280,6 @@ function App() {
             }
           />
         </Routes>
-        
       </BrowserRouter>
       <ToastContainer />
     </div>
