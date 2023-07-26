@@ -9,7 +9,7 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
-import CreateVoucherManagement from "./pages/employee/voucher-management/CreateVoucherManagement";
+import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement"
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
@@ -17,7 +17,7 @@ import MaterialManagement from "./pages/employee/material-management/MaterialMan
 import SoleManagement from "./pages/employee/sole-management/SoleManagement";
 import AccountManagement from "./pages/employee/account-management/AccountManagement";
 import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
-import VoucherManagement from "./pages/employee/voucher-management/VoucherManagement";
+import PromotionManagement from "./pages/employee/promotion-management/PromotionManagement";
 import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
@@ -271,21 +271,21 @@ function App() {
             }
           />
           <Route
-            path="/voucher-management"
+            path="/promotion-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
-                  <VoucherManagement />
+                  <PromotionManagement />
                 </DashBoardEmployee>
               </AuthGuard>
             }
           />
           <Route
-            path="/create-voucher-management"
+            path="/create-promotion-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
-                  <CreateVoucherManagement />
+                  <CreatePromotionManagement />
                 </DashBoardEmployee>
               </AuthGuard>
             }

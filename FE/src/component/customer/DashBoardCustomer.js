@@ -9,7 +9,7 @@ const DashBoardCustomer = ({ children }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 100) {
+      if (window.scrollY > 70) {
         setShowHeaderMenu(true);
       } else {
         setShowHeaderMenu(false);
