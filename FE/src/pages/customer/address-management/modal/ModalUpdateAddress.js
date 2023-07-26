@@ -18,13 +18,11 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
   const getOne = () => {
     AddressApi.getOne(id).then((res) => {
       setAddress(res.data.data);
-      console.log(res);
       form.setFieldsValue(res.data.data);
     });
   };
 
   useEffect(() => {
-    console.log(id);
     if (id != null && id !== "") {
       getOne();
     }
@@ -56,6 +54,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
             dispatch(UpdateAddress(res.data.data));
             toast.success("Cập nhật thành công");
             onCancel();
+            form.resetFields();
           })
           .catch((error) => {
             toast.error("Cập nhật thất bại");
@@ -74,7 +73,6 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
     AddressApi.fetchAllProvince().then(
       (res) => {
         setListProvince(res.data.data);
-        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -88,10 +86,10 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
         setListDistricts(res.data.data);
       }
     );
-    console.log(listDistricts);
   };
 
   const handleCityChange = (value, valueDistrict) => {
+    form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
     });
@@ -119,7 +117,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "7d27cbd0-6569-48f8-8286-378b956dab26",
+          userId: "8ae00573-7e45-4d07-a283-2c2a4a64e973",
         }}
       >
         <Form.Item
@@ -128,7 +126,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
           rules={[{ required: true, message: "Vui lòng chọn Tỉnh/Thành phố" }]}
         >
           <Select onChange={handleProvinceChange}>
-            {/* <Option value="">--Chọn Tỉnh/Thành phố--</Option> */}
+            <Option value="">--Chọn Tỉnh/Thành phố--</Option>
             {listProvince?.map((item) => {
               return (
                 <Option
@@ -145,11 +143,11 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
 
         <Form.Item
           label="Quận/Huyện"
-          name="city"
+          name="district"
           rules={[{ required: true, message: "Vui lòng chọn Quận/Huyện" }]}
         >
           <Select onChange={handleCityChange}>
-            {/* <Option value="">--Chọn Quận/Huyện--</Option> */}
+            <Option value="">--Chọn Quận/Huyện--</Option>
             {listDistricts?.map((item) => {
               return (
                 <Option
@@ -166,11 +164,11 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
 
         <Form.Item
           label="Xã/Phường"
-          name="country"
+          name="werd"
           rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
         >
           <Select>
-            {/* <Option value="">--Chọn Xã/Phường--</Option> */}
+            <Option value="">--Chọn Xã/Phường--</Option>
             {listWard?.map((item) => {
               return (
                 <Option key={item.WardCode} value={item.WardName}>
@@ -183,7 +181,6 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
 
         <Form.Item
           label="Số nhà/Ngõ/Đường"
-          style={{ marginTop: "40px" }}
           name="line"
           rules={[
             { required: true, message: "Vui lòng nhập số nhà/ngõ/đường" },
@@ -192,7 +189,10 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
         <Form.Item name="userId" hidden>
-          <Input defaultValue="7d27cbd0-6569-48f8-8286-378b956dab26" disabled />
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="toDistrictId" hidden>
+          <Input disabled />
         </Form.Item>
       </Form>
     </Modal>

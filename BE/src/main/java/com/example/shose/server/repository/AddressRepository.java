@@ -22,9 +22,9 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 ROW_NUMBER() OVER (ORDER BY a.last_modified_date DESC ) AS stt,
                 a.id AS id,
                 a.line AS line,
-                a.city AS city,
+                a.district AS district,
                 a.province AS province,
-                a.country AS country,
+                a.werd AS ward,
                 a.created_date AS createdDate,
                 a.last_modified_date AS lastModifiedDate,
                 u.id AS idUser
@@ -38,17 +38,17 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                       OR :#{#req.line} LIKE '' 
                       OR a.line LIKE %:#{#req.line}% )
             AND 
-                  ( :#{#req.city} IS NULL 
-                      OR :#{#req.city} LIKE '' 
-                      OR a.city LIKE %:#{#req.city}% )
+                  ( :#{#req.district} IS NULL 
+                      OR :#{#req.district} LIKE '' 
+                      OR a.district LIKE %:#{#req.district}% )
             AND 
                   ( :#{#req.province} IS NULL 
                       OR :#{#req.province} LIKE '' 
                       OR a.province LIKE %:#{#req.province}% )
             AND 
-                  ( :#{#req.country} IS NULL 
-                      OR :#{#req.country} LIKE '' 
-                      OR a.country LIKE %:#{#req.country}% )        
+                  ( :#{#req.ward} IS NULL 
+                      OR :#{#req.ward} LIKE '' 
+                      OR a.werd LIKE %:#{#req.ward}% )        
             GROUP BY a.id
             ORDER BY a.last_modified_date DESC
                   """,

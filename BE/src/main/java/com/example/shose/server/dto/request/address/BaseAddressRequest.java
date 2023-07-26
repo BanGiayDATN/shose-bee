@@ -15,11 +15,13 @@ public abstract class BaseAddressRequest {
 
     private String line;
 
-    private String city;
+    private String district;
 
     private String province;
 
-    private String country;
+    private String werd;
+
+    private Integer toDistrictId;
 
     private String userId;
 }
