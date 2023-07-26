@@ -63,7 +63,7 @@ function HeaderMenu() {
     <div>
       <div className="menu">
         <div className="logo-menu">
-          <img className="logo" src={logo} alt="..." />
+          <img className="logo-img" src={logo} alt="..." />
         </div>
         <div className="space-menu">
           {fields.map((field, index) => {
