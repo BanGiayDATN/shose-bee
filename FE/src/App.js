@@ -9,7 +9,7 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
-import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement"
+import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
@@ -31,6 +31,7 @@ import ModalCreateCustomer from "./pages/employee/customer-management/modal/Moda
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
 import DetailProductManagment from "./pages/employee/product-management/DetailProductManagment";
+import UpdateProductManagment from "./pages/employee/product-management/UpdateProductManagment";
 import Sale from "./pages/employee/bill-management/Sale";
 function App() {
   return (
@@ -126,6 +127,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <DetailProductManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/product-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <UpdateProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }

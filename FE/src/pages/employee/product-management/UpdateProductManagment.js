@@ -1,5 +1,4 @@
-import { Option } from "antd/es/mentions";
-import "./style-product.css";
+import React, { useEffect, useState } from "react";
 import {
   AutoComplete,
   Button,
@@ -11,44 +10,65 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   Table,
   Upload,
 } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import NumberFormat from "react-number-format";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { useParams } from "react-router";
+import { Option } from "antd/es/mentions";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../api/employee/color/Color.api";
-import tinycolor from "tinycolor2";
-import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
+import { SizeProductDetailApi } from "../../../api/employee/size-product-detail/SizeProductDetail.api";
+import "./style-detail.css";
+import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+import { IamgeApi } from "../../../api/employee/image/Image.api";
+import { ProductApi } from "../../../api/employee/product/product.api";
+import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
-import { GetSize, SetSize } from "../../../app/reducer/Size.reducer";
-import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
-import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
-import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
-import {
-  GetMaterail,
-  SetMaterial,
-} from "../../../app/reducer/Materail.reducer";
 import {
   GetCategory,
   SetCategory,
 } from "../../../app/reducer/Category.reducer";
+import {
+  GetMaterail,
+  SetMaterial,
+} from "../../../app/reducer/Materail.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
-import { ProductApi } from "../../../api/employee/product/product.api";
-import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
-import axios from "axios";
-import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
-import NumberFormat from "react-number-format";
+import { GetSize } from "../../../app/reducer/Size.reducer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
+import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
+import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
+import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
 import { toast } from "react-toastify";
+import axios from "axios";
 
-const CreateProductManagment = () => {
+const UpdateProductManagment = () => {
   const dispatch = useAppDispatch();
+  const [product, setProduct] = useState(null);
+  const { id } = useParams();
+  const [initialValues, setInitialValues] = useState({
+    description: "",
+    gender: "",
+    price: "",
+    status: "",
+    categoryId: "",
+    productId: "",
+    materialId: "",
+    colorId: "",
+    soleId: "",
+    brandId: "",
+  });
+
   const status = "DANG_SU_DUNG";
+  const [productDetail, setProductDetail] = useState({});
   const [modalAddSole, setModalAddSole] = useState(false);
   const [modalAddCategopry, setModalAddCategory] = useState(false);
   const [modalAddMaterial, setModalAddMaterial] = useState(false);
@@ -62,9 +82,87 @@ const CreateProductManagment = () => {
   const dataBrand = useAppSelector(GetBrand);
   const dataSize = useAppSelector(GetSize);
 
-  const initialValues = {
-    status: "DANG_SU_DUNG",
+  const onFinish = (values) => {
+    const priceValue = values.price;
+    if (typeof priceValue === "string") {
+      const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ""));
+      values.price = numericPrice + "";
+    }
+    setProductDetail(values);
   };
+
+  // update product- detail
+  const handleUpload = () => {
+    console.log(productDetail);
+    if (Object.entries(productDetail).length != 0) {
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý thêm sản phẩm không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: () => {
+          if (listSizeAdd == null || listSizeAdd.length <= 0) {
+            toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
+          } else if (fileList == null || fileList.length <= 0) {
+            toast.error("Bạn cần thêm ảnh cho sản phẩm");
+          } else {
+            const formData = new FormData();
+            fileList.forEach((file) => {
+              if (file.originFileObj) {
+                formData.append(`multipartFiles`, file.originFileObj);
+              } else if (file.url) {
+                formData.append(`listImage`, file.url);
+              }
+              // Kiểm tra và thêm trạng thái (status) vào formData
+              const isStarred = starredFiles[file.uid]?.isStarred || false;
+              formData.append(`status`, isStarred ? "true" : "false");
+
+              console.log(file);
+            });
+            const requestData = {
+              description: productDetail.description,
+              gender: productDetail.gender,
+              price: productDetail.price,
+              status: productDetail.status,
+              categoryId: productDetail.categoryId,
+              productId: productDetail.productId,
+              materialId: productDetail.materialId,
+              colorId: productDetail.colorId,
+              soleId: productDetail.soleId,
+              brandId: productDetail.brandId,
+            };
+            console.log(listSizeAdd);
+            formData.append("listSize", JSON.stringify(listSizeAdd));
+            formData.append("data", JSON.stringify(requestData));
+            axios
+              .put(`http://localhost:8080/admin/product-detail/${id}`, formData)
+              .then((response) => {
+                console.log(response.data);
+                setIsSubmitting(true);
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          }
+        },
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (
+      dataSole != null ||
+      dataBrand != null ||
+      dataCategory != null ||
+      dataMaterial != null ||
+      dataSize != null
+    ) {
+      setListSole(dataSole);
+      setListCategory(dataCategory);
+      setListMaterial(dataMaterial);
+      setListBrand(dataBrand);
+    }
+  }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
 
   const handleCancel = () => {
     setModalAddSole(false);
@@ -75,23 +173,54 @@ const CreateProductManagment = () => {
     setModalAddSize(false);
   };
 
-  const [productDetail, setProductDetail] = useState({});
   const [listMaterial, setListMaterial] = useState([]);
   const [listCategory, setListCategory] = useState([]);
   const [listBrand, setListBrand] = useState([]);
   const [listColor, setListColor] = useState([]);
-  const [listProduct, setListProduct] = useState([]);
   const [listSole, setListSole] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const getColorName = (color) => {
-    const colorObj = tinycolor(color);
-    return colorObj.toName() || colorObj.toHexString();
+  const [listSizeAdd, setListSizeAdd] = useState([]);
+  const handleQuantityChange = (value, record) => {
+    // Ensure the value is at least 1
+    const newQuantity = Math.max(value, 1);
+    const updatedListSole = listSizeAdd.map((item) =>
+      item.nameSize === record.nameSize
+        ? { ...item, quantity: newQuantity }
+        : item
+    );
+    setListSizeAdd(updatedListSole);
+  };
+
+  const handleQuantityDecrease = (record) => {
+    const updatedListSole = listSizeAdd.map((item) =>
+      item.nameSize === record.nameSize
+        ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
+        : item
+    );
+    setListSizeAdd(updatedListSole);
+  };
+
+  const handleQuantityIncrease = (record) => {
+    const updatedListSole = listSizeAdd.map((item) =>
+      item.nameSize === record.nameSize
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    );
+    setListSizeAdd(updatedListSole);
+  };
+
+  const getSizeProductDetail = () => {
+    SizeProductDetailApi.fetchAll(id).then((res) => {
+      const dataWithSTT = res.data.data.map((item, index) => ({
+        ...item,
+        stt: index + 1,
+      }));
+      setListSizeAdd(dataWithSTT);
+    });
   };
 
   const getList = () => {
-    ProductApi.fetchAll().then((res) => {
-      setListProduct(res.data.data);
-    });
     MaterialApi.fetchAll({
       status: status,
     }).then((res) => {
@@ -118,63 +247,11 @@ const CreateProductManagment = () => {
     });
     ColorApi.getAllCode().then((res) => {
       setListColor(res.data.data);
-      console.log(res.data.data);
     });
-  };
-
-  const onFinish = (values) => {
-    const priceValue = values.price;
-    const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ""));
-    values.price = numericPrice + "";
-    setProductDetail(values);
-  };
-
-  const handleSearch = (value) => {
-    ProductApi.fetchAll({
-      name: value,
-    }).then((res) => {
-      setListProduct(res.data.data);
-    });
-  };
-
-  const renderOptions = (nameList) => {
-    return nameList.map((product, index) => ({
-      key: `${product.id}-${index}`,
-      value: product.name,
-      label: product.name,
-    }));
-  };
-
-  const [listSizeAdd, setListSizeAdd] = useState([]);
-
-  const handleQuantityChange = (value, record) => {
-    // Ensure the value is at least 1
-    const newQuantity = Math.max(value, 1);
-    const updatedListSole = listSizeAdd.map((item) =>
-      item.size === record.size ? { ...item, quantity: newQuantity } : item
-    );
-    setListSizeAdd(updatedListSole);
-  };
-
-  const handleQuantityDecrease = (record) => {
-    const updatedListSole = listSizeAdd.map((item) =>
-      item.size === record.size
-        ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
-        : item
-    );
-    setListSizeAdd(updatedListSole);
-  };
-
-  const handleQuantityIncrease = (record) => {
-    const updatedListSole = listSizeAdd.map((item) =>
-      item.size === record.size
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    );
-    setListSizeAdd(updatedListSole);
   };
 
   const handleSaveData = (selectedSizeData) => {
+    console.log(selectedSizeData);
     selectedSizeData.forEach((selectedSizeData) => {
       // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
       const existingSize = listSizeAdd.find(
@@ -195,7 +272,7 @@ const CreateProductManagment = () => {
           ...prevList,
           {
             stt: prevList.length + 1,
-            size: selectedSizeData.size,
+            nameSize: selectedSizeData.size,
             quantity: selectedSizeData.quantity,
             status: "DANG_SU_DUNG",
           },
@@ -203,6 +280,7 @@ const CreateProductManagment = () => {
       }
     });
   };
+
   const handleDelete = (index) => {
     const updatedList = listSizeAdd.filter((item, i) => i !== index);
     const updatedListWithStt = updatedList.map((item, i) => ({
@@ -212,180 +290,38 @@ const CreateProductManagment = () => {
     setListSizeAdd(updatedListWithStt);
   };
 
-  // ảnh
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState([]);
-  const handleCancelImage = () => setPreviewOpen(false);
-
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    const fileExists = fileList.find((f) => f.uid === file.uid);
-
-    // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
-    if (!fileExists) {
-      const newFile = { ...file, isStarred: false };
-      setFileList([...fileList, newFile]);
-    }
-
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-    );
-  };
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  useEffect(() => {
-    if (isSubmitting) {
-      window.location.href = "/product-management";
-    }
-  }, [isSubmitting]);
-
-  const handleUpload = () => {
-    console.log(productDetail);
-    if (Object.entries(productDetail).length != 0) {
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có đồng ý thêm sản phẩm không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: () => {
-          if (listSizeAdd == null || listSizeAdd.length <= 0) {
-            toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
-          } else if (fileList == null || fileList.length <= 0) {
-            toast.error("Bạn cần thêm ảnh cho sản phẩm");
-          } else {
-            const formData = new FormData();
-            fileList.forEach((file) => {
-              formData.append(`multipartFiles`, file.originFileObj);
-              // Check if the file is starred and set the status accordingly
-              const isStarred = starredFiles[file.uid]?.isStarred || false;
-              formData.append(`status`, isStarred ? "true" : "false");
-              console.log(file);
-            });
-            const requestData = {
-              description: productDetail.description,
-              gender: productDetail.gender,
-              price: productDetail.price,
-              status: productDetail.status,
-              categoryId: productDetail.categoryId,
-              productId: productDetail.productId,
-              materialId: productDetail.materialId,
-              colorId: productDetail.colorId,
-              soleId: productDetail.soleId,
-              brandId: productDetail.brandId,
-            };
-
-            formData.append("listSize", JSON.stringify(listSizeAdd));
-            formData.append("data", JSON.stringify(requestData));
-            axios
-              .post("http://localhost:8080/admin/product-detail", formData)
-              .then((response) => {
-                console.log(response.data);
-                setIsSubmitting(true);
-              })
-              .catch((error) => {
-                console.error(error);
-              });
-          }
-        },
+  const fetchProductDetails = async () => {
+    try {
+      ProducDetailtApi.getOne(id).then((productData) => {
+        setProduct(productData.data.data);
+        setInitialValues({
+          description: productData.data.data.description,
+          gender: productData.data.data.gender,
+          price: productData.data.data.price,
+          status: productData.data.data.status,
+          categoryId: productData.data.data.categoryId,
+          productId: productData.data.data.productId,
+          materialId: productData.data.data.materialId,
+          colorId: productData.data.data.colorId,
+          soleId: productData.data.data.soleId,
+          brandId: productData.data.data.brandId,
+        });
       });
+    } catch (error) {
+      console.error("Error fetching product details:", error);
     }
   };
 
-  const [starredFiles, setStarredFiles] = useState({});
-
   useEffect(() => {
-    const initialStarredState = fileList.reduce((acc, file) => {
-      acc[file.uid] = { ...file, isStarred: false };
-      return acc;
-    }, {});
-    setStarredFiles(initialStarredState);
-  }, [fileList]);
-
-  const renderUploadButton = (file) => {
-    const isStarred = starredFiles[file.uid]?.isStarred || false;
-
-    return (
-      <div className="custom-button">
-        <Button onClick={() => handleCustomButtonClick(file)}>
-          {isStarred ? (
-            <StarFilled style={{ fontSize: 24, color: "gold" }} />
-          ) : (
-            <StarOutlined style={{ fontSize: 24 }} />
-          )}
-        </Button>
-      </div>
-    );
-  };
-
-  const handleCustomButtonClick = (file) => {
-    setStarredFiles((prevStarredFiles) => {
-      return {
-        ...prevStarredFiles,
-        [file.uid]: {
-          ...prevStarredFiles[file.uid],
-          isStarred: !prevStarredFiles[file.uid]?.isStarred,
-        },
-      };
-    });
-  };
-
-  const customItemRender = (originNode, file) => {
-    const isUploadedFile = fileList.some((item) => item.uid === file.uid);
-    if (isUploadedFile) {
-      return (
-        <div className="uploaded-file-container">
-          {originNode}
-          {renderUploadButton(file)}
-        </div>
-      );
-    }
-    return originNode;
-  };
-
-  useEffect(() => {
+    setIsSubmitted(true);
     getList();
   }, []);
 
   useEffect(() => {
-    if (
-      dataSole != null ||
-      dataBrand != null ||
-      dataCategory != null ||
-      dataMaterial != null ||
-      dataSize != null
-    ) {
-      setListSole(dataSole);
-      setListCategory(dataCategory);
-      setListMaterial(dataMaterial);
-      setListBrand(dataBrand);
-    }
-  }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
+    getSizeProductDetail();
+    getListImage();
+    fetchProductDetails();
+  }, [id]);
 
   const columns = [
     {
@@ -396,8 +332,8 @@ const CreateProductManagment = () => {
     },
     {
       title: "Kích cỡ",
-      dataIndex: "size",
-      key: "size",
+      dataIndex: "nameSize",
+      key: "nameSize",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -459,6 +395,178 @@ const CreateProductManagment = () => {
     },
   ];
 
+  // ảnh
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [fileList, setFileList] = useState([
+    {
+      uid: "",
+      name: "",
+      status: "",
+      url: "",
+    },
+  ]);
+
+  const getListImage = () => {
+    IamgeApi.fetchAll(id).then((res) => {
+      const newData = res.data.data.map((imageData) => ({
+        uid: imageData.id,
+        name: imageData.name,
+        status: imageData.status,
+        url: imageData.name,
+      }));
+      setFileList(newData);
+    });
+  };
+  const handleCancelImage = () => setPreviewOpen(false);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    const fileExists = fileList.find((f) => f.uid === file.uid);
+
+    // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
+    if (!fileExists) {
+      const newFile = { ...file, isStarred: false };
+      setFileList([...fileList, newFile]);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
+
+  const [starredFiles, setStarredFiles] = useState({});
+
+  useEffect(() => {
+    const initialStarredState = fileList.reduce((acc, file) => {
+      acc[file.uid] = { ...file, isStarred: false };
+      return acc;
+    }, {});
+    setStarredFiles(initialStarredState);
+  }, [fileList]);
+
+  const renderUploadButton = (file) => {
+    const isStarred = starredFiles[file.uid]?.isStarred || false;
+
+    return (
+      <div className="custom-button">
+        <Button onClick={() => handleCustomButtonClick(file)}>
+          {isStarred ? (
+            <StarFilled style={{ fontSize: 24, color: "gold" }} />
+          ) : (
+            <StarOutlined style={{ fontSize: 24 }} />
+          )}
+        </Button>
+      </div>
+    );
+  };
+
+  const handleCustomButtonClick = (file) => {
+    setStarredFiles((prevStarredFiles) => {
+      return {
+        ...prevStarredFiles,
+        [file.uid]: {
+          ...prevStarredFiles[file.uid],
+          isStarred: !prevStarredFiles[file.uid]?.isStarred,
+        },
+      };
+    });
+  };
+
+  const customItemRender = (originNode, file) => {
+    const isUploadedFile = fileList.some((item) => item.uid === file.uid);
+    if (isUploadedFile) {
+      return (
+        <div className="uploaded-file-container">
+          {originNode}
+          {renderUploadButton(file)}
+        </div>
+      );
+    }
+    return originNode;
+  };
+
+  //
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {
+    if (isSubmitting) {
+      window.location.href = "/product-management";
+    }
+  }, [isSubmitting]);
+  const [listProduct, setListProduct] = useState([]);
+  const handleSearch = (value) => {
+    ProductApi.fetchAll({
+      name: value,
+    }).then((res) => {
+      setListProduct(res.data.data);
+    });
+  };
+
+  const renderOptions = (nameList) => {
+    return nameList.map((product, index) => ({
+      key: `${product.id}-${index}`,
+      value: product.name,
+      label: product.name,
+    }));
+  };
+
+  // Add a check for product existence
+  if (!product) {
+    return (
+      <div>
+        {" "}
+        {isSubmitted && (
+          <Space
+            direction="vertical"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "white",
+              zIndex: 999999999,
+            }}
+          >
+            <Space>
+              <Spin tip="Loading" size="large">
+                <div className="content" />
+              </Spin>
+            </Space>
+          </Space>
+        )}{" "}
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="filter">
@@ -473,7 +581,7 @@ const CreateProductManagment = () => {
           <span
             style={{ fontSize: "25px", fontWeight: "bold", marginTop: "10px" }}
           >
-            THÊM SẢN PHẨM
+            Update Sản Phẩm
           </span>
         </div>
 
@@ -482,6 +590,7 @@ const CreateProductManagment = () => {
             <Form onFinish={onFinish} initialValues={initialValues}>
               <Form.Item>
                 <Button
+                  title="Chỉnh sửa sản phẩm"
                   type="primary"
                   htmlType="submit"
                   className="form-submit-btn"
@@ -504,7 +613,10 @@ const CreateProductManagment = () => {
                   placeholder="Nhập tên sản phẩm"
                   onSearch={handleSearch}
                 >
-                  <Input className="form-input" style={{ fontWeight: "bold" }}/>
+                  <Input
+                    className="form-input"
+                    style={{ fontWeight: "bold" }}
+                  />
                 </AutoComplete>
               </Form.Item>
 
@@ -524,7 +636,7 @@ const CreateProductManagment = () => {
               </Form.Item>
 
               <Row gutter={16} justify="center">
-                <Col span={8}>
+                <Col span={9}>
                   <Form.Item
                     label="Giá"
                     name="price"
@@ -537,12 +649,16 @@ const CreateProductManagment = () => {
                       thousandSeparator={true}
                       suffix=" VND"
                       placeholder="Nhập giá sản phẩm"
-                      style={{ fontWeight: "bold", height: "40px" }}
+                      style={{
+                        fontWeight: "bold",
+                        height: "40px",
+                        width: "300px",
+                      }}
                       customInput={Input}
                     />
                   </Form.Item>
                 </Col>
-                <Col span={8}>
+                <Col span={9}>
                   <Form.Item
                     label="Trạng thái"
                     name="status"
@@ -554,9 +670,18 @@ const CreateProductManagment = () => {
                       },
                     ]}
                   >
-                    <Select>
+                    <Select
+                      placeholder="Chọn chọn giới tính"
+                      style={{ marginLeft: "20px", width: "260px" }}
+                    >
                       <Option value="DANG_SU_DUNG">
                         <span style={{ fontWeight: "bold" }}>Kinh Doanh</span>
+                      </Option>
+                      <Option value="kHONG_SU_DUNG">
+                        {" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          Không Kinh Doanh
+                        </span>
                       </Option>
                     </Select>
                   </Form.Item>
@@ -798,7 +923,7 @@ const CreateProductManagment = () => {
         <div style={{ marginTop: "25px" }}>
           <Table
             dataSource={listSizeAdd}
-            rowKey="id"
+            rowKey="nameSize"
             columns={columns}
             pagination={{ pageSize: 3 }}
             className="size-table"
@@ -880,4 +1005,5 @@ const CreateProductManagment = () => {
     </>
   );
 };
-export default CreateProductManagment;
+
+export default UpdateProductManagment;
