@@ -23,6 +23,7 @@ import { AccountApi } from "../../../api/employee/account/account.api";
 import FormSearch from "./FormSearch";
 import { Link } from "react-router-dom";
 import { AddressApi } from "../../../api/employee/address/address.api";
+import TimelineTest from "./TimelineTest";
 
 function BillManagement() {
   var listCategory = useSelector((state) => state.bill.bills.value);
@@ -69,7 +70,7 @@ function BillManagement() {
       status: [],
       endDeliveryDateString: "",
       startDeliveryDateString: "",
-      code: "",
+      key: "",
       employees: "",
       user: "",
       phoneNumber: "",
@@ -89,7 +90,7 @@ function BillManagement() {
     status: [],
     endDeliveryDateString: "",
     startDeliveryDateString: "",
-    code: "",
+    key: "",
     employees: "",
     user: "",
     phoneNumber: "",
@@ -138,7 +139,7 @@ function BillManagement() {
         return (
           <button
             className={`trangThai ${" status_" + text} `}
-            style={{ border: "none", borderRadius: "0px" }}
+            style={{ border: "none", borderRadius: "22px" }}
           >
             {text === "TAO_HOA_DON"
               ? "Tạo Hóa đơn"

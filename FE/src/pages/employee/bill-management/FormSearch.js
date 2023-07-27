@@ -60,20 +60,20 @@ function FormSearch({
             <Row>
               <Col span={6} className="text">
                 {" "}
-                Mã hóa đơn:
+                Tìm kiếm:
               </Col>
               <Col span={18}>
                 <Input
-                  value={fillter.code}
-                  onChange={(value) => changFillter(value.target.value, "code")}
-                  placeholder="Nhập mã hóa đơn"
+                  value={fillter.key}
+                  onChange={(value) => changFillter(value.target.value, "key")}
+                  placeholder="Nhập"
                   style={{ width: "98%" }}
                 />
               </Col>
             </Row>
           </Col>
           <Col span={12}>
-            <Row style={{ marginLeft: "15px" }}>
+            {/* <Row style={{ marginLeft: "15px" }}>
               <Col span={6} className="text">
                 {" "}
                 Số điện thoại:
@@ -88,7 +88,7 @@ function FormSearch({
                   style={{ width: "98%" }}
                 />
               </Col>
-            </Row>
+            </Row> */}
           </Col>
         </Row>
         <Row style={{ marginTop: "15px" }}>
@@ -175,7 +175,7 @@ function FormSearch({
             </Row>
           </Col>
         </Row>
-        <Row style={{ marginTop: "15px" }}>
+        {/* <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>
               <Col span={6} className="text">
@@ -222,7 +222,7 @@ function FormSearch({
               </Col>
             </Row>
           </Col>
-        </Row>
+        </Row> */}
         <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>

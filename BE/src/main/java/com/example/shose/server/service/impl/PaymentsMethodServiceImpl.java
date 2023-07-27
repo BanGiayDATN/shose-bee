@@ -1,12 +1,14 @@
 package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
+import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
@@ -34,6 +36,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     private BillHistoryRepository billHistoryRepository;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private BillRepository billRepository;
 
     private FormUtils formUtils = new FormUtils();
@@ -48,10 +53,14 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public PaymentsMethod create(String idBill, CreatePaymentsMethodRequest request) {
+    public PaymentsMethod create(String idBill, String idEmployees, CreatePaymentsMethodRequest request) {
         Optional<Bill> bill = billRepository.findById(idBill);
+        Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
         }
         BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
         if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN && bill.get().getTotalMoney().compareTo(payment) >= 0){
@@ -61,7 +70,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.DA_THANH_TOAN);
             billHistory.setActionDescription(request.getActionDescription());
-
+            billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
             billRepository.save(bill.get());
         }

@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodR
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/payment")
 public class PaymentsMethodRestController {
 
+    @Value("${user}")
+    private String userId;
+
     @Autowired
     private PaymentsMethodService paymentsMethodService;
 
@@ -31,7 +35,7 @@ public class PaymentsMethodRestController {
 
     @PostMapping("/bill/{id}")
     public ResponseObject create(@PathVariable("id") String id, @RequestBody CreatePaymentsMethodRequest request){
-        return  new ResponseObject(paymentsMethodService.create(id, request));
+        return  new ResponseObject(paymentsMethodService.create(id, userId, request));
     }
 
     @GetMapping("/total-money/{id}")

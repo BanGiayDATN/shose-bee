@@ -20,7 +20,7 @@ public class BillRequest {
     private long startDeliveryDate;
     private String startDeliveryDateString = new String("");
     private String converStatus;
-    private String code;
+    private String key;
     private String employees;
     private String user;
     private String phoneNumber;

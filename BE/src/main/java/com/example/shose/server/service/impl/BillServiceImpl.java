@@ -156,7 +156,7 @@ public class BillServiceImpl implements BillService {
                 .itemDiscount(new BigDecimal(request.getItemDiscount()))
                 .totalMoney(new BigDecimal(request.getTotalMoney()))
                 .moneyShip(new BigDecimal(request.getMoneyShip())).build());
-        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).build());
+        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
@@ -233,10 +233,14 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill changedStatusbill(String id, ChangStatusBillRequest request) {
+    public Bill changedStatusbill(String id,  String idEmployees, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
+        Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
         }
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
@@ -262,21 +266,27 @@ public class BillServiceImpl implements BillService {
         billHistory.setBill(bill.get());
         billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
         billHistory.setActionDescription(request.getActionDescription());
+        billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
         return billRepository.save(bill.get());
     }
 
     @Override
-    public Bill cancelBill(String id, ChangStatusBillRequest request) {
+    public Bill cancelBill(String id, String idEmployees, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
+        Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
         }
         bill.get().setStatusBill(StatusBill.DA_HUY);
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
         billHistory.setStatusBill(bill.get().getStatusBill());
         billHistory.setActionDescription(request.getActionDescription());
+        billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
         return billRepository.save(bill.get());
     }

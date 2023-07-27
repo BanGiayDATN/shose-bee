@@ -26,6 +26,7 @@ public interface BillHistoryResponse {
     @Value("#{target.action_description}")
     String getActionDesc();
 
-
+    @Value("#{target.full_name}")
+    String getFullName();
 
 }

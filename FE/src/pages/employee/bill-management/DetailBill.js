@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import "./detail.css";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -84,28 +85,39 @@ function DetailBill() {
     setIsModalCanCelOpen(true);
   };
   const handleCanCelOk = () => {
-    BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
-      dispatch(getBill(res.data.data));
-      var index = listStatus.findIndex(
-        (item) => item.status == res.data.data.statusBill
-      );
-      if (res.data.data.statusBill == "TRA_HANG") {
-        index = 5;
-      }
-      if (res.data.data.statusBill == "DA_HUY") {
-        index = 6;
-      }
-      var history = {
-        stt: billHistory.length + 1,
-        statusBill: res.data.data.statusBill,
-        actionDesc: statusBill.actionDescription,
-        id: "",
-        createDate: new Date().getTime(),
-      };
-      dispatch(addStatusPresent(index));
-      dispatch(addBillHistory(history));
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có đồng ý xác nhận không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: () => {
+        BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+          dispatch(getBill(res.data.data));
+          var index = listStatus.findIndex(
+            (item) => item.status == res.data.data.statusBill
+          );
+          if (res.data.data.statusBill == "TRA_HANG") {
+            index = 5;
+          }
+          if (res.data.data.statusBill == "DA_HUY") {
+            index = 6;
+          }
+          var history = {
+            stt: billHistory.length + 1,
+            statusBill: res.data.data.statusBill,
+            actionDesc: statusBill.actionDescription,
+            id: "",
+            createDate: new Date().getTime(),
+          };
+          dispatch(addStatusPresent(index));
+          dispatch(addBillHistory(history));
+        });
+        setIsModalCanCelOpen(false);
+      },
+      onCancel: () => {
+        setIsModalCanCelOpen(false);
+      },
     });
-    setIsModalCanCelOpen(false);
   };
   const handleCanCelClose = () => {
     setIsModalCanCelOpen(false);
@@ -117,35 +129,46 @@ function DetailBill() {
   const showModalPayMent = (e) => {
     setIsModalPayMentOpen(true);
   };
-   const handleOkPayMent = async () => {
-    await  PaymentsMethodApi.payment(id, statusBill).then((res) => {
-      dispatch(addPaymentsMethod(res.data.data));
-      console.log(res.data.data)
-    })
-    await  BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-      console.log(res.data.data)
-      dispatch(getProductInBillDetail(res.data.data));
+  const handleOkPayMent = () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có đồng ý thanh toán không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async () => {
+        await PaymentsMethodApi.payment(id, statusBill).then((res) => {
+          dispatch(addPaymentsMethod(res.data.data));
+          console.log(res.data.data);
+        });
+        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+          console.log(res.data.data);
+          dispatch(getProductInBillDetail(res.data.data));
+        });
+        await BillApi.fetchDetailBill(id).then((res) => {
+          console.log(res.data.data);
+          dispatch(getBill(res.data.data));
+          var index = listStatus.findIndex(
+            (item) => item.status == res.data.data.statusBill
+          );
+          if (res.data.data.statusBill == "TRA_HANG") {
+            index = 6;
+          }
+          if (res.data.data.statusBill == "DA_HUY") {
+            index = 7;
+          }
+          dispatch(addStatusPresent(index));
+          console.log(index);
+        });
+        await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+          dispatch(getBillHistory(res.data.data));
+          console.log(res.data.data);
+        });
+        setIsModalPayMentOpen(false);
+      },
+      onCancel: () => {
+        setIsModalPayMentOpen(false);
+      },
     });
-    await  BillApi.fetchDetailBill(id).then((res) => {
-      console.log(res.data.data)
-      dispatch(getBill(res.data.data));
-      var index = listStatus.findIndex(
-        (item) => item.status == res.data.data.statusBill
-      );
-      if (res.data.data.statusBill == "TRA_HANG") {
-        index = 6;
-      }
-      if (res.data.data.statusBill == "DA_HUY") {
-        index = 7;
-      }
-      dispatch(addStatusPresent(index));
-      console.log(index)
-    });
-    await   BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-      dispatch(getBillHistory(res.data.data));
-      console.log(res.data.data);
-    });
-    setIsModalPayMentOpen(false);
   };
   const handleCancelPayMent = () => {
     setIsModalPayMentOpen(false);
@@ -175,33 +198,45 @@ function DetailBill() {
   };
 
   const handleOkChangeStatus = () => {
-    BillApi.changeStatusBill(id, statusBill).then((res) => {
-      console.log("change");
-      console.log(res.data.data);
-      dispatch(getBill(res.data.data));
-      var index = listStatus.findIndex(
-        (item) => item.status == res.data.data.statusBill
-      );
-      console.log(index);
-      if (res.data.data.statusBill == "TRA_HANG") {
-        index = 5;
-      }
-      if (res.data.data.statusBill == "DA_HUY") {
-        index = 6;
-      }
-      console.log(res.data.data.statusBill);
-      var history = {
-        stt: billHistory.length + 1,
-        statusBill: res.data.data.statusBill,
-        actionDesc: statusBill.actionDescription,
-        id: "",
-        createDate: new Date().getTime(),
-      };
-      dispatch(addStatusPresent(index));
-      dispatch(addBillHistory(history));
-    });
-    PaymentsMethodApi.findByIdBill(id).then((res) => {
-      dispatch(getPaymentsMethod(res.data.data));
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có đồng ý thêm sản phẩm không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: () => {
+        BillApi.changeStatusBill(id, statusBill).then((res) => {
+          console.log("change");
+          console.log(res.data.data);
+          dispatch(getBill(res.data.data));
+          var index = listStatus.findIndex(
+            (item) => item.status == res.data.data.statusBill
+          );
+          console.log(index);
+          if (res.data.data.statusBill == "TRA_HANG") {
+            index = 5;
+          }
+          if (res.data.data.statusBill == "DA_HUY") {
+            index = 6;
+          }
+          console.log(res.data.data.statusBill);
+          var history = {
+            stt: billHistory.length + 1,
+            statusBill: res.data.data.statusBill,
+            actionDesc: statusBill.actionDescription,
+            id: "",
+            createDate: new Date().getTime(),
+          };
+          dispatch(addStatusPresent(index));
+          dispatch(addBillHistory(history));
+        });
+        PaymentsMethodApi.findByIdBill(id).then((res) => {
+          dispatch(getPaymentsMethod(res.data.data));
+        });
+        setIsModalOpenChangeStatus(false);
+      },
+      onCancel: () => {
+        setIsModalOpenChangeStatus(false);
+      },
     });
 
     setIsModalOpenChangeStatus(false);
@@ -210,7 +245,6 @@ function DetailBill() {
   const handleCancelChangeStatus = () => {
     setIsModalOpenChangeStatus(false);
   };
-
 
   const onChangeDescStatusBill = (fileName, value) => {
     setStatusBill({ ...statusBill, [fileName]: value });
@@ -348,6 +382,11 @@ function DetailBill() {
       },
     },
     {
+      title: <div className="title-product">Người xác nhận</div>,
+      dataIndex: "fullName",
+      key: "fullName",
+    },
+    {
       title: <div className="title-product">Ghi chú</div>,
       dataIndex: "actionDesc",
       key: "actionDesc",
@@ -402,160 +441,181 @@ function DetailBill() {
 
   return (
     <div>
-      <Row style={{ width: "100%"}}>
-        <div className="row" style={{ backgroundColor: "white" , width: "100%"}}>
-          <TimeLine 
-          style= {{with: "100%"}}
-            listStatus={listStatus}
-            data={billHistory}
-            statusPresent={statusPresent}
-          />
-        </div>
-      </Row>
-      <Row style={{ width: "100%", marginBottom: "20px" }}>
-        <Row style={{ width: "100%" }}>
-          <Col style={{ width: "100%" }} span={statusPresent < 4 ? 3 : 0}>
-            {statusPresent < 4 ? (
-              <Button
-                type="primary"
-                className="btn btn-primary"
-                onClick={() => showModalChangeStatus()}
-              >
-                {listStatus[statusPresent + 1].name}
-              </Button>
-            ) : (
-              <div></div>
-            )}
-          </Col>
-          <Col span={statusPresent < 4 ? 2 : 0}>
-            {statusPresent < 4 ? (
-              <Button
-                type="danger"
-                onClick={() => showModalCanCel()}
-                style={{ backgroundColor: "red" }}
-              >
-                Hủy
-              </Button>
-            ) : (
-              <div></div>
-            )}
-          </Col>
-          <Col span={3}>
-            <Button type="primary" onClick={showModal}>
-              Lịch sử
-            </Button>
-          </Col>
-        </Row>
-        <Modal
-          title="Xác nhận"
-          open={isModalOpenChangeStatus}
-          onOk={handleOkChangeStatus}
-          onCancel={handleCancelChangeStatus}
+      <Row style={{ width: "100%" }}>
+        {/* <TimelineTest></TimelineTest> */}
+        <div
+          className="row"
+          style={{
+            backgroundColor: "white",
+            width: "100%",
+            marginBottom: "30px",
+          }}
         >
-          <Row> Mã Hóa đơn: {bill.code}</Row>
-          {bill.statusBill === "VAN_CHUYEN" ? (
-            <div>
-              <Row style={{ width: "100%", marginTop: "10px" }}>
-                <Col span={5}>Nhập Số tiền: </Col>
-                <Col span={19}>
-                  <InputNumber
-                    style={{ width: "100%" }}
-                    placeholder="vui lòng số"
-                    onChange={(value) =>
-                      onChangeDescStatusBill("totalMoney", value)
-                    }
-                  />
-                </Col>
-              </Row>
-              <Row style={{ width: "100%" }}>
-                <Col span={5}>Hình thức: </Col>
-                <Col span={19}>
-                  <Select
-                    showSearch
-                    style={{ width: "100%", margin: "10px 0" }}
-                    placeholder="Chọn hình thức"
-                    optionFilterProp="children"
-                    onChange={(value) =>
-                      onChangeDescStatusBill("method", value)
-                    }
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    options={[
-                      {
-                        value: "TIEN_MAT",
-                        label: "Tiền mặt",
-                      },
-                      {
-                        value: "CHUYEN_KHOAN",
-                        label: "Chuyển khoản",
-                      },
-                      {
-                        value: "TIEN_MAT_VA_CHUYEN_KHOAN",
-                        label: "Tiền mặt và chuyển khoản",
-                      },
-                    ]}
-                  />
-                </Col>
-              </Row>
-            </div>
-          ) : (
-            <div></div>
-          )}
-          <Row style={{ width: "100%" }}>
-            <Col span={5}>Nhập mô tả: </Col>
-            <Col span={19}>
-              <Input
-                placeholder="vui lòng nhập mô tả"
-                onChange={(e) =>
-                  onChangeDescStatusBill("actionDescription", e.target.value)
-                }
-              />
-            </Col>
-          </Row>
-        </Modal>
-        <div className="col-2">
-          <Modal
-            title="Hủy đơn hàng"
-            open={isModalCanCelOpen}
-            onOk={handleCanCelOk}
-            onCancel={handleCanCelClose}
-          >
-            <p className="row"> Mã Hóa đơn: {bill.code}</p>
-            <p className="row">
-              <div className="mb-3">
-                <label className="form-label">Nhập mô tả</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="actionDescription"
-                  value={statusBill.actionDescription}
-                  onChange={(e) => onChangeDescStatusBill(e)}
-                  id="exampleInputEmail1"
-                />
-              </div>
-            </p>
-          </Modal>
-        </div>
-        <div className="offset-6 col-2">
-          <Modal
-            title="Basic Modal"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          >
-            <Table
-              dataSource={billHistory}
-              columns={columnsHistory}
-              rowKey="id"
-              pagination={false} // Disable default pagination
-              className="product-table"
+          <Row style={{ backgroundColor: "white", width: "100%" }}>
+            <TimeLine
+              style={{ with: "100%" }}
+              listStatus={listStatus}
+              data={billHistory}
+              statusPresent={statusPresent}
             />
-          </Modal>
+          </Row>
+          <Row style={{ width: "100%", marginBottom: "20px" }}>
+            <Row style={{ width: "100%" }}>
+              <Col style={{ width: "100%" }} span={statusPresent < 4 ? 3 : 0}>
+                {statusPresent < 4 ? (
+                  <Button
+                    type="primary"
+                    className="btn btn-primary"
+                    onClick={() => showModalChangeStatus()}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    {listStatus[statusPresent + 1].name}
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
+              </Col>
+              <Col span={statusPresent < 4 ? 2 : 0}>
+                {statusPresent < 4 ? (
+                  <Button
+                    type="danger"
+                    onClick={() => showModalCanCel()}
+                    style={{ backgroundColor: "red", marginLeft: "10px" }}
+                  >
+                    Hủy
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
+              </Col>
+              <Col span={3}>
+                <Button
+                  type="primary"
+                  onClick={showModal}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Lịch sử
+                </Button>
+              </Col>
+            </Row>
+            <Modal
+              title="Xác nhận"
+              open={isModalOpenChangeStatus}
+              onOk={handleOkChangeStatus}
+              onCancel={handleCancelChangeStatus}
+            >
+              <Row> Mã Hóa đơn: {bill.code}</Row>
+              {bill.statusBill === "VAN_CHUYEN" ? (
+                <div>
+                  <Row style={{ width: "100%", marginTop: "10px" }}>
+                    <Col span={5}>Nhập Số tiền: </Col>
+                    <Col span={19}>
+                      <InputNumber
+                        style={{ width: "100%" }}
+                        placeholder="vui lòng số"
+                        onChange={(value) =>
+                          onChangeDescStatusBill("totalMoney", value)
+                        }
+                      />
+                    </Col>
+                  </Row>
+                  <Row style={{ width: "100%" }}>
+                    <Col span={5}>Hình thức: </Col>
+                    <Col span={19}>
+                      <Select
+                        showSearch
+                        style={{ width: "100%", margin: "10px 0" }}
+                        placeholder="Chọn hình thức"
+                        optionFilterProp="children"
+                        onChange={(value) =>
+                          onChangeDescStatusBill("method", value)
+                        }
+                        filterOption={(input, option) =>
+                          (option?.label ?? "")
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
+                        options={[
+                          {
+                            value: "TIEN_MAT",
+                            label: "Tiền mặt",
+                          },
+                          {
+                            value: "CHUYEN_KHOAN",
+                            label: "Chuyển khoản",
+                          },
+                          {
+                            value: "TIEN_MAT_VA_CHUYEN_KHOAN",
+                            label: "Tiền mặt và chuyển khoản",
+                          },
+                        ]}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              ) : (
+                <div></div>
+              )}
+              <Row style={{ width: "100%" }}>
+                <Col span={5}>Nhập mô tả: </Col>
+                <Col span={19}>
+                  <Input
+                    placeholder="vui lòng nhập mô tả"
+                    onChange={(e) =>
+                      onChangeDescStatusBill(
+                        "actionDescription",
+                        e.target.value
+                      )
+                    }
+                  />
+                </Col>
+              </Row>
+            </Modal>
+            <div className="col-2">
+              <Modal
+                title="Hủy đơn hàng"
+                open={isModalCanCelOpen}
+                onOk={handleCanCelOk}
+                onCancel={handleCanCelClose}
+              >
+                <p className="row"> Mã Hóa đơn: {bill.code}</p>
+                <p className="row">
+                  <div className="mb-3">
+                    <label className="form-label">Nhập mô tả</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="actionDescription"
+                      value={statusBill.actionDescription}
+                      onChange={(e) => onChangeDescStatusBill(e)}
+                      id="exampleInputEmail1"
+                    />
+                  </div>
+                </p>
+              </Modal>
+            </div>
+            <div className="offset-6 col-2">
+              <Modal
+                title="Lịch sử"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                className="widthModal"
+                style={{ marginLeft: "15%" }}
+              >
+                <Table
+                  dataSource={billHistory}
+                  columns={columnsHistory}
+                  rowKey="id"
+                  pagination={false} // Disable default pagination
+                  className="product-table"
+                />
+              </Modal>
+            </div>
+          </Row>
         </div>
       </Row>
+
       <Row
         style={{
           width: "100%",
@@ -611,7 +671,8 @@ function DetailBill() {
             <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>
                 Trạng thái:{" "}
-                {bill.statusBill == "TAO_HOA_DON"
+               <span className={`trangThai ${" status_" + bill.statusBill} `}>
+               {bill.statusBill == "TAO_HOA_DON"
                   ? "Tạo Hóa đơn"
                   : bill.statusBill == "CHO_THANH_TOAN"
                   ? "Chờ xác nhận"
@@ -624,14 +685,36 @@ function DetailBill() {
                   : bill.statusBill === "TRA_HANG"
                   ? "Trả hàng"
                   : "Đã hủy"}
+               </span>
               </div>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>Loại: {bill.typeBill}</div>
+              <div style={{ marginLeft: "20px" }}>
+                Loại:{" "}
+                <span
+                  style={{
+                    backgroundColor: " #9ff905",
+                    color: "white",
+                    width: "180px",
+                    borderRadius: "15px",
+                    padding: " 5px 19px",
+                    marginLeft: "10px"
+                  }}
+                >
+                  {bill.typeBill}
+                </span>
+              </div>
             </Col>
             <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>
-                Tên khách hàng: {bill.userName}
+                Tên khách hàng: {bill.userName == '' ? (<span style={{
+                    backgroundColor: " #ccc",
+                    color: "white",
+                    width: "180px",
+                    borderRadius: "15px",
+                    padding: " 5px 19px",
+                    marginLeft: "10px"
+                  }}>Khách lẻ</span>) : (<span>{bill.userName}</span>)} 
               </div>
             </Col>
             <Col span={12} className="text">
@@ -671,7 +754,7 @@ function DetailBill() {
               </div>
             </Col>
 
-            <Col span={12} className="text">
+            {/* <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>
                 Ngày xác nhận:{" "}
                 {bill.confirmationDate != null
@@ -702,7 +785,7 @@ function DetailBill() {
                   ? moment(bill.completionDate).format("DD-MM-YYYY")
                   : ""}
               </div>
-            </Col>
+            </Col> */}
           </Row>
         </div>
       </Row>

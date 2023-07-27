@@ -39,4 +39,8 @@ public class BillHistory extends PrimaryEntity {
     @JoinColumn(name = "id_bill",referencedColumnName = "id")
     private Bill bill;
 
+    @ManyToOne
+    @JoinColumn(name = "id_employees",referencedColumnName = "id")
+    private Account employees;
+
 }

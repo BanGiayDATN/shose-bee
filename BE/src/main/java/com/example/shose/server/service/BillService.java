@@ -34,7 +34,7 @@ public interface BillService {
 
     Bill detail(String id);
 
-    Bill changedStatusbill(String id, ChangStatusBillRequest request);
+    Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request);
 
-    Bill cancelBill(String id, ChangStatusBillRequest request);
+    Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request);
 }
