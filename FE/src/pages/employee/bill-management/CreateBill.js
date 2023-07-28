@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router";
+import { FaShoppingBag } from "react-icons/fa";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -169,17 +170,17 @@ function CreateBill() {
 
   return (
     <div>
-      <Row>
+      <Row justify="space-between" >
         <Col span={3}>
-          <Button type="primary" onClick={e => navigate("/bill-management") }>Danh sách hóa đơn</Button>
+          <Button type="primary" style={{fontSize: "medium", fontWeight: "500"}} onClick={e => navigate("/bill-management") }>Danh sách</Button>
         </Col>
-        <Col span={18}></Col>
-        <Col span={3}>
-          <Button type="primary" onClick={e => showModalProduct(e)}>Thêm sản phẩm</Button>
+        {/* <Col span={16}></Col> */}
+        <Col span={4}>
+          <Button type="primary" style={{fontSize: "medium", fontWeight: "500"}} onClick={e => showModalProduct(e)}>Thêm sản phẩm</Button>
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        <Row>
+        <Row style={{ width: "100%" }}>
           {" "}
           <Table
             dataSource={[]}
@@ -196,13 +197,13 @@ function CreateBill() {
         </Row>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        <Row style={{ width: "100%" }}>
+        <Row style={{ width: "100%" , marginBottom: "20px", borderBottom: "2px solid #ccc", padding: "12px"}}>
           <Col span={8}>
-            <h2 style={{ margin: "10px 0 0 10px" }} >Tài khoản</h2>
+            <h2 style={{ margin: "10px 0 0 0px" }} >Tài khoản</h2>
           </Col>
           <Col span={12}></Col>
-          <Col span={3}>
-            <Button style={{ margin: "10px 10px 0px 0" }} onClick={e => showModalAccount(e)}>
+          <Col span={4} align={"end"} >
+            <Button style={{ margin: "10px 00px 0px 0" }} onClick={e => showModalAccount(e)}>
               Chọn tài khoản
             </Button>
           </Col>
@@ -232,13 +233,10 @@ function CreateBill() {
         </Row>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        <Row style={{ width: "100%", margin: "2px 0 2px 10px" }}>
+        <Row style={{ width: "100%" , marginBottom: "20px", borderBottom: "2px solid #ccc", padding: "12px"}}>
           <Col span={8}>
             <h2>Khách hàng</h2>
           </Col>
-        </Row>
-        <Row style={{ width: "100%" }}>
-          <hr></hr>
         </Row>
         <Row style={{ width: "100%" }}>
           <Col span={14}>
@@ -250,9 +248,7 @@ function CreateBill() {
                     marginLeft: "10px",
                     marginTop: "10px",
                   }}
-                >
-                  <Col span={5}> Họ và tên: </Col>
-                  <Col span={19}>
+                ><Col span={24}>
                     {" "}
                     <Input
                       placeholder="Nhập họ và tên"
@@ -267,8 +263,7 @@ function CreateBill() {
                     marginTop: "10px",
                   }}
                 >
-                  <Col span={5}> Số điện thoại: </Col>
-                  <Col span={19}>
+                  <Col span={24}>
                     {" "}
                     <Input
                       placeholder="Nhập số điện thoại"
@@ -283,8 +278,7 @@ function CreateBill() {
                     marginTop: "10px",
                   }}
                 >
-                  <Col span={5}> Địa chỉ: </Col>
-                  <Col span={19}>
+                  <Col span={24}>
                     {" "}
                     <Input
                       placeholder="Nhập địa chỉ"
@@ -299,8 +293,7 @@ function CreateBill() {
                     marginTop: "10px",
                   }}
                 >
-                  <Col span={5}></Col>
-                  <Col span={19}>
+                  <Col span={24}>
                     <Row style={{ width: "100%" }}>
                       <Col span={7}>
                         {" "}
@@ -363,12 +356,11 @@ function CreateBill() {
                     marginTop: "10px",
                   }}
                 >
-                  <Col span={5}> Ghi chú: </Col>
-                  <Col span={19}>
+                  <Col span={24}>
                     <TextArea
                       rows={4}
                       style={{ width: "90%" }}
-                      placeholder="ghi chú"
+                      placeholder="Ghi chú"
                     />
                   </Col>
                 </Row>
@@ -380,13 +372,13 @@ function CreateBill() {
           <Col span={10}>
             <Row style={{ width: "100%" }}>
               <Col span={2}>
-                <ShoppingCartOutlined />
+                <FaShoppingBag style={{width:"50px", height: "20px", margin: "4px"}}/>
               </Col>
               <Col span={22}>
-                <h3 style={{ margin: "0px" }}>Thông tin thanh toán</h3>
+                <h2 style={{ margin: "0px 0px 0px 10px" }}>Thông tin thanh toán</h2>
               </Col>
             </Row>
-            <Row style={{ margin: "10px 0 5px 5px", width: "100%" }}>
+            <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
               <Col span={5}> Giao hàng: </Col>
               <Col span={12}>
                 <label class="switch" for="checkbox">
@@ -413,20 +405,21 @@ function CreateBill() {
                 options={[]}
               />
             </Row>
-            <Row justify="space-between" style={{ marginTop: "10px" }}>
+            <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{marginRight: "10px"}}>{} đ </Col>
             </Row>
-            <Row justify="space-between" style={{ marginTop: "10px" }}>
+            <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={8}>Phí vận chuyển: </Col>
               <Col span={10} align={"end"} style={{marginRight: "10px"}}>{} đ </Col>
             </Row>
-            <Row justify="space-between" style={{ marginTop: "10px" }}>
+            <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Giảm giá: </Col>
               <Col span={10} align={"end"} style={{marginRight: "10px"}}>{} đ </Col>
             </Row>
-            <Row justify="space-between" style={{ marginTop: "10px" }}>
-              <Col span={12} >Tổng tiền: </Col>
+            <Row justify="space-between" style={{ marginTop: "20px" }}>
+              <Col span={12} >
+                <span style={{margin: "2px", fontWeight: "700px"}}>Tổng tiền:</span> </Col>
               <Col
                 span={10}
                 style={{ color: "red", fontSize: "18px", fontWeight: "bold",marginRight: "10px" }}
@@ -435,8 +428,8 @@ function CreateBill() {
                 {} đ{" "}
               </Col>
             </Row>
-            <Row style={{ marginTop: "20px" }} justify="end">
-              <Button type="primary" onClick={e => orderBill(e)} >Xác nhận đặt hàng</Button>
+            <Row style={{ margin: "40px 20px 30px 0" }} justify="end">
+              <Button type="primary" style={{backgroundColor: "black", fontWeight: "500"}} onClick={e => orderBill(e)} >Xác nhận đặt hàng</Button>
             </Row>
           </Col>
         </Row>

@@ -26,6 +26,7 @@ import { useParams } from "react-router";
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import "./detail.css";
+import TextArea from "antd/es/input/TextArea";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -46,7 +47,7 @@ function DetailBill() {
   const statusPresent = useSelector((state) => state.bill.bill.status);
   const [statusBill, setStatusBill] = useState({
     actionDescription: "",
-    method: "",
+    method: "TIEN_MAT",
     totalMoney: 0,
   });
   const dispatch = useDispatch();
@@ -85,6 +86,7 @@ function DetailBill() {
     setIsModalCanCelOpen(true);
   };
   const handleCanCelOk = () => {
+    setIsModalCanCelOpen(false);
     Modal.confirm({
       title: "Xác nhận",
       content: "Bạn có đồng ý xác nhận không?",
@@ -118,6 +120,12 @@ function DetailBill() {
         setIsModalCanCelOpen(false);
       },
     });
+
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+    });
   };
   const handleCanCelClose = () => {
     setIsModalCanCelOpen(false);
@@ -130,6 +138,7 @@ function DetailBill() {
     setIsModalPayMentOpen(true);
   };
   const handleOkPayMent = () => {
+    setIsModalPayMentOpen(false);
     Modal.confirm({
       title: "Xác nhận",
       content: "Bạn có đồng ý thanh toán không?",
@@ -198,6 +207,7 @@ function DetailBill() {
   };
 
   const handleOkChangeStatus = () => {
+    setIsModalOpenChangeStatus(false);
     Modal.confirm({
       title: "Xác nhận",
       content: "Bạn có đồng ý thêm sản phẩm không?",
@@ -238,7 +248,11 @@ function DetailBill() {
         setIsModalOpenChangeStatus(false);
       },
     });
-
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+    });
     setIsModalOpenChangeStatus(false);
   };
 
@@ -377,7 +391,7 @@ function DetailBill() {
       dataIndex: "createDate",
       key: "createDate",
       render: (text) => {
-        const formattedDate = moment(text).format("DD-MM-YYYY"); // Định dạng ngày
+        const formattedDate = moment(text).format(" HH:mm:ss DD-MM-YYYY"); // Định dạng ngày
         return formattedDate;
       },
     },
@@ -459,69 +473,92 @@ function DetailBill() {
               statusPresent={statusPresent}
             />
           </Row>
-          <Row style={{ width: "100%", marginBottom: "20px" }}>
+          <Row
+            style={{ width: "100%", marginBottom: "20px" }}
+            justify={"space-around"}
+          >
             <Row style={{ width: "100%" }}>
-              <Col style={{ width: "100%" }} span={statusPresent < 4 ? 3 : 0}>
-                {statusPresent < 4 ? (
-                  <Button
-                    type="primary"
-                    className="btn btn-primary"
-                    onClick={() => showModalChangeStatus()}
-                    style={{ marginLeft: "10px" }}
+              <Col span={12}>
+                <Row>
+                  <Col
+                    style={{ width: "100%" }}
+                    span={statusPresent < 4 ? 7 : 0}
                   >
-                    {listStatus[statusPresent + 1].name}
-                  </Button>
-                ) : (
-                  <div></div>
-                )}
+                    {statusPresent < 4 ? (
+                      <Button
+                        type="primary"
+                        className="btn btn-primary"
+                        onClick={() => showModalChangeStatus()}
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "500",
+                          marginLeft: "20px",
+                        }}
+                      >
+                        {listStatus[statusPresent + 1].name}
+                      </Button>
+                    ) : (
+                      <div></div>
+                    )}
+                  </Col>
+                  <Col span={statusPresent < 4 ? 6 : 0}>
+                    {statusPresent < 4 ? (
+                      <Button
+                        type="danger"
+                        onClick={() => showModalCanCel()}
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "500",
+                          marginLeft: "20px",
+                          backgroundColor: "red",
+                          color: "white",
+                        }}
+                      >
+                        Hủy
+                      </Button>
+                    ) : (
+                      <div></div>
+                    )}
+                  </Col>
+                </Row>
               </Col>
-              <Col span={statusPresent < 4 ? 2 : 0}>
-                {statusPresent < 4 ? (
-                  <Button
-                    type="danger"
-                    onClick={() => showModalCanCel()}
-                    style={{ backgroundColor: "red", marginLeft: "10px" }}
-                  >
-                    Hủy
-                  </Button>
-                ) : (
-                  <div></div>
-                )}
-              </Col>
-              <Col span={3}>
+              <Col span={12} align={"end"}>
                 <Button
                   type="primary"
                   onClick={showModal}
-                  style={{ marginLeft: "10px" }}
+                  style={{
+                    fontSize: "medium",
+                    fontWeight: "500",
+                    marginRight: "20px",
+                    backgroundColor: "#ccc",
+                  }}
                 >
                   Lịch sử
                 </Button>
               </Col>
             </Row>
             <Modal
-              title="Xác nhận"
+              title="Xác nhận Đơn hàng"
               open={isModalOpenChangeStatus}
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}
             >
-              <Row> Mã Hóa đơn: {bill.code}</Row>
               {bill.statusBill === "VAN_CHUYEN" ? (
                 <div>
                   <Row style={{ width: "100%", marginTop: "10px" }}>
-                    <Col span={5}>Nhập Số tiền: </Col>
-                    <Col span={19}>
+                    <Col span={24}>
                       <InputNumber
                         style={{ width: "100%" }}
-                        placeholder="vui lòng số"
+                        placeholder="Nhập số tiền"
                         onChange={(value) =>
                           onChangeDescStatusBill("totalMoney", value)
                         }
+                        value={statusBill.totalMoney}
                       />
                     </Col>
                   </Row>
                   <Row style={{ width: "100%" }}>
-                    <Col span={5}>Hình thức: </Col>
-                    <Col span={19}>
+                    <Col span={24}>
                       <Select
                         showSearch
                         style={{ width: "100%", margin: "10px 0" }}
@@ -530,6 +567,7 @@ function DetailBill() {
                         onChange={(value) =>
                           onChangeDescStatusBill("method", value)
                         }
+                        value={statusBill.method}
                         filterOption={(input, option) =>
                           (option?.label ?? "")
                             .toLowerCase()
@@ -557,10 +595,11 @@ function DetailBill() {
                 <div></div>
               )}
               <Row style={{ width: "100%" }}>
-                <Col span={5}>Nhập mô tả: </Col>
-                <Col span={19}>
-                  <Input
-                    placeholder="vui lòng nhập mô tả"
+                <Col span={24}>
+                  <TextArea
+                    rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
+                    value={statusBill.actionDescription}
+                    placeholder="Nhập mô tả"
                     onChange={(e) =>
                       onChangeDescStatusBill(
                         "actionDescription",
@@ -578,20 +617,19 @@ function DetailBill() {
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
               >
-                <p className="row"> Mã Hóa đơn: {bill.code}</p>
-                <p className="row">
-                  <div className="mb-3">
-                    <label className="form-label">Nhập mô tả</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="actionDescription"
-                      value={statusBill.actionDescription}
-                      onChange={(e) => onChangeDescStatusBill(e)}
-                      id="exampleInputEmail1"
-                    />
-                  </div>
-                </p>
+                <Col span={24}>
+                  <TextArea
+                    rows={4}
+                    value={statusBill.actionDescription}
+                    placeholder="Nhập mô tả"
+                    onChange={(e) =>
+                      onChangeDescStatusBill(
+                        "actionDescription",
+                        e.target.value
+                      )
+                    }
+                  />
+                </Col>
               </Modal>
             </div>
             <div className="offset-6 col-2">
@@ -601,7 +639,7 @@ function DetailBill() {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 className="widthModal"
-                style={{ marginLeft: "15%" }}
+                style={{}}
               >
                 <Table
                   dataSource={billHistory}
@@ -623,11 +661,23 @@ function DetailBill() {
           backgroundColor: "white",
         }}
       >
-        <Row style={{ width: "100%" }}>
+        <Row
+          style={{
+            width: "100%",
+            borderBottom: "2px solid #ccc",
+            padding: "12px",
+            margin: "0px 20px",
+          }}
+        >
           <Col span={20}>
             <h2
               className="text-center"
-              style={{ width: "100%", marginLeft: "20px" }}
+              style={{
+                width: "100%",
+                fontSize: "x-large",
+                fontWeight: "500",
+                // margin: "10px 20px 20px 20px",
+              }}
             >
               Lịch sử thanh toán
             </h2>
@@ -636,7 +686,7 @@ function DetailBill() {
             <Button
               type="dashed"
               align={"end"}
-              style={{ margin: "17.430px 0" }}
+              style={{ margin: "" }}
               onClick={(e) => showModalPayMent(e)}
             >
               Xác nhận thanh toán
@@ -658,100 +708,149 @@ function DetailBill() {
           <Row>
             <h2
               className="text-center"
-              style={{ width: "100%", textAlign: "center" }}
+              style={{
+                width: "100%",
+                fontSize: "x-large",
+                fontWeight: "500",
+                margin: "10px 20px 20px 20px",
+                borderBottom: "2px solid #ccc",
+                padding: "12px",
+              }}
             >
-              {" "}
-              Thông tin hóa đơn
+              Thông tin đơn hàng
             </h2>
           </Row>
           <Row>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>Mã hóa đơn: {bill.code}</div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}>Trạng thái:</Col>
+                <Col span={16}>
+                  <span
+                    className={`trangThai ${" status_" + bill.statusBill} `}
+                  >
+                    {bill.statusBill == "TAO_HOA_DON"
+                      ? "Tạo Hóa đơn"
+                      : bill.statusBill == "CHO_THANH_TOAN"
+                      ? "Chờ xác nhận"
+                      : bill.statusBill === "VAN_CHUYEN"
+                      ? "Đang vận chuyển"
+                      : bill.statusBill === "DA_THANH_TOAN"
+                      ? "Đã thanh toán"
+                      : bill.statusBill === "KHONG_TRA_HANG"
+                      ? "Thành công"
+                      : bill.statusBill === "TRA_HANG"
+                      ? "Trả hàng"
+                      : "Đã hủy"}
+                  </span>
+                </Col>
+              </Row>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Trạng thái:{" "}
-               <span className={`trangThai ${" status_" + bill.statusBill} `}>
-               {bill.statusBill == "TAO_HOA_DON"
-                  ? "Tạo Hóa đơn"
-                  : bill.statusBill == "CHO_THANH_TOAN"
-                  ? "Chờ xác nhận"
-                  : bill.statusBill === "VAN_CHUYEN"
-                  ? "Đang vận chuyển"
-                  : bill.statusBill === "DA_THANH_TOAN"
-                  ? "Đã thanh toán"
-                  : bill.statusBill === "KHONG_TRA_HANG"
-                  ? "Thành công"
-                  : bill.statusBill === "TRA_HANG"
-                  ? "Trả hàng"
-                  : "Đã hủy"}
-               </span>
-              </div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}>Tên khách hàng:</Col>
+                <Col span={16}>
+                  {bill.userName == "" ? (
+                    <span
+                      style={{
+                        backgroundColor: " #ccc",
+                        color: "white",
+                        width: "180px",
+                        borderRadius: "15px",
+                        padding: " 5px 19px",
+                        marginLeft: "10px",
+                      }}
+                    >
+                      Khách lẻ
+                    </span>
+                  ) : (
+                    <span>{bill.userName}</span>
+                  )}
+                </Col>
+              </Row>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Loại:{" "}
-                <span
-                  style={{
-                    backgroundColor: " #9ff905",
-                    color: "white",
-                    width: "180px",
-                    borderRadius: "15px",
-                    padding: " 5px 19px",
-                    marginLeft: "10px"
-                  }}
-                >
-                  {bill.typeBill}
-                </span>
-              </div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}>Loại:</Col>
+                <Col span={16}>
+                  <span
+                    style={{
+                      backgroundColor: " #9ff905",
+                      color: "white",
+                      width: "180px",
+                      borderRadius: "15px",
+                      padding: " 5px 19px",
+                    }}
+                  >
+                    {bill.typeBill}
+                  </span>
+                </Col>
+              </Row>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Tên khách hàng: {bill.userName == '' ? (<span style={{
-                    backgroundColor: " #ccc",
-                    color: "white",
-                    width: "180px",
-                    borderRadius: "15px",
-                    padding: " 5px 19px",
-                    marginLeft: "10px"
-                  }}>Khách lẻ</span>) : (<span>{bill.userName}</span>)} 
-              </div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}> Số điện thoại:</Col>
+                <Col span={16}>
+                  <span>{bill.phoneNumber}</span>
+                </Col>
+              </Row>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Số điện thoại: {bill.phoneNumber}
-              </div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}>Mã hóa đơn:</Col>
+                <Col span={16}>
+                  <span>{bill.code}</span>
+                </Col>
+              </Row>
             </Col>
+
             {/* <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>Gmail: {bill.account != null ? bill.account.email : bill.account.customer }</div>
             </Col> */}
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>Địa chỉ: {bill.address}</div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}>Địa chỉ:</Col>
+                <Col span={16}>
+                  <span>{bill.address}</span>
+                </Col>
+              </Row>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>ghi chú: {bill.note}</div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}>ghi chú:</Col>
+                <Col span={16}>
+                  <span>{bill.note}</span>
+                </Col>
+              </Row>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Tiền giảm:{" "}
-                {bill.itemDiscount >= 1000
-                  ? bill.itemDiscount.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                  : bill.itemDiscount}
-              </div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}>Tiền giảm:</Col>
+                <Col span={16}>
+                  <span>
+                    {bill.itemDiscount >= 1000
+                      ? bill.itemDiscount.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : bill.itemDiscount + " đ"}
+                  </span>
+                </Col>
+              </Row>
             </Col>
             <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Tổng tiền:{" "}
-                {bill.totalMoney >= 1000
-                  ? bill.totalMoney.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                  : bill.totalMoney}
-              </div>
+              <Row style={{ marginLeft: "20px" }}>
+                <Col span={8}> Tổng tiền:</Col>
+                <Col span={16}>
+                  <span>
+                    {bill.totalMoney >= 1000
+                      ? bill.totalMoney.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : bill.totalMoney + " đ"}
+                  </span>
+                </Col>
+              </Row>
             </Col>
 
             {/* <Col span={12} className="text">
@@ -819,24 +918,24 @@ function DetailBill() {
         onCancel={handleCancelPayMent}
       >
         <Row style={{ width: "100%", marginTop: "10px" }}>
-          <Col span={5}>Nhập Số tiền: </Col>
-          <Col span={19}>
+          <Col span={24}>
             <InputNumber
               style={{ width: "100%" }}
-              placeholder="vui lòng số"
+              placeholder="Nhập số tiền"
               onChange={(value) => onChangeDescStatusBill("totalMoney", value)}
+              value={statusBill.totalMoney}
             />
           </Col>
         </Row>
         <Row style={{ width: "100%" }}>
-          <Col span={5}>Hình thức: </Col>
-          <Col span={19}>
+          <Col span={24}>
             <Select
               showSearch
               style={{ width: "100%", margin: "10px 0" }}
               placeholder="Chọn hình thức"
               optionFilterProp="children"
               onChange={(value) => onChangeDescStatusBill("method", value)}
+              value={statusBill.method}
               filterOption={(input, option) =>
                 (option?.label ?? "")
                   .toLowerCase()
@@ -860,10 +959,11 @@ function DetailBill() {
           </Col>
         </Row>
         <Row style={{ width: "100%" }}>
-          <Col span={5}>Nhập mô tả: </Col>
-          <Col span={19}>
-            <Input
-              placeholder="vui lòng nhập mô tả"
+          <Col span={24}>
+            <TextArea
+              rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
+              value={statusBill.actionDescription}
+              placeholder="Nhập mô tả"
               onChange={(e) =>
                 onChangeDescStatusBill("actionDescription", e.target.value)
               }
