@@ -212,12 +212,12 @@ public class BillServiceImpl implements BillService {
         if (!updateBill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
-        Bill bill = formUtils.convertToObject(Bill.class, request);
-        bill.setItemDiscount(new BigDecimal(request.getItemDiscount()));
-        bill.setMoneyShip(new BigDecimal(request.getMoneyShip()));
-        bill.setStatusBill(StatusBill.DA_THANH_TOAN);
-        bill.setCompletionDate(Calendar.getInstance().getTimeInMillis());
-        return billRepository.save(bill);
+        updateBill.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
+        updateBill.get().setAddress(request.getAddress());
+        updateBill.get().setUserName(request.getName());
+        updateBill.get().setPhoneNumber(request.getPhoneNumber());
+        updateBill.get().setNote(request.getNote());
+        return billRepository.save(updateBill.get());
     }
 
     @Override
