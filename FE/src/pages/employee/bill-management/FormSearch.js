@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Col, Form, Row, Button, Select, Space, Input, DatePicker } from "antd";
 import { values } from "lodash";
 import { RightOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+import { PlusOutlined } from "@ant-design/icons";
 
 const data = [
   {
@@ -41,6 +43,10 @@ function FormSearch({
   users,
   employess,
   status,
+  handleSubmitSearch,
+  clearFillter,
+  handleSelectChange,
+  handleSelectMultipleChange,
 }) {
   const { Option } = Select;
   const handleChange = (value) => {
@@ -56,13 +62,13 @@ function FormSearch({
     <div>
       <div>
         <Row style={{ marginTop: "15px" }}>
-          <Col span={12}>
-            <Row>
-              <Col span={6} className="text">
+          <Col span={11}>
+            <Row style={{width: "100%"}}>
+              <Col span={4} className="text">
                 {" "}
                 Tìm kiếm:
               </Col>
-              <Col span={18}>
+              <Col span={11}>
                 <Input
                   value={fillter.key}
                   onChange={(value) => changFillter(value.target.value, "key")}
@@ -70,10 +76,85 @@ function FormSearch({
                   style={{ width: "98%" }}
                 />
               </Col>
+              <Col span={8}>
+                <Row style={{width: "100%"}}>
+                  <Col span={12}>
+                    <Button
+                    style={{width: "100%"}}
+                      className="btn_filter"
+                      type="submit"
+                      onClick={(e) => handleSubmitSearch(e)}
+                    >
+                      Tìm kiếm
+                    </Button>
+                  </Col>
+                  <Col span={12}>
+                    {" "}
+                    <Button
+                      className="btn_clear"
+                      onClick={(e) => clearFillter(e)}
+                      style={{marginLeft: "5px"}}
+                    >
+                      Làm mới
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
             </Row>
           </Col>
-          <Col span={12}>
-            {/* <Row style={{ marginLeft: "15px" }}>
+          <Col span={9}>
+            <Row>
+              <Col span={3} className="text">
+                {" "}
+              </Col>
+              <Col span={20}>
+                <Row>
+                  <Col span={11}>
+                    <Input
+                      type="date"
+                      style={{ width: "98%" }}
+                      value={fillter.startTimeString}
+                      placeholder= "Từ ngày"
+                      onChange={(value) =>
+                        changFillter(value.target.value, "startTimeString")
+                      }
+                    />
+                  </Col>
+                  <Col
+                    span={1}
+                    style={{ textAlign: "center", margin: "6px 4px 0px 4px" }}
+                  >
+                    <RightOutlined />
+                  </Col>
+                  <Col span={11}>
+                    <Input
+                      type="date"
+                      style={{ width: "98%" }}
+                      value={fillter.endTimeString}
+                      onChange={(value) =>
+                        changFillter(value.target.value, "endTimeString")
+                      }
+                    />
+                  </Col>
+                </Row>
+              </Col>
+              <Col span={1}></Col>
+            </Row>
+          </Col>
+          <Col
+            span={4}
+            className="text"
+            align={"end"}
+            style={{ margin: "0px" }}
+          >
+            <Link to={"/create-bill"} style={{ marginRight: "10px" }}>
+              <Button type="primary" icon={<PlusOutlined />} size={"large"}>
+                Tạo đơn hàng
+              </Button>
+            </Link>
+          </Col>
+          {/* <Col span={12}>
+            <Row style={{ marginLeft: "15px" }}>
               <Col span={6} className="text">
                 {" "}
                 Số điện thoại:
@@ -88,10 +169,10 @@ function FormSearch({
                   style={{ width: "98%" }}
                 />
               </Col>
-            </Row> */}
-          </Col>
+            </Row>
+          </Col> */}
         </Row>
-        <Row style={{ marginTop: "15px" }}>
+        {/* <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>
               <Col span={6} className="text">
@@ -174,7 +255,7 @@ function FormSearch({
               </Col>
             </Row>
           </Col>
-        </Row>
+        </Row> */}
         {/* <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>
@@ -226,17 +307,14 @@ function FormSearch({
         <Row style={{ marginTop: "15px" }}>
           <Col span={12}>
             <Row>
-              <Col span={6} className="text" style={{ margin: "0px" }}>
-                Trạng thái:
-              </Col>
-              <Col span={18} className="text"  style={{ margin: "0px" }}>
+              <Col span={24} className="text" style={{ margin: "0px" }}>
                 <Select
                   mode="multiple"
                   style={{ width: "98%" }}
                   // className="select_multi"
-                  placeholder="Chọn trạng thái"
+                  placeholder="Trạng thái"
                   defaultValue={fillter.status}
-                  onChange={(value) => handleChange(value)}
+                  onChange={(value) => handleSelectMultipleChange(value)}
                   optionLabelProp="label"
                   allowClear
                   value={status}
@@ -252,18 +330,15 @@ function FormSearch({
           </Col>
           <Col span={12}>
             <Row style={{ marginLeft: "15px" }}>
-              <Col span={6} className="text">
-                Phương thức:
-              </Col>
-              <Col span={18}>
+              <Col span={24}>
                 <Select
                   style={{ width: "98%" }}
                   value={fillter.type}
-                  onChange={(value) => changFillter(value, "type")}
-                  defaultValue=""
+                  onChange={(value) => {handleSelectChange(value, "type")}}
+                  defaultValue={-1}
                 >
                   <Option value={-1} disabled>
-                    Tất cả
+                    Loại  đơn
                   </Option>
                   <Option value={1}>Tại quầy</Option>
                   <Option value={0}>Online</Option>

@@ -27,6 +27,8 @@ import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import "./detail.css";
 import TextArea from "antd/es/input/TextArea";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -49,6 +51,7 @@ function DetailBill() {
     actionDescription: "",
     method: "TIEN_MAT",
     totalMoney: 0,
+    status: "THANH_TOAN",
   });
   const dispatch = useDispatch();
 
@@ -89,7 +92,7 @@ function DetailBill() {
     setIsModalCanCelOpen(false);
     Modal.confirm({
       title: "Xác nhận",
-      content: "Bạn có đồng ý xác nhận không?",
+      content: "Bạn có đồng ý hủy không?",
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: () => {
@@ -115,6 +118,7 @@ function DetailBill() {
           dispatch(addBillHistory(history));
         });
         setIsModalCanCelOpen(false);
+        toast("Hủy hóa đơn thành công");
       },
       onCancel: () => {
         setIsModalCanCelOpen(false);
@@ -125,6 +129,7 @@ function DetailBill() {
       actionDescription: "",
       method: "TIEN_MAT",
       totalMoney: 0,
+      status: "THANH_TOAN",
     });
   };
   const handleCanCelClose = () => {
@@ -172,6 +177,7 @@ function DetailBill() {
           dispatch(getBillHistory(res.data.data));
           console.log(res.data.data);
         });
+        toast("Thanh toán thành công");
         setIsModalPayMentOpen(false);
       },
       onCancel: () => {
@@ -210,7 +216,7 @@ function DetailBill() {
     setIsModalOpenChangeStatus(false);
     Modal.confirm({
       title: "Xác nhận",
-      content: "Bạn có đồng ý thêm sản phẩm không?",
+      content: "Bạn có đồng ý xác nhận không?",
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: () => {
@@ -242,6 +248,7 @@ function DetailBill() {
         PaymentsMethodApi.findByIdBill(id).then((res) => {
           dispatch(getPaymentsMethod(res.data.data));
         });
+        toast("Xác nhận thành công");
         setIsModalOpenChangeStatus(false);
       },
       onCancel: () => {
@@ -252,6 +259,7 @@ function DetailBill() {
       actionDescription: "",
       method: "TIEN_MAT",
       totalMoney: 0,
+      status: "THANH_TOAN",
     });
     setIsModalOpenChangeStatus(false);
   };
@@ -424,6 +432,26 @@ function DetailBill() {
       ),
     },
     {
+      title: <div className="title-product">Loại giao dịch</div>,
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <span className={status}>
+          {status == "THANH_TOAN" ? "Thanh toán" : "Hoàn tiền"}
+        </span>
+      ),
+    },
+    {
+      title: <div className="title-product">Phương thức thanh toán</div>,
+      dataIndex: "method",
+      key: "method",
+      render: (method) => (
+        <span className={method}>
+          {method == "TIEN_MAT" ? "Tiền mặt" : method == "CHUYEN_KHOAN" ? "Chuyển khoản" : "Chuyển khoản và tiền mặt"}
+        </span>
+      ),
+    },
+    {
       title: <div className="title-product">Trạng thái</div>,
       dataIndex: "method",
       key: "method",
@@ -450,6 +478,14 @@ function DetailBill() {
       title: <div className="title-product">Ghi chú</div>,
       dataIndex: "description",
       key: "description",
+    },
+    {
+      title: <div className="title-product">Người xác nhận</div>,
+      dataIndex: "employees",
+      key: "employees",
+      render: (employees) => {
+        return employees.user.fullName;
+      },
     },
   ];
 
@@ -746,7 +782,7 @@ function DetailBill() {
               </Row>
             </Col>
             <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
+              <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                 <Col span={8}>Tên khách hàng:</Col>
                 <Col span={16}>
                   {bill.userName == "" ? (
@@ -769,7 +805,7 @@ function DetailBill() {
               </Row>
             </Col>
             <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
+              <Row style={{ marginLeft: "20px", marginTop: "8px"  }}>
                 <Col span={8}>Loại:</Col>
                 <Col span={16}>
                   <span
@@ -787,7 +823,7 @@ function DetailBill() {
               </Row>
             </Col>
             <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
+              <Row style={{ marginLeft: "20px", marginTop: "8px"  }}>
                 <Col span={8}> Số điện thoại:</Col>
                 <Col span={16}>
                   <span>{bill.phoneNumber}</span>
@@ -795,7 +831,7 @@ function DetailBill() {
               </Row>
             </Col>
             <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
+              <Row style={{ marginLeft: "20px", marginTop: "8px"  }}>
                 <Col span={8}>Mã hóa đơn:</Col>
                 <Col span={16}>
                   <span>{bill.code}</span>
@@ -807,23 +843,16 @@ function DetailBill() {
               <div style={{ marginLeft: "20px" }}>Gmail: {bill.account != null ? bill.account.email : bill.account.customer }</div>
             </Col> */}
             <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
+              <Row style={{ marginLeft: "20px", marginTop: "8px"  }}>
                 <Col span={8}>Địa chỉ:</Col>
                 <Col span={16}>
                   <span>{bill.address}</span>
                 </Col>
               </Row>
             </Col>
+ 
             <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
-                <Col span={8}>ghi chú:</Col>
-                <Col span={16}>
-                  <span>{bill.note}</span>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
+              <Row style={{ marginLeft: "20px", marginTop: "8px"  }}>
                 <Col span={8}>Tiền giảm:</Col>
                 <Col span={16}>
                   <span>
@@ -838,7 +867,7 @@ function DetailBill() {
               </Row>
             </Col>
             <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px" }}>
+              <Row style={{ marginLeft: "20px", marginTop: "8px"  }}>
                 <Col span={8}> Tổng tiền:</Col>
                 <Col span={16}>
                   <span>
@@ -852,7 +881,14 @@ function DetailBill() {
                 </Col>
               </Row>
             </Col>
-
+            <Col span={12} className="text">
+              <Row style={{ marginLeft: "20px", marginTop: "8px", marginBottom: "20px"  }}>
+                <Col span={8}>ghi chú:</Col>
+                <Col span={16}>
+                  <span>{bill.note}</span>
+                </Col>
+              </Row>
+            </Col>
             {/* <Col span={12} className="text">
               <div style={{ marginLeft: "20px" }}>
                 Ngày xác nhận:{" "}
@@ -960,6 +996,33 @@ function DetailBill() {
         </Row>
         <Row style={{ width: "100%" }}>
           <Col span={24}>
+            <Select
+              showSearch
+              style={{ width: "100%", margin: "10px 0" }}
+              placeholder="Chọn hình thức"
+              optionFilterProp="children"
+              onChange={(value) => onChangeDescStatusBill("status", value)}
+              value={statusBill.status}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              options={[
+                {
+                  value: "THANH_TOAN",
+                  label: "Thanh toán",
+                },
+                {
+                  value: "HOAN_TIEN",
+                  label: "Hoàn tiền",
+                },
+              ]}
+            />
+          </Col>
+        </Row>
+        <Row style={{ width: "100%" }}>
+          <Col span={24}>
             <TextArea
               rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
               value={statusBill.actionDescription}
@@ -972,6 +1035,20 @@ function DetailBill() {
         </Row>
       </Modal>
       {/* end modal payment  */}
+      <ToastContainer
+        position="top-right"
+        autoClose={500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {/* Same as */}
+      <ToastContainer />
     </div>
   );
 }

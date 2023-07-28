@@ -62,8 +62,11 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
+        if(bill.get().getStatusBill() == StatusBill.DA_HUY ){
+            throw new RestApiException(Message.NOT_PAYMENT);
+        }
         BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
-        if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN && bill.get().getTotalMoney().compareTo(payment) >= 0){
+        if((bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN || bill.get().getStatusBill() != StatusBill.KHONG_TRA_HANG || bill.get().getStatusBill() != StatusBill.TRA_HANG)  && bill.get().getTotalMoney().compareTo(payment) >= 0){
 
             bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
             BillHistory billHistory = new BillHistory();
@@ -77,6 +80,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         PaymentsMethod paymentsMethod = formUtils.convertToObject(PaymentsMethod.class, request);
         paymentsMethod.setBill(bill.get());
         paymentsMethod.setDescription(request.getActionDescription());
+        paymentsMethod.setEmployees(account.get());
         return paymentsMethodRepository.save(paymentsMethod);
     }
 
