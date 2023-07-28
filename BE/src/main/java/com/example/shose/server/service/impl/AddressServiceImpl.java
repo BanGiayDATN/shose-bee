@@ -49,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
     public Address create(CreateAddressRequest req) {
         Optional<User> user = userReposiory.findById(req.getUserId());
         Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
-                .werd(req.getWerd()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
+                .ward(req.getWerd()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
         return addressRepository.save(address);
     }
 
@@ -63,7 +63,7 @@ public class AddressServiceImpl implements AddressService {
         address.setLine(req.getLine());
         address.setDistrict(req.getDistrict());
         address.setProvince(req.getProvince());
-        address.setWerd(req.getWerd());
+        address.setWard(req.getWerd());
         address.setToDistrictId(req.getToDistrictId());
         address.setUser(user.get());
         return addressRepository.save(address);

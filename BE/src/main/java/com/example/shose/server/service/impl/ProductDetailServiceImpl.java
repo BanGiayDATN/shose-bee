@@ -80,6 +80,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
     private UploadImageToCloudinary imageToCloudinary;
+
     @Autowired
     private PromotionRepository promotionRepository;
 
@@ -169,29 +170,38 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         update.setStatus("DANG_SU_DUNG".equals(req.getStatus()) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
         productDetailRepository.save(update);
 
-        List<SizeProductDetail> existingSizeDetails = sizeProductDetailRepository.findAllByIdProduct(req.getId());
-        sizeProductDetailRepository.deleteAll(existingSizeDetails);
+        List<Image> existingImagesDetail = imageRepository.getAllByIdProductDetail(req.getId());
+        imageRepository.deleteAll(existingImagesDetail);
 
-        List<SizeProductDetail> sizeProductDetails = new ArrayList<>();
+        List<SizeProductDetail> listSizeProductDetails = new ArrayList<>();
         for (CreateSizeData data : listSize) {
-            SizeProductDetail sizeProductDetail = new SizeProductDetail();
             Size size = sizeRepository.getOneByName(data.getNameSize());
             if (size == null) {
                 size = new Size();
                 size.setName(data.getNameSize());
                 size.setStatus(Status.DANG_SU_DUNG);
-                sizeRepository.save(size);
+                size = sizeRepository.save(size);
             }
-            sizeProductDetail.setQuantity(data.getQuantity());
-            sizeProductDetail.setProductDetail(update);
-            sizeProductDetail.setSize(size);
-            sizeProductDetail.setStatus(Status.DANG_SU_DUNG);
-            sizeProductDetails.add(sizeProductDetail);
+
+            SizeProductDetail sizeProductDetail = sizeProductDetailRepository.getOneSizeDetailBySizeAndProductDetail(req.getId(), size.getName());
+            if (sizeProductDetail == null) {
+                // Tạo mới SizeProductDetail chỉ khi nó chưa tồn tại
+                sizeProductDetail = new SizeProductDetail();
+                sizeProductDetail.setSize(size);
+                sizeProductDetail.setQuantity(data.getQuantity());
+                sizeProductDetail.setProductDetail(update);
+                sizeProductDetail.setStatus(data.getStatus());
+            } else {
+                // Nếu SizeProductDetail đã tồn tại, chỉ cập nhật trạng thái và số lượng
+                sizeProductDetail.setStatus(data.getStatus());
+                sizeProductDetail.setQuantity(data.getQuantity());
+            }
+
+            listSizeProductDetails.add(sizeProductDetail);
         }
-        sizeProductDetailRepository.saveAll(sizeProductDetails);
+        sizeProductDetailRepository.saveAll(listSizeProductDetails);
 
         // Process images for each size
-
         List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
         List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
                 .parallel()

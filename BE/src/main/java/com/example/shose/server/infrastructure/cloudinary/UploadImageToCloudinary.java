@@ -23,7 +23,7 @@ public class UploadImageToCloudinary {
     @Autowired
     private Cloudinary cloudinary;
 
-    public List<String> uploadImages(List<MultipartFile> files) throws IOException, InterruptedException, ExecutionException {
+    public List<String> uploadImages(List<MultipartFile> files) throws  InterruptedException, ExecutionException {
         List<String> urls = new ArrayList<>();
 
         // Tạo một ThreadPool với số luồng tải lên tùy ý (ở đây mình chọn là 5)
