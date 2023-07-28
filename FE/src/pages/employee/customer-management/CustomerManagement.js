@@ -213,6 +213,18 @@ const CustomerManagement = () => {
       sorter: (a, b) => a.stt - b.stt,
     },
     {
+      title: "Ảnh",
+      dataIndex: "avata",
+      key: "avata",
+      render: (avata) => (
+        <img
+          src={avata}
+          alt="Hình ảnh"
+          style={{ width: "150px", height: "110px", borderRadius: "20px" }}
+        />
+      ),
+    },
+    {
       title: "Tên khách hàng",
       dataIndex: "fullName",
       key: "fullName",
@@ -225,7 +237,7 @@ const CustomerManagement = () => {
       sorter: (a, b) => a.email.localeCompare(b.email),
     },
     {
-      title: "SDT",
+      title: "Số điện thoại",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
       sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),

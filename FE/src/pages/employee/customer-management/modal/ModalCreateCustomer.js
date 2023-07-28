@@ -1,28 +1,75 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Input, Select, Button, Form, Row, Col, Upload } from "antd";
+import {
+  Modal,
+  Input,
+  Select,
+  Button,
+  Form,
+  Row,
+  Col,
+  Upload,
+  message,
+  Radio,
+} from "antd";
 import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
 import { CustomerApi } from "../../../../api/employee/account/customer.api";
 import { CreateCustomer } from "../../../../app/reducer/Customer.reducer";
-import { useParams, useNavigate } from "react-router-dom";
 import "../style-account.css";
-import { faKaaba } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
-import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+
 import { AddressApi } from "../../../../api/customer/address/address.api";
+import { useNavigate } from "react-router";
+import { PlusOutlined } from "@ant-design/icons";
 
 // import QrReader from "react-qr-reader";
 
 const { Option } = Select;
 
-const ModalCreateCustomer = ({ visible, onCancel }) => {
+const ModalCreateCustomer = () => {
   const [form] = Form.useForm();
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // ảnh
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [uploadedFile, setUploadedFile] = useState(null);
+
+  const handleCancelImagel = () => setPreviewOpen(false);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+  const handleChange = ({ file }) => {
+    if (file.type !== "image/jpeg" && file.type !== "image/png") {
+      toast.error("Bạn chỉ có thể tải lên tệp JPG/PNG!");
+      return;
+    }
+    setUploadedFile(file);
+    if (file.status === "removed") {
+      // Nếu tệp bị xóa, đặt giá trị uploadedFile về null
+      setUploadedFile(null);
+    }
+  };
 
   const uploadButton = (
     <div>
@@ -98,16 +145,24 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
           "YYYY-MM-DD"
         ).valueOf();
         const updatedValues = { ...values, dateOfBirth: formattedDate };
-        CustomerApi.create(updatedValues)
-          .then((res) => {
-            dispatch(CreateCustomer(res.data.data));
-            toast.success("Thêm thành công");
-            navigate("/customerr-management");
-          })
-          .catch((error) => {
-            toast.error("Thêm thất bại");
-            console.log("Create failed:", error);
-          });
+        if (uploadedFile == null) {
+          toast.error("Bạn cần thêm ảnh đai diện ");
+        } else {
+          console.log(updatedValues);
+          const formData = new FormData();
+          formData.append(`multipartFile`, uploadedFile.originFileObj);
+          formData.append(`request`, JSON.stringify(updatedValues));
+          CustomerApi.create(formData)
+            .then((res) => {
+              dispatch(CreateCustomer(res.data.data));
+              toast.success("Thêm thành công");
+              navigate("/customerr-management");
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+              console.log("Create failed:", error);
+            });
+        }
       })
       .catch(() => {
         // Xử lý khi người dùng từ chối xác nhận
@@ -141,48 +196,91 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
         }}
       >
         <span
-          style={{ fontSize: "25px", fontWeight: "bold", marginTop: "10px" , marginBottom:"20px"}}
+          style={{
+            fontSize: "25px",
+            fontWeight: "bold",
+            marginTop: "10px",
+            marginBottom: "20px",
+          }}
         >
           THÊM KHÁCH HÀNG
         </span>
       </div>
       <Row gutter={[24, 8]}>
-        <Col className="filter" span={6}>
-          {/* <Link to="/promotion-management">
-            <LeftOutlined /> Quay lại
-          </Link> */}
-          <h1
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "10px",
-              marginBottom: "30px",
-            }}
-          >
-            Ảnh đại diện
-          </h1>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Upload
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              listType="picture-circle"
+        <Col
+          className="filter"
+          span={6}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "50px",
+                marginBottom: "50px",
+                fontSize: "20px",
+              }}
             >
-              {uploadButton}
-            </Upload>
+              Ảnh đại diện
+            </h1>
+            {/* ... */}
+            <div>
+              <Upload
+                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                listType="picture-circle"
+                fileList={uploadedFile ? [uploadedFile] : []}
+                onPreview={handlePreview}
+                onChange={handleChange}
+                showUploadList={{
+                  showPreviewIcon: true,
+                  showRemoveIcon: true,
+                  showErrorTips: true,
+                }}
+              >
+                {uploadedFile ? null : uploadButton}
+              </Upload>
+              <Modal
+                open={previewOpen}
+                title={previewTitle}
+                footer={null}
+                onCancel={handleCancelImagel}
+              >
+                <img
+                  alt="example"
+                  style={{
+                    width: "100%",
+                  }}
+                  src={previewImage}
+                />
+              </Modal>
+            </div>
+            {/* ... */}
           </div>
         </Col>
 
         <Col className="filter" span={17} style={{ marginLeft: "20px" }}>
           {/* <div className="filter"> */}
+          <h1
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "15px",
+              marginBottom: "30px",
+              fontSize: "20px",
+            }}
+          >
+            Thông tin khách hàng
+          </h1>
           <Form form={form} layout="vertical">
             <Row gutter={[24, 8]}>
-              <Col span={10}>
+              <Col span={10} style={{ marginLeft: "6%" }}>
                 <div className="title_add">
                   <Form.Item
                     label="Tên khách hàng"
@@ -205,7 +303,7 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                     name="email"
                     rules={[
                       { required: true, message: "Vui lòng nhập email" },
-                      { max: 20, message: "Email tối đa 20 ký tự" },
+                      { max: 50, message: "Email tối đa 50 ký tự" },
                       {
                         pattern:
                           /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
@@ -214,16 +312,6 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                     ]}
                   >
                     <Input className="input-item" placeholder="Email" />
-                  </Form.Item>
-                  <Form.Item
-                    label="Mật khẩu"
-                    name="password"
-                    rules={[
-                      { required: true, message: "Vui lòng nhập mật khẩu" },
-                      { min: 8, message: "Mật khẩu phải 8 ký tự" },
-                    ]}
-                  >
-                    <Input className="input-item" placeholder="Mật khẩu" />
                   </Form.Item>
                   <Form.Item
                     label="Tỉnh/Thành phố"
@@ -269,41 +357,23 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                       })}
                     </Select>
                   </Form.Item>
-
-                  <Form.Item style={{ marginTop: "40px" }} name="userId" hidden>
-                    <Input disabled />
-                  </Form.Item>
                   <Form.Item
-                    style={{ marginTop: "40px" }}
-                    name="toDistrictId"
-                    hidden
+                    label="Trạng thái"
+                    name="status"
+                    initialValue="DANG_SU_DUNG"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn trạng thái" },
+                    ]}
                   >
-                    <Input disabled />
-                  </Form.Item>
-                  <Form.Item label="Trạng thái" name="status">
-                    <Select
-                      placeholder="Vui lòng chọn trạng thái"
-                      defaultValue="DANG_SU_DUNG"
-                      disabled
-                    >
-                      <Option value="DANG_SU_DUNG">Kích hoạt</Option>
-                      <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
+                    <Select>
+                      <Option value="DANG_SU_DUNG">
+                        <span style={{ fontWeight: "bold" }}>Kích hoạt</span>
+                      </Option>
                     </Select>
                   </Form.Item>
-
-                  <Button
-                    key="submit"
-                    type="primary"
-                    onClick={handleOk}
-                    style={{ marginRight: "10px" }}
-                  >
-                    Thêm
-                  </Button>
-                  <Button key="cancel" onClick={handleCancel}>
-                    Hủy
-                  </Button>
                 </div>
               </Col>
+
               <Col span={10} style={{ marginLeft: "40px", marginTop: "16px" }}>
                 <Form.Item
                   label="Số điện thoại"
@@ -331,17 +401,6 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                   ]}
                 >
                   <Input className="input-item" type="date" />
-                </Form.Item>
-                <Form.Item
-                  label="Điểm"
-                  name="points"
-                  rules={[{ required: true, message: "Vui lòng nhập điểm" }]}
-                >
-                  <Input
-                    className="input-item"
-                    type="number"
-                    placeholder="Điểm"
-                  />
                 </Form.Item>
                 <Form.Item
                   label="Quận/Huyện"
@@ -381,6 +440,21 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                     placeholder="Số nhà/Ngõ/Đường"
                   />
                 </Form.Item>
+                <Form.Item
+                    label="Giới tính"
+                    name="gender"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn giới tinh" },
+                    ]}
+                    initialValue="true"
+                  >
+                    <Radio.Group>
+                      <Radio value="true" checked>
+                        Nam
+                      </Radio>
+                      <Radio value="false">Nữ</Radio>
+                    </Radio.Group>
+                  </Form.Item>
                 {/* <div>
                   <QrReader
                     delay={300}
@@ -394,6 +468,32 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
             </Row>
           </Form>
           {/* </div> */}
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: "15px",
+              marginRight: "8%",
+              marginBottom: "20px",
+            }}
+          >
+            <Button
+              key="submit"
+              type="primary"
+              onClick={handleOk}
+              style={{ marginRight: "10px", width: "100px", height: "40px" }}
+            >
+              Thêm
+            </Button>
+            <Button
+              key="cancel"
+              onClick={handleCancel}
+              style={{ width: "100px", height: "40px" }}
+            >
+              Hủy
+            </Button>
+          </div>
         </Col>
       </Row>
     </div>
