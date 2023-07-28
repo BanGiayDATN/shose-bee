@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Input, Select, Button, Form, Row, Col, Upload } from "antd";
 import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
@@ -10,14 +10,20 @@ import { faKaaba } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+import { AddressApi } from "../../../../api/customer/address/address.api";
+
 // import QrReader from "react-qr-reader";
 
 const { Option } = Select;
 
 const ModalCreateCustomer = ({ visible, onCancel }) => {
   const [form] = Form.useForm();
+  const [listProvince, setListProvince] = useState([]);
+  const [listDistricts, setListDistricts] = useState([]);
+  const [listWard, setListWard] = useState([]);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -42,6 +48,34 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
   // const handleError = (error) => {
   //   console.error("QR Scan Error:", error);
   // };
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvince(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+
+  const handleProvinceChange = (value, valueProvince) => {
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+
+  const handleDistrictChange = (value, valueDistrict) => {
+    form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+  useEffect(() => {
+    loadDataProvince();
+  }, []);
 
   const handleOk = () => {
     form
@@ -201,9 +235,19 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                       },
                     ]}
                   >
-                    <Select defaultValue="">
-                      {/* <Select defaultValue="" onChange={handleProvinceChange}> */}
+                    <Select defaultValue="" onChange={handleProvinceChange}>
                       <Option value="">--Chọn Tỉnh/Thành phố--</Option>
+                      {listProvince?.map((item) => {
+                        return (
+                          <Option
+                            key={item.ProvinceID}
+                            value={item.ProvinceName}
+                            valueProvince={item.ProvinceID}
+                          >
+                            {item.ProvinceName}
+                          </Option>
+                        );
+                      })}
                     </Select>
                   </Form.Item>
 
@@ -216,6 +260,13 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                   >
                     <Select defaultValue="">
                       <Option value="">--Chọn Xã/Phường--</Option>
+                      {listWard?.map((item) => {
+                        return (
+                          <Option key={item.WardCode} value={item.WardName}>
+                            {item.WardName}
+                          </Option>
+                        );
+                      })}
                     </Select>
                   </Form.Item>
 
@@ -299,9 +350,19 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
                     { required: true, message: "Vui lòng chọn Quận/Huyện" },
                   ]}
                 >
-                  {/* <Select defaultValue=" " onChange={handleDistrictChange}> */}
-                  <Select defaultValue=" ">
+                  <Select defaultValue=" " onChange={handleDistrictChange}>
                     <Option value=" ">--Chọn Quận/Huyện--</Option>
+                    {listDistricts?.map((item) => {
+                      return (
+                        <Option
+                          key={item.DistrictID}
+                          value={item.DistrictName}
+                          valueDistrict={item.DistrictID}
+                        >
+                          {item.DistrictName}
+                        </Option>
+                      );
+                    })}
                   </Select>
                 </Form.Item>
 
