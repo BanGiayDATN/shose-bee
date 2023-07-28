@@ -8,9 +8,6 @@ import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
-import com.example.shose.server.dto.response.bill.ChildrenBillResponse;
-import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
-import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
@@ -160,7 +157,7 @@ public class BillServiceImpl implements BillService {
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
-            Optional<Size> size = sizeRepository.findById(billDetailRequest.getIdSize());
+            Optional<Size> size = sizeRepository.findByName(billDetailRequest.getSize());
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
