@@ -86,7 +86,6 @@ const UpdateProductManagment = () => {
   const dataBrand = useAppSelector(GetBrand);
   const dataSize = useAppSelector(GetSize);
 
-  const [isProductDetailUpdated, setProductDetailUpdated] = useState(false);
   const onFinish = (values) => {
     const priceValue = values.price;
     if (typeof priceValue === "string") {
@@ -94,15 +93,8 @@ const UpdateProductManagment = () => {
       values.price = numericPrice + "";
     }
     setProductDetail(values);
-    setProductDetailUpdated(true);
   };
 
-  useEffect(() => {
-    if (isProductDetailUpdated) {
-      handleUpload();
-      setProductDetailUpdated(false);
-    }
-  }, [productDetail, isProductDetailUpdated]);
 
   // update product- detail
   const handleUpload = () => {

@@ -122,7 +122,6 @@ const CreateProductManagment = () => {
     });
   };
 
-  const [isProductDetailUpdated, setProductDetailUpdated] = useState(false);
   const onFinish = (values) => {
     const priceValue = values.price;
     if (typeof priceValue === "string") {
@@ -130,15 +129,8 @@ const CreateProductManagment = () => {
       values.price = numericPrice + "";
     }
     setProductDetail(values);
-    setProductDetailUpdated(true);
   };
 
-  useEffect(() => {
-    if (isProductDetailUpdated) {
-      handleUpload();
-      setProductDetailUpdated(false);
-    }
-  }, [productDetail, isProductDetailUpdated]);
 
   const handleSearch = (value) => {
     ProductApi.fetchAll({

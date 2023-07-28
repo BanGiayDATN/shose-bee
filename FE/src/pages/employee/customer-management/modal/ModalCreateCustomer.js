@@ -98,10 +98,6 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
   };
   return (
     <div>
-      <div className="title_account">
-        <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
-        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản khách hàng</span>
-      </div>
       <div
         className="content-wrapper"
         style={{
@@ -111,7 +107,7 @@ const ModalCreateCustomer = ({ visible, onCancel }) => {
         }}
       >
         <span
-          style={{ fontSize: "25px", fontWeight: "bold", marginTop: "10px" }}
+          style={{ fontSize: "25px", fontWeight: "bold", marginTop: "10px" , marginBottom:"20px"}}
         >
           THÊM KHÁCH HÀNG
         </span>
