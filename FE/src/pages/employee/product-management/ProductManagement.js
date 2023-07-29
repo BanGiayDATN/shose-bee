@@ -15,6 +15,8 @@ import { useAppDispatch, useAppSelector } from "../../../app/hook";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBookBookmark,
+  faBookmark,
   faEdit,
   faEye,
   faFilter,
@@ -170,6 +172,13 @@ const ProductManagement = () => {
     loadData();
   }, [selectedValues]);
 
+  const getPromotionStyle = (promotion) => {
+    return promotion >= 50 ? { color: "white" } : { color: "#000000" };
+  };
+  const getPromotionColor = (promotion) => {
+    return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
+  };
+
   const columns = [
     {
       title: "STT",
@@ -181,12 +190,58 @@ const ProductManagement = () => {
       title: "Ảnh",
       dataIndex: "image",
       key: "image",
-      render: (text) => (
-        <img
-          src={text}
-          alt="Ảnh sản phẩm"
-          style={{ width: "130px", borderRadius: "20px", height: "110px" }}
-        />
+      render: (text, record) => (
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src={text}
+            alt="Ảnh sản phẩm"
+            style={{ width: "170px", borderRadius: "10%", height: "140px" }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "0px",
+              right: "0px",
+              padding: "0px",
+              cursor: "pointer",
+              borderRadius: "50%",
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                ...getPromotionColor(record.promotion),
+                fontSize: "3.5em",
+              }}
+            />
+            <span
+              style={{
+                position: "absolute",
+                top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                fontSize: "0.8em",
+                fontWeight: "bold",
+                ...getPromotionStyle(record.promotion),
+              }}
+            >
+              {record.promotion == null ? "0%" : `${record.promotion}%`}
+            </span>
+            <span
+              style={{
+                position: "absolute",
+                top: "60%", // Để "Giảm" nằm chính giữa biểu tượng
+                left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                fontSize: "0.8em",
+                fontWeight: "bold",
+                ...getPromotionStyle(record.promotion),
+              }}
+            >
+              Giảm
+            </span>
+          </div>
+        </div>
       ),
     },
     {
@@ -208,13 +263,6 @@ const ProductManagement = () => {
       key: "totalQuantity",
       sorter: (a, b) => a.totalQuantity - b.totalQuantity,
       align: "center",
-    },
-    {
-      title: "Ngày Tạo",
-      dataIndex: "createDate",
-      key: "createDate",
-      sorter: (a, b) => a.createDate - b.createDate,
-      render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
       title: "Giới Tính",
@@ -265,7 +313,7 @@ const ProductManagement = () => {
           <Button
             type="primary"
             title="Chỉnh sửa thể loại"
-            style={{ backgroundColor: "green", borderColor: "green" }}
+            style={{ backgroundColor: "#0099FF", borderColor: "#0099FF" }}
             onClick={() => handleUpdate(record.id)}
           >
             <FontAwesomeIcon icon={faEdit} />
@@ -540,7 +588,7 @@ const ProductManagement = () => {
             dataSource={listProduct}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="category-table"
           />
         </div>

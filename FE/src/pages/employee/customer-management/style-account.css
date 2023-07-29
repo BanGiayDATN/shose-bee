@@ -118,6 +118,21 @@
   height: 30px;
   pointer-events: none;
 }
+<<<<<<< HEAD
 .title_add Input {
   height: 40px;
 }
+=======
+
+.header-image{
+  display: "flex";
+  align-items: "center";
+  justify-content: "center";
+  margin-top: "10px";
+  margin-bottom: "30px";
+}
+.input-item{
+  height: 40px;
+}
+
+>>>>>>> 480c98af49abab798b9adaac03e39e8750103e24

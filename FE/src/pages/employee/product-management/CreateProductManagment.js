@@ -124,10 +124,13 @@ const CreateProductManagment = () => {
 
   const onFinish = (values) => {
     const priceValue = values.price;
-    const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ""));
-    values.price = numericPrice + "";
+    if (typeof priceValue === "string") {
+      const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ""));
+      values.price = numericPrice + "";
+    }
     setProductDetail(values);
   };
+
 
   const handleSearch = (value) => {
     ProductApi.fetchAll({
@@ -151,14 +154,16 @@ const CreateProductManagment = () => {
     // Ensure the value is at least 1
     const newQuantity = Math.max(value, 1);
     const updatedListSole = listSizeAdd.map((item) =>
-      item.size === record.size ? { ...item, quantity: newQuantity } : item
+      item.nameSize === record.nameSize
+        ? { ...item, quantity: newQuantity }
+        : item
     );
     setListSizeAdd(updatedListSole);
   };
 
   const handleQuantityDecrease = (record) => {
     const updatedListSole = listSizeAdd.map((item) =>
-      item.size === record.size
+      item.nameSize === record.nameSize
         ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
         : item
     );
@@ -167,7 +172,7 @@ const CreateProductManagment = () => {
 
   const handleQuantityIncrease = (record) => {
     const updatedListSole = listSizeAdd.map((item) =>
-      item.size === record.size
+      item.nameSize === record.nameSize
         ? { ...item, quantity: item.quantity + 1 }
         : item
     );
@@ -195,7 +200,7 @@ const CreateProductManagment = () => {
           ...prevList,
           {
             stt: prevList.length + 1,
-            size: selectedSizeData.size,
+            nameSize: selectedSizeData.size,
             quantity: selectedSizeData.quantity,
             status: "DANG_SU_DUNG",
           },
@@ -287,6 +292,7 @@ const CreateProductManagment = () => {
               formData.append(`status`, isStarred ? "true" : "false");
               console.log(file);
             });
+            console.log(productDetail);
             const requestData = {
               description: productDetail.description,
               gender: productDetail.gender,
@@ -302,6 +308,7 @@ const CreateProductManagment = () => {
 
             formData.append("listSize", JSON.stringify(listSizeAdd));
             formData.append("data", JSON.stringify(requestData));
+            console.log(listSizeAdd);
             axios
               .post("http://localhost:8080/admin/product-detail", formData)
               .then((response) => {
@@ -365,6 +372,7 @@ const CreateProductManagment = () => {
         </div>
       );
     }
+
     return originNode;
   };
 
@@ -396,8 +404,8 @@ const CreateProductManagment = () => {
     },
     {
       title: "Kích cỡ",
-      dataIndex: "size",
-      key: "size",
+      dataIndex: "nameSize",
+      key: "nameSize",
       sorter: (a, b) => a.stt - b.stt,
     },
     {

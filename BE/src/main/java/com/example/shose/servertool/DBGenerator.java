@@ -371,16 +371,23 @@ public class DBGenerator implements CommandLineRunner {
         imageRepository.save(image10);
 
         User user1 = User.builder()
+                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaIP8Lvis7vhRKgCFKfPoWTxrNE4HnQ18gdg&usqp=CAU")
                 .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2000")).email("vinhnvph23845@fpt.edu.vn")
-                .gender(true).avata("/image/anh").phoneNumber("0378530273").status(Status.DANG_SU_DUNG)
+                .gender(true).phoneNumber("0378530273").status(Status.DANG_SU_DUNG)
                 .build();
         User user2 = User.builder()
+                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4RGwl1mqaD9sd_JO7m0KPAlgZmnClgtkEqQ&usqp=CAU")
                 .fullName("Đinh Khắc Diệm").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2003")).email("diem@gmail.com")
-                .gender(true).avata("/image/anh1").phoneNumber("0963852741").status(Status.DANG_SU_DUNG)
+                .gender(true).phoneNumber("0963852741").status(Status.DANG_SU_DUNG)
                 .build();
         User user3 = User.builder()
+                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
                 .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdt@fpt.edu.vn")
+<<<<<<< HEAD
                 .gender(true).avata("https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg").phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+=======
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+>>>>>>> 480c98af49abab798b9adaac03e39e8750103e24
                 .build();
         userReposiory.save(user1);
         userReposiory.save(user2);

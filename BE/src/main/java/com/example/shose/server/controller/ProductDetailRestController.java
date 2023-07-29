@@ -70,22 +70,23 @@ public class ProductDetailRestController {
         request.setBrandId(jsonObject.get("brandId").getAsString());
 
         JsonArray jsonListSize = JsonParser.parseString(dataSize).getAsJsonArray();
+        System.out.println(jsonListSize);
         List<CreateSizeData> listSize = new ArrayList<>();
         for (int i = 0; i < jsonListSize.size(); i++) {
             JsonObject sizeDataObject = jsonListSize.get(i).getAsJsonObject();
             CreateSizeData sizeData = formUtils.convertToObject(CreateSizeData.class, sizeDataObject);
             listSize.add(sizeData);
         }
-
+        listSize.stream().forEach(a-> System.out.println(a.getNameSize()));
         return new ResponseObject(productDetailService.create(request, multipartFiles, listSize, listStatusImage));
     }
+
 
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id,
                                  @RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
                                  @RequestParam("data") String requestData,
                                  @RequestParam("status") List<Boolean> listStatusImage,
-//                                 @RequestParam("listImage") List<String> listImage,
                                  @RequestParam("listSize") String dataSize) throws IOException, ExecutionException, InterruptedException {
 
         UpdateProductDetailRequest request = new UpdateProductDetailRequest();
@@ -109,8 +110,8 @@ public class ProductDetailRestController {
             CreateSizeData sizeData = formUtils.convertToObject(CreateSizeData.class, sizeDataObject);
             listSize.add(sizeData);
         }
-        System.out.println(request.getDescription());
-        listSize.stream().forEach(a-> System.out.println(a));
+        multipartFiles.stream().forEach(s-> System.out.println());
+        listSize.forEach(s-> System.out.println(s.getStatus()));
         return new ResponseObject(productDetailService.update(request,multipartFiles,listSize,listStatusImage));
     }
 
