@@ -145,52 +145,178 @@ function DetailBill() {
     setIsModalPayMentOpen(true);
   };
   const handleOkPayMent = () => {
-    setIsModalPayMentOpen(false);
-    Modal.confirm({
-      title: "Xác nhận",
-      content: "Bạn có đồng ý thanh toán không?",
-      okText: "Đồng ý",
-      cancelText: "Hủy",
-      onOk: async () => {
-        await PaymentsMethodApi.payment(id, statusBill).then((res) => {
-          dispatch(addPaymentsMethod(res.data.data));
-          console.log(res.data.data);
-        });
-        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-          console.log(res.data.data);
-          dispatch(getProductInBillDetail(res.data.data));
-        });
-        await BillApi.fetchDetailBill(id).then((res) => {
-          console.log(res.data.data);
-          dispatch(getBill(res.data.data));
-          var index = listStatus.findIndex(
-            (item) => item.status == res.data.data.statusBill
-          );
-          if (res.data.data.statusBill == "TRA_HANG") {
-            index = 6;
-          }
-          if (res.data.data.statusBill == "DA_HUY") {
-            index = 7;
-          }
-          dispatch(addStatusPresent(index));
-          console.log(index);
-        });
-        await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-          dispatch(getBillHistory(res.data.data));
-          console.log(res.data.data);
-        });
-        toast("Thanh toán thành công");
-        setIsModalPayMentOpen(false);
-      },
-      onCancel: () => {
-        setIsModalPayMentOpen(false);
-      },
+   
+    if (statusBill.totalMoney >= 0) {
+       setIsModalPayMentOpen(false);
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý thanh toán không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          await PaymentsMethodApi.payment(id, statusBill).then((res) => {
+            dispatch(addPaymentsMethod(res.data.data));
+            console.log(res.data.data);
+          });
+          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+            console.log(res.data.data);
+            dispatch(getProductInBillDetail(res.data.data));
+          });
+          await BillApi.fetchDetailBill(id).then((res) => {
+            console.log(res.data.data);
+            dispatch(getBill(res.data.data));
+            var index = listStatus.findIndex(
+              (item) => item.status == res.data.data.statusBill
+            );
+            if (res.data.data.statusBill == "TRA_HANG") {
+              index = 6;
+            }
+            if (res.data.data.statusBill == "DA_HUY") {
+              index = 7;
+            }
+            dispatch(addStatusPresent(index));
+            console.log(index);
+          });
+          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+            dispatch(getBillHistory(res.data.data));
+            console.log(res.data.data);
+          });
+          toast("Thanh toán thành công");
+          setIsModalPayMentOpen(false);
+          setStatusBill({
+            actionDescription: "",
+            method: "TIEN_MAT",
+            totalMoney: 0,
+            status: "THANH_TOAN",
+          });
+        },
+        onCancel: () => {
+          setIsModalPayMentOpen(false);
+          setStatusBill({
+            actionDescription: "",
+            method: "TIEN_MAT",
+            totalMoney: 0,
+            status: "THANH_TOAN",
+          });
+        },
+      });
+    }
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
     });
   };
   const handleCancelPayMent = () => {
     setIsModalPayMentOpen(false);
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
+    });
   };
   // enad modal thanh toán
+
+  // begin modal bill
+  const [billRequest, setBillRequest] = useState({
+    name: "",
+    phoneNumber: "",
+    address: "",
+    moneyShip: "0",
+    note: "",
+  });
+
+  const [address, setAddress] = useState({
+    city: "",
+    district: "",
+    wards: "",
+    detail: "",
+  });
+
+  const onChangeBill = (fileName, value) => {
+    setBillRequest({ ...billRequest, [fileName]: value });
+  };
+
+  const onChangeAddress = (fileName, value) => {
+    setAddress({ ...address, [fileName]: value });
+  };
+
+  const [isModaBillOpen, setIsModalBillOpen] = useState(false);
+  const showModalBill = (e) => {
+    setIsModalBillOpen(true);
+  };
+  const checkNotEmptyBill = () => {
+    return Object.keys(billRequest)
+      .filter((key) => key !== "note")
+      .every((key) => billRequest[key] !== "");
+  };
+  const checkNotEmptyAddress = () => {
+    return (
+      Object.keys(address).filter((key) => address[key] !== "").length ===
+      Object.keys(address).length - 1
+    );
+  };
+  const handleOkBill = () => {
+    
+    if (checkNotEmptyBill() && checkNotEmptyAddress()) {
+      setIsModalBillOpen(false);
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận thay đổi không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          var value =
+            address.detail +
+            ", " +
+            address.wards +
+            ", " +
+            address.district +
+            ", " +
+            address.city;
+          setBillRequest({ ...billRequest, [address]: value });
+          await BillApi.updateBill(id, billRequest).then((res) => {
+            dispatch(getBill(res.data.data));
+            var index = listStatus.findIndex(
+              (item) => item.status == res.data.data.statusBill
+            );
+            if (res.data.data.statusBill == "TRA_HANG") {
+              index = 6;
+            }
+            if (res.data.data.statusBill == "DA_HUY") {
+              index = 7;
+            }
+            dispatch(addStatusPresent(index));
+          });
+          toast("Thay đổi hóa đơn thành công");
+          setIsModalBillOpen(false);
+        },
+        onCancel: () => {
+          setIsModalBillOpen(false);
+        },
+      });
+      setBillRequest({
+        name: "",
+        phoneNumber: "",
+        address: "",
+        moneyShip: "0",
+        note: "",
+      });
+      setAddress({
+        city: "",
+        district: "",
+        wards: "",
+        detail: "",
+      });
+     
+    }
+  };
+  const handleCancelBill = () => {
+    setIsModalBillOpen(false);
+  };
+  // enad modal bill
 
   //  begin modal change status
 
@@ -615,7 +741,8 @@ function DetailBill() {
                 {bill.statusBill === "VAN_CHUYEN" ? (
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
-                      <Col span={24}>
+                      <Col span={24} style={{ marginTop: "10px" }}>
+                        <label style={{ top: "-15px" }}>Giá</label>
                         <Form.Item
                           label=""
                           name="price"
@@ -631,7 +758,11 @@ function DetailBill() {
                             thousandSeparator={true}
                             suffix=" VND"
                             placeholder="Vui lòng nhập số tiền"
-                            style={{ width: "100%" }}
+                            style={{
+                              width: "100%",
+                              position: "relative",
+                              height: "37px",
+                            }}
                             customInput={Input}
                             value={statusBill.totalMoney}
                             onChange={(e) =>
@@ -645,10 +776,15 @@ function DetailBill() {
                       </Col>
                     </Row>
                     <Row style={{ width: "100%" }}>
-                      <Col span={24}>
+                      <Col span={24} style={{ marginTop: "10px" }}>
+                        <label style={{ marginTop: "-4px" }}>Hình thức</label>
                         <Select
                           showSearch
-                          style={{ width: "100%", margin: "10px 0" }}
+                          style={{
+                            width: "100%",
+                            margin: "10px 0",
+                            position: "relative",
+                          }}
                           placeholder="Chọn hình thức"
                           optionFilterProp="children"
                           onChange={(value) =>
@@ -682,11 +818,13 @@ function DetailBill() {
                   <div></div>
                 )}
                 <Row style={{ width: "100%" }}>
-                  <Col span={24}>
+                  <Col span={24} style={{ marginTop: "20px" }}>
+                    <label>Mô Tả</label>
                     <TextArea
                       rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
                       value={statusBill.actionDescription}
                       placeholder="Nhập mô tả"
+                      style={{ width: "100%", position: "F" }}
                       onChange={(e) =>
                         onChangeDescStatusBill(
                           "actionDescription",
@@ -705,7 +843,8 @@ function DetailBill() {
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
               >
-                <Col span={24}>
+                <Col span={24} style={{ marginTop: "20px" }}>
+                  <label>Mô Tả</label>
                   <TextArea
                     rows={4}
                     value={statusBill.actionDescription}
@@ -793,20 +932,35 @@ function DetailBill() {
       </Row>
       <Row>
         <div style={{ backgroundColor: "white" }}>
-          <Row>
-            <h2
-              className="text-center"
-              style={{
-                width: "100%",
-                fontSize: "x-large",
-                fontWeight: "500",
-                margin: "10px 20px 20px 20px",
-                borderBottom: "2px solid #ccc",
-                padding: "12px",
-              }}
-            >
-              Thông tin đơn hàng
-            </h2>
+          <Row
+            style={{
+              width: "96%",
+              margin: "10px 20px 20px 20px",
+              borderBottom: "2px solid #ccc",
+              padding: "12px",
+            }}
+          >
+            <Col span={22}>
+              <h2
+                className="text-center"
+                style={{
+                  fontSize: "x-large",
+                  fontWeight: "500",
+                }}
+              >
+                Thông tin đơn hàng
+              </h2>
+            </Col>
+            <Col span={2}>
+              <Button
+                type="dashed"
+                align={"end"}
+                style={{ margin: "" }}
+                onClick={(e) => showModalBill(e)}
+              >
+                Thay đổi
+              </Button>
+            </Col>
           </Row>
           <Row>
             <Col span={12} className="text">
@@ -1006,18 +1160,19 @@ function DetailBill() {
       </Row>
       {/* begin modal payment  */}
       <Modal
-        title="Xác nhận thanh toán"
+        title="Thanh toán"
         open={isModalPayMentOpen}
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
       >
         <Form>
           <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24}>
+            <Col span={24} style={{ marginTop: "10px" }}>
+              <label style={{ top: "-14px" }}>Giá</label>
               <Form.Item
                 label=""
                 name="price"
-                // style={{ fontWeight: "bold" }}
+                style={{ marginBottom: "20px" }}
                 rules={[
                   {
                     required: true,
@@ -1029,7 +1184,11 @@ function DetailBill() {
                   thousandSeparator={true}
                   suffix=" VND"
                   placeholder="Vui lòng nhập số tiền"
-                  style={{ width: "100%" }}
+                  style={{
+                    width: "100%",
+                    position: "relative",
+                    height: "37px",
+                  }}
                   customInput={Input}
                   value={statusBill.totalMoney}
                   onChange={(e) =>
@@ -1040,10 +1199,15 @@ function DetailBill() {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-            <Col span={24}>
+            <Col span={24} style={{ marginTop: "10px" }}>
+              <label style={{ marginTop: "2px" }}>Hình thức</label>
               <Select
                 showSearch
-                style={{ width: "100%", margin: "10px 0" }}
+                style={{
+                  width: "100%",
+                  margin: "10px 0",
+                  position: "relative",
+                }}
                 placeholder="Chọn hình thức"
                 optionFilterProp="children"
                 onChange={(value) => onChangeDescStatusBill("method", value)}
@@ -1071,11 +1235,16 @@ function DetailBill() {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-            <Col span={24}>
+            <Col span={24} style={{ marginTop: "10px" }}>
+              <label style={{ top: "-6%" }}>Loại thanh toán</label>
               <Select
                 showSearch
-                style={{ width: "100%", margin: "10px 0" }}
-                placeholder="Chọn hình thức"
+                style={{
+                  width: "100%",
+                  margin: "10px 0",
+                  position: "relative",
+                }}
+                placeholder="Chọn Loại"
                 optionFilterProp="children"
                 onChange={(value) => onChangeDescStatusBill("status", value)}
                 value={statusBill.status}
@@ -1098,10 +1267,12 @@ function DetailBill() {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-            <Col span={24}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label>Mô Tả</label>
               <TextArea
                 rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
                 value={statusBill.actionDescription}
+                style={{ width: "100%", position: "relative" }}
                 placeholder="Nhập mô tả"
                 onChange={(e) =>
                   onChangeDescStatusBill("actionDescription", e.target.value)
@@ -1112,6 +1283,255 @@ function DetailBill() {
         </Form>
       </Modal>
       {/* end modal payment  */}
+
+      {/* begin modal bill  */}
+      <Modal
+        title="Thay đổi hóa đơn"
+        open={isModaBillOpen}
+        onOk={handleOkBill}
+        onCancel={handleCancelBill}
+      >
+        <Form initialValues={initialValues}>
+          <Row style={{ width: "100%", marginTop: "10px" }}>
+            <Col span={24} style={{ marginTop: "10px" }}>
+              {/* <label style={{ top: "-15px" }}>Giá</label>
+              <Form.Item
+                label=""
+                name="price"
+                style={{ marginBottom: "20px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập số tiền",
+                  },
+                ]}
+              >
+                <NumberFormat
+                  thousandSeparator={true}
+                  suffix=" VND"
+                  placeholder="Vui lòng nhập số tiền"
+                  style={{
+                    width: "100%",
+                    position: "relative",
+                    height: "37px",
+                  }}
+                  customInput={Input}
+                  value={statusBill.totalMoney}
+                  onChange={(e) =>
+                    onChangeDescStatusBill("totalMoney", e.target.value)
+                  }
+                />
+              </Form.Item> */}
+            </Col>
+          </Row>
+
+          <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label style={{ marginTop: "-4px", top: "-31%" }}>
+                Tên khách hàng
+              </label>
+              <Form.Item
+                label=""
+                name="name"
+                style={{ marginBottom: "20px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên khách hàng",
+                  },
+                ]}
+              >
+                <Input
+                  value={billRequest.name}
+                  onChange={(e) => onChangeBill("name", e.target.value)}
+                  placeholder="Nhập tên khách hàng"
+                  style={{ width: "98%", position: "relative", height: "40px" }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label style={{ marginTop: "-4px", top: "-25%" }}>
+                Số điện thoại
+              </label>
+              <Form.Item
+                label=""
+                name="phoneNumber"
+                style={{ marginBottom: "20px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập số điện thoại",
+                  },
+                  {
+                    pattern:
+                      "(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}",
+                    message: "Vui lòng nhập đúng số điện thoại",
+                  },
+                ]}
+              >
+                <Input
+                  value={billRequest.phoneNumber}
+                  onChange={(e) => onChangeBill("phoneNumber", e.target.value)}
+                  placeholder="Nhập số điện thoại"
+                  style={{ width: "98%", position: "relative", height: "40px" }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row style={{}}>
+            <Col span={24}>
+              <Row style={{ width: "100%", marginTop: "20px" }}>
+                <Col span={8}>
+                  <Row>
+                    <Col span={24}>
+                      <label style={{ marginTop: "-4px", top: "-25%" }}>
+                        Tỉnh
+                      </label>
+                      <Form.Item
+                        label=""
+                        name="city"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn tỉnh",
+                          },
+                        ]}
+                      >
+                        <Select
+                          showSearch
+                          placeholder="Chọn tỉnh"
+                          optionFilterProp="children"
+                          onChange={(v) => onChangeAddress("city", v)}
+                          defaultValue={address.city}
+                          style={{ width: "90%", position: "relative" }}
+                          filterOption={(input, option) =>
+                            (option?.label ?? "")
+                              .toLowerCase()
+                              .includes(input.toLowerCase())
+                          }
+                          options={[]}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+                <Col span={8}>
+                  <Row>
+                    <Col span={24}>
+                      <label style={{ marginTop: "-4px", top: "-25%" }}>
+                        Quận
+                      </label>
+
+                      <Form.Item
+                        label=""
+                        name="district"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn Quận",
+                          },
+                        ]}
+                      >
+                        <Select
+                          showSearch
+                          placeholder="Chọn Quận"
+                          optionFilterProp="children"
+                          onChange={(v) => onChangeAddress("district", v)}
+                          defaultValue={address.district}
+                          style={{ width: "90%", position: "relative" }}
+                          filterOption={(input, option) =>
+                            (option?.label ?? "")
+                              .toLowerCase()
+                              .includes(input.toLowerCase())
+                          }
+                          options={[]}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+                <Col span={8}>
+                  <Row>
+                    <Col span={24}>
+                      <label style={{ marginTop: "-4px", top: "-25%" }}>
+                        xã
+                      </label>
+                      <Form.Item
+                        label=""
+                        name="wards"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn Quận",
+                          },
+                        ]}
+                      >
+                        <Select
+                          showSearch
+                          placeholder="Chọn Phường xã"
+                          optionFilterProp="children"
+                          onChange={(v) => onChangeAddress("wards", v)}
+                          defaultValue={address.wards}
+                          style={{ width: "94%", position: "relative" }}
+                          filterOption={(input, option) =>
+                            (option?.label ?? "")
+                              .toLowerCase()
+                              .includes(input.toLowerCase())
+                          }
+                          options={[]}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label style={{ marginTop: "-4px", top: "-25%" }}>
+                Địa chỉ cụ thể
+              </label>
+              <Form.Item
+                label=""
+                name="detail"
+                style={{ marginBottom: "20px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn Quận",
+                  },
+                ]}
+              >
+                <Input
+                  value={address.detail}
+                  onChange={(e) => onChangeAddress("detail", e.target.value)}
+                  placeholder="Nhập địa chỉ"
+                  style={{ width: "98%", position: "relative", height: "40px" }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label>Ghi chú</label>
+              <TextArea
+                rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
+                value={billRequest.note}
+                style={{ width: "100%", position: "relative" }}
+                placeholder="Nhập mô tả"
+                onChange={(e) => onChangeBill("note", e.target.value)}
+              />
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+      {/* end modal bill  */}
       <ToastContainer
         position="top-right"
         autoClose={500}

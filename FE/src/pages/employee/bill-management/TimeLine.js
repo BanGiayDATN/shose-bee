@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
-import "./timeline.css";
 import moment from "moment";
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline'
 import { FaBug, FaFileSignature, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
 import { BiSolidTruck} from "react-icons/bi";
 import { MdPayment} from "react-icons/md";
-import { AiFillCarryOut} from "react-icons/ai";
+import { AiFillCarryOut, AiFillFile} from "react-icons/ai";
 import { GiReturnArrow} from "react-icons/gi";
 import { BsFileEarmarkExcelFill} from "react-icons/bs";
+import "./timeline.css";
 
 function TimeLine({ listStatus, data, statusPresent }) {
   
   const showIcon = (statusBill) =>{
     if( statusBill === "TAO_HOA_DON"){
-        return FaRegFileAlt
+        return AiFillFile
         
     }
     else if(statusBill === "CHO_XAC_NHAN"){
@@ -33,13 +33,13 @@ function TimeLine({ listStatus, data, statusPresent }) {
   }
   return (
     <div className="container" style={{ width: "100%", margin: "10px",  }}>
-      <Timeline minEvents={statusPresent != 7 ? 5: 1} placeholder>
+      <Timeline minEvents={statusPresent != 7 ? 5: 1}  placeholder  >
        {
         data.map((item) => (
           <TimelineEvent
           color={ item.statusBill != "DA_HUY" ? "#03fa53" : "red"}
           icon={showIcon(item.statusBill )}
-          style={{ overflowX: "scroll"}}
+         
           title={
             item.statusBill === "TAO_HOA_DON"
               ? "Tạo Hóa đơn"

@@ -50,6 +50,14 @@ export class BillApi {
       });
     };
 
+    static updateBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/update-offline/`+ id,
+        data: data,
+      });
+    };
+
     static changeCancelStatusBill = (id, data) => {
       return request({
         method: "PUT",
