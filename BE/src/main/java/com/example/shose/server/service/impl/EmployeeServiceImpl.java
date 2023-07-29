@@ -15,7 +15,6 @@ import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.EmployeeService;
 import com.example.shose.server.util.PasswordGenerator;
-import com.example.shose.server.util.SendEmail;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,8 +37,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private PasswordGenerator passwordEncoder;
 
-    @Autowired
-    private SendEmail mail;
+//    @Autowired
+//    private SendEmail mail;
 
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
@@ -53,16 +52,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public User create(CreateEmployeeRequest req) throws MessagingException {
-        List<Account> accounts = accountRepository.findAll();
-        Optional<Account> adminAccount = accounts.stream()
-                .filter(account -> account.getRoles().equals(Roles.ADMIN))
-                .findFirst();
-        if (!adminAccount.isPresent()) {
-            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
-        }
         String randomPassword = passwordEncoder.generatePassword();
-        String email = req.getEmail();
-        mail.testMail(email, randomPassword);
+//        String email = req.getEmail();
+//        mail.testMail(email, randomPassword);
         Account employeeAccount = new Account();
         employeeAccount.setEmail(req.getEmail());
         employeeAccount.setRoles(Roles.NHAN_VIEN);
@@ -74,14 +66,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .email(req.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .dateOfBirth(req.getDateOfBirth())
-                .avata(req.getAvata())
+                .avata(null)
+                .gender(req.getGender())
                 .build();
         user = userReposiory.save(user);
         employeeAccount.setUser(user);
         employeeAccount = accountRepository.save(employeeAccount);
         return user;
     }
-
     @Override
     @Transactional
     public User update(UpdateEmployeeRequest req) {
@@ -94,7 +86,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setPhoneNumber(req.getPhoneNumber());
         user.setDateOfBirth(req.getDateOfBirth());
         user.setEmail(req.getEmail());
-        user.setAvata(String.valueOf(req.getAvata()));
+        user.setGender(req.getGender());
+        user.setAvata(null);
         user.setStatus(req.getStatus());
 
         if (req.getPassword() != null) {

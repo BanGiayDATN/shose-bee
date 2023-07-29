@@ -504,7 +504,10 @@ const CreateProductManagment = () => {
                   placeholder="Nhập tên sản phẩm"
                   onSearch={handleSearch}
                 >
-                  <Input className="form-input" style={{ fontWeight: "bold" }}/>
+                  <Input
+                    className="form-input"
+                    style={{ fontWeight: "bold" }}
+                  />
                 </AutoComplete>
               </Form.Item>
 

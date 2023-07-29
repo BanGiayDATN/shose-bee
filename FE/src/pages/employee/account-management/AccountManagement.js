@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider, Image } from "antd";
+import { Input, Button, Select, Table, Slider, Image, Row, Col } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-account.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
@@ -31,7 +31,6 @@ const AccountManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [imageData, setImageData] = useState(null);
 
   // Lấy mảng redux ra
   const data = useAppSelector(GetAccount);
@@ -143,15 +142,14 @@ const AccountManagement = () => {
     });
     setStartDate(initialStartDate);
     setEndDate(initialEndDate);
-    filterByDateOfBirthRange(initialStartDate, initialEndDate);
-    // filterByAgeRange()
+
     setListaccount(
       initialAccountList.map((account, index) => ({
         ...account,
         stt: index + 1,
       }))
     );
-    loadData();
+    setAgeRange([0, 100]);
   };
 
   const loadData = () => {
@@ -180,22 +178,10 @@ const AccountManagement = () => {
   const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
-  const handleCancel = () => {
-    setModalVisible(false);
-    setModalVisibleUpdate(false);
-    setModalVisibleDetail(false);
-  };
-
   const handleViewDetail = (id) => {
     setIdDetail(id);
     setModalVisibleDetail(true);
   };
-
-  const handleUpdate = (id) => {
-    setIdUpdate(id);
-    setModalVisibleUpdate(true);
-  };
-
   const handleAgeRangeChange = (value) => {
     setAgeRange(value);
   };
@@ -205,53 +191,6 @@ const AccountManagement = () => {
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
   }, [ageRange, initialAccountList]);
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState([]);
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    const fileExists = fileList.find((f) => f.uid === file.uid);
-
-    // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
-    if (!fileExists) {
-      const newFile = { ...file, isStarred: false };
-      setFileList([...fileList, newFile]);
-    }
-
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-    );
-  };
-  useEffect(() => {
-    // Gọi API để lấy dữ liệu ảnh từ backend
-    fetch("http://localhost:8080/admin/employee")
-      .then((response) => response.json())
-      .then((data) => {
-        // Kiểm tra nếu data là một mảng trước khi sử dụng map
-        if (Array.isArray(data)) {
-          // Trích xuất URL của ảnh từ dữ liệu nhân viên (giả sử URL ảnh lưu trong trường "avata" của mỗi nhân viên)
-          const imageURLs = data.map((employee) => employee.avata);
-
-          // Set state với mảng URL ảnh
-          setImageData(imageURLs);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching image:", error);
-      });
-  }, []);
 
   const columns = [
     {
@@ -264,11 +203,8 @@ const AccountManagement = () => {
       title: "Ảnh",
       dataIndex: "avata",
       key: "avata",
-      render: (text) => (
-        <img src={text} alt="Ảnh sản phẩm" style={{ width: "60px" }} />
-      ),
+      render: (text) => <img src={text} alt="Ảnh " style={{ width: "60px" }} />,
     },
-
     {
       title: "Tên nhân viên",
       dataIndex: "fullName",
@@ -350,40 +286,46 @@ const AccountManagement = () => {
         <hr />
         <div className="content_ac">
           <div className="content-wrapper-ac">
-            <div>
-              <Input
-                style={{
-                  marginBottom: "20px",
-                  marginLeft: "18%",
-                  width: "300px",
-                  display: "flex",
-                }}
-                placeholder="Tìm kiếm"
-                type="text"
-                name="keyword"
-                value={searchAccount.keyword}
-                onChange={handleKeywordChange}
-              />
-              <label>Trạng thái:</label>
-              <Select
-                style={{
-                  marginLeft: "5px",
-                  width: "300px",
-                }}
-                name="status"
-                value={searchAccount.status}
-                onChange={handleStatusChange}
-              >
-                <Option value="">Tất cả</Option>
-                <Option value="DANG_SU_DUNG">Kích hoạt</Option>
-                <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
-              </Select>
-            </div>
-            <div>
-              <div className="date-range">
-                <label className="date-label">Ngày sinh:</label>
+            <Row>
+              <Col span={24} style={{ marginBottom: "10px" }}>
+                <label>Tìm kiếm:</label>
                 <Input
-                  style={{ width: "200px" }}
+                  style={{
+                    width: "300px",
+                    marginLeft: "19px",
+                    marginBottom: "20px",
+                  }}
+                  placeholder="Tìm kiếm tên / sđt / email... "
+                  type="text"
+                  name="keyword"
+                  value={searchAccount.keyword}
+                  onChange={handleKeywordChange}
+                />
+              </Col>
+              <Col span={24}>
+                <label>Trạng thái:</label>
+                <Select
+                  style={{ width: "300px", marginLeft: "15px" }}
+                  name="status"
+                  value={searchAccount.status}
+                  onChange={handleStatusChange}
+                >
+                  <Option value="">Tất cả</Option>
+                  <Option value="DANG_SU_DUNG">Kích hoạt</Option>
+                  <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
+                </Select>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col span={24}>
+                <label>Ngày sinh:</label>
+                <Input
+                  style={{
+                    width: "200px",
+                    marginRight: "15px",
+                    marginLeft: "15px",
+                  }}
                   type="date"
                   value={startDate || initialStartDate}
                   onChange={handleStartDateChange}
@@ -394,11 +336,18 @@ const AccountManagement = () => {
                   value={endDate || initialEndDate}
                   onChange={handleEndDateChange}
                 />
-              </div>
-              <div className="age">
+              </Col>
+
+              <Col
+                span={24}
+                style={{
+                  display: "flex",
+                  marginTop: "30px",
+                }}
+              >
                 <label>Khoảng tuổi:</label>
                 <Slider
-                  style={{ width: "400px" }}
+                  style={{ width: "400px", marginLeft: "15px" }}
                   range
                   min={0}
                   max={100}
@@ -406,8 +355,8 @@ const AccountManagement = () => {
                   value={ageRange}
                   onChange={handleAgeRangeChange}
                 />
-              </div>
-            </div>
+              </Col>
+            </Row>
           </div>
         </div>
 

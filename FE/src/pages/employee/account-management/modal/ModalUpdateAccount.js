@@ -93,7 +93,7 @@ const ModalUpdateAccount = ({ visible }) => {
     <div>
       <div className="title_account">
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
-        <span style={{ marginLeft: "10px" }}>Quản lý tài khoản nhân viên</span>
+        <span style={{ marginLeft: "10px" }}>Quản lý nhân viên</span>
       </div>
       <div className="filter">
         <div
@@ -107,7 +107,7 @@ const ModalUpdateAccount = ({ visible }) => {
           <span
             style={{ fontSize: "25px", fontWeight: "bold", marginTop: "10px" }}
           >
-            CẬP NHẬT TÀI KHOẢN
+            CẬP NHẬT NHÂN VIÊN
           </span>
         </div>
         <div className="title_add">

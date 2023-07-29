@@ -43,19 +43,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public User create(CreateEmployeeRequest req) {
-        List<Account> accounts = accountRepository.findAll();
-        Optional<Account> adminAccount = accounts.stream()
-                .filter(account -> account.getRoles().equals(Roles.ADMIN))
-                .findFirst();
-        Optional<Account> EmAccount = accounts.stream()
-                .filter(account -> account.getRoles().equals(Roles.NHAN_VIEN))
-                .findFirst();
-        if (!adminAccount.isPresent()) {
-            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
-        }
-        if (!EmAccount.isPresent()) {
-            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
-        }
         Account employeeAccount = new Account();
         employeeAccount.setEmail(req.getEmail());
         employeeAccount.setPassword(req.getPassword());
