@@ -81,6 +81,13 @@ export class BillApi {
       });
     };
 
+    static getDetaiProductInBill = (id) => {
+      return request({
+        method: "GET",
+        url: `/admin/bill-detail/detail/` +id
+      });
+    };
+
     // static getOne = (id) => {
     //   return request({
     //     method: "GET",

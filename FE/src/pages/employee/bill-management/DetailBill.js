@@ -313,7 +313,79 @@ function DetailBill() {
   const handleCancelBill = () => {
     setIsModalBillOpen(false);
   };
-  // enad modal bill
+  // end modal bill
+
+  // begin detail product
+
+  const [detaiProduct, setDetailProduct] = useState({});
+
+  //  end detail product
+
+  // begin modal refundProduct
+  const [refundProduct, setRefundProduct] = useState({
+    id: "",
+    idBill: id,
+    idProduct: "",
+    size: "",
+    quantity: 0,
+    note: "",
+  });
+
+  const [quantity, setQuantity] = useState(1);
+
+  const handleIncrease = () => {
+    setQuantity((prevQuantity) => prevQuantity + 1);
+  };
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity((prevQuantity) => prevQuantity - 1);
+    }
+  };
+  const onChangeRefundProduct = (fileName, value) => {
+    setRefundProduct({ ...refundProduct, [fileName]: value });
+  };
+
+  const [isModaRefundProductOpen, setIsModalRefundProductOpen] =
+    useState(false);
+  const showModalRefundProduct = async (e, id) => {
+    await BillApi.getDetaiProductInBill(id).then((res) => {
+      setRefundProduct({ ...refundProduct, [refundProduct.idProduct]: res.data.data.idProduct });
+      setRefundProduct({ ...refundProduct, [refundProduct.size]: res.data.data.size });
+      setRefundProduct({ ...refundProduct, [refundProduct.id]: res.data.data.id });
+      setDetailProduct(res.data.data);
+      setQuantity(res.data.data.quantity);
+    });
+    setIsModalRefundProductOpen(true);
+  };
+  const checkNotEmptyRefundProduct = () => {
+    return Object.keys(refundProduct)
+      .filter((key) => key !== "note")
+      .every((key) => refundProduct[key] !== "");
+  };
+
+  const handleOkRefundProduct = () => {
+    if (checkNotEmptyRefundProduct()) {
+      setIsModalRefundProductOpen(false);
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận Hoàn hàng không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          toast("Hoàn hàng thành công");
+          setIsModalRefundProductOpen(false);
+        },
+        onCancel: () => {
+          setIsModalRefundProductOpen(false);
+        },
+      });
+    }
+  };
+  const handleCancelRefundProduct = () => {
+    setIsModalRefundProductOpen(false);
+  };
+  // end modal refundProduct
 
   //  begin modal change status
 
@@ -804,7 +876,7 @@ function DetailBill() {
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
                       <Col span={24} style={{ marginTop: "10px" }}>
-                        <label style={{ top: "-15px" }}>Giá</label>
+                        <label className="label-bill" style={{ top: "-15px" }}>Giá</label>
                         <Form.Item
                           label=""
                           name="price"
@@ -839,7 +911,7 @@ function DetailBill() {
                     </Row>
                     <Row style={{ width: "100%" }}>
                       <Col span={24} style={{ marginTop: "10px" }}>
-                        <label style={{ marginTop: "-4px" }}>Hình thức</label>
+                        <label className="label-bill" style={{ marginTop: "-4px" }}>Hình thức</label>
                         <Select
                           showSearch
                           style={{
@@ -881,7 +953,7 @@ function DetailBill() {
                 )}
                 <Row style={{ width: "100%" }}>
                   <Col span={24} style={{ marginTop: "20px" }}>
-                    <label>Mô Tả</label>
+                    <label className="label-bill">Mô Tả</label>
                     <TextArea
                       rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
                       value={statusBill.actionDescription}
@@ -906,7 +978,7 @@ function DetailBill() {
                 onCancel={handleCanCelClose}
               >
                 <Col span={24} style={{ marginTop: "20px" }}>
-                  <label>Mô Tả</label>
+                  <label className="label-bill">Mô Tả</label>
                   <TextArea
                     rows={4}
                     value={statusBill.actionDescription}
@@ -1290,8 +1362,9 @@ function DetailBill() {
                           border: "1px solid #eb5a36",
                           borderRadius: "10px",
                         }}
+                        onClick={(e) => showModalRefundProduct(e, item.id)}
                       >
-                        Hủy
+                        Trả hàng
                       </Button>
                     </Col>
                   </Row>
@@ -1305,7 +1378,7 @@ function DetailBill() {
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Tiền hàng:</Col>
-              <Col span={10}  align={"end"}>
+              <Col span={10} align={"end"}>
                 <span>
                   {bill.totalMoney >= 1000
                     ? bill.totalMoney.toLocaleString("vi-VN", {
@@ -1319,7 +1392,7 @@ function DetailBill() {
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Phí vận chuyển:</Col>
-              <Col span={10}  align={"end"}>
+              <Col span={10} align={"end"}>
                 <span>
                   {bill.moneyShip >= 1000
                     ? bill.moneyShip.toLocaleString("vi-VN", {
@@ -1333,7 +1406,7 @@ function DetailBill() {
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Tiền giảm: </Col>
-              <Col span={10}  align={"end"}>
+              <Col span={10} align={"end"}>
                 <span>
                   {bill.itemDiscount >= 1000
                     ? bill.itemDiscount.toLocaleString("vi-VN", {
@@ -1346,15 +1419,26 @@ function DetailBill() {
             </Row>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
-              <Col span={6} style={{marginBottom: "40px"}}>Tổng tiền: </Col>
-              <Col span={10}  align={"end"}>
-                <span style={{color: "red", fontWeight: "bold"}}>
-                  {(bill.totalMoney + bill.moneyShip - bill.itemDiscount) >= 1000
-                    ? (bill.totalMoney + bill.moneyShip - bill.itemDiscount).toLocaleString("vi-VN", {
+              <Col span={6} style={{ marginBottom: "40px" }}>
+                Tổng tiền:{" "}
+              </Col>
+              <Col span={10} align={"end"}>
+                <span style={{ color: "red", fontWeight: "bold" }}>
+                  {bill.totalMoney + bill.moneyShip - bill.itemDiscount >= 1000
+                    ? (
+                        bill.totalMoney +
+                        bill.moneyShip -
+                        bill.itemDiscount
+                      ).toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })
-                    : (bill.totalMoney + bill.moneyShip - bill.itemDiscount) < 0 ? "0 đ" : (bill.totalMoney + bill.moneyShip - bill.itemDiscount) + " đ" }
+                    : bill.totalMoney + bill.moneyShip - bill.itemDiscount < 0
+                    ? "0 đ"
+                    : bill.totalMoney +
+                      bill.moneyShip -
+                      bill.itemDiscount +
+                      " đ"}
                 </span>
               </Col>
             </Row>
@@ -1371,7 +1455,7 @@ function DetailBill() {
         <Form>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
-              <label style={{ top: "-14px" }}>Giá</label>
+              <label className="label-bill" style={{ top: "-14px" }}>Giá</label>
               <Form.Item
                 label=""
                 name="price"
@@ -1403,7 +1487,7 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
-              <label style={{ marginTop: "2px" }}>Hình thức</label>
+              <label className="label-bill" style={{ marginTop: "2px" }}>Hình thức</label>
               <Select
                 showSearch
                 style={{
@@ -1439,7 +1523,7 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
-              <label style={{ top: "-6%" }}>Loại thanh toán</label>
+              <label className="label-bill" style={{ top: "-6%" }}>Loại thanh toán</label>
               <Select
                 showSearch
                 style={{
@@ -1471,7 +1555,7 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label>Mô Tả</label>
+              <label className="label-bill">Mô Tả</label>
               <TextArea
                 rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
                 value={statusBill.actionDescription}
@@ -1530,7 +1614,7 @@ function DetailBill() {
 
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label style={{ marginTop: "-4px", top: "-31%" }}>
+              <label className="label-bill" style={{ marginTop: "3px", top: "-31%" }}>
                 Tên khách hàng
               </label>
               <Form.Item
@@ -1555,7 +1639,7 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label style={{ marginTop: "-4px", top: "-25%" }}>
+              <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
                 Số điện thoại
               </label>
               <Form.Item
@@ -1589,7 +1673,7 @@ function DetailBill() {
                 <Col span={8}>
                   <Row>
                     <Col span={24}>
-                      <label style={{ marginTop: "-4px", top: "-25%" }}>
+                      <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
                         Tỉnh
                       </label>
                       <Form.Item
@@ -1624,7 +1708,7 @@ function DetailBill() {
                 <Col span={8}>
                   <Row>
                     <Col span={24}>
-                      <label style={{ marginTop: "-4px", top: "-25%" }}>
+                      <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
                         Quận
                       </label>
 
@@ -1660,7 +1744,7 @@ function DetailBill() {
                 <Col span={8}>
                   <Row>
                     <Col span={24}>
-                      <label style={{ marginTop: "-4px", top: "-25%" }}>
+                      <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
                         xã
                       </label>
                       <Form.Item
@@ -1697,7 +1781,7 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label style={{ marginTop: "-4px", top: "-25%" }}>
+              <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
                 Địa chỉ cụ thể
               </label>
               <Form.Item
@@ -1722,13 +1806,172 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label>Ghi chú</label>
+              <label className="label-bill">Ghi chú</label>
               <TextArea
                 rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
                 value={billRequest.note}
                 style={{ width: "100%", position: "relative" }}
                 placeholder="Nhập mô tả"
                 onChange={(e) => onChangeBill("note", e.target.value)}
+              />
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+      {/* end modal bill  */}
+
+      {/* begin modal refundProduct  */}
+      <Modal
+        title="Trả hàng"
+        open={isModaRefundProductOpen}
+        onOk={handleOkRefundProduct}
+        onCancel={handleCancelRefundProduct}
+        style={{ width: "800px" }}
+      >
+        <Form initialValues={initialValues}>
+          <Row style={{ width: "100%", marginTop: "10px" }}>
+            <Col span={24} style={{ marginTop: "10px" }}>
+              {/* <label style={{ top: "-15px" }}>Giá</label>
+              <Form.Item
+                label=""
+                name="price"
+                style={{ marginBottom: "20px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập số tiền",
+                  },
+                ]}
+              >
+                <NumberFormat
+                  thousandSeparator={true}
+                  suffix=" VND"
+                  placeholder="Vui lòng nhập số tiền"
+                  style={{
+                    width: "100%",
+                    position: "relative",
+                    height: "37px",
+                  }}
+                  customInput={Input}
+                  value={statusBill.totalMoney}
+                  onChange={(e) =>
+                    onChangeDescStatusBill("totalMoney", e.target.value)
+                  }
+                />
+              </Form.Item> */}
+            </Col>
+          </Row>
+
+          <Row style={{ marginTop: "10px", width: "100%" }}>
+            <Col span={7}>
+              <img
+                src={detaiProduct.image}
+                alt="Ảnh sản phẩm"
+                style={{
+                  width: "170px",
+                  borderRadius: "10%",
+                  height: "140px",
+                  marginLeft: "5px",
+                }}
+              />
+            </Col>
+            <Col span={14}>
+              <Row>
+                {" "}
+                <span
+                  style={{
+                    fontSize: "19",
+                    fontWeight: "500",
+                    marginTop: "10px",
+                  }}
+                >
+                  {detaiProduct.productName}
+                </span>{" "}
+              </Row>
+              <Row>
+                <span style={{ color: "red", fontWeight: "500" }}>
+                  {detaiProduct.price >= 1000
+                    ? detaiProduct.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : detaiProduct.price + " đ"}
+                </span>{" "}
+              </Row>
+              <Row>
+                <span style={{ fontSize: "12", marginTop: "10px" }}>
+                  Size: {detaiProduct.nameSize}
+                </span>{" "}
+              </Row>
+              <Row>
+                <span style={{ fontSize: "12" }}>
+                  x {detaiProduct.quantity}
+                </span>{" "}
+              </Row>
+            </Col>
+            <Col span={3} style={{ display: "flex", alignItems: "center" }}>
+              <span
+                style={{
+                  color: "red",
+                  fontWeight: "bold",
+                  marginBottom: "30px",
+                }}
+              >
+                {detaiProduct.price * detaiProduct.quantity >= 1000
+                  ? (detaiProduct.price * detaiProduct.quantity).toLocaleString(
+                      "vi-VN",
+                      {
+                        style: "currency",
+                        currency: "VND",
+                      }
+                    )
+                  : detaiProduct.price * detaiProduct.quantity + " đ"}
+              </span>{" "}
+            </Col>
+          </Row>
+          <Row style={{ width: "100%", marginTop: "20px" }} justify={"center"}>
+            <Col span={4}>Số lượng</Col>
+            <Col span={6}>
+              <Row>
+                <Col span={6}>
+                  {" "}
+                  <Button
+                    onClick={handleDecrease}
+                    style={{ margin: "0 4px 0 10px" }}
+                  >
+                    -
+                  </Button>
+                </Col>
+                <Col span={12}>
+                  {" "}
+                  <InputNumber
+                    min={1}
+                    value={quantity}
+                    style={{marginLeft: "4px"}}
+                    onChange={(value) => setQuantity(value)}
+                  />
+                </Col>
+                <Col span={6}>
+                  {" "}
+                  <Button
+                    onClick={handleIncrease}
+                    style={{ margin: "0 4px 0 4px" }}
+                  >
+                    +
+                  </Button>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label className="label-bill">Ghi chú</label>
+              <TextArea
+                rows={4}
+                value={refundProduct.note}
+                style={{ width: "100%", position: "relative" }}
+                placeholder="Nhập mô tả"
+                onChange={(e) => onChangeRefundProduct("note", e.target.value)}
               />
             </Col>
           </Row>

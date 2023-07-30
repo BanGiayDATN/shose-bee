@@ -82,7 +82,10 @@ public class BillDetailServiceImpl implements BillDetailService {
         if (billDetail.get().getQuantity() < request.getQuantity()) {
             throw new RestApiException(Message.ERROR_QUANTITY);
         }
-        if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN || bill.get().getStatusBill() != StatusBill.DA_HUY){
+        if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN ||
+                bill.get().getStatusBill() != StatusBill.KHONG_TRA_HANG ||
+                bill.get().getStatusBill() != StatusBill.DA_HUY)
+        {
             throw new RestApiException(Message.BILL_NOT_REFUND);
         }
 
