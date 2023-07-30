@@ -25,4 +25,8 @@ public interface ImageRepository extends JpaRepository<Image,String> {
                 WHERE pd.id = :id
             """, nativeQuery = true)
     List<ImageResponse> findAllByIdProductDetail (@Param("id") String id);
+
+    @Query("SELECT i FROM Image i WHERE i.productDetail.id =:id ")
+    List<Image> getAllByIdProductDetail (@Param("id") String id);
+
 }

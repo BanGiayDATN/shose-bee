@@ -31,7 +31,7 @@ public class Address extends PrimaryEntity {
 
     private String province;
 
-    private String werd;
+    private String ward;
 
     private Integer toDistrictId;
 

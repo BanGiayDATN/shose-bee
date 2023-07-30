@@ -40,4 +40,7 @@ public interface ProductDetailReponse {
     @Value("#{target.total_quantity}")
     Integer getTotalQuantity();
 
+    @Value("#{target.promotion}")
+    BigDecimal getPromotion();
+
 }

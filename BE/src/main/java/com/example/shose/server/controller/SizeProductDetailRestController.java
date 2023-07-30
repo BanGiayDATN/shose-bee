@@ -1,6 +1,5 @@
 package com.example.shose.server.controller;
 
-import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.service.SizeProductDetailService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -15,15 +15,15 @@
       margin-bottom: 10px;
   }
   /* Tạo một class cho container chứa các ảnh */
-.image-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px; /* Khoảng cách giữa các ảnh */
-}
 
-/* Tạo một class cho ảnh */
-.image-item {
-  width: 150px; /* Đặt kích thước ảnh theo ý muốn */
-  height: 150px; /* Đặt kích thước ảnh theo ý muốn */
-  object-fit: cover; /* Đảm bảo ảnh không bị biến dạng */
-}
+  .uploaded-file-container {
+    width: 100%; /* Đặt kích thước chiều rộng mong muốn */
+    height: 100%; /* Đặt kích thước chiều cao mong muốn */
+    overflow: hidden; /* Ẩn bất kỳ phần nào của hình ảnh vượt ra ngoài phạm vi đã định */
+  }
+  
+  .uploaded-file-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo hình ảnh được điều chỉnh tỷ lệ để không bị méo khi hiển thị */
+  }

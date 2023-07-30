@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider } from "antd";
+import { Input, Button, Select, Table, Slider, Row, Col } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-account.css";
 import { CustomerApi } from "../../../api/employee/account/customer.api";
@@ -213,6 +213,18 @@ const CustomerManagement = () => {
       sorter: (a, b) => a.stt - b.stt,
     },
     {
+      title: "Ảnh",
+      dataIndex: "avata",
+      key: "avata",
+      render: (avata) => (
+        <img
+          src={avata}
+          alt="Hình ảnh"
+          style={{ width: "150px", height: "110px", borderRadius: "20px" }}
+        />
+      ),
+    },
+    {
       title: "Tên khách hàng",
       dataIndex: "fullName",
       key: "fullName",
@@ -225,7 +237,7 @@ const CustomerManagement = () => {
       sorter: (a, b) => a.email.localeCompare(b.email),
     },
     {
-      title: "SDT",
+      title: "Số điện thoại",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
       sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
@@ -291,89 +303,97 @@ const CustomerManagement = () => {
   return (
     <>
       <div className="title_account">
+        {" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý tài khoản khách hàng</span>
       </div>
       <div className="filter">
-        <FontAwesomeIcon icon={faFilter} size="2x" />
+        <FontAwesomeIcon icon={faFilter} size="2x" />{" "}
         <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
         <hr />
-        <div className="content_ac">
-          <div className="content-wrapper-ac">
+        <div className="content">
+          <div className="content-wrapper">
             <div>
-              <Input
-                style={{
-                  marginBottom: "20px",
-                  marginLeft: "18%",
-                  width: "300px",
-                  display: "flex",
-                }}
-                placeholder="Tìm kiếm"
-                type="text"
-                name="keyword"
-                value={searchCustomer.keyword}
-                onChange={handleKeywordChange}
-              />
-              <label>Trạng thái:</label>
-              <Select
-                style={{
-                  marginLeft: "5px",
-                  width: "300px",
-                }}
-                name="status"
-                value={searchCustomer.status}
-                onChange={handleStatusChange}
-              >
-                <Option value="">Tất cả</Option>
-                <Option value="DANG_SU_DUNG">Kích hoạt</Option>
-                <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
-              </Select>
-            </div>
-            <div>
-              <div className="date-range">
-                <label className="date-label">Ngày sinh:</label>
+              <Row>
                 <Input
-                  style={{ width: "200px" }}
+                  style={{
+                    width: "250px",
+                    height: "38px",
+                    marginRight: "8px",
+                  }}
+                  placeholder="Tìm kiếm"
+                  type="text"
+                  name="keyword"
+                  value={searchCustomer.keyword}
+                  onChange={handleKeywordChange}
+                />
+                <Button
+                  className="btn_filter"
+                  type="submit"
+                  onClick={handleSubmitSearch}
+                >
+                  Tìm kiếm
+                </Button>
+                <Button
+                  className="btn_clear"
+                  key="submit"
+                  type="primary"
+                  onClick={handleClear}
+                >
+                  Làm mới bộ lọc
+                </Button>
+                ,
+              </Row>
+            </div>
+          </div>
+        </div>
+        <div>
+          <Row gutter={[24, 16]}>
+            <Col span={6}>
+              <div>
+                Trạng thái :{" "}
+                <Select
+                  style={{ width: "90%", marginLeft: "" }}
+                  name="status"
+                  value={searchCustomer.status}
+                  onChange={handleStatusChange}
+                >
+                  <Option value="">Tất cả</Option>
+                  <Option value="DANG_SU_DUNG">Kích hoạt</Option>
+                  <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
+                </Select>
+              </div>
+            </Col>
+            <Col span={10}>
+              <div>
+                Ngày sinh : <br />
+                <Input
+                  style={{ width: "47%", height: "40px" }}
                   type="date"
                   value={startDate || initialStartDate}
                   onChange={handleStartDateChange}
                 />
                 <Input
-                  style={{ width: "200px" }}
+                  style={{ width: "47%", height: "40px" }}
                   type="date"
                   value={endDate || initialEndDate}
                   onChange={handleEndDateChange}
                 />
               </div>
-              <div className="age">
-                <label>Khoảng tuổi:</label>
-                <Slider
-                  style={{ width: "400px" }}
-                  range
-                  min={0}
-                  max={100}
-                  defaultValue={ageRange}
-                  value={ageRange}
-                  onChange={handleAgeRangeChange}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className="box_btn_filter">
-            <Button
-              className="btn_filter"
-              type="submit"
-              onClick={handleSubmitSearch}
-            >
-              Tìm kiếm
-            </Button>
-            <Button className="btn_clear" onClick={handleClear}>
-              Làm mới bộ lọc
-            </Button>
-          </div>
+            </Col>
+            <Col span={8}>
+              Khoảng tuổi:<br></br>
+              <Slider
+                style={{ width: "70%" }}
+                range
+                min={0}
+                max={100}
+                defaultValue={ageRange}
+                value={ageRange}
+                onChange={handleAgeRangeChange}
+              />
+            </Col>
+          </Row>
         </div>
       </div>
       <div className="account-table">
