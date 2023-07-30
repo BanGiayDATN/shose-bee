@@ -3,7 +3,7 @@ export class BillApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/admin/bill?startTimeString=`+ filter.startTimeString + `&endTimeString=`+ filter.endTimeString +`&status=` + filter.status + `&endDeliveryDateString=` + filter.endDeliveryDateString + `&startDeliveryDateString=` + filter.startDeliveryDateString + `&code=` + filter.code + `&employees=` + filter.employees + `&user=` + filter.user + `&phoneNumber=` + filter.phoneNumber + `&type=` + filter.type + `&page=` + filter.page ,
+      url: `/admin/bill?startTimeString=`+ filter.startTimeString + `&endTimeString=`+ filter.endTimeString +`&status=` + filter.status + `&endDeliveryDateString=` + filter.endDeliveryDateString + `&startDeliveryDateString=` + filter.startDeliveryDateString + `&key=` + filter.key + `&employees=` + filter.employees + `&user=` + filter.user + `&phoneNumber=` + filter.phoneNumber + `&type=` + filter.type + `&page=` + filter.page ,
     });
   };
 
@@ -47,6 +47,14 @@ export class BillApi {
         method: "PUT",
         url: `/admin/bill/change-status/`+ id,
         params: data,
+      });
+    };
+
+    static updateBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/update-offline/`+ id,
+        data: data,
       });
     };
 

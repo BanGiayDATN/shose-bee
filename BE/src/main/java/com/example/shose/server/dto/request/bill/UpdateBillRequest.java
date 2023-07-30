@@ -12,8 +12,6 @@ import java.math.BigDecimal;
 @Setter
 public class UpdateBillRequest {
 
-    private String idUser;
-
     private String name;
 
     private String phoneNumber;
@@ -21,8 +19,6 @@ public class UpdateBillRequest {
     private String address;
 
     private String moneyShip;
-
-    private String itemDiscount;
 
     private String note;
 }

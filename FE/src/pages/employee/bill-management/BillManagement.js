@@ -62,6 +62,29 @@ function BillManagement() {
     });
   };
 
+  const handleSelectChange = async (value, fileName) =>{
+    // setFillter({ ...fillter, [fileName]: value });
+    var data = fillter;
+    data.status = status;
+    data.type = value
+    setFillter(data);
+    await BillApi.fetchAll(fillter).then((res) => {
+      dispatch(getAllBill(res.data.data));
+    });
+  }
+  const handleSelectMultipleChange = (value) => {
+    var arr = Object.keys(value).map(function (key) {
+      return value[key];
+    });
+    setStatus(arr);
+    var data = fillter;
+    data.status = status;
+    setFillter(data);
+    BillApi.fetchAll(fillter).then((res) => {
+      dispatch(getAllBill(res.data.data));
+    });
+  }
+
   const clearFillter = (e) => {
     setFillter({
       startTimeString: "",
@@ -69,7 +92,7 @@ function BillManagement() {
       status: [],
       endDeliveryDateString: "",
       startDeliveryDateString: "",
-      code: "",
+      key: "",
       employees: "",
       user: "",
       phoneNumber: "",
@@ -89,7 +112,7 @@ function BillManagement() {
     status: [],
     endDeliveryDateString: "",
     startDeliveryDateString: "",
-    code: "",
+    key: "",
     employees: "",
     user: "",
     phoneNumber: "",
@@ -138,7 +161,7 @@ function BillManagement() {
         return (
           <button
             className={`trangThai ${" status_" + text} `}
-            style={{ border: "none", borderRadius: "0px" }}
+            style={{ border: "none", borderRadius: "22px" }}
           >
             {text === "TAO_HOA_DON"
               ? "Tạo Hóa đơn"
@@ -163,7 +186,7 @@ function BillManagement() {
       key: "createdDate",
       sorter: (a, b) => a.createdDate - b.createdDate,
       render: (text) => {
-        const formattedDate = moment(text).format("DD-MM-YYYY"); // Định dạng ngày
+        const formattedDate = moment(text).format("HH:mm:ss DD-MM-YYYY"); // Định dạng ngày
         return formattedDate;
       },
     },
@@ -229,11 +252,15 @@ function BillManagement() {
               employess={employees}
               onChangeStatusBillInFillter={onChangeStatusBillInFillter}
               status={status}
+              handleSubmitSearch = {handleSubmitSearch}
+              clearFillter = {clearFillter}
+              handleSelectMultipleChange = {handleSelectMultipleChange}
+              handleSelectChange = {handleSelectChange}
             />
           </div>
         </div>
         <div className="box_btn_filter">
-          <Row style={{ marginTop: "30px" }}>
+          {/* <Row style={{ marginTop: "30px" }}>
             <Col span={9}></Col>
 
             <Col span={2}>
@@ -253,7 +280,7 @@ function BillManagement() {
                 Làm mới bộ lọc
               </Button>
             </Col>
-          </Row>
+          </Row> */}
         </div>
       </div>
 

@@ -93,6 +93,16 @@
   pointer-events: none;
 }
 
+.trangThai{
+  border: none;
+  /* border-radius: 0px; */
+  /* background-color: red; */
+  color: white;
+  width: 100px;
+  border-radius: 15px;
+  height: 2pc;
+
+}
 .status_TAO_HOA_DON{
   background-color: rgb(104, 234, 203);
 }
@@ -159,7 +169,7 @@
 }
 
 .text{
-  margin: 10px 0 5px 0;
+  margin: 5px 0 6px 0;
   font-size: 15px;
 }
 
