@@ -15,7 +15,6 @@ import { useAppDispatch, useAppSelector } from "../../../app/hook";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBookBookmark,
   faBookmark,
   faEdit,
   faEye,
@@ -24,7 +23,6 @@ import {
   faListAlt,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment/moment";
 import { GetProduct, SetProduct } from "../../../app/reducer/Product.reducer";
 import { Option } from "antd/es/mentions";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
@@ -197,50 +195,52 @@ const ProductManagement = () => {
             alt="Ảnh sản phẩm"
             style={{ width: "170px", borderRadius: "10%", height: "140px" }}
           />
-          <div
-            style={{
-              position: "absolute",
-              top: "0px",
-              right: "0px",
-              padding: "0px",
-              cursor: "pointer",
-              borderRadius: "50%",
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faBookmark}
-              style={{
-                ...getPromotionColor(record.promotion),
-                fontSize: "3.5em",
-              }}
-            />
-            <span
+          {record.promotion !== null && (
+            <div
               style={{
                 position: "absolute",
-                top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
-                left: "50%", // Để "50%" nằm chính giữa biểu tượng
-                transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
-                fontSize: "0.8em",
-                fontWeight: "bold",
-                ...getPromotionStyle(record.promotion),
+                top: "0px",
+                right: "0px",
+                padding: "0px",
+                cursor: "pointer",
+                borderRadius: "50%",
               }}
             >
-              {record.promotion == null ? "0%" : `${record.promotion}%`}
-            </span>
-            <span
-              style={{
-                position: "absolute",
-                top: "60%", // Để "Giảm" nằm chính giữa biểu tượng
-                left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
-                transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
-                fontSize: "0.8em",
-                fontWeight: "bold",
-                ...getPromotionStyle(record.promotion),
-              }}
-            >
-              Giảm
-            </span>
-          </div>
+              <FontAwesomeIcon
+                icon={faBookmark}
+                style={{
+                  ...getPromotionColor(record.promotion),
+                  fontSize: "3.5em",
+                }}
+              />
+              <span
+                style={{
+                  position: "absolute",
+                  top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                  left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(record.promotion),
+                }}
+              >
+                {`${record.promotion}%`}
+              </span>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "60%", // Để "Giảm" nằm chính giữa biểu tượng
+                  left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(record.promotion),
+                }}
+              >
+                Giảm
+              </span>
+            </div>
+          )}
         </div>
       ),
     },
