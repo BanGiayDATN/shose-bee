@@ -1351,7 +1351,10 @@ function DetailBill() {
                         <div></div>
                       )}
                     </Col>
-                    <Col span={12}>
+                    {
+                      bill.statusBill == "TAO_HOA_DON" ||
+                      bill.statusBill == "CHO_XAC_NHAN" ? (
+                        <Col span={12}>
                       <Button
                         type=""
                         style={{
@@ -1362,11 +1365,37 @@ function DetailBill() {
                           border: "1px solid #eb5a36",
                           borderRadius: "10px",
                         }}
-                        onClick={(e) => showModalRefundProduct(e, item.id)}
+                        // onClick={(e) => showModalRefundProduct(e, item.id)}
                       >
-                        Trả hàng
+                        Xóa
                       </Button>
                     </Col>
+                      ): (<div></div>)
+                    }
+                    {
+                      bill.statusBill == "DA_THANH_TOAN" ||
+                      bill.statusBill == "KHONG_TRA_HANG" ||
+                      bill.statusBill == "TRA_HANG" ? (
+                        <Col span={12}>
+                        <Button
+                          type=""
+                          style={{
+                            color: "#eb5a36",
+                            marginLeft: "20px",
+                            fontWeight: "500",
+                            marginBottom: "30px",
+                            border: "1px solid #eb5a36",
+                            borderRadius: "10px",
+                          }}
+                          onClick={(e) => showModalRefundProduct(e, item.id)}
+                        >
+                          Trả hàng
+                        </Button>
+                      </Col>
+                      ): (<div></div>)
+                    }
+
+                    
                   </Row>
                 </Col>
               </Row>

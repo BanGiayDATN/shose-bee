@@ -84,7 +84,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         }
         if(bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN ||
                 bill.get().getStatusBill() != StatusBill.KHONG_TRA_HANG ||
-                bill.get().getStatusBill() != StatusBill.DA_HUY)
+                bill.get().getStatusBill() != StatusBill.TRA_HANG )
         {
             throw new RestApiException(Message.BILL_NOT_REFUND);
         }
@@ -168,6 +168,30 @@ public class BillDetailServiceImpl implements BillDetailService {
         billDetail.get().setPrice(new BigDecimal(request.getPrice()));
         billDetail.get().setQuantity(request.getQuantity());
         return billDetailRepository.save(billDetail.get());
+    }
+
+    @Override
+    public boolean delete(String id, Integer sizeName) {
+        Optional<BillDetail> billDetail = billDetailRepository.findById(id);
+        if (!billDetail.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Optional<Size> size = sizeRepository.findByName(sizeName);
+        if (!size.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Bill bill = billDetail.get().getBill();
+        bill.setTotalMoney(bill.getTotalMoney().subtract(billDetail.get().getPrice()));
+        billRepository.save(bill);
+
+        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), billDetail.get().getProductDetail());
+        if (!sizeProductDetail.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        sizeProductDetail.get().setQuantity(billDetail.get().getQuantity() + sizeProductDetail.get().getQuantity());
+        sizeProductDetailRepository.save(sizeProductDetail.get());
+        billDetailRepository.deleteById(id);
+        return true;
     }
 
 }
