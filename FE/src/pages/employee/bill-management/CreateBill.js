@@ -67,7 +67,7 @@ function CreateBill() {
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
   const [product, setProduct] = useState({
-    product: {
+    productDetail: {
       image: "",
       productName: "",
       price: 0,
@@ -111,8 +111,8 @@ function CreateBill() {
   const columns = [
     {
       title: <div className="title-product" style={{width: "70%"}}> sản phẩm</div>,
-      dataIndex: "product",
-      key: "product",
+      dataIndex: "productDetail",
+      key: "productDetail",
       render: (item) => {
         return (
           <Row style={{ marginTop: "10px"}}>
@@ -166,7 +166,24 @@ function CreateBill() {
     },
     {
       title: <div className="title-product">Số lượng </div>,
-      render: <InputNumber addonBefore="+" addonAfter="-" defaultValue={100} />,
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (quantity) => (
+        <div style={{ marginTop: 16 }}>
+          <label>Số lượng:</label>
+          <Button  style={{ margin: "0 4px 0 10px" }}>
+            -
+          </Button>
+          <InputNumber
+            min={1}
+            value={quantity}
+            // onChange={(value) => setQuantity(value)}
+          />
+          <Button  style={{ margin: "0 4px 0 4px" }}>
+            +
+          </Button>
+        </div>
+      )
     },
     {
       title: <div className="title-product">Giá</div>,

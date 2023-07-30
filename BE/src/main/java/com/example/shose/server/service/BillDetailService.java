@@ -21,4 +21,6 @@ public interface BillDetailService {
     BillDetail create(CreateBillDetailRequest request);
 
     BillDetail update(String id, CreateBillDetailRequest request);
+
+    boolean delete(String id, Integer sizeName);
 }
