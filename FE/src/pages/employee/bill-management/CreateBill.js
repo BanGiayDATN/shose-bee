@@ -12,19 +12,184 @@ import {
   Tooltip,
 } from "antd";
 import React, { useEffect, useState } from "react";
-// import "./create-bill.css";
+import "./create-bill.css";
 import "./style-bill.css";
 import { useSelector } from "react-redux";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router";
 import { FaShoppingBag } from "react-icons/fa";
+import { useAppDispatch, useAppSelector } from "../../../app/hook";
+import {
+  GetCustomer,
+  SetCustomer,
+} from "../../../app/reducer/Customer.reducer";
+import { CustomerApi } from "../../../api/employee/account/customer.api";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import moment from "moment";
+import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
 
+  //  begin khách hàng
+  const [isModalAccountOpen, setIsModalAccountOpen] = useState(false);
+  const showModalAccount = (e) => {
+    setIsModalAccountOpen(true);
+  };
+  const handleOkAccount = () => {
+    setIsModalAccountOpen(false);
+  };
+  const handleCancelAccount = () => {
+    setIsModalAccountOpen(false);
+  };
+  const [listaccount, setListaccount] = useState([]);
+  const [initialCustomerList, setInitialCustomerList] = useState([]);
+  const [searchCustomer, setSearchCustomer] = useState({
+    keyword: "",
+    status: "",
+  });
+  const dispatch = useAppDispatch();
+  const data = useAppSelector(GetCustomer);
+  useEffect(() => {
+    if (data != null) {
+      setListaccount(data);
+    }
+  }, [data]);
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = () => {
+    CustomerApi.fetchAll().then(
+      (res) => {
+        const accounts = res.data.data.map((customer, index) => ({
+          ...customer,
+          stt: index + 1,
+        }));
+        setListaccount(res.data.data);
+        setInitialCustomerList(accounts);
+        dispatch(SetCustomer(res.data.data));
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+
+  const handleInputChangeSearch = (name, value) => {
+    setSearchCustomer((prevSearchCustomer) => ({
+      ...prevSearchCustomer,
+      [name]: value,
+    }));
+  };
+
+  const handleKeywordChange = (event) => {
+    const { value } = event.target;
+    handleInputChangeSearch("keyword", value);
+  };
+
+  const handleSubmitSearch = (event) => {
+    event.preventDefault();
+    const { keyword, status } = searchCustomer;
+
+    CustomerApi.fetchAll({ status }).then((res) => {
+      const filteredCustomers = res.data.data
+        .filter(
+          (customer) =>
+            customer.fullName.toLowerCase().includes(keyword) ||
+            customer.email.includes(keyword) ||
+            customer.phoneNumber.includes(keyword)
+        )
+        .map((customer, index) => ({
+          ...customer,
+          stt: index + 1,
+        }));
+      setListaccount(filteredCustomers);
+      dispatch(SetCustomer(filteredCustomers));
+    });
+  };
+  const columnsAccount = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+      sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "avata",
+      key: "avata",
+      render: (avata) => (
+        <img
+          src={avata}
+          alt="Hình ảnh"
+          style={{ width: "150px", height: "110px", borderRadius: "20px" }}
+        />
+      ),
+    },
+    {
+      title: "Tên khách hàng",
+      dataIndex: "fullName",
+      key: "fullName",
+      sorter: (a, b) => a.fullName.localeCompare(b.fullName),
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      sorter: (a, b) => a.email.localeCompare(b.email),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+      sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
+    },
+    {
+      title: "Điểm",
+      dataIndex: "points",
+      key: "points",
+      sorter: (a, b) => a.points.localeCompare(b.points),
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Kích hoạt " : "Ngừng kích hoạt"}
+          </button>
+        );
+      },
+    },
+    {
+      title: "Hành động",
+      dataIndex: "hanhDong",
+      key: "hanhDong",
+      render: (text, record) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+         <Button
+            type="dashed"
+            title="Chọn"
+            style={{ color: "#02bdf0", border: "1px solid #02bdf0", fontWeight: "500" }}
+            onClick={() => selectedAccount(record)}
+          >Chọn</Button>
+        </div>
+      ),
+    },
+  ];
+  const selectedAccount = (record) =>{
+    dispatch(addUserBillWait(record));
+    setIsModalAccountOpen(true);
+  }
+  // end khách hàng
   const user = useSelector((state) => state.bill.billWaitProduct.user);
   const vouchers = useSelector((state) => state.bill.billWaitProduct.vouchers);
 
@@ -73,7 +238,6 @@ function CreateBill() {
       price: 0,
       nameSize: "",
       quantity: 0,
-
     },
     idProduct: "",
     quantity: 0,
@@ -92,30 +256,19 @@ function CreateBill() {
 
   //  end modal product
 
-  // begin modal Account
-  const [isModalAccountOpen, setIsModalAccountOpen] = useState(false);
-  const showModalAccount = (e) => {
-    setIsModalAccountOpen(true);
-  };
-  const handleOkAccount = () => {
-    setIsModalAccountOpen(false);
-  };
-  const handleCancelAccount = () => {
-    setIsModalAccountOpen(false);
-  };
-
-  // dispatch(addUserBillWait(res.data.data));
-
-  //  end modal Account
-
   const columns = [
     {
-      title: <div className="title-product" style={{width: "70%"}}> sản phẩm</div>,
+      title: (
+        <div className="title-product" style={{ width: "70%" }}>
+          {" "}
+          sản phẩm
+        </div>
+      ),
       dataIndex: "productDetail",
       key: "productDetail",
       render: (item) => {
         return (
-          <Row style={{ marginTop: "10px"}}>
+          <Row style={{ marginTop: "10px" }}>
             <Col span={5}>
               <img
                 src={item.image}
@@ -171,19 +324,15 @@ function CreateBill() {
       render: (quantity) => (
         <div style={{ marginTop: 16 }}>
           <label>Số lượng:</label>
-          <Button  style={{ margin: "0 4px 0 10px" }}>
-            -
-          </Button>
+          <Button style={{ margin: "0 4px 0 10px" }}>-</Button>
           <InputNumber
             min={1}
             value={quantity}
             // onChange={(value) => setQuantity(value)}
           />
-          <Button  style={{ margin: "0 4px 0 4px" }}>
-            +
-          </Button>
+          <Button style={{ margin: "0 4px 0 4px" }}>+</Button>
         </div>
-      )
+      ),
     },
     {
       title: <div className="title-product">Giá</div>,
@@ -208,19 +357,23 @@ function CreateBill() {
         </div>
       ),
     },
-    
+
     {
       title: <div className="title-product">Thao tác</div>,
-      render: () =>(
-        <Button style={{
-          color: "#eb5a36",
-          marginLeft: "20px",
-          fontWeight: "500",
-          marginBottom: "30px",
-          border: "1px solid #eb5a36",
-          borderRadius: "10px",
-        }}>Xóa khỏi hàng</Button>
-      )
+      render: () => (
+        <Button
+          style={{
+            color: "#eb5a36",
+            marginLeft: "20px",
+            fontWeight: "500",
+            marginBottom: "30px",
+            border: "1px solid #eb5a36",
+            borderRadius: "10px",
+          }}
+        >
+          Xóa khỏi hàng
+        </Button>
+      ),
     },
   ];
 
@@ -294,15 +447,15 @@ function CreateBill() {
             <Row style={{ marginLeft: "20px", width: "100%" }}>
               <Row style={{ width: "100%", marginBottom: " 20px" }}>
                 <Col span={5}>Tên khách hàng: </Col>
-                <Col span={19}>{}</Col>
+                <Col span={19}>{user.fullName}</Col>
               </Row>
               <Row style={{ width: "100%", marginBottom: " 20px" }}>
                 <Col span={5}>Số điện thoại: </Col>
-                <Col span={19}>{}</Col>
+                <Col span={19}>{user.phoneNumber}</Col>
               </Row>
               <Row style={{ width: "100%", marginBottom: " 20px" }}>
                 <Col span={5}>email: </Col>
-                <Col span={19}>{}</Col>
+                <Col span={19}>{user.email}</Col>
               </Row>
             </Row>
           ) : (
@@ -570,18 +723,53 @@ function CreateBill() {
       </Modal>
       {/* end bigin modal product */}
 
-      {/* begin modal product */}
+      {/* begin modal Account */}
       <Modal
-        title="Basic Modal"
+        title="Khách hàng"
         open={isModalAccountOpen}
         onOk={handleOkAccount}
+        className="account"
         onCancel={handleCancelAccount}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <Row style={{ width: "100%" }}>
+          <Col span={20}>
+            <Input
+              style={{
+                // width: "250px",
+                height: "38px",
+                marginRight: "8px",
+              }}
+              placeholder="Tìm kiếm"
+              type="text"
+              name="keyword"
+              value={searchCustomer.keyword}
+              onChange={handleKeywordChange}
+            />
+          </Col>
+          <Col span={1}></Col>
+          <Col span={3}>
+            {" "}
+            <Button
+              className="btn_filter"
+              type="submit"
+              onClick={handleSubmitSearch}
+            >
+              Tìm kiếm
+            </Button>
+          </Col>
+        </Row>
+        <Row style={{ width: "100%", marginTop: "20px" }}>
+          <Table
+          style={{width: "100%"}}
+            dataSource={listaccount}
+            rowKey="id"
+            columns={columnsAccount}
+            pagination={{ pageSize: 3 }}
+            className="customer-table"
+          />
+        </Row>
       </Modal>
-      {/* end bigin modal product */}
+      {/* end bigin modal Account */}
     </div>
   );
 }
