@@ -1064,8 +1064,8 @@ function DetailBill() {
           />
         </Row>
       </Row>
-      <Row>
-        <div style={{ backgroundColor: "white" }}>
+      <Row style={{ width: "150%" }}>
+        <div style={{ backgroundColor: "white", width:"100%" }}>
           <Row
             style={{
               width: "96%",
@@ -1150,11 +1150,11 @@ function DetailBill() {
                 <Col span={16}>
                   <span
                     style={{
-                      backgroundColor: " #9ff905",
+                      backgroundColor: "#6633FF",
                       color: "white",
-                      width: "180px",
+                      width: "300px",
                       borderRadius: "15px",
-                      padding: " 5px 19px",
+                      padding: " 5px 38px",
                     }}
                   >
                     {bill.typeBill}

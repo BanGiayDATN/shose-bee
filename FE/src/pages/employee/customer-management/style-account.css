@@ -118,3 +118,15 @@
   height: 30px;
   pointer-events: none;
 }
+
+.header-image{
+  display: "flex";
+  align-items: "center";
+  justify-content: "center";
+  margin-top: "10px";
+  margin-bottom: "30px";
+}
+.input-item{
+  height: 40px;
+}
+

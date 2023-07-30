@@ -1,6 +1,7 @@
 package com.example.shose.server.infrastructure.cloudinary;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,7 @@ public class UploadImageToCloudinary {
     @Autowired
     private Cloudinary cloudinary;
 
-    public List<String> uploadImages(List<MultipartFile> files) throws IOException, InterruptedException, ExecutionException {
+    public List<String> uploadImages(List<MultipartFile> files) throws  InterruptedException, ExecutionException {
         List<String> urls = new ArrayList<>();
 
         // Tạo một ThreadPool với số luồng tải lên tùy ý (ở đây mình chọn là 5)
@@ -64,5 +65,15 @@ public class UploadImageToCloudinary {
         return (String) result.get("url");
     }
 
+    public String uploadImage(MultipartFile file) {
+        try {
+            // Upload file lên Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            return (String) uploadResult.get("url");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Upload failed";
+        }
+    }
 
 }

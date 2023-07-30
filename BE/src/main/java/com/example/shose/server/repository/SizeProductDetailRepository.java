@@ -13,23 +13,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SizeProductDetailRepository extends JpaRepository<SizeProductDetail , String> {
+public interface SizeProductDetailRepository extends JpaRepository<SizeProductDetail, String> {
 
     @Query(value = """
-            SELECT
-                spd.id AS id,
-                s.name AS nameSize,
-                spd.quantity AS quantity,
-                spd.status AS status
-            FROM size_product_detail spd
-            JOIN product_detail pd ON spd.id_product_detail = pd.id
-            JOIN size s ON spd.id_size = s.id
-            WHERE pd.id = :id
-        """, nativeQuery = true)
+                SELECT
+                    spd.id AS id,
+                    s.name AS nameSize,
+                    spd.quantity AS quantity,
+                    spd.status AS status
+                FROM size_product_detail spd
+                JOIN product_detail pd ON spd.id_product_detail = pd.id
+                JOIN size s ON spd.id_size = s.id
+                WHERE pd.id = :id
+            """, nativeQuery = true)
     List<SizeProductDetailReponse> findAllByIdProductDetail(@Param("id") String id);
 
     @Query("SELECT spd FROM SizeProductDetail spd WHERE spd.productDetail.id =:id")
     List<SizeProductDetail> findAllByIdProduct(@Param("id") String id);
 
     Optional<SizeProductDetail> findBySizeAndProductDetail(Size size, ProductDetail productDetail);
+
+    @Query("SELECT spd FROM SizeProductDetail spd WHERE spd.productDetail.id =:id AND spd.size.name =:nameSize")
+    SizeProductDetail getOneSizeDetailBySizeAndProductDetail(@Param("id") String id,
+                                                             @Param("nameSize") Integer size);
 }

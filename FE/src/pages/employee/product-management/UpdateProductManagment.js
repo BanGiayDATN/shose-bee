@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   AutoComplete,
   Button,
@@ -42,7 +42,11 @@ import {
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { GetSize } from "../../../app/reducer/Size.reducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPenToSquare,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
 import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
@@ -91,33 +95,67 @@ const UpdateProductManagment = () => {
     setProductDetail(values);
   };
 
+
   // update product- detail
   const handleUpload = () => {
-    console.log(productDetail);
-    if (Object.entries(productDetail).length != 0) {
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có đồng ý thêm sản phẩm không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: () => {
-          if (listSizeAdd == null || listSizeAdd.length <= 0) {
-            toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
-          } else if (fileList == null || fileList.length <= 0) {
-            toast.error("Bạn cần thêm ảnh cho sản phẩm");
-          } else {
-            const formData = new FormData();
-            fileList.forEach((file) => {
-              if (file.originFileObj) {
-                formData.append(`multipartFiles`, file.originFileObj);
-              } else if (file.url) {
-                formData.append(`listImage`, file.url);
-              }
-              // Kiểm tra và thêm trạng thái (status) vào formData
-              const isStarred = starredFiles[file.uid]?.isStarred || false;
-              formData.append(`status`, isStarred ? "true" : "false");
+    if (Object.entries(productDetail).length === 0) {
+      return;
+    }
 
-              console.log(file);
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có đồng ý thêm sản phẩm không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: () => {
+        if (!listSizeAdd || listSizeAdd.length === 0) {
+          toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
+          return;
+        }
+
+        if (!fileList || fileList.length === 0) {
+          toast.error("Bạn cần thêm ảnh cho sản phẩm");
+          return;
+        }
+
+        const formData = new FormData();
+
+        const promises = fileList.map((file) => {
+          return new Promise((resolve, reject) => {
+            if (file.originFileObj) {
+              formData.append(`multipartFiles`, file.originFileObj);
+              resolve(); // Giải quyết promise ngay lập tức nếu có originFileObj
+            } else if (file.url) {
+              axios
+                .get(file.url, { responseType: "arraybuffer" }) // Tải ảnh từ URL dưới dạng mảng byte (arraybuffer)
+                .then((response) => {
+                  const imageFile = new File(
+                    [response.data],
+                    "your_image_public_id.jpg",
+                    { type: "image/jpeg" }
+                  );
+                  formData.append(`multipartFiles`, imageFile);
+                  resolve(); // Giải quyết promise sau khi đã thêm imageFile vào formData
+                })
+                .catch((error) => {
+                  console.error("Error fetching image:", error);
+                  reject(error); // Từ chối promise nếu xảy ra lỗi
+                });
+            } else {
+              resolve(); // Giải quyết promise ngay lập tức nếu không có originFileObj hoặc url
+            }
+          });
+        });
+
+        Promise.all(promises)
+          .then(() => {
+            // Tất cả các yêu cầu tải ảnh từ URL đã hoàn thành
+            // Tiếp tục xử lý các dữ liệu và gửi formData lên server
+            fileList.forEach((file) => {
+              formData.append(
+                `status`,
+                starredFiles[file.uid]?.isStarred ? "true" : "false"
+              );
             });
             const requestData = {
               description: productDetail.description,
@@ -134,6 +172,7 @@ const UpdateProductManagment = () => {
             console.log(listSizeAdd);
             formData.append("listSize", JSON.stringify(listSizeAdd));
             formData.append("data", JSON.stringify(requestData));
+
             axios
               .put(`http://localhost:8080/admin/product-detail/${id}`, formData)
               .then((response) => {
@@ -143,10 +182,12 @@ const UpdateProductManagment = () => {
               .catch((error) => {
                 console.error(error);
               });
-          }
-        },
-      });
-    }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+    });
   };
 
   useEffect(() => {
@@ -216,6 +257,7 @@ const UpdateProductManagment = () => {
         ...item,
         stt: index + 1,
       }));
+      console.log(dataWithSTT);
       setListSizeAdd(dataWithSTT);
     });
   };
@@ -281,15 +323,6 @@ const UpdateProductManagment = () => {
     });
   };
 
-  const handleDelete = (index) => {
-    const updatedList = listSizeAdd.filter((item, i) => i !== index);
-    const updatedListWithStt = updatedList.map((item, i) => ({
-      ...item,
-      stt: i + 1,
-    }));
-    setListSizeAdd(updatedListWithStt);
-  };
-
   const fetchProductDetails = async () => {
     try {
       ProducDetailtApi.getOne(id).then((productData) => {
@@ -318,10 +351,27 @@ const UpdateProductManagment = () => {
   }, []);
 
   useEffect(() => {
-    getSizeProductDetail();
     getListImage();
     fetchProductDetails();
+    getSizeProductDetail();
   }, [id]);
+
+  const [checkStatus, setCheckStatus] = useState(false);
+  const handleUpdateStatusSize = (index) => {
+    const updatedList = [...listSizeAdd];
+    const currentStatus = updatedList[index].status;
+    const newStatus =
+      currentStatus === "DANG_SU_DUNG" ? "KHONG_SU_DUNG" : "DANG_SU_DUNG";
+    updatedList[index].status = newStatus;
+    setListSizeAdd(updatedList);
+    setCheckStatus(true);
+  };
+
+  useEffect(() => {
+    if (checkStatus == true) {
+      setCheckStatus(false);
+    }
+  }, [checkStatus]);
 
   const columns = [
     {
@@ -384,11 +434,11 @@ const UpdateProductManagment = () => {
         <div style={{ display: "flex", gap: "10px" }}>
           <Button
             type="primary"
-            title="xóa "
-            style={{ backgroundColor: "Red", borderColor: "Red" }}
-            onClick={() => handleDelete(index)} // Gọi hàm xóa và truyền vị trí của phần tử
+            title=" chỉnh sửa trạng thái "
+            style={{ backgroundColor: "green", borderColor: "green" }}
+            onClick={() => handleUpdateStatusSize(index)} // Gọi hàm xóa và truyền vị trí của phần tử
           >
-            <FontAwesomeIcon icon={faTrash} />
+            <FontAwesomeIcon icon={faPenToSquare} />
           </Button>
         </div>
       ),
@@ -406,14 +456,7 @@ const UpdateProductManagment = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState([
-    {
-      uid: "",
-      name: "",
-      status: "",
-      url: "",
-    },
-  ]);
+  const [fileList, setFileList] = useState([]);
 
   const getListImage = () => {
     IamgeApi.fetchAll(id).then((res) => {
@@ -628,6 +671,7 @@ const UpdateProductManagment = () => {
                   { required: true, message: "Vui lòng nhập mô tả sản phẩm" },
                 ]}
               >
+                {/* Container div */}
                 <Input.TextArea
                   rows={7}
                   placeholder="Nhập mô tả sản phẩm"
@@ -923,7 +967,7 @@ const UpdateProductManagment = () => {
         <div style={{ marginTop: "25px" }}>
           <Table
             dataSource={listSizeAdd}
-            rowKey="nameSize"
+            rowKey="id"
             columns={columns}
             pagination={{ pageSize: 3 }}
             className="size-table"

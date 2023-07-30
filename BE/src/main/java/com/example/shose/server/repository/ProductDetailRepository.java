@@ -32,7 +32,13 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                      FROM size_product_detail spd
                      JOIN size si ON spd.id_size = si.id
                      WHERE detail.id = spd.id_product_detail
-                 ) AS total_quantity
+                 ) AS total_quantity,
+                 (
+                      SELECT p2.value
+                      FROM promotion p2
+                      WHERE detail.id_promotion = p2.id AND p2.status = 'DANG_SU_DUNG'
+                      ORDER BY p2.value DESC
+                 ) AS promotion
              FROM product_detail detail
              JOIN product p ON detail.id_product = p.id
              JOIN image i ON detail.id = i.id_product_detail

@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class BaseCustomerRequest {
+
     private String fullName;
 
     private Long dateOfBirth;
@@ -23,12 +24,6 @@ public abstract class BaseCustomerRequest {
     private String avata;
 
     private Status status;
-
-    private Long startTime;
-
-    private Long endTime;
-
-    private String id;
 
     private String password;
 
