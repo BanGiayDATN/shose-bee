@@ -15,7 +15,6 @@ import { useAppDispatch, useAppSelector } from "../../../app/hook";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBookBookmark,
   faBookmark,
   faEdit,
   faEye,
@@ -24,7 +23,6 @@ import {
   faListAlt,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment/moment";
 import { GetProduct, SetProduct } from "../../../app/reducer/Product.reducer";
 import { Option } from "antd/es/mentions";
 import { MaterialApi } from "../../../api/employee/material/Material.api";

@@ -37,7 +37,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
        {
         data.map((item) => (
           <TimelineEvent
-          color={ item.statusBill != "DA_HUY" ? "#03fa53" : "red"}
+          color={ item.statusBill != "DA_HUY" ? "#0099FF" : "#FF0000"}
           icon={showIcon(item.statusBill )}
          
           title={

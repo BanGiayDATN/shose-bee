@@ -21,8 +21,7 @@ public enum Message {
     ERROR_TOTALMONEY("Tiền trả phải lớn hơn hoặc bằng phải trả"),
     VOUCHER_NOT_USE("không thể sử dụng voucher"),
     NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán"),
-\    PHONENUMBER_USER_EXIST("Số điện thoại người dùng đã tồn tại ");
-
+    PHONENUMBER_USER_EXIST("Số điện thoại người dùng đã tồn tại ");
 
 
     private String message;

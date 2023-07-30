@@ -992,8 +992,8 @@ function DetailBill() {
           />
         </Row>
       </Row>
-      <Row>
-        <div style={{ backgroundColor: "white" }}>
+      <Row style={{ width: "150%" }}>
+        <div style={{ backgroundColor: "white", width:"100%" }}>
           <Row
             style={{
               width: "96%",
@@ -1078,11 +1078,11 @@ function DetailBill() {
                 <Col span={16}>
                   <span
                     style={{
-                      backgroundColor: " #9ff905",
+                      backgroundColor: "#6633FF",
                       color: "white",
-                      width: "180px",
+                      width: "300px",
                       borderRadius: "15px",
-                      padding: " 5px 19px",
+                      padding: " 5px 38px",
                     }}
                   >
                     {bill.typeBill}
@@ -1305,7 +1305,7 @@ function DetailBill() {
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Tiền hàng:</Col>
-              <Col span={10}  align={"end"}>
+              <Col span={10} align={"end"}>
                 <span>
                   {bill.totalMoney >= 1000
                     ? bill.totalMoney.toLocaleString("vi-VN", {
@@ -1319,7 +1319,7 @@ function DetailBill() {
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Phí vận chuyển:</Col>
-              <Col span={10}  align={"end"}>
+              <Col span={10} align={"end"}>
                 <span>
                   {bill.moneyShip >= 1000
                     ? bill.moneyShip.toLocaleString("vi-VN", {
@@ -1333,7 +1333,7 @@ function DetailBill() {
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Tiền giảm: </Col>
-              <Col span={10}  align={"end"}>
+              <Col span={10} align={"end"}>
                 <span>
                   {bill.itemDiscount >= 1000
                     ? bill.itemDiscount.toLocaleString("vi-VN", {
@@ -1346,15 +1346,26 @@ function DetailBill() {
             </Row>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
-              <Col span={6} style={{marginBottom: "40px"}}>Tổng tiền: </Col>
-              <Col span={10}  align={"end"}>
-                <span style={{color: "red", fontWeight: "bold"}}>
-                  {(bill.totalMoney + bill.moneyShip - bill.itemDiscount) >= 1000
-                    ? (bill.totalMoney + bill.moneyShip - bill.itemDiscount).toLocaleString("vi-VN", {
+              <Col span={6} style={{ marginBottom: "40px" }}>
+                Tổng tiền:{" "}
+              </Col>
+              <Col span={10} align={"end"}>
+                <span style={{ color: "red", fontWeight: "bold" }}>
+                  {bill.totalMoney + bill.moneyShip - bill.itemDiscount >= 1000
+                    ? (
+                        bill.totalMoney +
+                        bill.moneyShip -
+                        bill.itemDiscount
+                      ).toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })
-                    : (bill.totalMoney + bill.moneyShip - bill.itemDiscount) < 0 ? "0 đ" : (bill.totalMoney + bill.moneyShip - bill.itemDiscount) + " đ" }
+                    : bill.totalMoney + bill.moneyShip - bill.itemDiscount < 0
+                    ? "0 đ"
+                    : bill.totalMoney +
+                      bill.moneyShip -
+                      bill.itemDiscount +
+                      " đ"}
                 </span>
               </Col>
             </Row>

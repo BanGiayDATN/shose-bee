@@ -25,25 +25,25 @@
   
   }
   .status_TAO_HOA_DON{
-    background-color: rgb(104, 234, 203);
+    background-color: #3399FF;
   }
   .status_CHO_XAC_NHAN{
-    background-color: rgb(104, 234, 180);
+    background-color : #3399FF;
   }
   .status_VAN_CHUYEN{
-    background-color: rgb(104, 234, 171);
+    background-color: #3399FF;
   }
   .status_DA_THANH_TOAN{
-    background-color: rgb(0, 239, 88);
+    background-color: #3399FF;
   }
   .status_TRA_HANG{
-    background-color: rgb(1, 240, 88);
+    background-color: #3399FF;
   }
   .status_KHONG_TRA_HANG{
-    background-color: rgb(10, 255, 34);
+    background-color: #3399FF;
   }
   .status_DA_HUY{
-    background-color: rgb(240, 1, 1);
+    background-color: #FF0000;
   }
 
   .THANH_TOAN{
@@ -101,8 +101,8 @@
     z-index: 100;
     background-color: white;
     padding: 0 1px;
-    /* font-size: 12px; */
+    font-size: 12px;
     top: -13% ;
     margin-left: 10px;
-  }
+   }
     
