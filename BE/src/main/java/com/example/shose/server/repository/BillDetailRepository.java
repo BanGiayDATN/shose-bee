@@ -15,9 +15,10 @@ import java.util.List;
 public interface BillDetailRepository extends JpaRepository<BillDetail, String> {
 
     @Query(value = """
-           SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, bi.id AS id_bill, bide.id, prde.id AS id_product, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity from bill_detail bide
+           SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, bi.id AS id_bill, im.name AS image, bide.id, prde.id AS id_product, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity from bill_detail bide
            LEFT JOIN bill bi ON bide.id_bill = bi.id
            LEFT JOIN product_detail prde ON bide.id_product_detail = prde.id
+           LEFT JOIN image im ON prde.id = im.id_product_detail
            LEFT JOIN size_product_detail siprde ON siprde.id_product_detail = prde.id
            LEFT JOIN product pr ON pr.id = prde.id_product
            LEFT JOIN color co ON co.id = prde.id_color
@@ -30,9 +31,10 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
     List<BillDetailResponse> findAllByIdBill(String idBill);
 
     @Query(value = """
-            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, prde.id AS id_product, bi.id AS id_bill, bide.id, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity   from bill_detail bide
+            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, prde.id AS id_product, im.name AS image, bi.id AS id_bill, bide.id, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity   from bill_detail bide
             LEFT JOIN bill bi ON bide.id_bill = bi.id
             LEFT JOIN product_detail prde ON bide.id_product_detail = prde.id
+            LEFT JOIN image im ON prde.id = im.id_product_detail
             LEFT JOIN size_product_detail siprde ON siprde.id_product_detail = prde.id
             LEFT JOIN product pr ON pr.id = prde.id_product
             LEFT JOIN color co ON co.id = prde.id_color

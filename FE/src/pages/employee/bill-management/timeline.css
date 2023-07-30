@@ -3,4 +3,5 @@
 .Timeline-wrapper-1 {
     position: relative;
     overflow: auto !important;
+    width: 98%;
   }

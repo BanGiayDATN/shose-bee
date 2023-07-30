@@ -145,9 +145,8 @@ function DetailBill() {
     setIsModalPayMentOpen(true);
   };
   const handleOkPayMent = () => {
-   
     if (statusBill.totalMoney >= 0) {
-       setIsModalPayMentOpen(false);
+      setIsModalPayMentOpen(false);
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có đồng ý thanh toán không?",
@@ -259,7 +258,6 @@ function DetailBill() {
     );
   };
   const handleOkBill = () => {
-    
     if (checkNotEmptyBill() && checkNotEmptyAddress()) {
       setIsModalBillOpen(false);
       Modal.confirm({
@@ -310,7 +308,6 @@ function DetailBill() {
         wards: "",
         detail: "",
       });
-     
     }
   };
   const handleCancelBill = () => {
@@ -433,6 +430,64 @@ function DetailBill() {
       title: <div className="title-product">STT</div>,
       dataIndex: "stt",
       key: "stt",
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "img",
+      key: "img",
+      render: (text, record) => (
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src={text}
+            alt="Ảnh sản phẩm"
+            style={{ width: "170px", borderRadius: "10%", height: "140px" }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "0px",
+              right: "0px",
+              padding: "0px",
+              cursor: "pointer",
+              borderRadius: "50%",
+            }}
+          >
+            {/* <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                ...getPromotionColor(record.promotion),
+                fontSize: "3.5em",
+              }}
+            /> */}
+            <span
+              style={{
+                position: "absolute",
+                top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                fontSize: "0.8em",
+                fontWeight: "bold",
+                ...getPromotionStyle(record.promotion),
+              }}
+            >
+              {record.promotion == null ? "0%" : `${record.promotion}%`}
+            </span>
+            <span
+              style={{
+                position: "absolute",
+                top: "60%", // Để "Giảm" nằm chính giữa biểu tượng
+                left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                fontSize: "0.8em",
+                fontWeight: "bold",
+                ...getPromotionStyle(record.promotion),
+              }}
+            >
+              Giảm
+            </span>
+          </div>
+        </div>
+      ),
     },
     {
       title: <div className="title-product">Mã sản phẩm</div>,
@@ -646,6 +701,13 @@ function DetailBill() {
       },
     },
   ];
+
+  const getPromotionStyle = (promotion) => {
+    return promotion >= 50 ? { color: "white" } : { color: "#000000" };
+  };
+  const getPromotionColor = (promotion) => {
+    return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
+  };
 
   return (
     <div>
@@ -1057,7 +1119,7 @@ function DetailBill() {
               </Row>
             </Col>
 
-            <Col span={12} className="text">
+            {/* <Col span={12} className="text">
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                 <Col span={8}>Tiền giảm:</Col>
                 <Col span={16}>
@@ -1086,7 +1148,7 @@ function DetailBill() {
                   </span>
                 </Col>
               </Row>
-            </Col>
+            </Col> */}
             <Col span={12} className="text">
               <Row
                 style={{
@@ -1101,38 +1163,6 @@ function DetailBill() {
                 </Col>
               </Row>
             </Col>
-            {/* <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Ngày xác nhận:{" "}
-                {bill.confirmationDate != null
-                  ? moment(bill.confirmationDate).format("DD-MM-YYYY")
-                  : ""}{" "}
-              </div>
-            </Col>
-            <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Ngày nhận:{" "}
-                {bill.receiveDate != null
-                  ? moment(bill.receiveDate).format("DD-MM-YYYY")
-                  : ""}
-              </div>
-            </Col>
-            <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                Ngày giao hàng:{" "}
-                {bill.deliveryDate != null
-                  ? moment(bill.deliveryDate).format("DD-MM-YYYY")
-                  : ""}
-              </div>
-            </Col>
-            <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>
-                ngày hoàn thành:{" "}
-                {bill.completionDate != null
-                  ? moment(bill.completionDate).format("DD-MM-YYYY")
-                  : ""}
-              </div>
-            </Col> */}
           </Row>
         </div>
       </Row>
@@ -1148,7 +1178,7 @@ function DetailBill() {
         ) : (
           <div></div>
         )}
-        <Row style={{ width: "100%" }}>
+        {/* <Row style={{ width: "100%" }}>
           <Table
             dataSource={detailProductInBill}
             columns={columns}
@@ -1156,6 +1186,179 @@ function DetailBill() {
             pagination={false} // Disable default pagination
             className="product-table"
           />
+        </Row> */}
+        <Row
+          style={{
+            width: "100%",
+            marginTop: "20px",
+            borderBottom: "1px solid #ccc",
+            padding: "12px",
+          }}
+        >
+          {detailProductInBill.map((item) => {
+            return (
+              <Row style={{ marginTop: "10px", width: "100%" }}>
+                <Col span={5}>
+                  <img
+                    src={item.image}
+                    alt="Ảnh sản phẩm"
+                    style={{
+                      width: "170px",
+                      borderRadius: "10%",
+                      height: "140px",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </Col>
+                <Col span={11}>
+                  <Row>
+                    {" "}
+                    <span
+                      style={{
+                        fontSize: "19",
+                        fontWeight: "500",
+                        marginTop: "10px",
+                      }}
+                    >
+                      {item.productName}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span style={{ color: "red", fontWeight: "500" }}>
+                      {item.price >= 1000
+                        ? item.price.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })
+                        : item.price + " đ"}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span style={{ fontSize: "12", marginTop: "10px" }}>
+                      Size: {item.nameSize}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span style={{ fontSize: "12" }}>x {item.quantity}</span>{" "}
+                  </Row>
+                </Col>
+                <Col span={3} style={{ display: "flex", alignItems: "center" }}>
+                  <span
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                      marginBottom: "30px",
+                    }}
+                  >
+                    {item.price * item.quantity >= 1000
+                      ? (item.price * item.quantity).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : item.price * item.quantity + " đ"}
+                  </span>{" "}
+                </Col>
+                <Col span={5} style={{ display: "flex", alignItems: "center" }}>
+                  <Row>
+                    <Col span={12}>
+                      {bill.statusBill == "TAO_HOA_DON" ||
+                      bill.statusBill == "CHO_XAC_NHAN" ? (
+                        <Button
+                          type=""
+                          style={{
+                            color: "#00ffe0",
+                            fontWeight: "500",
+                            marginBottom: "30px",
+                            border: "1px solid #00ffe0",
+                            borderRadius: "10px",
+                          }}
+                        >
+                          Cập nhật
+                        </Button>
+                      ) : (
+                        <div></div>
+                      )}
+                    </Col>
+                    <Col span={12}>
+                      <Button
+                        type=""
+                        style={{
+                          color: "#eb5a36",
+                          marginLeft: "20px",
+                          fontWeight: "500",
+                          marginBottom: "30px",
+                          border: "1px solid #eb5a36",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        Hủy
+                      </Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            );
+          })}
+        </Row>
+        <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
+          <Col span={10}>
+            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+              <Col span={7}></Col>
+              <Col span={6}>Tiền hàng:</Col>
+              <Col span={10}  align={"end"}>
+                <span>
+                  {bill.totalMoney >= 1000
+                    ? bill.totalMoney.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : bill.totalMoney + " đ"}
+                </span>
+              </Col>
+            </Row>
+            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+              <Col span={7}></Col>
+              <Col span={6}>Phí vận chuyển:</Col>
+              <Col span={10}  align={"end"}>
+                <span>
+                  {bill.moneyShip >= 1000
+                    ? bill.moneyShip.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : bill.moneyShip + " đ"}
+                </span>
+              </Col>
+            </Row>
+            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+              <Col span={7}></Col>
+              <Col span={6}>Tiền giảm: </Col>
+              <Col span={10}  align={"end"}>
+                <span>
+                  {bill.itemDiscount >= 1000
+                    ? bill.itemDiscount.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : bill.itemDiscount + " đ"}
+                </span>
+              </Col>
+            </Row>
+            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+              <Col span={7}></Col>
+              <Col span={6} style={{marginBottom: "40px"}}>Tổng tiền: </Col>
+              <Col span={10}  align={"end"}>
+                <span style={{color: "red", fontWeight: "bold"}}>
+                  {(bill.totalMoney + bill.moneyShip - bill.itemDiscount) >= 1000
+                    ? (bill.totalMoney + bill.moneyShip - bill.itemDiscount).toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : (bill.totalMoney + bill.moneyShip - bill.itemDiscount) < 0 ? "0 đ" : (bill.totalMoney + bill.moneyShip - bill.itemDiscount) + " đ" }
+                </span>
+              </Col>
+            </Row>
+          </Col>
         </Row>
       </Row>
       {/* begin modal payment  */}

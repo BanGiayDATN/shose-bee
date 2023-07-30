@@ -23,7 +23,6 @@ import { AccountApi } from "../../../api/employee/account/account.api";
 import FormSearch from "./FormSearch";
 import { Link } from "react-router-dom";
 import { AddressApi } from "../../../api/employee/address/address.api";
-import TimelineTest from "./TimelineTest";
 
 function BillManagement() {
   var listCategory = useSelector((state) => state.bill.bills.value);
