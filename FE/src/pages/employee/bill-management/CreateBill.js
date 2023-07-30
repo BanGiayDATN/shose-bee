@@ -20,6 +20,7 @@ import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router";
 import { FaShoppingBag } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
+import {CiDeliveryTruck} from 'react-icons/ci';
 import {
   GetCustomer,
   SetCustomer,
@@ -766,6 +767,14 @@ function CreateBill() {
                       placeholder="Ghi chú"
                     />
                   </Col>
+                </Row>
+                <Row style={{marginTop: "30px", marginLeft: "10px", width: "100%"}}>
+                <Col span={2} >
+                <CiDeliveryTruck style={{height: "30px", width: "50px"}}/>
+                </Col>
+                <Col span={22} style={{display: "flex", alignItems: "center", fontWeight: "500"}}>
+                <span>Thời gian nhận hàng dự kiến: {}</span>
+                </Col>
                 </Row>
               </div>
             ) : (
