@@ -7,6 +7,7 @@ import com.example.shose.server.dto.response.AddressResponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.infrastructure.common.PageableObject;
+import com.example.shose.server.infrastructure.constant.Status;
 
 import java.util.List;
 
@@ -28,4 +29,6 @@ public interface AddressService {
     Address getOneById(String id);
 
     List<SimpleUserResponse> getAllSimpleEntityUser();
+    Address getAddressByUserIdAndStatus(String id, Status status);
+
 }

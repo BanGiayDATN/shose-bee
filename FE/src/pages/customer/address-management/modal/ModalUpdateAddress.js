@@ -19,6 +19,16 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
     AddressApi.getOne(id).then((res) => {
       setAddress(res.data.data);
       form.setFieldsValue(res.data.data);
+      AddressApi.fetchAllProvinceDistricts(res.data.data.toDistrictId).then(
+        (resDistrict) => {
+          setListDistricts(resDistrict.data.data);
+        }
+      );
+      AddressApi.fetchAllProvinceDistricts(res.data.data.provinceId).then(
+        (resWard) => {
+          setListWard(resWard.data.data);
+        }
+      );
     });
   };
 
@@ -81,6 +91,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
   };
 
   const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -117,7 +128,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "8ae00573-7e45-4d07-a283-2c2a4a64e973",
+          userId: "88ceddbe-94fa-4ee5-9ba7-bdcf2227a8a0",
         }}
       >
         <Form.Item
@@ -164,7 +175,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
 
         <Form.Item
           label="Xã/Phường"
-          name="werd"
+          name="ward"
           rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
         >
           <Select>
@@ -188,10 +199,23 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
         >
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
+        <Form.Item
+          label="Trạng thái"
+          name="status"
+          rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+        >
+          <Select>
+            <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
+            <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+          </Select>
+        </Form.Item>
         <Form.Item name="userId" hidden>
           <Input disabled />
         </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="toDistrictId" hidden>
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="provinceId" hidden>
           <Input disabled />
         </Form.Item>
       </Form>

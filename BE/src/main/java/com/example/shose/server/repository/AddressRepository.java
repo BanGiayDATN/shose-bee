@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.address.FindAddressRequest;
 import com.example.shose.server.dto.response.AddressResponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Address;
+import com.example.shose.server.infrastructure.constant.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,7 +25,8 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.line AS line,
                 a.district AS district,
                 a.province AS province,
-                a.werd AS ward,
+                a.ward AS ward,
+                a.status AS status,
                 a.created_date AS createdDate,
                 a.last_modified_date AS lastModifiedDate,
                 u.id AS idUser
@@ -48,7 +50,11 @@ public interface AddressRepository extends JpaRepository<Address, String> {
             AND 
                   ( :#{#req.ward} IS NULL 
                       OR :#{#req.ward} LIKE '' 
-                      OR a.werd LIKE %:#{#req.ward}% )        
+                      OR a.ward LIKE %:#{#req.ward}% )  
+            AND 
+                 ( :#{#req.status} IS NULL 
+                    OR :#{#req.status} LIKE '' 
+                    OR a.status LIKE :#{#req.status} )      
             GROUP BY a.id
             ORDER BY a.last_modified_date DESC
                   """,
@@ -62,4 +68,9 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                         
             """, nativeQuery = true)
     List<SimpleUserResponse> getAllSimpleEntityUser();
+
+    Address getAddressByUserIdAndStatus(String id, Status status);
+
+    @Query("SELECT a FROM  Address a WHERE (a.status =:status) and (a.user.id =:idUser)")
+    Address getOneAddressByStatus(@Param("status") Status status,@Param("idUser") String idUser);
 }

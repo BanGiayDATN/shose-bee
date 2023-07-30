@@ -20,7 +20,9 @@ public enum Message {
     ERROR_QUANTITY("Số lượng không đủ"),
     ERROR_TOTALMONEY("Tiền trả phải lớn hơn hoặc bằng phải trả"),
     PHONENUMBER_USER_EXIST("Số điện thoại người dùng đã tồn tại "),
-    VOUCHER_NOT_USE("không thể sử dụng voucher");
+    VOUCHER_NOT_USE("không thể sử dụng voucher"),
+
+    STATUS_ADDRESS_EXIST("Trạng thái đang sử dụng đã được dùng cho địa chỉ khác");
 
 
 
