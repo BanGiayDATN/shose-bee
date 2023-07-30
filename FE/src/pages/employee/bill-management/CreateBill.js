@@ -29,6 +29,9 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
+import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { GetPromotion, SetPromotion } from "../../../app/reducer/Promotion.reducer";
+import dayjs from "dayjs";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -73,6 +76,23 @@ function CreateBill() {
         setListaccount(res.data.data);
         setInitialCustomerList(accounts);
         dispatch(SetCustomer(res.data.data));
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    PromotionApi.fetchAll().then(
+      (res) => {
+        const data = []
+        res.data.data.map(item =>{
+          if(item.status == "DANG_SU_DUNG" 
+          // && item.quantity != null
+          // && item.quantity > 0
+          ){
+            data.push(item)
+          }
+        })
+        dispatch(SetPromotion(data));
       },
       (err) => {
         console.log(err);
@@ -219,12 +239,144 @@ function CreateBill() {
   useEffect(() => {}, []);
 
   //  begin voucher
+
+  const [isModalVoucherOpen, setIsModalVoucherOpen] = useState(false);
+  const showModalVoucher = (e) => {
+    setIsModalVoucherOpen(true);
+  };
+  const handleOkVoucher = () => {
+    setIsModalVoucherOpen(false);
+  };
+  const handleCancelVoucher = () => {
+    setIsModalVoucherOpen(false);
+  };
+
+  const [listVoucher, setListVoucher] = useState([]);
+  const [keyVoucher, setKeyVoucher] = useState("");
+  const searchVoucher = (e) =>{
+    var fillter = {
+      code: keyVoucher,
+      name: keyVoucher,
+      quantity: keyVoucher
+    }
+    PromotionApi.fetchAll(fillter).then(
+      (res) => {
+        const data = []
+        res.data.data.map(item =>{
+          if(item.status == "DANG_SU_DUNG" 
+          && item.quantity != null
+          && item.quantity > 0
+          ){
+            data.push(item)
+          }
+        })
+        dispatch(SetPromotion(data));
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+  const dataVoucher = useAppSelector(GetPromotion);
+  useEffect(() => {
+    if (data != null) {
+      setListVoucher(dataVoucher);
+    }
+  }, [dataVoucher]);
+
+  const columnsVoucher = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+      sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Mã ",
+      dataIndex: "code",
+      key: "code",
+      sorter: (a, b) => a.code.localeCompare(b.code),
+    },
+    {
+      title: "Tên ",
+      dataIndex: "name",
+      key: "name",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+
+    {
+      title: "Giá trị ",
+      dataIndex: "value",
+      key: "value",
+      sorter: (a, b) => a.value - b.value,
+      render: (value) =>(
+        <span>
+        {value >= 1000
+          ? value.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })
+          : value + " đ"}
+      </span>
+      )
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      sorter: (a, b) => a.value - b.value,
+    },
+    {
+      title: "Thời gian",
+      dataIndex: "startDate",
+      key: "startDate",
+      sorter: (a, b) => a.startDate - b.startDate,
+      render: (date, record) =>{
+        const start = moment(date).format(" DD-MM-YYYY");
+        const end = moment(record.endDate).format(" DD-MM-YYYY");
+        return (
+          <span>{start +" > "+ end}</span>
+        )
+      },
+    },
+    {
+      title: "Hành động",
+      dataIndex: "hanhDong",
+      key: "hanhDong",
+      render: (text, record) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+           <Button
+            type="primary"
+            title="Chọn"
+            style={{ color: "#02bdf0", border: "1px solid #02bdf0", fontWeight: "500", backgroundColor: "white" }}
+            onClick={() => selectedVoucher(record)}
+          >
+            Chọn
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const selectedVoucher = (record) => {
+    setVoucher({
+      idVoucher: record.id,
+      beforPrice: 0,
+      afterPrice: 0,
+      discountPrice: record.value,
+    })
+    setCodeVoucher(record.code)
+    setIsModalVoucherOpen(false);
+  }
+
   const [voucher, setVoucher] = useState({
     idVoucher: "",
     beforPrice: 0,
     afterPrice: 0,
     discountPrice: 0,
   });
+
+  const [codeVoucher, setCodeVoucher] = useState("");
   // dispatch(addVoucherBillWait(res.data.data));
 
   // end voucher
@@ -648,17 +800,13 @@ function CreateBill() {
               </Col>
             </Row>
             <Row style={{ margin: "10px 0 " }}>
-              <Select
-                mode="multiple"
-                size={"middle"}
-                placeholder="Chọn mã giảm giá"
-                defaultValue={[]}
-                // onChange={handleChange}
-                style={{
-                  width: "90%",
-                }}
-                options={[]}
-              />
+              <Col span={16}>
+              <Input style={{width: "100%", backgroundColor: "white"}} disabled value={codeVoucher}/>
+              </Col>
+              <Col span={1}></Col>
+              <Col span={3}>
+              <Button type="dashed" onClick={(e) => showModalVoucher(e)}>Chọn mã</Button>
+              </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Tiền hàng: </Col>
@@ -769,7 +917,52 @@ function CreateBill() {
           />
         </Row>
       </Modal>
-      {/* end bigin modal Account */}
+      {/* end  modal Account */}
+
+      {/* begin modal voucher */}
+      <Modal title="Mã giảm giá" width={1000} open={isModalVoucherOpen} onOk={handleOkVoucher} onCancel={handleCancelVoucher}>
+      <Row style={{ width: "100%" }}>
+          <Col span={20}>
+            <Input
+              style={{
+                // width: "250px",
+                height: "38px",
+                marginRight: "8px",
+              }}
+              placeholder="Tìm kiếm"
+              type="text"
+              name="keyword"
+              value={keyVoucher}
+              onChange={(e) => {setKeyVoucher(e.target.value)}}
+            />
+          </Col>
+          <Col span={1}></Col>
+          <Col span={3}>
+            {" "}
+            <Button
+              className="btn_filter"
+              type="submit"
+              onClick={(e) => searchVoucher(e)}
+            >
+              Tìm kiếm
+            </Button>
+          </Col>
+        </Row>
+        <Row style={{ width: "100%", marginTop: "20px" }}>
+        <Table
+            dataSource={listVoucher}
+            rowKey="id"
+            style={{ width: "100%",}}
+            columns={columnsVoucher}
+            pagination={{ pageSize: 5 }}
+            // rowClassName={(record, index) =>
+            //   index % 2 === 0 ? "even-row" : "odd-row"
+            // }
+          />
+        </Row>
+      
+      </Modal>
+      {/* end modal voucher */}
     </div>
   );
 }
