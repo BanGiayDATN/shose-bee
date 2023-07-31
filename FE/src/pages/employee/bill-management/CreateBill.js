@@ -33,6 +33,13 @@ import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
 import { GetPromotion, SetPromotion } from "../../../app/reducer/Promotion.reducer";
 import dayjs from "dayjs";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { GetProduct, SetProduct } from "../../../app/reducer/Product.reducer";
+import { MaterialApi } from "../../../api/employee/material/Material.api";
+import { CategoryApi } from "../../../api/employee/category/category.api";
+import { SoleApi } from "../../../api/employee/sole/sole.api";
+import { BrandApi } from "../../../api/employee/brand/Brand.api";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -383,6 +390,14 @@ function CreateBill() {
   // end voucher
 
   // begin modal product
+  const [listProductDetail, setListProductDetail] = useState([]);
+  const [search, setSearch] = useState("");
+  const [listMaterial, setListMaterial] = useState([]);
+  const [listCategory, setListCategory] = useState([]);
+  const [listBrand, setListBrand] = useState([]);
+  const [listColor, setListColor] = useState([]);
+  // const [listSize, setListSize] = useState([]);
+  const [listSole, setListSole] = useState([]);
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
   const [product, setProduct] = useState({
     productDetail: {
@@ -396,6 +411,7 @@ function CreateBill() {
     quantity: 0,
     price: 0,
   });
+
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
   };
@@ -873,10 +889,9 @@ function CreateBill() {
         open={isModalProductOpen}
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
+        width={1000}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <ModalAddProductDetail/>
       </Modal>
       {/* end bigin modal product */}
 
