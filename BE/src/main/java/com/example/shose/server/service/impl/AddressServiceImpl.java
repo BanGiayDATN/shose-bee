@@ -9,6 +9,7 @@ import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.UserReposiory;
@@ -47,9 +48,14 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address create(CreateAddressRequest req) {
+        Address checkStatusAddress = addressRepository.getOneAddressByStatus(req.getStatus(), req.getUserId());
+        if (checkStatusAddress != null) {
+            throw new RestApiException(Message.STATUS_ADDRESS_EXIST);
+        }
         Optional<User> user = userReposiory.findById(req.getUserId());
+
         Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
-                .ward(req.getWerd()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
+                .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
         return addressRepository.save(address);
     }
 
@@ -63,8 +69,10 @@ public class AddressServiceImpl implements AddressService {
         address.setLine(req.getLine());
         address.setDistrict(req.getDistrict());
         address.setProvince(req.getProvince());
-        address.setWard(req.getWerd());
+        address.setWard(req.getWard());
+        address.setStatus(req.getStatus());
         address.setToDistrictId(req.getToDistrictId());
+        address.setProvinceId(req.getProvinceId());
         address.setUser(user.get());
         return addressRepository.save(address);
     }
@@ -92,4 +100,10 @@ public class AddressServiceImpl implements AddressService {
     public List<SimpleUserResponse> getAllSimpleEntityUser() {
         return addressRepository.getAllSimpleEntityUser();
     }
+
+    @Override
+    public Address getAddressByUserIdAndStatus(String id, Status status) {
+        return addressRepository.getAddressByUserIdAndStatus(id, Status.DANG_SU_DUNG);
+    }
+
 }

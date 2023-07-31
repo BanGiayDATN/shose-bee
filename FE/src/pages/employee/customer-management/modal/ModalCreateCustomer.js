@@ -107,6 +107,7 @@ const ModalCreateCustomer = () => {
   };
 
   const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -115,6 +116,7 @@ const ModalCreateCustomer = () => {
   };
 
   const handleDistrictChange = (value, valueDistrict) => {
+    console.log(valueDistrict.valueDistrict);
     form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
@@ -148,10 +150,11 @@ const ModalCreateCustomer = () => {
         if (uploadedFile == null) {
           toast.error("Bạn cần thêm ảnh đai diện ");
         } else {
-          console.log(updatedValues);
           const formData = new FormData();
           formData.append(`multipartFile`, uploadedFile.originFileObj);
           formData.append(`request`, JSON.stringify(updatedValues));
+          console.log(values);
+          console.log(formData);
           CustomerApi.create(formData)
             .then((res) => {
               dispatch(CreateCustomer(res.data.data));
@@ -341,7 +344,7 @@ const ModalCreateCustomer = () => {
 
                   <Form.Item
                     label="Xã/Phường"
-                    name="werd"
+                    name="ward"
                     rules={[
                       { required: true, message: "Vui lòng chọn Xã/Phường" },
                     ]}
@@ -441,20 +444,26 @@ const ModalCreateCustomer = () => {
                   />
                 </Form.Item>
                 <Form.Item
-                    label="Giới tính"
-                    name="gender"
-                    rules={[
-                      { required: true, message: "Vui lòng chọn giới tinh" },
-                    ]}
-                    initialValue="true"
-                  >
-                    <Radio.Group>
-                      <Radio value="true" checked>
-                        Nam
-                      </Radio>
-                      <Radio value="false">Nữ</Radio>
-                    </Radio.Group>
-                  </Form.Item>
+                  label="Giới tính"
+                  name="gender"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn giới tinh" },
+                  ]}
+                  initialValue="true"
+                >
+                  <Radio.Group>
+                    <Radio value="true" checked>
+                      Nam
+                    </Radio>
+                    <Radio value="false">Nữ</Radio>
+                  </Radio.Group>
+                </Form.Item>
+                <Form.Item name="toDistrictId" hidden>
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item name="provinceId" hidden>
+                  <Input disabled />
+                </Form.Item>
                 {/* <div>
                   <QrReader
                     delay={300}
