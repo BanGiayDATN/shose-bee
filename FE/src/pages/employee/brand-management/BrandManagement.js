@@ -152,7 +152,7 @@ const BrandManagement = () => {
           <Button
             type="primary"
             title="Chỉnh sửa "
-            style={{ backgroundColor: "green", borderColor: "green" }}
+            style={{ backgroundColor: "#0099FF", borderColor: "#0099FF" }}
             onClick={() => handleViewUpdate(record.id)}
           >
             <FontAwesomeIcon icon={faEdit} />
@@ -186,11 +186,11 @@ const BrandManagement = () => {
         <div className="content">
           <div className="content-wrapper">
             <div className="content-left">
-              Tên thể loại :{" "}
+              Tên thương hiệu :{" "}
               <Input
                 placeholder="Tìm kiếm"
                 type="text"
-                style={{ width: "50%", marginLeft: "10px" }}
+                style={{ width: "50%", marginLeft: "10px", height: "40px" }}
                 name="keyword"
                 value={searchBrand.keyword}
                 onChange={handleKeywordChange}
@@ -237,11 +237,12 @@ const BrandManagement = () => {
           <span style={{ fontSize: "18px", fontWeight: "500" }}>
             Danh sách thể loại
           </span>
-          <div style={{ marginLeft: "auto" }}>
+          <div style={{ marginLeft: "auto", marginRight: "3%" }}>
             <Button
               type="primary"
               icon={<FontAwesomeIcon icon={faPlus} />}
               onClick={() => setModalVisible(true)}
+              style={{ height: "40px" }}
             >
               Thêm
             </Button>

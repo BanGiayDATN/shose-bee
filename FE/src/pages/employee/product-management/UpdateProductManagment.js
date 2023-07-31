@@ -435,7 +435,7 @@ const UpdateProductManagment = () => {
           <Button
             type="primary"
             title=" chỉnh sửa trạng thái "
-            style={{ backgroundColor: "green", borderColor: "green" }}
+            style={{ backgroundColor: "#0099FF", borderColor: "#0099FF" }}
             onClick={() => handleUpdateStatusSize(index)} // Gọi hàm xóa và truyền vị trí của phần tử
           >
             <FontAwesomeIcon icon={faPenToSquare} />
