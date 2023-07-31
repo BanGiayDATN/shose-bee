@@ -13,6 +13,7 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import "./create-bill.css";
+import { BsTrash } from "react-icons/bs";
 import "./style-bill.css";
 import { useSelector } from "react-redux";
 import { BillApi } from "../../../api/employee/bill/bill.api";
@@ -20,7 +21,7 @@ import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router";
 import { FaShoppingBag } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import {CiDeliveryTruck} from 'react-icons/ci';
+import { CiDeliveryTruck } from "react-icons/ci";
 import {
   GetCustomer,
   SetCustomer,
@@ -31,18 +32,32 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { GetPromotion, SetPromotion } from "../../../app/reducer/Promotion.reducer";
-import dayjs from "dayjs";
-import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
-import { GetProduct, SetProduct } from "../../../app/reducer/Product.reducer";
-import { MaterialApi } from "../../../api/employee/material/Material.api";
-import { CategoryApi } from "../../../api/employee/category/category.api";
-import { SoleApi } from "../../../api/employee/sole/sole.api";
-import { BrandApi } from "../../../api/employee/brand/Brand.api";
+import {
+  GetPromotion,
+  SetPromotion,
+} from "../../../app/reducer/Promotion.reducer";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
+  const [products, setProducts] = useState([]);
+  const [billRequest, setBillRequest] = useState({
+    phoneNumber: "",
+    address: "",
+    userName: "",
+    itemDiscount: 0,
+    totalMoney: 0,
+    note: "",
+    moneyShip: 0,
+    billDetailRequests: [],
+    vouchers: [],
+  });
+
+  const ChangeBillRequest = (filleName, value) => {
+    setBillRequest({ ...billRequest, [filleName]: value });
+  };
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
 
@@ -91,15 +106,16 @@ function CreateBill() {
     );
     PromotionApi.fetchAll().then(
       (res) => {
-        const data = []
-        res.data.data.map(item =>{
-          if(item.status == "DANG_SU_DUNG" 
-          // && item.quantity != null
-          // && item.quantity > 0
-          ){
-            data.push(item)
+        const data = [];
+        res.data.data.map((item) => {
+          if (
+            item.status == "DANG_SU_DUNG"
+            // && item.quantity != null
+            // && item.quantity > 0
+          ) {
+            data.push(item);
           }
-        })
+        });
         dispatch(SetPromotion(data));
       },
       (err) => {
@@ -183,40 +199,39 @@ function CreateBill() {
       key: "points",
       sorter: (a, b) => a.points.localeCompare(b.points),
     },
-    {
-      title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
-      render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
-        return (
-          <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Kích hoạt " : "Ngừng kích hoạt"}
-          </button>
-        );
-      },
-    },
+
     {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
       render: (text, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-         <Button
+          <Button
             type="dashed"
             title="Chọn"
-            style={{ color: "#02bdf0", border: "1px solid #02bdf0", fontWeight: "500" }}
+            style={{
+              color: "#02bdf0",
+              border: "1px solid #02bdf0",
+              fontWeight: "500",
+            }}
             onClick={() => selectedAccount(record)}
-          >Chọn</Button>
+          >
+            Chọn
+          </Button>
         </div>
       ),
     },
   ];
-  const selectedAccount = (record) =>{
+  const selectedAccount = (record) => {
+    setBillRequest({
+      ...billRequest,
+      phoneNumber: record.phoneNumber,
+      userName: record.fullName,
+    });
+    console.log(billRequest);
     dispatch(addUserBillWait(record));
-    setIsModalAccountOpen(true);
-  }
+    setIsModalAccountOpen(false);
+  };
   // end khách hàng
   const user = useSelector((state) => state.bill.billWaitProduct.user);
   const vouchers = useSelector((state) => state.bill.billWaitProduct.vouchers);
@@ -237,11 +252,49 @@ function CreateBill() {
     vouchers: vouchers,
   });
   const navigate = useNavigate();
-  const orderBill = (e) => {
-    console.log(e);
-    BillApi.createBillWait(bill).then((res) => {
-      navigate("/bill-management/detail-bill/" + res.data.data.id);
-    });
+  const orderBill = async (e) => {
+    var newProduct = products.map((product) => ({
+      idProduct: product.idProduct,
+      size: product.nameSize,
+      quantity: product.quantity,
+      price: product.price,
+    }));
+    var newVoucher = [];
+    if (voucher.idVoucher != "") {
+      newVoucher.push(voucher);
+    }
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    if(totalBill > 0){
+
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận đặt hàng không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          var data = {
+            phoneNumber: billRequest.phoneNumber,
+            address: billRequest.address,
+            userName: billRequest.userName,
+            itemDiscount: voucher.discountPrice,
+            totalMoney: totalBill,
+            note: billRequest.note,
+            moneyShip: 0,
+            billDetailRequests: newProduct,
+            vouchers: newVoucher,
+          }
+          await BillApi.createBillWait(data).then((res) => {
+            navigate("/bill-management/detail-bill/" + res.data.data.id);
+          });
+        },
+        onCancel: () => {
+        },
+      });
+    }else{
+      toast("vui lòng chọn sản phẩm");
+    }
   };
 
   useEffect(() => {}, []);
@@ -261,30 +314,31 @@ function CreateBill() {
 
   const [listVoucher, setListVoucher] = useState([]);
   const [keyVoucher, setKeyVoucher] = useState("");
-  const searchVoucher = (e) =>{
+  const searchVoucher = (e) => {
     var fillter = {
       code: keyVoucher,
       name: keyVoucher,
-      quantity: keyVoucher
-    }
+      quantity: keyVoucher,
+    };
     PromotionApi.fetchAll(fillter).then(
       (res) => {
-        const data = []
-        res.data.data.map(item =>{
-          if(item.status == "DANG_SU_DUNG" 
-          && item.quantity != null
-          && item.quantity > 0
-          ){
-            data.push(item)
+        const data = [];
+        res.data.data.map((item) => {
+          if (
+            item.status == "DANG_SU_DUNG" &&
+            item.quantity != null &&
+            item.quantity > 0
+          ) {
+            data.push(item);
           }
-        })
+        });
         dispatch(SetPromotion(data));
       },
       (err) => {
         console.log(err);
       }
     );
-  }
+  };
   const dataVoucher = useAppSelector(GetPromotion);
   useEffect(() => {
     if (data != null) {
@@ -317,16 +371,16 @@ function CreateBill() {
       dataIndex: "value",
       key: "value",
       sorter: (a, b) => a.value - b.value,
-      render: (value) =>(
+      render: (value) => (
         <span>
-        {value >= 1000
-          ? value.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })
-          : value + " đ"}
-      </span>
-      )
+          {value >= 1000
+            ? value.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+            : value + " đ"}
+        </span>
+      ),
     },
     {
       title: "Số lượng",
@@ -339,12 +393,10 @@ function CreateBill() {
       dataIndex: "startDate",
       key: "startDate",
       sorter: (a, b) => a.startDate - b.startDate,
-      render: (date, record) =>{
+      render: (date, record) => {
         const start = moment(date).format(" DD-MM-YYYY");
         const end = moment(record.endDate).format(" DD-MM-YYYY");
-        return (
-          <span>{start +" > "+ end}</span>
-        )
+        return <span>{start + " > " + end}</span>;
       },
     },
     {
@@ -353,10 +405,15 @@ function CreateBill() {
       key: "hanhDong",
       render: (text, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-           <Button
+          <Button
             type="primary"
             title="Chọn"
-            style={{ color: "#02bdf0", border: "1px solid #02bdf0", fontWeight: "500", backgroundColor: "white" }}
+            style={{
+              color: "#02bdf0",
+              border: "1px solid #02bdf0",
+              fontWeight: "500",
+              backgroundColor: "white",
+            }}
             onClick={() => selectedVoucher(record)}
           >
             Chọn
@@ -367,15 +424,19 @@ function CreateBill() {
   ];
 
   const selectedVoucher = (record) => {
+    var price = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+
     setVoucher({
       idVoucher: record.id,
-      beforPrice: 0,
-      afterPrice: 0,
+      beforPrice: price,
+      afterPrice: price - record.value,
       discountPrice: record.value,
-    })
-    setCodeVoucher(record.code)
+    });
+    setCodeVoucher(record.code);
     setIsModalVoucherOpen(false);
-  }
+  };
 
   const [voucher, setVoucher] = useState({
     idVoucher: "",
@@ -390,14 +451,6 @@ function CreateBill() {
   // end voucher
 
   // begin modal product
-  const [listProductDetail, setListProductDetail] = useState([]);
-  const [search, setSearch] = useState("");
-  const [listMaterial, setListMaterial] = useState([]);
-  const [listCategory, setListCategory] = useState([]);
-  const [listBrand, setListBrand] = useState([]);
-  const [listColor, setListColor] = useState([]);
-  // const [listSize, setListSize] = useState([]);
-  const [listSole, setListSole] = useState([]);
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
   const [product, setProduct] = useState({
     productDetail: {
@@ -412,6 +465,36 @@ function CreateBill() {
     price: 0,
   });
 
+  const handleQuantityDecrease = (record) => {
+    const updatedListSole = products.map((item) =>
+      item.idSizeProduct === record.idSizeProduct
+        ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
+        : item
+    );
+    setProducts(updatedListSole);
+  };
+
+  const handleQuantityChange = (value, record) => {
+    // Ensure the value is at least 1
+    const newQuantity = Math.max(value, 1);
+    const updatedListSole = products.map((item) =>
+      item.idSizeProduct === record.idSizeProduct
+        ? { ...item, quantity: newQuantity }
+        : item
+    );
+    setProducts(updatedListSole);
+  };
+
+  const handleQuantityIncrease = (record) => {
+    const updatedListSole = products.map((item) =>
+      item.idSizeProduct === record.idSizeProduct &&
+      record.maxQuantity > item.quantity
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    );
+    setProducts(updatedListSole);
+  };
+
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
   };
@@ -420,6 +503,13 @@ function CreateBill() {
   };
   const handleCancelProduct = () => {
     setIsModalProductOpen(false);
+  };
+
+  const removeProductInBill = (e, id) => {
+    console.log(id);
+    var data = products.filter((x) => x.idSizeProduct !== id);
+    setProducts(data);
+    console.log(products);
   };
   // dispatch(addProductBillWait(res.data.data));
 
@@ -433,14 +523,14 @@ function CreateBill() {
           sản phẩm
         </div>
       ),
-      dataIndex: "productDetail",
-      key: "productDetail",
-      render: (item) => {
+      dataIndex: "productName",
+      key: "productName",
+      render: (productName, record) => {
         return (
           <Row style={{ marginTop: "10px" }}>
             <Col span={5}>
               <img
-                src={item.image}
+                src={record.image}
                 alt="Ảnh sản phẩm"
                 style={{
                   width: "170px",
@@ -460,26 +550,26 @@ function CreateBill() {
                     marginTop: "10px",
                   }}
                 >
-                  {item.productName}
+                  {record.productName}
                 </span>{" "}
               </Row>
               <Row>
                 <span style={{ color: "red", fontWeight: "500" }}>
-                  {item.price >= 1000
-                    ? item.price.toLocaleString("vi-VN", {
+                  {record.price >= 1000
+                    ? record.price.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })
-                    : item.price + " đ"}
+                    : record.price + " đ"}
                 </span>{" "}
               </Row>
               <Row>
                 <span style={{ fontSize: "12", marginTop: "10px" }}>
-                  Size: {item.nameSize}
+                  Size: {record.nameSize}
                 </span>{" "}
               </Row>
               <Row>
-                <span style={{ fontSize: "12" }}>x {item.quantity}</span>{" "}
+                <span style={{ fontSize: "12" }}>x {record.quantity}</span>{" "}
               </Row>
             </Col>
           </Row>
@@ -505,9 +595,9 @@ function CreateBill() {
     },
     {
       title: <div className="title-product">Giá</div>,
-      dataIndex: "product",
-      key: "product",
-      render: (item) => (
+      dataIndex: "price",
+      key: "price",
+      render: (price) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <span
             style={{
@@ -516,12 +606,35 @@ function CreateBill() {
               marginBottom: "30px",
             }}
           >
-            {item.price * item.quantity >= 1000
-              ? (item.price * item.quantity).toLocaleString("vi-VN", {
+            {price >= 1000
+              ? price.toLocaleString("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 })
-              : item.price * item.quantity + " đ"}
+              : price + " đ"}
+          </span>{" "}
+        </div>
+      ),
+    },
+    {
+      title: <div className="title-product">Tổng</div>,
+      dataIndex: "sum",
+      key: "sum",
+      render: (sum) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span
+            style={{
+              color: "red",
+              fontWeight: "bold",
+              marginBottom: "30px",
+            }}
+          >
+            {sum >= 1000
+              ? sum.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })
+              : sum + " đ"}
           </span>{" "}
         </div>
       ),
@@ -572,18 +685,192 @@ function CreateBill() {
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
         <Row style={{ width: "100%" }}>
           {" "}
-          <Table
-            dataSource={[]}
+          {/* <Table
+            dataSource={listProduct}
             columns={columns}
             rowKey="id"
             style={{ width: "100%" }}
             pagination={false} // Disable default pagination
             className="product-table"
-          />
+          /> */}
+          <Row
+            style={{
+              marginBottom: "20px",
+              width: "100%",
+              borderBottom: "2px solid #ccc",
+              padding: "5px",
+            }}
+          >
+            <Col span={13} align={"center"}>
+              Sản phẩm
+            </Col>
+            <Col span={5} align={"center"}>
+              Số lượng
+            </Col>
+            <Col span={4} align={"center"}>
+              Tổng tiền
+            </Col>
+            <Col span={2} align={"center"}>
+              Thao tác
+            </Col>
+          </Row>
+          {products.map((item) => {
+            return (
+              <Row style={{ marginTop: "10px", width: "100%" }}>
+                <Col span={4}>
+                  <img
+                    src={item.image}
+                    alt="Ảnh sản phẩm"
+                    style={{
+                      width: "170px",
+                      borderRadius: "10%",
+                      height: "140px",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </Col>
+                <Col span={9}>
+                  <Row>
+                    {" "}
+                    <span
+                      style={{
+                        fontSize: "19",
+                        fontWeight: "500",
+                        marginTop: "10px",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      {item.productName}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span
+                      style={{
+                        color: "red",
+                        fontWeight: "500",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      {item.price >= 1000
+                        ? item.price.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })
+                        : item.price + " đ"}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span
+                      style={{
+                        fontSize: "12",
+                        marginTop: "10px",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      Size: {item.nameSize}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span style={{ fontSize: "12", marginLeft: "15px" }}>
+                      x {item.quantity}
+                    </span>{" "}
+                  </Row>
+                </Col>
+                <Col
+                  span={5}
+                  align={"center"}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <Button
+                    onClick={() => handleQuantityDecrease(item)}
+                    style={{ margin: "0 0 0 4px" }}
+                  >
+                    -
+                  </Button>
+                  <InputNumber
+                    min={1}
+                    max={item.maxQuantity}
+                    value={item.quantity}
+                    onChange={(value) => handleQuantityChange(value, item)}
+                  />
+                  <Button
+                    onClick={() => handleQuantityIncrease(item)}
+                    style={{ margin: "0 10px 0 0" }}
+                  >
+                    +
+                  </Button>
+                </Col>
+                <Col
+                  span={4}
+                  align={"center"}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <span
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {item.price * item.quantity >= 1000
+                      ? (item.price * item.quantity).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : item.price * item.quantity + " đ"}
+                  </span>{" "}
+                </Col>
+                <Col span={2} style={{ display: "flex", alignItems: "center" }}>
+                  <Button
+                    style={{
+                      marginLeft: "10px",
+                      fontWeight: "500",
+                      fontSize: "16px",
+                      color: "white",
+                      backgroundColor: "red",
+                    }}
+                    onClick={(e) => removeProductInBill(e, item.idSizeProduct)}
+                  >
+                    <BsTrash />
+                  </Button>
+                </Col>
+              </Row>
+            );
+          })}
         </Row>
-        <Row justify="end" style={{ marginBottom: "10px", width: "100%" }}>
+        <Row
+          justify="end"
+          style={{
+            marginBottom: "10px",
+            width: "100%",
+            borderTop: "2px solid #ccc",
+            padding: "10px 0 0 0",
+            marginTop: "20px",
+          }}
+        >
           <Col span={3}>Tổng tiền: </Col>
-          <Col span={4}>{}</Col>
+          <Col
+            span={4}
+            style={{ fontWeight: "500", fontSize: "16px", color: "red" }}
+          >
+            {products.reduce((accumulator, currentValue) => {
+              return accumulator + currentValue.price * currentValue.quantity;
+            }, 0) >= 1000
+              ? products
+                  .reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0)
+                  .toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })
+              : products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) + " đ"}
+          </Col>
         </Row>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
@@ -784,13 +1071,28 @@ function CreateBill() {
                     />
                   </Col>
                 </Row>
-                <Row style={{marginTop: "30px", marginLeft: "10px", width: "100%"}}>
-                <Col span={2} >
-                <CiDeliveryTruck style={{height: "30px", width: "50px"}}/>
-                </Col>
-                <Col span={22} style={{display: "flex", alignItems: "center", fontWeight: "500"}}>
-                <span>Thời gian nhận hàng dự kiến: {}</span>
-                </Col>
+                <Row
+                  style={{
+                    marginTop: "30px",
+                    marginLeft: "10px",
+                    width: "100%",
+                  }}
+                >
+                  <Col span={2}>
+                    <CiDeliveryTruck
+                      style={{ height: "30px", width: "50px" }}
+                    />
+                  </Col>
+                  <Col
+                    span={22}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      fontWeight: "500",
+                    }}
+                  >
+                    <span>Thời gian nhận hàng dự kiến: {}</span>
+                  </Col>
                 </Row>
               </div>
             ) : (
@@ -826,17 +1128,43 @@ function CreateBill() {
             </Row>
             <Row style={{ margin: "10px 0 " }}>
               <Col span={16}>
-              <Input style={{width: "100%", backgroundColor: "white"}} disabled value={codeVoucher}/>
+                <Input
+                  style={{ width: "100%", backgroundColor: "white" }}
+                  disabled
+                  value={codeVoucher}
+                />
               </Col>
               <Col span={1}></Col>
               <Col span={3}>
-              <Button type="dashed" onClick={(e) => showModalVoucher(e)}>Chọn mã</Button>
+                <Button type="dashed" onClick={(e) => showModalVoucher(e)}>
+                  Chọn mã
+                </Button>
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} đ{" "}
+                {products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) >= 1000
+                  ? products
+                      .reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0)
+                      .toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                  : products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) + " đ"}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
@@ -867,7 +1195,27 @@ function CreateBill() {
                 }}
                 align={"end"}
               >
-                {} đ{" "}
+                {products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) >= 1000
+                  ? products
+                      .reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0)
+                      .toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                  : products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) + " đ"}
               </Col>
             </Row>
             <Row style={{ margin: "40px 20px 30px 0" }} justify="end">
@@ -891,7 +1239,11 @@ function CreateBill() {
         onCancel={handleCancelProduct}
         width={1000}
       >
-        <ModalAddProductDetail/>
+        <ModalAddProductDetail
+          handleCancelProduct={handleCancelProduct}
+          products={products}
+          setProducts={setProducts}
+        />
       </Modal>
       {/* end bigin modal product */}
 
@@ -932,7 +1284,7 @@ function CreateBill() {
         </Row>
         <Row style={{ width: "100%", marginTop: "20px" }}>
           <Table
-          style={{width: "100%"}}
+            style={{ width: "100%" }}
             dataSource={listaccount}
             rowKey="id"
             columns={columnsAccount}
@@ -944,8 +1296,14 @@ function CreateBill() {
       {/* end  modal Account */}
 
       {/* begin modal voucher */}
-      <Modal title="Mã giảm giá" width={1000} open={isModalVoucherOpen} onOk={handleOkVoucher} onCancel={handleCancelVoucher}>
-      <Row style={{ width: "100%" }}>
+      <Modal
+        title="Mã giảm giá"
+        width={1000}
+        open={isModalVoucherOpen}
+        onOk={handleOkVoucher}
+        onCancel={handleCancelVoucher}
+      >
+        <Row style={{ width: "100%" }}>
           <Col span={20}>
             <Input
               style={{
@@ -957,7 +1315,9 @@ function CreateBill() {
               type="text"
               name="keyword"
               value={keyVoucher}
-              onChange={(e) => {setKeyVoucher(e.target.value)}}
+              onChange={(e) => {
+                setKeyVoucher(e.target.value);
+              }}
             />
           </Col>
           <Col span={1}></Col>
@@ -973,10 +1333,10 @@ function CreateBill() {
           </Col>
         </Row>
         <Row style={{ width: "100%", marginTop: "20px" }}>
-        <Table
+          <Table
             dataSource={listVoucher}
             rowKey="id"
-            style={{ width: "100%",}}
+            style={{ width: "100%" }}
             columns={columnsVoucher}
             pagination={{ pageSize: 5 }}
             // rowClassName={(record, index) =>
@@ -984,9 +1344,22 @@ function CreateBill() {
             // }
           />
         </Row>
-      
       </Modal>
       {/* end modal voucher */}
+      <ToastContainer
+        position="top-right"
+        autoClose={500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {/* Same as */}
+      <ToastContainer />
     </div>
   );
 }

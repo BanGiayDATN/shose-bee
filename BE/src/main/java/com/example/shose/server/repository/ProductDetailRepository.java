@@ -3,6 +3,7 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -87,5 +88,34 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                         where p.id = :id
             """,nativeQuery = true)
     List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
+
+    @Query(value = """
+             SELECT\s
+                                            detail.id AS id,
+                                            i.name AS image,
+                                            p.code AS codeProduct,
+                                            p.name AS nameProduct,
+                                            pr.value AS value,
+                                            s.name AS nameSole,
+                                            m.name AS nameMaterial,
+                                            c.name AS nameCategory,
+                                            b.name AS nameBrand,
+                                            detail.price AS price,
+                                            detail.created_date AS created_date,
+                                            detail.gender AS gender,
+                                            detail.status AS status,
+                                            detail.id_promotion AS idPromotion
+                          FROM product_detail detail
+                          LEFT JOIN product p on detail.id_product = p.id
+                          LEFT JOIN image i on detail.id = i.id_product_detail
+                         LEFT JOIN sole s ON s.id = detail.id_sole
+                         LEFT JOIN material m ON detail.id_material = m.id
+                         LEFT JOIN promotion pr ON pr.id = detail.id_promotion
+                         LEFT JOIN category c ON detail.id_category = c.id
+                         LEFT JOIN brand b ON detail.id_brand = b.id
+                         LEFT JOIN color col ON detail.id_color = col.id
+                        where detail.id = :id
+            """,nativeQuery = true)
+    ProductDetailResponse findByIdProductDetail(@Param("id") String id);
 
 }

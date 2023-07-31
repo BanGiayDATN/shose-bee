@@ -154,7 +154,7 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(new BigDecimal(request.getTotalMoney()))
                 .moneyShip(new BigDecimal(request.getMoneyShip())).build());
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-
+        System.out.println(bill);
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
             Optional<Size> size = sizeRepository.findByName(billDetailRequest.getSize());
@@ -164,7 +164,6 @@ public class BillServiceImpl implements BillService {
             if (!size.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-
             Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
             if (!sizeProductDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
@@ -174,7 +173,7 @@ public class BillServiceImpl implements BillService {
             }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
-
+            System.out.println("hello");
             sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - billDetailRequest.getQuantity());
             sizeProductDetailRepository.save(sizeProductDetail.get());
         });

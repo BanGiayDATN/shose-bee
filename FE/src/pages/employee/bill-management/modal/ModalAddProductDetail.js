@@ -9,6 +9,7 @@ import {
   Space,
   Spin,
   Slider,
+  Modal,
 } from "antd";
 import "./style-product.css";
 import { useAppDispatch, useAppSelector } from "../../../../app/hook";
@@ -36,8 +37,11 @@ import { ColorApi } from "../../../../api/employee/color/Color.api";
 import tinycolor from "tinycolor2";
 import { Link, useNavigate } from "react-router-dom";
 import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
+import ModalDetailProduct from "./ModalDetailProduct";
+import { addProductBillWait } from "../../../../app/reducer/Bill.reducer";
 
-function ModalAddProductDetail() {
+      
+function ModalAddProductDetail({ handleCancelProduct, setProducts, products }) {
   const [listProduct, setListProduct] = useState([]);
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState("");
@@ -69,8 +73,14 @@ function ModalAddProductDetail() {
     ProducDetailtApi.fetchAll({
       product: search,
     }).then((res) => {
-      setListProduct(res.data.data);
-      dispatch(SetProduct(res.data.data));
+      var data = [];
+      res.data.data.map((item) => {
+        if (item.status == "DANG_SU_DUNG") {
+          data.push(item);
+        }
+      });
+      setListProduct(data);
+      dispatch(SetProduct(data));
     });
   };
 
@@ -80,8 +90,14 @@ function ModalAddProductDetail() {
     ProducDetailtApi.fetchAll({
       product: "",
     }).then((res) => {
-      setListProduct(res.data.data);
-      dispatch(SetProduct(res.data.data));
+      var data = [];
+      res.data.data.map((item) => {
+        if (item.status == "DANG_SU_DUNG") {
+          data.push(item);
+        }
+      });
+      setListProduct(data);
+      dispatch(SetProduct(data));
     });
   };
 
@@ -143,12 +159,17 @@ function ModalAddProductDetail() {
   };
 
   const loadData = () => {
-    console.log(selectedValues);
     ProducDetailtApi.fetchAll(selectedValues).then(
       (res) => {
-        console.log(res);
-        setListProduct(res.data.data);
-        dispatch(SetProduct(res.data.data));
+        var data = [];
+        res.data.data.map((item) => {
+          if (item.status == "DANG_SU_DUNG") {
+            data.push(item);
+          }
+        });
+
+        setListProduct(data);
+        dispatch(SetProduct(data));
         setIsSubmitted(false);
       },
       (err) => {
@@ -286,20 +307,6 @@ function ModalAddProductDetail() {
       ),
     },
     {
-      title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
-      render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
-        return (
-          <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Không kinh doanh"}
-          </button>
-        );
-      },
-    },
-    {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
@@ -309,14 +316,70 @@ function ModalAddProductDetail() {
             type="primary"
             title="Chi tiết thể loại"
             style={{ backgroundColor: "#FF9900" }}
-            onClick={() => handleViewDetail(record.id)}
+            onClick={(e) => showModal(e, record)}
           >
-            <FontAwesomeIcon icon={faEye} />
+            Chọn
           </Button>
         </div>
       ),
     },
   ];
+
+  // begin xử lý modal
+  //   modal detail product size
+  const [product, setProduct] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = (e, record) => {
+    setSizes([])
+    setProductSelect(record);
+    setIsModalOpen(true);
+    setProduct(record);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+    var list = products
+    console.log(sizes);
+    sizes.map((item) => {
+      var index =  list.findIndex(x => x.idSizeProduct === item.id);
+      var data = {
+        image: productSelect.image,
+        productName: productSelect.nameProduct,
+        nameSize: item.nameSize,
+        idProduct: productSelect.id,
+        quantity: quantity,
+        price: productSelect.price,
+        idSizeProduct: item.id,
+        maxQuantity: item.quantity
+      };
+      if(index == -1){
+        list.push(data)
+      }else{
+        data.quantity = list[index].quantity + quantity
+        list.splice(index, 1, data)
+      }
+      dispatch(addProductBillWait(data));
+    });
+    setProducts(list)
+    // handleCancelProduct();
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  // end modal detail product size
+  const [sizes, setSizes] = useState([]);
+  const [productSelect, setProductSelect] = useState({});
+  const [quantity, setQuantity] = useState(1);
+  const ChangedSelectSize = (e, size) => {
+    setSizes((prevSelected) =>
+      prevSelected.includes(size)
+        ? prevSelected.filter((selected) => selected !== size)
+        : [...prevSelected, size]
+    );
+  };
+  const ChangeQuantity = (value) => {
+    setQuantity(value);
+  };
+  // end xử lý modal
   return (
     <div>
       <div className="content">
@@ -482,21 +545,6 @@ function ModalAddProductDetail() {
             </Select>
           </Col>
           <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
-            <label>Trạng Thái :</label>
-          </Col>
-          <Col span={3}>
-            <Select
-              style={{ width: "100%" }}
-              value={selectedValues.status}
-              onChange={(value) => handleSelectChange(value, "status")}
-              defaultValue=""
-            >
-              <Option value="">Tất cả</Option>
-              <Option value="DANG_SU_DUNG">Đang sử dung</Option>
-              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-            </Select>
-          </Col>
-          <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
             <label>Giới Tinh :</label>
           </Col>
           <Col span={3}>
@@ -539,6 +587,19 @@ function ModalAddProductDetail() {
           className="category-table"
         />
       </div>
+      <Modal
+        title=""
+        width={800}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <ModalDetailProduct
+          id={product.id}
+          ChangedSelectSize={ChangedSelectSize}
+          ChangeQuantity={ChangeQuantity}
+        />
+      </Modal>
     </div>
   );
 }

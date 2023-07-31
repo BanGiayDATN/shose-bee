@@ -85,6 +85,8 @@ function DetailBill() {
     });
   }, []);
 
+  console.log(bill);
+
   // begin cancelBill
   const [isModalCanCelOpen, setIsModalCanCelOpen] = useState(false);
   const showModalCanCel = () => {
@@ -1064,7 +1066,7 @@ function DetailBill() {
           />
         </Row>
       </Row>
-      <Row style={{ width: "150%" }}>
+      <Row style={{ width: "100%" }}>
         <div style={{ backgroundColor: "white", width:"100%" }}>
           <Row
             style={{
@@ -1096,7 +1098,7 @@ function DetailBill() {
               </Button>
             </Col>
           </Row>
-          <Row>
+          <Row style={{width: "100%"}}>
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px" }}>
                 <Col span={8}>Trạng thái:</Col>
@@ -1139,8 +1141,9 @@ function DetailBill() {
                       Khách lẻ
                     </span>
                   ) : (
-                    <span>{bill.userName}</span>
+                    <span style={{color: "black",}}>{bill.userName}</span>
                   )}
+                  
                 </Col>
               </Row>
             </Col>
@@ -1166,15 +1169,7 @@ function DetailBill() {
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                 <Col span={8}> Số điện thoại:</Col>
                 <Col span={16}>
-                  <span>{bill.phoneNumber}</span>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={8}>Mã hóa đơn:</Col>
-                <Col span={16}>
-                  <span>{bill.code}</span>
+                  <span style={{color: "black",}}>{bill.phoneNumber}</span>
                 </Col>
               </Row>
             </Col>
@@ -1186,7 +1181,7 @@ function DetailBill() {
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                 <Col span={8}>Địa chỉ:</Col>
                 <Col span={16}>
-                  <span>{bill.address}</span>
+                  <span style={{color: "black",}}>{bill.address}</span>
                 </Col>
               </Row>
             </Col>
@@ -2022,6 +2017,7 @@ function DetailBill() {
       />
       {/* Same as */}
       <ToastContainer />
+      
     </div>
   );
 }

@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.productdetail.FindProductDetailReque
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
@@ -246,6 +247,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public List<GetProductDetailByProduct> getByIdProduct(String id) {
         return productDetailRepository.getByIdProduct(id);
+    }
+
+    @Override
+    public ProductDetailResponse findByIdProductDetail(String id) {
+        return productDetailRepository.findByIdProductDetail(id);
     }
 
 }
