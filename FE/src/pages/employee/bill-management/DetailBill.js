@@ -1852,6 +1852,7 @@ function DetailBill() {
       {/* begin modal refundProduct  */}
       <Modal
         title="Trả hàng"
+        className="refundProduct"
         open={isModaRefundProductOpen}
         onOk={handleOkRefundProduct}
         onCancel={handleCancelRefundProduct}
