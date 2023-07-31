@@ -45,6 +45,7 @@ import axios from "axios";
 import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
 import NumberFormat from "react-number-format";
 import { toast } from "react-toastify";
+import AddColorModal from "./modal/ModalAddColor";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -130,7 +131,6 @@ const CreateProductManagment = () => {
     }
     setProductDetail(values);
   };
-
 
   const handleSearch = (value) => {
     ProductApi.fetchAll({
@@ -780,6 +780,7 @@ const CreateProductManagment = () => {
           </div>
           <ModalCreateSole visible={modalAddSole} onCancel={handleCancel} />
           <ModalCreateBrand visible={modalAddBrand} onCancel={handleCancel} />
+          <AddColorModal visible={modalAddColor} onCancel={handleCancel} />
           <ModalCreateCategory
             visible={modalAddCategopry}
             onCancel={handleCancel}
