@@ -20,7 +20,7 @@ import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router";
 import { FaShoppingBag } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import {CiDeliveryTruck} from 'react-icons/ci';
+import { CiDeliveryTruck } from "react-icons/ci";
 import {
   GetCustomer,
   SetCustomer,
@@ -31,14 +31,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { GetPromotion, SetPromotion } from "../../../app/reducer/Promotion.reducer";
+import {
+  GetPromotion,
+  SetPromotion,
+} from "../../../app/reducer/Promotion.reducer";
 import dayjs from "dayjs";
+import { AddressApi } from "../../../api/customer/address/address.api";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
-
+  const { Option } = Select;
   //  begin khách hàng
   const [isModalAccountOpen, setIsModalAccountOpen] = useState(false);
   const showModalAccount = (e) => {
@@ -52,6 +56,12 @@ function CreateBill() {
   };
   const [listaccount, setListaccount] = useState([]);
   const [initialCustomerList, setInitialCustomerList] = useState([]);
+  //tạo list chứa tỉnh, quận/huyện, xã/phường, ngày dự kiến ship, phí ship
+  const [listProvince, setListProvince] = useState([]);
+  const [listDistricts, setListDistricts] = useState([]);
+  const [listWard, setListWard] = useState([]);
+  const [dayShip, setDayShip] = useState([]);
+  const [shipFee, setShipFee] = useState([]);
   const [searchCustomer, setSearchCustomer] = useState({
     keyword: "",
     status: "",
@@ -65,6 +75,7 @@ function CreateBill() {
   }, [data]);
   useEffect(() => {
     loadData();
+    loadDataProvince();
   }, []);
 
   const loadData = () => {
@@ -84,21 +95,69 @@ function CreateBill() {
     );
     PromotionApi.fetchAll().then(
       (res) => {
-        const data = []
-        res.data.data.map(item =>{
-          if(item.status == "DANG_SU_DUNG" 
-          // && item.quantity != null
-          // && item.quantity > 0
-          ){
-            data.push(item)
+        const data = [];
+        res.data.data.map((item) => {
+          if (
+            item.status == "DANG_SU_DUNG"
+            // && item.quantity != null
+            // && item.quantity > 0
+          ) {
+            data.push(item);
           }
-        })
+        });
         dispatch(SetPromotion(data));
       },
       (err) => {
         console.log(err);
       }
     );
+  };
+  //load data tỉnh
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvince(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  //load data quận/huyện khi chọn tỉnh
+  const handleProvinceChange = (value, valueProvince) => {
+    // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+  //load data xã/phường khi chọn quận/huyện
+  const handleDistrictChange = (value, valueDistrict) => {
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+
+  //load data phí ship và ngày ship
+  const handleWardChange = (value, valueWard) => {
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+
+    AddressApi.fetchAllMoneyShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      setShipFee(res.data.data.total);
+    });
+    AddressApi.fetchAllDayShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      const leadtimeInSeconds = res.data.data.leadtime;
+      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+      setDayShip(formattedDate);
+    });
   };
 
   const handleInputChangeSearch = (name, value) => {
@@ -196,20 +255,26 @@ function CreateBill() {
       key: "hanhDong",
       render: (text, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-         <Button
+          <Button
             type="dashed"
             title="Chọn"
-            style={{ color: "#02bdf0", border: "1px solid #02bdf0", fontWeight: "500" }}
+            style={{
+              color: "#02bdf0",
+              border: "1px solid #02bdf0",
+              fontWeight: "500",
+            }}
             onClick={() => selectedAccount(record)}
-          >Chọn</Button>
+          >
+            Chọn
+          </Button>
         </div>
       ),
     },
   ];
-  const selectedAccount = (record) =>{
+  const selectedAccount = (record) => {
     dispatch(addUserBillWait(record));
     setIsModalAccountOpen(true);
-  }
+  };
   // end khách hàng
   const user = useSelector((state) => state.bill.billWaitProduct.user);
   const vouchers = useSelector((state) => state.bill.billWaitProduct.vouchers);
@@ -254,30 +319,31 @@ function CreateBill() {
 
   const [listVoucher, setListVoucher] = useState([]);
   const [keyVoucher, setKeyVoucher] = useState("");
-  const searchVoucher = (e) =>{
+  const searchVoucher = (e) => {
     var fillter = {
       code: keyVoucher,
       name: keyVoucher,
-      quantity: keyVoucher
-    }
+      quantity: keyVoucher,
+    };
     PromotionApi.fetchAll(fillter).then(
       (res) => {
-        const data = []
-        res.data.data.map(item =>{
-          if(item.status == "DANG_SU_DUNG" 
-          && item.quantity != null
-          && item.quantity > 0
-          ){
-            data.push(item)
+        const data = [];
+        res.data.data.map((item) => {
+          if (
+            item.status == "DANG_SU_DUNG" &&
+            item.quantity != null &&
+            item.quantity > 0
+          ) {
+            data.push(item);
           }
-        })
+        });
         dispatch(SetPromotion(data));
       },
       (err) => {
         console.log(err);
       }
     );
-  }
+  };
   const dataVoucher = useAppSelector(GetPromotion);
   useEffect(() => {
     if (data != null) {
@@ -310,16 +376,16 @@ function CreateBill() {
       dataIndex: "value",
       key: "value",
       sorter: (a, b) => a.value - b.value,
-      render: (value) =>(
+      render: (value) => (
         <span>
-        {value >= 1000
-          ? value.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })
-          : value + " đ"}
-      </span>
-      )
+          {value >= 1000
+            ? value.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+            : value + " đ"}
+        </span>
+      ),
     },
     {
       title: "Số lượng",
@@ -332,12 +398,10 @@ function CreateBill() {
       dataIndex: "startDate",
       key: "startDate",
       sorter: (a, b) => a.startDate - b.startDate,
-      render: (date, record) =>{
+      render: (date, record) => {
         const start = moment(date).format(" DD-MM-YYYY");
         const end = moment(record.endDate).format(" DD-MM-YYYY");
-        return (
-          <span>{start +" > "+ end}</span>
-        )
+        return <span>{start + " > " + end}</span>;
       },
     },
     {
@@ -346,10 +410,15 @@ function CreateBill() {
       key: "hanhDong",
       render: (text, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-           <Button
+          <Button
             type="primary"
             title="Chọn"
-            style={{ color: "#02bdf0", border: "1px solid #02bdf0", fontWeight: "500", backgroundColor: "white" }}
+            style={{
+              color: "#02bdf0",
+              border: "1px solid #02bdf0",
+              fontWeight: "500",
+              backgroundColor: "white",
+            }}
             onClick={() => selectedVoucher(record)}
           >
             Chọn
@@ -365,10 +434,10 @@ function CreateBill() {
       beforPrice: 0,
       afterPrice: 0,
       discountPrice: record.value,
-    })
-    setCodeVoucher(record.code)
+    });
+    setCodeVoucher(record.code);
     setIsModalVoucherOpen(false);
-  }
+  };
 
   const [voucher, setVoucher] = useState({
     idVoucher: "",
@@ -705,16 +774,29 @@ function CreateBill() {
                           showSearch
                           placeholder="Chọn tỉnh"
                           optionFilterProp="children"
-                          // onChange={onChange}
-                          // onSearch={onSearch}
+                          // // onChange={onChange}
+                          // // onSearch={onSearch}
+                          onChange={handleProvinceChange}
                           style={{ width: "90%" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listProvince?.map((item) => {
+                            return (
+                              <Option
+                                key={item.ProvinceID}
+                                value={item.ProvinceName}
+                                valueProvince={item.ProvinceID}
+                              >
+                                {item.ProvinceName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Col>
                       <Col span={8}>
                         {" "}
@@ -725,13 +807,26 @@ function CreateBill() {
                           style={{ width: "90%" }}
                           // onChange={onChange}
                           // onSearch={onSearch}
+                          onChange={handleDistrictChange}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listDistricts?.map((item) => {
+                            return (
+                              <Option
+                                key={item.DistrictID}
+                                value={item.DistrictName}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.DistrictName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Col>
                       <Col span={7}>
                         {" "}
@@ -742,13 +837,27 @@ function CreateBill() {
                           style={{ width: "95%" }}
                           // onChange={onChange}
                           // onSearch={onSearch}
+                          onChange={handleWardChange}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listWard?.map((item) => {
+                            return (
+                              <Option
+                                key={item.WardCode}
+                                value={item.WardName}
+                                valueWard={item.WardCode}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.WardName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Col>
                     </Row>
                   </Col>
@@ -768,13 +877,28 @@ function CreateBill() {
                     />
                   </Col>
                 </Row>
-                <Row style={{marginTop: "30px", marginLeft: "10px", width: "100%"}}>
-                <Col span={2} >
-                <CiDeliveryTruck style={{height: "30px", width: "50px"}}/>
-                </Col>
-                <Col span={22} style={{display: "flex", alignItems: "center", fontWeight: "500"}}>
-                <span>Thời gian nhận hàng dự kiến: {}</span>
-                </Col>
+                <Row
+                  style={{
+                    marginTop: "30px",
+                    marginLeft: "10px",
+                    width: "100%",
+                  }}
+                >
+                  <Col span={2}>
+                    <CiDeliveryTruck
+                      style={{ height: "30px", width: "50px" }}
+                    />
+                  </Col>
+                  <Col
+                    span={22}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      fontWeight: "500",
+                    }}
+                  >
+                    <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
+                  </Col>
                 </Row>
               </div>
             ) : (
@@ -810,11 +934,17 @@ function CreateBill() {
             </Row>
             <Row style={{ margin: "10px 0 " }}>
               <Col span={16}>
-              <Input style={{width: "100%", backgroundColor: "white"}} disabled value={codeVoucher}/>
+                <Input
+                  style={{ width: "100%", backgroundColor: "white" }}
+                  disabled
+                  value={codeVoucher}
+                />
               </Col>
               <Col span={1}></Col>
               <Col span={3}>
-              <Button type="dashed" onClick={(e) => showModalVoucher(e)}>Chọn mã</Button>
+                <Button type="dashed" onClick={(e) => showModalVoucher(e)}>
+                  Chọn mã
+                </Button>
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
@@ -826,7 +956,7 @@ function CreateBill() {
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={8}>Phí vận chuyển: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} đ{" "}
+                {shipFee} đ{" "}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
@@ -917,7 +1047,7 @@ function CreateBill() {
         </Row>
         <Row style={{ width: "100%", marginTop: "20px" }}>
           <Table
-          style={{width: "100%"}}
+            style={{ width: "100%" }}
             dataSource={listaccount}
             rowKey="id"
             columns={columnsAccount}
@@ -929,8 +1059,14 @@ function CreateBill() {
       {/* end  modal Account */}
 
       {/* begin modal voucher */}
-      <Modal title="Mã giảm giá" width={1000} open={isModalVoucherOpen} onOk={handleOkVoucher} onCancel={handleCancelVoucher}>
-      <Row style={{ width: "100%" }}>
+      <Modal
+        title="Mã giảm giá"
+        width={1000}
+        open={isModalVoucherOpen}
+        onOk={handleOkVoucher}
+        onCancel={handleCancelVoucher}
+      >
+        <Row style={{ width: "100%" }}>
           <Col span={20}>
             <Input
               style={{
@@ -942,7 +1078,9 @@ function CreateBill() {
               type="text"
               name="keyword"
               value={keyVoucher}
-              onChange={(e) => {setKeyVoucher(e.target.value)}}
+              onChange={(e) => {
+                setKeyVoucher(e.target.value);
+              }}
             />
           </Col>
           <Col span={1}></Col>
@@ -958,10 +1096,10 @@ function CreateBill() {
           </Col>
         </Row>
         <Row style={{ width: "100%", marginTop: "20px" }}>
-        <Table
+          <Table
             dataSource={listVoucher}
             rowKey="id"
-            style={{ width: "100%",}}
+            style={{ width: "100%" }}
             columns={columnsVoucher}
             pagination={{ pageSize: 5 }}
             // rowClassName={(record, index) =>
@@ -969,7 +1107,6 @@ function CreateBill() {
             // }
           />
         </Row>
-      
       </Modal>
       {/* end modal voucher */}
     </div>

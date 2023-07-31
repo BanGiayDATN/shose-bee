@@ -40,7 +40,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
             form.resetFields();
           })
           .catch((error) => {
-            toast.error("Thêm thất bại");
+            toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
       })
@@ -102,7 +102,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "59b011f2-90b4-46af-b7a0-681c0dce1771",
+          userId: "f01cb41d-cf72-46b0-8bb4-290e28863062",
         }}
       >
         <Form.Item
@@ -173,12 +173,8 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         >
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
-        <Form.Item
-          label="Trạng thái"
-          name="status"
-          rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
-        >
-          <Select defaultValue="DANG_SU_DUNG">
+        <Form.Item label="Trạng thái" name="status">
+          <Select>
             <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
             <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
           </Select>
