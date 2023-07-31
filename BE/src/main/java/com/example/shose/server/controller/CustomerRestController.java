@@ -102,8 +102,8 @@ public class CustomerRestController {
         addressRequest.setProvince(jsonObject.get("province").getAsString());
         addressRequest.setDistrict(jsonObject.get("district").getAsString());
         addressRequest.setWard(jsonObject.get("ward").getAsString());
-        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
-        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
+//        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
+//        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
         addressRequest.setUserId(id);
 
         return new ResponseObject(customerService.update(customerRequest,addressRequest,file));

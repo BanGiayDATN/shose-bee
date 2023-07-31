@@ -8,7 +8,6 @@ import {
   Row,
   Col,
   Upload,
-  message,
   Radio,
 } from "antd";
 import moment from "moment";
@@ -19,10 +18,9 @@ import { CustomerApi } from "../../../../api/employee/account/customer.api";
 import { UpdateCustomer } from "../../../../app/reducer/Customer.reducer";
 import { useParams, useNavigate } from "react-router-dom";
 import "../style-account.css";
-import { faKaaba } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
+import axios from "axios";
 const { Option } = Select;
 
 const ModalUpdateCustomer = ({ visible }) => {
@@ -48,7 +46,6 @@ const ModalUpdateCustomer = ({ visible }) => {
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [uploadedFileDeatil, setUploadedFileDetail] = useState(null);
   const handleCancelImagel = () => setPreviewOpen(false);
 
   const handlePreview = async (file) => {
@@ -63,13 +60,15 @@ const ModalUpdateCustomer = ({ visible }) => {
   };
 
   const handleChange = ({ file }) => {
-    if (file.type !== "image/jpeg" && file.type !== "image/png") {
+    if (file.status === "removed") {
+      // If the file is being uploaded or removed, set the uploadedFile state accordingly
+      setUploadedFile(null);
+    } else if (file.type !== "image/jpeg" && file.type !== "image/png") {
+      // If the file is not a JPG or PNG image, display an error message
       toast.error("Bạn chỉ có thể tải lên tệp JPG/PNG!");
       return;
-    }
-    setUploadedFile(file);
-    if (file.status === "removed") {
-      setUploadedFile(null);
+    } else {
+      setUploadedFile(file);
     }
   };
 
@@ -150,8 +149,11 @@ const ModalUpdateCustomer = ({ visible }) => {
         });
 
         if (res.data.data?.avata) {
-          setUploadedFileDetail({
+          setUploadedFile({
             url: res.data.data.avata,
+            uid: "-1",
+            name: "avatar.png", // Đặt tên mặc định cho ảnh avatar
+            status: "done",
           });
         }
       });
@@ -199,18 +201,51 @@ const ModalUpdateCustomer = ({ visible }) => {
           console.log(updatedValues);
           console.log(uploadedFile);
           const formData = new FormData();
-          formData.append(`multipartFile`, uploadedFile.originFileObj);
-          formData.append(`request`, JSON.stringify(updatedValues));
-          console.log(id);
-          CustomerApi.update(id, formData)
-            .then((res) => {
-              dispatch(UpdateCustomer(res.data.data));
-              toast.success("Cập nhật thành công");
-              navigate("/customerr-management");
+
+          const promises = () => {
+            return new Promise((resolve, reject) => {
+              if (uploadedFile.originFileObj) {
+                formData.append(`multipartFiles`, uploadedFile.originFileObj);
+                resolve(); // Resolve the promise immediately if there is originFileObj
+              } else if (uploadedFile.url) {
+                axios
+                  .get(uploadedFile.url, { responseType: "arraybuffer" })
+                  .then((response) => {
+                    const imageFile = new File(
+                      [response.data],
+                      "your_image_public_id.jpg",
+                      { type: "image/jpeg" }
+                    );
+                    formData.append(`multipartFile`, imageFile);
+                    resolve(); // Resolve the promise after adding the imageFile to formData
+                  })
+                  .catch((error) => {
+                    console.error("Error fetching image:", error);
+                    reject(error); // Reject the promise if there is an error
+                  });
+              } else {
+                resolve(); // Resolve the promise immediately if there is neither originFileObj nor url
+              }
+            });
+          };
+
+          promises() // Call the 'promises' function to execute the file conversion promise
+            .then(() => {
+              formData.append(`request`, JSON.stringify(updatedValues));
+              console.log(id);
+              CustomerApi.update(id, formData)
+                .then((res) => {
+                  dispatch(UpdateCustomer(res.data.data));
+                  toast.success("Cập nhật thành công");
+                  navigate("/customerr-management");
+                })
+                .catch((error) => {
+                  toast.error(error.response.data.message);
+                  console.log("Update failed:", error);
+                });
             })
             .catch((error) => {
-              toast.error(error.response.data.message);
-              console.log("Update failed:", error);
+              console.error("Error converting and appending file:", error);
             });
         }
       })
@@ -272,46 +307,22 @@ const ModalUpdateCustomer = ({ visible }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                marginTop: "20px",
-                marginBottom: "20px",
+                marginTop: "50px",
+                marginBottom: "50px",
                 fontSize: "20px",
               }}
             >
-              Ảnh đại diện đã tải lên
+              Ảnh đại diện
             </h1>
             {/* ... */}
             <div>
               <Upload
                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                 listType="picture-circle"
-                fileList={uploadedFileDeatil ? [uploadedFileDeatil] : []}
-                onPreview={handlePreview}
-                showUploadList={{
-                  showPreviewIcon: true,
-                  showRemoveIcon: true,
-                  showErrorTips: true,
-                }}
-              >
-                {uploadedFileDeatil ? null : uploadButton}
-              </Upload>
-              <h1
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginTop: "20px",
-                  marginBottom: "20px",
-                  fontSize: "20px",
-                }}
-              >
-                Cập nhật ảnh đại diện mới
-              </h1>
-              <Upload
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                listType="picture-circle"
                 fileList={uploadedFile ? [uploadedFile] : []}
                 onPreview={handlePreview}
                 onChange={handleChange}
+                onRemove={() => setUploadedFile(null)}
                 showUploadList={{
                   showPreviewIcon: true,
                   showRemoveIcon: true,
