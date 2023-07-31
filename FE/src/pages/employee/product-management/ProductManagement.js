@@ -177,6 +177,10 @@ const ProductManagement = () => {
     return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
   };
 
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row"; // Áp dụng lớp 'even-row' cho hàng chẵn và 'odd-row' cho hàng lẻ
+  };
+
   const columns = [
     {
       title: "STT",
@@ -477,9 +481,7 @@ const ProductManagement = () => {
                         height: "100%",
                         borderRadius: "5px",
                       }}
-                    >
-                      {getColorName(color)}
-                    </div>
+                    ></div>
                   </Option>
                 ))}
               </Select>
@@ -590,6 +592,7 @@ const ProductManagement = () => {
             columns={columns}
             pagination={{ pageSize: 5 }}
             className="category-table"
+            rowClassName={getRowClassName}
           />
         </div>
       </div>
