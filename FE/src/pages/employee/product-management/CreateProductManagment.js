@@ -279,46 +279,57 @@ const CreateProductManagment = () => {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: () => {
-          if (listSizeAdd == null || listSizeAdd.length <= 0) {
+          if (!listSizeAdd || listSizeAdd.length === 0) {
             toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
-          } else if (fileList == null || fileList.length <= 0) {
-            toast.error("Bạn cần thêm ảnh cho sản phẩm");
-          } else {
-            const formData = new FormData();
-            fileList.forEach((file) => {
-              formData.append(`multipartFiles`, file.originFileObj);
-              // Check if the file is starred and set the status accordingly
-              const isStarred = starredFiles[file.uid]?.isStarred || false;
-              formData.append(`status`, isStarred ? "true" : "false");
-              console.log(file);
-            });
-            console.log(productDetail);
-            const requestData = {
-              description: productDetail.description,
-              gender: productDetail.gender,
-              price: productDetail.price,
-              status: productDetail.status,
-              categoryId: productDetail.categoryId,
-              productId: productDetail.productId,
-              materialId: productDetail.materialId,
-              colorId: productDetail.colorId,
-              soleId: productDetail.soleId,
-              brandId: productDetail.brandId,
-            };
-
-            formData.append("listSize", JSON.stringify(listSizeAdd));
-            formData.append("data", JSON.stringify(requestData));
-            console.log(listSizeAdd);
-            axios
-              .post("http://localhost:8080/admin/product-detail", formData)
-              .then((response) => {
-                console.log(response.data);
-                setIsSubmitting(true);
-              })
-              .catch((error) => {
-                console.error(error);
-              });
+            return;
           }
+
+          if (!fileList || fileList.length === 0) {
+            toast.error("Bạn cần thêm ảnh cho sản phẩm");
+            return;
+          }
+          // check ảnh được chọn là mặc định chưa
+          const isAnyStarred = Object.values(starredFiles).some(
+            (file) => file.isStarred
+          );
+          if (!isAnyStarred) {
+            toast.error("Bạn cần chọn ảnh để làm mặc định");
+            return;
+          }
+          const formData = new FormData();
+          fileList.forEach((file) => {
+            formData.append(`multipartFiles`, file.originFileObj);
+            // Check if the file is starred and set the status accordingly
+            const isStarred = starredFiles[file.uid]?.isStarred || false;
+            formData.append(`status`, isStarred ? "true" : "false");
+            console.log(file);
+          });
+          console.log(productDetail);
+          const requestData = {
+            description: productDetail.description,
+            gender: productDetail.gender,
+            price: productDetail.price,
+            status: productDetail.status,
+            categoryId: productDetail.categoryId,
+            productId: productDetail.productId,
+            materialId: productDetail.materialId,
+            soleId: productDetail.soleId,
+            brandId: productDetail.brandId,
+          };
+
+          formData.append("listSize", JSON.stringify(listSizeAdd));
+          formData.append("data", JSON.stringify(requestData));
+          formData.append("listColor", JSON.stringify(selectedColors));
+
+          axios
+            .post("http://localhost:8080/admin/product-detail", formData)
+            .then((response) => {
+              console.log(response.data);
+              setIsSubmitting(true);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         },
       });
     }
@@ -466,6 +477,26 @@ const CreateProductManagment = () => {
       ),
     },
   ];
+
+  const [selectedColors, setSelectedColors] = useState([]);
+  const handleChangeColor = (selectedColors) => {
+    setSelectedColors(selectedColors);
+  };
+  const getColoredOption = (color) => {
+    return (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            width: "50px",
+            height: "25px",
+            borderRadius: "10%",
+            backgroundColor: color,
+            marginRight: "8px",
+          }}
+        />
+      </div>
+    );
+  };
 
   return (
     <>
@@ -743,15 +774,24 @@ const CreateProductManagment = () => {
                 <Col span={8}>
                   <Form.Item
                     label="Màu Sắc"
-                    name="colorId"
                     style={{ fontWeight: "bold" }}
                     rules={[
                       { required: true, message: "Vui lòng chọn màu sắc" },
                     ]}
                   >
-                    <Select placeholder="Chọn màu sắc">
+                    <Select
+                      mode="multiple"
+                      placeholder="Chọn màu sắc"
+                      value={selectedColors}
+                      onChange={handleChangeColor}
+                      optionLabelProp="colorLabel"
+                    >
                       {listColor.map((color, index) => (
-                        <Option key={index} value={color}>
+                        <Option
+                          key={index}
+                          value={color}
+                          colorLabel={getColoredOption(color)}
+                        >
                           <div
                             style={{
                               backgroundColor: color,

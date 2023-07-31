@@ -32,8 +32,6 @@ public class ProductDetailDTO {
 
     private String materialId;
 
-    private String colorId;
-
     private String soleId;
 
     private String brandId;
@@ -42,7 +40,6 @@ public class ProductDetailDTO {
         this.id = detail.getId();
         this.brandId = detail.getBrand().getId();
         this.productId = detail.getProduct().getName();
-        this.colorId = detail.getColor().getCode();
         this.categoryId = detail.getCategory().getId();
         this.description = detail.getDescription();
         this.gender = detail.getGender().name();

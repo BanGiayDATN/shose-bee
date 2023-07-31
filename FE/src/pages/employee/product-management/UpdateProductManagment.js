@@ -42,17 +42,14 @@ import {
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { GetSize } from "../../../app/reducer/Size.reducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPenToSquare,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faPlus } from "@fortawesome/free-solid-svg-icons";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
 import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
 import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { ColorProductDetailApi } from "../../../api/employee/color-product-detail/ColorProductDetail";
 
 const UpdateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -95,6 +92,9 @@ const UpdateProductManagment = () => {
     setProductDetail(values);
   };
 
+  const checkAtLeastOneStarred = () => {
+    return fileList.some((file) => file.isStarred);
+  };
 
   // update product- detail
   const handleUpload = () => {
@@ -115,6 +115,14 @@ const UpdateProductManagment = () => {
 
         if (!fileList || fileList.length === 0) {
           toast.error("Bạn cần thêm ảnh cho sản phẩm");
+          return;
+        }
+        // check ảnh được chọn là mặc định chưa
+        const isAnyStarred = Object.values(starredFiles).some(
+          (file) => file.isStarred
+        );
+        if (!isAnyStarred) {
+          toast.error("Bạn cần chọn ảnh để làm mặc định");
           return;
         }
 
@@ -165,13 +173,14 @@ const UpdateProductManagment = () => {
               categoryId: productDetail.categoryId,
               productId: productDetail.productId,
               materialId: productDetail.materialId,
-              colorId: productDetail.colorId,
               soleId: productDetail.soleId,
               brandId: productDetail.brandId,
             };
             console.log(listSizeAdd);
             formData.append("listSize", JSON.stringify(listSizeAdd));
             formData.append("data", JSON.stringify(requestData));
+
+            formData.append("listColor", JSON.stringify(selectedColors));
 
             axios
               .put(`http://localhost:8080/admin/product-detail/${id}`, formData)
@@ -257,7 +266,6 @@ const UpdateProductManagment = () => {
         ...item,
         stt: index + 1,
       }));
-      console.log(dataWithSTT);
       setListSizeAdd(dataWithSTT);
     });
   };
@@ -335,7 +343,6 @@ const UpdateProductManagment = () => {
           categoryId: productData.data.data.categoryId,
           productId: productData.data.data.productId,
           materialId: productData.data.data.materialId,
-          colorId: productData.data.data.colorId,
           soleId: productData.data.data.soleId,
           brandId: productData.data.data.brandId,
         });
@@ -345,12 +352,23 @@ const UpdateProductManagment = () => {
     }
   };
 
+  const [selectedColors, setSelectedColors] = useState([]);
+  const handleChangeColor = (color) => {
+    setSelectedColors(color);
+  };
+  const getColorProductDetail = () => {
+    ColorProductDetailApi.fetchAll(id).then((res) => {
+      setSelectedColors(res.data.data);
+    });
+  };
+
   useEffect(() => {
     setIsSubmitted(true);
     getList();
   }, []);
 
   useEffect(() => {
+    getColorProductDetail();
     getListImage();
     fetchProductDetails();
     getSizeProductDetail();
@@ -577,7 +595,6 @@ const UpdateProductManagment = () => {
       label: product.name,
     }));
   };
-
   // Add a check for product existence
   if (!product) {
     return (
@@ -901,13 +918,18 @@ const UpdateProductManagment = () => {
                 <Col span={8}>
                   <Form.Item
                     label="Màu Sắc"
-                    name="colorId"
+                    // name="colorId"
                     style={{ fontWeight: "bold" }}
                     rules={[
                       { required: true, message: "Vui lòng chọn màu sắc" },
                     ]}
                   >
-                    <Select placeholder="Chọn màu sắc">
+                    <Select
+                      mode="multiple"
+                      placeholder="Chọn màu sắc"
+                      value={selectedColors}
+                      onChange={handleChangeColor}
+                    >
                       {listColor.map((color, index) => (
                         <Option key={index} value={color}>
                           <div
@@ -918,6 +940,7 @@ const UpdateProductManagment = () => {
                               borderRadius: "5px",
                             }}
                           ></div>
+                          {color}
                         </Option>
                       ))}
                     </Select>

@@ -55,10 +55,6 @@ public class ProductDetail extends PrimaryEntity {
     @JoinColumn(name = "id_brand",referencedColumnName = "id")
     private Brand brand;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_color",referencedColumnName = "id")
-    private Color color;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_material",referencedColumnName = "id")
