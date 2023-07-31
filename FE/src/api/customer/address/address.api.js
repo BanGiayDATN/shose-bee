@@ -3,7 +3,7 @@ export class AddressApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/customer/address?id_user=59b011f2-90b4-46af-b7a0-681c0dce1771`,
+      url: `/customer/address?id_user=f01cb41d-cf72-46b0-8bb4-290e28863062`,
       params: filter,
     });
   };
@@ -52,8 +52,8 @@ export class AddressApi {
       headers: {
         token: "d73043b1-2777-11ee-b394-8ac29577e80e",
       },
-      url: `  https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${codeProvince}`,
-      params: { codeProvince },
+      url: `  https://online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+      params: { province_id: codeProvince },
     });
   };
   static fetchAllProvinceWard = (codeDistrict) => {
@@ -62,36 +62,48 @@ export class AddressApi {
       headers: {
         token: "d73043b1-2777-11ee-b394-8ac29577e80e",
       },
-      url: ` https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${codeDistrict}`,
-      params: { codeDistrict },
+      url: ` https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
+      params: { district_id: codeDistrict },
     });
   };
 
-  //   static fetchAllMoneyShip = (
-  //     insurance_value,
-  //     coupon,
-  //     to_district_id,
-  //     to_ward_code
-  //   ) => {
-  //     return requestAdress({
-  //       method: "GET",
-  //       headers: {
-  //         token: "d73043b1-2777-11ee-b394-8ac29577e80e",
-  //         shop_id: "4374133",
-  //       },
-  //       url: ` https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=${service_id}&insurance_value=${insurance_value}&coupon=${coupon}&from_district_id=${from_district_id}&to_district_id=${to_district_id}&to_ward_code=${to_ward_code}&height=${height}&length=${length}&weight=${weight}&width=${width}`,
-  //       params: {
-  //         service_id: 53321,
-  //         insurance_value,
-  //         coupon,
-  //         from_district_id: 1542,
-  //         to_district_id,
-  //         to_ward_code,
-  //         height: 15,
-  //         length: 15,
-  //         weight: 1000,
-  //         width: 15,
-  //       },
-  //     });
-  //   };
+  static fetchAllMoneyShip = (to_district_id, to_ward_code) => {
+    return requestAdress({
+      method: "GET",
+      headers: {
+        token: "d73043b1-2777-11ee-b394-8ac29577e80e",
+        shop_id: "4374133",
+      },
+      url: ` https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`,
+      params: {
+        service_type_id: 2,
+        insurance_value: "",
+        coupon: "",
+        from_district_id: 1485,
+        to_district_id: to_district_id,
+        to_ward_code: to_ward_code,
+        height: 15,
+        length: 15,
+        weight: 1000,
+        width: 15,
+      },
+    });
+  };
+  static fetchAllDayShip = (to_district_id, to_ward_code) => {
+    return requestAdress({
+      method: "GET",
+      headers: {
+        token: "d73043b1-2777-11ee-b394-8ac29577e80e",
+        shop_id: "4374133",
+      },
+      url: `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime`,
+      params: {
+        from_district_id: 1485,
+        from_ward_code: "1A0607",
+        to_district_id: to_district_id,
+        to_ward_code: to_ward_code,
+        service_id: 53320,
+      },
+    });
+  };
 }

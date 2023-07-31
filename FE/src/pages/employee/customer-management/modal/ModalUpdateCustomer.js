@@ -97,6 +97,7 @@ const ModalUpdateCustomer = ({ visible }) => {
   };
 
   const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -135,6 +136,8 @@ const ModalUpdateCustomer = ({ visible }) => {
             district: resAddress.data.data.district,
             ward: resAddress.data.data.ward,
             line: resAddress.data.data.line,
+            toDistrictId: resAddress.data.data.toDistrictId,
+            provinceId: resAddress.data.data.provinceId,
           });
           AddressApi.fetchAllProvinceWard(
             resAddress.data.data.toDistrictId
@@ -548,6 +551,9 @@ const ModalUpdateCustomer = ({ visible }) => {
                   </Radio.Group>
                 </Form.Item>
                 <Form.Item name="toDistrictId" hidden>
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item name="provinceId" hidden>
                   <Input disabled />
                 </Form.Item>
                 {/* <div>
