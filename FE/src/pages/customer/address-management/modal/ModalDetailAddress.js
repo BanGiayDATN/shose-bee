@@ -46,7 +46,7 @@ const ModalDeatailAddress = ({ visible, id, onCancel }) => {
         </Form.Item>
 
         <Form.Item label="Xã/Phường">
-          <Input value={address != null ? address.werd : null} readOnly />
+          <Input value={address != null ? address.ward : null} readOnly />
         </Form.Item>
 
         <Form.Item label="Số nhà/Ngõ/Đường">

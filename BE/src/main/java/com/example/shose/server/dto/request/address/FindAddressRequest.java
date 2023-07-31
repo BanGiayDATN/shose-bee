@@ -1,6 +1,7 @@
 package com.example.shose.server.dto.request.address;
 
 import com.example.shose.server.infrastructure.common.PageableRequest;
+import com.example.shose.server.infrastructure.constant.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,8 @@ public class FindAddressRequest extends PageableRequest {
     private String province;
 
     private String ward;
+
+    private Status status;
 
     private String id_user;
 

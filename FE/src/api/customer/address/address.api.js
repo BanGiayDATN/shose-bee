@@ -3,7 +3,7 @@ export class AddressApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/customer/address?id_user=8ae00573-7e45-4d07-a283-2c2a4a64e973`,
+      url: `/customer/address?id_user=59b011f2-90b4-46af-b7a0-681c0dce1771`,
       params: filter,
     });
   };
@@ -20,6 +20,13 @@ export class AddressApi {
     return request({
       method: "GET",
       url: `/customer/address/${id}`,
+    });
+  };
+
+  static getAddressByUserIdAndStatus = (id) => {
+    return request({
+      method: "GET",
+      url: `/customer/address/address-user/${id}`,
     });
   };
 

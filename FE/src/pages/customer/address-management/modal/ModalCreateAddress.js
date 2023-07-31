@@ -64,6 +64,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
   };
 
   const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -101,7 +102,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "8ae00573-7e45-4d07-a283-2c2a4a64e973",
+          userId: "59b011f2-90b4-46af-b7a0-681c0dce1771",
         }}
       >
         <Form.Item
@@ -148,7 +149,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
 
         <Form.Item
           label="Xã/Phường"
-          name="werd"
+          name="ward"
           rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
         >
           <Select defaultValue="">
@@ -172,10 +173,23 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         >
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
+        <Form.Item
+          label="Trạng thái"
+          name="status"
+          rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+        >
+          <Select defaultValue="DANG_SU_DUNG">
+            <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
+            <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+          </Select>
+        </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="userId" hidden>
           <Input disabled />
         </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="toDistrictId" hidden>
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="provinceId" hidden>
           <Input disabled />
         </Form.Item>
       </Form>

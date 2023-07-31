@@ -17,7 +17,8 @@ const addressSlice = createSlice({
         line: data.line,
         district: data.district,
         province: data.province,
-        ward: data.werd,
+        ward: data.ward,
+        status: data.status,
         createdDate: data.createdDate,
         lastModifiedDate: data.startTime,
         userId: data.userId,
@@ -34,7 +35,8 @@ const addressSlice = createSlice({
         state[index].line = updatedAddress.line;
         state[index].district = updatedAddress.district;
         state[index].province = updatedAddress.province;
-        state[index].ward = updatedAddress.werd;
+        state[index].ward = updatedAddress.ward;
+        state[index].status = updatedAddress.status;
         state[index].createdDate = updatedAddress.createdDate;
         state[index].lastModifiedDate = updatedAddress.lastModifiedDate;
       }
