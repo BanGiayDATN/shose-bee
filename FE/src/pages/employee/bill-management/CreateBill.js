@@ -359,8 +359,8 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    if(isOpenDelivery){
-      if(checkNotEmptyAddress() && checkNotEmptyBill()){
+    if (isOpenDelivery) {
+      if (checkNotEmptyAddress() && checkNotEmptyBill()) {
         if (totalBill > 0) {
           Modal.confirm({
             title: "Xác nhận",
@@ -396,10 +396,10 @@ function CreateBill() {
         } else {
           toast("vui lòng chọn sản phẩm");
         }
-      }else{
-        toast('Vui lòng Nhập địa chỉ')
+      } else {
+        toast("Vui lòng Nhập địa chỉ");
       }
-    }else{
+    } else {
       if (totalBill > 0) {
         Modal.confirm({
           title: "Xác nhận",
@@ -436,7 +436,6 @@ function CreateBill() {
         toast("vui lòng chọn sản phẩm");
       }
     }
-   
   };
 
   useEffect(() => {}, []);
@@ -830,16 +829,28 @@ function CreateBill() {
             }}
           >
             <Col span={13} align={"center"}>
-              Sản phẩm
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >Sản phẩm</span>
+              
             </Col>
             <Col span={5} align={"center"}>
-              Số lượng
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >Số lượng</span>
+              
             </Col>
             <Col span={4} align={"center"}>
-              Tổng tiền
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >Tổng tiền</span>
+              
             </Col>
             <Col span={2} align={"center"}>
-              Thao tác
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >Thao tác</span>
+              
             </Col>
           </Row>
           {products.map((item) => {
@@ -1164,7 +1175,9 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập địa chỉ"
                           style={{ width: "90%", height: "39px" }}
-                          onChange={(e) => onChangeAddress("detail", e.target.value)}
+                          onChange={(e) =>
+                            onChangeAddress("detail", e.target.value)
+                          }
                         />
                       </Form.Item>
                     </Col>
@@ -1341,7 +1354,7 @@ function CreateBill() {
                         display: "flex",
                         alignItems: "center",
                         fontWeight: "500",
-                        marginBottom: "20px"
+                        marginBottom: "20px",
                       }}
                     >
                       <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
