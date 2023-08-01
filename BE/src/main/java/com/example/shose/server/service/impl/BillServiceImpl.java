@@ -135,13 +135,14 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill saveOffline(String idEmployee, CreateBillOfflineRequest request) {
         Optional<Account> account = accountRepository.findById(idEmployee);
+        Optional<Account> user = accountRepository.findById(request.getIdUser());
         if (!account.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
         }
         if (account.get().getRoles() == Roles.USER) {
             throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
         }
-        Bill bill = billRepository.save(Bill.builder()
+        Bill bill = Bill.builder()
                 .employees(account.get())
                 .statusBill(StatusBill.TAO_HOA_DON)
                 .typeBill(TypeBill.OFFLINE)
@@ -152,7 +153,11 @@ public class BillServiceImpl implements BillService {
                 .phoneNumber(request.getPhoneNumber())
                 .itemDiscount(new BigDecimal(request.getItemDiscount()))
                 .totalMoney(new BigDecimal(request.getTotalMoney()))
-                .moneyShip(new BigDecimal(request.getMoneyShip())).build());
+                .moneyShip(new BigDecimal(request.getMoneyShip())).build();
+        if (user.isPresent()) {
+            bill.setAccount(user.get());
+        }
+        billRepository.save(bill);
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
         System.out.println(bill);
         request.getBillDetailRequests().forEach(billDetailRequest -> {

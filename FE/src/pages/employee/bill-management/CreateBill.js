@@ -39,12 +39,9 @@ import {
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  GetPromotion,
-  SetPromotion,
-} from "../../../app/reducer/Promotion.reducer";
 import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
+import { set } from "lodash";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -53,6 +50,7 @@ function CreateBill() {
     phoneNumber: "",
     address: "",
     userName: "",
+    idUser: "",
     itemDiscount: 0,
     totalMoney: 0,
     note: "",
@@ -61,10 +59,22 @@ function CreateBill() {
     vouchers: [],
   });
 
-  const typeAddProductBill = "CREATE_BILL"
+  const [address, setAddress] = useState({
+    city: "",
+    district: "",
+    wards: "",
+    detail: "",
+  });
+
+  const onChangeAddress = (fileName, value) => {
+    setAddress({ ...address, [fileName]: value });
+  };
+
+  const typeAddProductBill = "CREATE_BILL";
 
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
+    console.log(billRequest);
   };
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
@@ -87,7 +97,7 @@ function CreateBill() {
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
   const [dayShip, setDayShip] = useState([]);
-  const [shipFee, setShipFee] = useState([]);
+  const [shipFee, setShipFee] = useState(0);
   const [searchCustomer, setSearchCustomer] = useState({
     keyword: "",
     status: "",
@@ -152,6 +162,7 @@ function CreateBill() {
   //load data quận/huyện khi chọn tỉnh
   const handleProvinceChange = (value, valueProvince) => {
     // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    setAddress({ ...address, city: valueProvince.value });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -160,6 +171,7 @@ function CreateBill() {
   };
   //load data xã/phường khi chọn quận/huyện
   const handleDistrictChange = (value, valueDistrict) => {
+    setAddress({ ...address, district: valueDistrict.value });
     // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
@@ -169,7 +181,7 @@ function CreateBill() {
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
     // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
-
+    setAddress({ ...address, wards: valueWard.value });
     AddressApi.fetchAllMoneyShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -289,6 +301,7 @@ function CreateBill() {
       ...billRequest,
       phoneNumber: record.phoneNumber,
       userName: record.fullName,
+      idUser: record.id
     });
     console.log(billRequest);
     dispatch(addUserBillWait(record));
@@ -328,33 +341,39 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    if(totalBill > 0){
-
+    if (totalBill > 0) {
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có xác nhận đặt hàng không?",
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
+          var addressuser =
+            address.detail +
+            ", " +
+            address.wards +
+            ", " +
+            address.district +
+            ", " +
+            address.city;
           var data = {
             phoneNumber: billRequest.phoneNumber,
-            address: billRequest.address,
+            address: addressuser,
             userName: billRequest.userName,
             itemDiscount: voucher.discountPrice,
             totalMoney: totalBill,
             note: billRequest.note,
-            moneyShip: 0,
+            moneyShip: shipFee,
             billDetailRequests: newProduct,
             vouchers: newVoucher,
-          }
+          };
           await BillApi.createBillWait(data).then((res) => {
             navigate("/bill-management/detail-bill/" + res.data.data.id);
           });
         },
-        onCancel: () => {
-        },
+        onCancel: () => {},
       });
-    }else{
+    } else {
       toast("vui lòng chọn sản phẩm");
     }
   };
@@ -514,18 +533,6 @@ function CreateBill() {
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
-  const [product, setProduct] = useState({
-    productDetail: {
-      image: "",
-      productName: "",
-      price: 0,
-      nameSize: "",
-      quantity: 0,
-    },
-    idProduct: "",
-    quantity: 0,
-    price: 0,
-  });
 
   const handleQuantityDecrease = (record) => {
     const updatedListSole = products.map((item) =>
@@ -568,10 +575,8 @@ function CreateBill() {
   };
 
   const removeProductInBill = (e, id) => {
-    console.log(id);
     var data = products.filter((x) => x.idSizeProduct !== id);
     setProducts(data);
-    console.log(products);
   };
   // dispatch(addProductBillWait(res.data.data));
 
@@ -1022,6 +1027,10 @@ function CreateBill() {
                     <Input
                       placeholder="Nhập họ và tên"
                       style={{ width: "90%" }}
+                      value={billRequest.userName}
+                      onChange={(e) =>
+                        ChangeBillRequest("userName", e.target.value)
+                      }
                     />
                   </Col>
                 </Row>
@@ -1037,6 +1046,10 @@ function CreateBill() {
                     <Input
                       placeholder="Nhập số điện thoại"
                       style={{ width: "90%" }}
+                      onChange={(e) =>
+                        ChangeBillRequest("phoneNumber", e.target.value)
+                      }
+                      value={billRequest.phoneNumber}
                     />
                   </Col>
                 </Row>
@@ -1170,31 +1183,12 @@ function CreateBill() {
                       rows={4}
                       style={{ width: "90%" }}
                       placeholder="Ghi chú"
+                      onChange={(e) =>
+                        ChangeBillRequest("note", e.target.value)
+                      }
                     />
                   </Col>
                 </Row>
-                <Row
-                  style={{
-                    marginTop: "30px",
-                    marginLeft: "10px",
-                    width: "100%",
-                  }}
-                >
-                  <Col span={2}>
-                    <CiDeliveryTruck
-                      style={{ height: "30px", width: "50px" }}
-                    />
-                  </Col>
-                  <Col
-                    span={22}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      fontWeight: "500",
-                    }}
-                  >
-                    <span>Thời gian nhận hàng dự kiến: {}</span>
-                  </Col>
                 <Row
                   style={{
                     marginTop: "30px",
@@ -1294,7 +1288,12 @@ function CreateBill() {
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={8}>Phí vận chuyển: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {shipFee} đ{" "}
+                {shipFee >= 1000
+                  ? shipFee.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : shipFee + " đ"}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
@@ -1323,23 +1322,25 @@ function CreateBill() {
                   return (
                     accumulator + currentValue.price * currentValue.quantity
                   );
-                }, 0) >= 1000
-                  ? products
-                      .reduce((accumulator, currentValue) => {
-                        return (
-                          accumulator +
-                          currentValue.price * currentValue.quantity
-                        );
-                      }, 0)
+                }, 0) +
+                  shipFee >=
+                1000
+                  ? (products.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0) +
+                    shipFee )
                       .toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })
-                  : products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) + " đ"}
+                  : (products.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0) +
+                    shipFee ) + " đ"}
               </Col>
             </Row>
             <Row style={{ margin: "40px 20px 30px 0" }} justify="end">
