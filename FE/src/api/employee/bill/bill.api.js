@@ -95,6 +95,21 @@ export class BillApi {
         data: data
       });
     };
+
+    static removeProductInBill = (id, size) => {
+      return request({
+        method: "DELETE",
+        url: `/admin/bill-detail/remove/${id}/${size}` ,
+      });
+    };
+
+    static updateProductInBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill-detail/${id}` ,
+        data: data
+      });
+    };
     // static getOne = (id) => {
     //   return request({
     //     method: "GET",

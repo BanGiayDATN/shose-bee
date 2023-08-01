@@ -356,18 +356,13 @@ function DetailBill() {
     useState(false);
   const showModalRefundProduct = async (e, id) => {
     await BillApi.getDetaiProductInBill(id).then((res) => {
-      setRefundProduct({
+      setUpdateProduct({
         ...refundProduct,
-        [refundProduct.idProduct]: res.data.data.idProduct,
+        idProduct: res.data.data.idProduct,
+        size: (res.data.data.nameSize),
+        id: res.data.data.id
       });
-      setRefundProduct({
-        ...refundProduct,
-        [refundProduct.size]: res.data.data.size,
-      });
-      setRefundProduct({
-        ...refundProduct,
-        [refundProduct.id]: res.data.data.id,
-      });
+ 
       setDetailProduct(res.data.data);
       setQuantity(res.data.data.quantity);
     });
@@ -396,11 +391,117 @@ function DetailBill() {
         },
       });
     }
+    setQuantity(1);
   };
   const handleCancelRefundProduct = () => {
     setIsModalRefundProductOpen(false);
+    setQuantity(1);
   };
   // end modal refundProduct
+
+  // begin modal refundProduct
+  const [updateProduct, setUpdateProduct] = useState({
+    idBill: id,
+    idProduct: "",
+    size: "",
+    quantity: 0,
+    price: "",
+    totalMoney: ""
+  });
+
+  const [idProductInBill, setIdProductInBill] = useState("");
+
+  const onChangeUpdateProduct = (fileName, value) => {
+    setUpdateProduct({ ...updateProduct, [fileName]: value });
+  };
+
+  const [isModaUpdateProduct, setIsModalUpdateProduct] =
+    useState(false);
+  const showModalUpdateProduct = async (e, id) => {
+    await BillApi.getDetaiProductInBill(id).then((res) => {
+      console.log(res);
+      setUpdateProduct({
+        ...updateProduct,
+        idProduct: res.data.data.idProduct,
+        size: (res.data.data.nameSize),
+      });
+      setIdProductInBill(res.data.data.id);
+      setDetailProduct(res.data.data);
+      setQuantity(res.data.data.quantity);
+    });
+    setIsModalUpdateProduct(true);
+  };
+  const checkNotEmptyUpdateProduct = () => {
+    return Object.keys(refundProduct)
+      .filter((key) => key !== "note")
+      .every((key) => refundProduct[key] !== "");
+  };
+
+  const handleOkUpdateProduct = () => {
+    var listProduct = [...detailProductInBill];
+    var index = listProduct.findIndex(item => item.id == idProductInBill);
+    var newProduct = {...listProduct[index]};
+    newProduct.quantity = quantity;
+    listProduct.splice(index, 1, newProduct);
+    // newProduct.quantity = quantity
+    listProduct.splice(index, 1, newProduct)
+    var total = listProduct.reduce((accumulator, currentValue) => {
+      return (
+        accumulator + currentValue.price * currentValue.quantity
+      );
+    }, 0);
+    console.log(total);
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận thay đổi không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          var data = {
+            idBill: updateProduct.idBill,
+            idProduct: updateProduct.idProduct,
+            size: updateProduct.size,
+            quantity: quantity,
+            price: "",
+            totalMoney: total
+          }
+         await BillApi.updateProductInBill(idProductInBill, data).then(res => {
+            toast("Thay đổi thành công");
+          })
+          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+            dispatch(getProductInBillDetail(res.data.data));
+          });
+          await BillApi.fetchDetailBill(id).then((res) => {
+            dispatch(getBill(res.data.data));
+            var index = listStatus.findIndex(
+              (item) => item.status == res.data.data.statusBill
+            );
+            if (res.data.data.statusBill == "TRA_HANG") {
+              index = 6;
+            }
+            if (res.data.data.statusBill == "DA_HUY") {
+              index = 7;
+            }
+            dispatch(addStatusPresent(index));
+          });
+          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+            dispatch(getBillHistory(res.data.data));
+          });
+          setIsModalRefundProductOpen(false);
+        },
+        onCancel: () => {
+          setIsModalRefundProductOpen(false);
+        },
+      });
+    setIsModalUpdateProduct(false);
+    setQuantity(1);
+  };
+  const handleCancelUpdateProduct = () => {
+    setIsModalUpdateProduct(false);
+    setQuantity(1);
+  };
+  // end modal refundProduct
+
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
@@ -819,10 +920,46 @@ function DetailBill() {
     return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
   };
 
+  // begin delete product
+
+  const removeProductInBill = (idProduct, size) =>{
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có xác nhận xóa sản phẩmkhông?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async () => {
+        await BillApi.removeProductInBill(idProduct, size).then(res =>{
+          toast("xóa thành công")
+        })
+        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+          dispatch(getProductInBillDetail(res.data.data));
+        });
+        await BillApi.fetchDetailBill(id).then((res) => {
+          dispatch(getBill(res.data.data));
+          var index = listStatus.findIndex(
+            (item) => item.status == res.data.data.statusBill
+          );
+          if (res.data.data.statusBill == "TRA_HANG") {
+            index = 6;
+          }
+          if (res.data.data.statusBill == "DA_HUY") {
+            index = 7;
+          }
+          dispatch(addStatusPresent(index));
+        });
+        await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+          dispatch(getBillHistory(res.data.data));
+        });
+      },
+      onCancel: () => {},
+    });
+  }
+  // end delete product 
+
   return (
     <div>
       <Row style={{ width: "100%" }}>
-        {/* <TimelineTest></TimelineTest> */}
         <div
           className="row"
           style={{
@@ -1227,37 +1364,6 @@ function DetailBill() {
                 </Col>
               </Row>
             </Col>
-
-            {/* <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={8}>Tiền giảm:</Col>
-                <Col span={16}>
-                  <span>
-                    {bill.itemDiscount >= 1000
-                      ? bill.itemDiscount.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      : bill.itemDiscount + " đ"}
-                  </span>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={12} className="text">
-              <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={8}> Tổng tiền:</Col>
-                <Col span={16}>
-                  <span>
-                    {bill.totalMoney >= 1000
-                      ? bill.totalMoney.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      : bill.totalMoney + " đ"}
-                  </span>
-                </Col>
-              </Row>
-            </Col> */}
             <Col span={12} className="text">
               <Row
                 style={{
@@ -1291,15 +1397,6 @@ function DetailBill() {
         ) : (
           <div></div>
         )}
-        {/* <Row style={{ width: "100%" }}>
-          <Table
-            dataSource={detailProductInBill}
-            columns={columns}
-            rowKey="id"
-            pagination={false} // Disable default pagination
-            className="product-table"
-          />
-        </Row> */}
         <Row
           style={{
             width: "100%",
@@ -1385,6 +1482,7 @@ function DetailBill() {
                             border: "1px solid #00ffe0",
                             borderRadius: "10px",
                           }}
+                          onClick={(e) => showModalUpdateProduct(e, item.id)}
                         >
                           Cập nhật
                         </Button>
@@ -1405,7 +1503,7 @@ function DetailBill() {
                             border: "1px solid #eb5a36",
                             borderRadius: "10px",
                           }}
-                          // onClick={(e) => showModalRefundProduct(e, item.id)}
+                          onClick={(e) => removeProductInBill( item.id, item.nameSize)}
                         >
                           Xóa
                         </Button>
@@ -1492,22 +1590,6 @@ function DetailBill() {
               </Col>
               <Col span={10} align={"end"}>
                 <span style={{ color: "red", fontWeight: "bold" }}>
-                  {/* {bill.totalMoney + bill.moneyShip - bill.itemDiscount >= 1000
-                    ? (
-                        bill.totalMoney +
-                        bill.moneyShip -
-                        bill.itemDiscount
-                      ).toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : bill.totalMoney + bill.moneyShip - bill.itemDiscount < 0
-                    ? "0 đ"
-                    : bill.totalMoney +
-                      bill.moneyShip -
-                      bill.itemDiscount +
-                      " đ"} */}
-
                   {detailProductInBill.reduce((accumulator, currentValue) => {
                     return (
                       accumulator + currentValue.price * currentValue.quantity
@@ -1961,34 +2043,7 @@ function DetailBill() {
         <Form initialValues={initialValues}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
-              {/* <label style={{ top: "-15px" }}>Giá</label>
-              <Form.Item
-                label=""
-                name="price"
-                style={{ marginBottom: "20px" }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập số tiền",
-                  },
-                ]}
-              >
-                <NumberFormat
-                  thousandSeparator={true}
-                  suffix=" VND"
-                  placeholder="Vui lòng nhập số tiền"
-                  style={{
-                    width: "100%",
-                    position: "relative",
-                    height: "37px",
-                  }}
-                  customInput={Input}
-                  value={statusBill.totalMoney}
-                  onChange={(e) =>
-                    onChangeDescStatusBill("totalMoney", e.target.value)
-                  }
-                />
-              </Form.Item> */}
+             
             </Col>
           </Row>
 
@@ -2077,6 +2132,7 @@ function DetailBill() {
                   <InputNumber
                     min={1}
                     value={quantity}
+                    max={detaiProduct.quantity}
                     style={{ marginLeft: "4px" }}
                     onChange={(value) => setQuantity(value)}
                   />
@@ -2107,7 +2163,141 @@ function DetailBill() {
           </Row>
         </Form>
       </Modal>
-      {/* end modal bill  */}
+      {/* end modal refundProduct  */}
+
+      {/* begin modal update product  */}
+      <Modal
+        title="Sửa sản phẩm"
+        className="refundProduct"
+        open={isModaUpdateProduct}
+        onOk={handleOkUpdateProduct}
+        onCancel={handleCancelUpdateProduct}
+        style={{ width: "800px" }}
+      >
+        <Form initialValues={initialValues}>
+          <Row style={{ width: "100%", marginTop: "10px" }}>
+            <Col span={24} style={{ marginTop: "10px" }}>
+             
+            </Col>
+          </Row>
+
+          <Row style={{ marginTop: "10px", width: "100%" }}>
+            <Col span={7}>
+              <img
+                src={detaiProduct.image}
+                alt="Ảnh sản phẩm"
+                style={{
+                  width: "170px",
+                  borderRadius: "10%",
+                  height: "140px",
+                  marginLeft: "5px",
+                }}
+              />
+            </Col>
+            <Col span={14}>
+              <Row>
+                {" "}
+                <span
+                  style={{
+                    fontSize: "19",
+                    fontWeight: "500",
+                    marginTop: "10px",
+                  }}
+                >
+                  {detaiProduct.productName}
+                </span>{" "}
+              </Row>
+              <Row>
+                <span style={{ color: "red", fontWeight: "500" }}>
+                  {detaiProduct.price >= 1000
+                    ? detaiProduct.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : detaiProduct.price + " đ"}
+                </span>{" "}
+              </Row>
+              <Row>
+                <span style={{ fontSize: "12", marginTop: "10px" }}>
+                  Size: {detaiProduct.nameSize}
+                </span>{" "}
+              </Row>
+              <Row>
+                <span style={{ fontSize: "12" }}>
+                  x {detaiProduct.quantity}
+                </span>{" "}
+              </Row>
+            </Col>
+            <Col span={3} style={{ display: "flex", alignItems: "center" }}>
+              <span
+                style={{
+                  color: "red",
+                  fontWeight: "bold",
+                  marginBottom: "30px",
+                }}
+              >
+                {detaiProduct.price * detaiProduct.quantity >= 1000
+                  ? (detaiProduct.price * detaiProduct.quantity).toLocaleString(
+                      "vi-VN",
+                      {
+                        style: "currency",
+                        currency: "VND",
+                      }
+                    )
+                  : detaiProduct.price * detaiProduct.quantity + " đ"}
+              </span>{" "}
+            </Col>
+          </Row>
+          <Row style={{ width: "100%", marginTop: "20px" }} justify={"center"}>
+            <Col span={4}>Số lượng</Col>
+            <Col span={6}>
+              <Row>
+                <Col span={6}>
+                  {" "}
+                  <Button
+                    onClick={handleDecrease}
+                    style={{ margin: "0 4px 0 10px" }}
+                  >
+                    -
+                  </Button>
+                </Col>
+                <Col span={12}>
+                  {" "}
+                  <InputNumber
+                    min={1}
+                    max={detaiProduct.maxQuantity}
+                    value={quantity}
+                    style={{ marginLeft: "4px" }}
+                    onChange={(value) => setQuantity(value)}
+                  />
+                </Col>
+                <Col span={6}>
+                  {" "}
+                  <Button
+                    onClick={handleIncrease}
+                    style={{ margin: "0 4px 0 4px" }}
+                  >
+                    +
+                  </Button>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label className="label-bill">Ghi chú</label>
+              <TextArea
+                rows={4}
+                value={refundProduct.note}
+                style={{ width: "100%", position: "relative" }}
+                placeholder="Nhập mô tả"
+                onChange={(e) => onChangeUpdateProduct("note", e.target.value)}
+              />
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+      {/* end modal update product  */}
 
       {/* begin modal product */}
       <Modal

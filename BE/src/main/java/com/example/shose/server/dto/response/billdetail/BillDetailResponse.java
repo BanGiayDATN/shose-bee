@@ -58,4 +58,7 @@ public interface BillDetailResponse {
     @Value("#{target.quantity}")
     Integer getQuantity();
 
+    @Value("#{target.max_quantity}")
+    Integer getMaxQuantity();
+
 }

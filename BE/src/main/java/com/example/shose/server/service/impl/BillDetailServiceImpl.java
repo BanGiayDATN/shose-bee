@@ -146,7 +146,7 @@ public class BillDetailServiceImpl implements BillDetailService {
     @Override
     public String update(String id, CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
-        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdBill());
+        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
         Optional<Size> size = sizeRepository.findByName(request.getSize());
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -168,8 +168,9 @@ public class BillDetailServiceImpl implements BillDetailService {
         sizeProductDetailRepository.save(sizeProductDetail.get());
 
         Optional<BillDetail> billDetail = billDetailRepository.findById(id);
-
-        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
+        bill.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
+        billRepository.save(bill.get());
+//        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
         billDetail.get().setQuantity(request.getQuantity());
         billDetailRepository.save(billDetail.get());
         return billDetail.get().getId();
