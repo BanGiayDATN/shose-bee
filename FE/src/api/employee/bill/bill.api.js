@@ -110,6 +110,13 @@ export class BillApi {
         data: data
       });
     };
+    static refundProduct = ( data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill-detail/refund` ,
+        data: data
+      });
+    };
     // static getOne = (id) => {
     //   return request({
     //     method: "GET",
