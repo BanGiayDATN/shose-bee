@@ -148,6 +148,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
         Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
         Optional<Size> size = sizeRepository.findByName(request.getSize());
+        Optional<BillDetail> billDetail = billDetailRepository.findById(id);
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
@@ -161,13 +162,13 @@ public class BillDetailServiceImpl implements BillDetailService {
         if (!productDetail.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if (sizeProductDetail.get().getQuantity() < request.getQuantity()) {
+        if ((sizeProductDetail.get().getQuantity() + billDetail.get().getQuantity()) < request.getQuantity()) {
             throw new RestApiException(Message.ERROR_QUANTITY);
         }
-        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
+        sizeProductDetail.get().setQuantity( (sizeProductDetail.get().getQuantity() + billDetail.get().getQuantity() ) - request.getQuantity());
         sizeProductDetailRepository.save(sizeProductDetail.get());
 
-        Optional<BillDetail> billDetail = billDetailRepository.findById(id);
+
         bill.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         billRepository.save(bill.get());
 //        billDetail.get().setPrice(new BigDecimal(request.getPrice()));

@@ -359,10 +359,10 @@ function DetailBill() {
       setUpdateProduct({
         ...refundProduct,
         idProduct: res.data.data.idProduct,
-        size: (res.data.data.nameSize),
-        id: res.data.data.id
+        size: res.data.data.nameSize,
+        id: res.data.data.id,
       });
- 
+
       setDetailProduct(res.data.data);
       setQuantity(res.data.data.quantity);
     });
@@ -406,7 +406,7 @@ function DetailBill() {
     size: "",
     quantity: 0,
     price: "",
-    totalMoney: ""
+    totalMoney: "",
   });
 
   const [idProductInBill, setIdProductInBill] = useState("");
@@ -415,15 +415,14 @@ function DetailBill() {
     setUpdateProduct({ ...updateProduct, [fileName]: value });
   };
 
-  const [isModaUpdateProduct, setIsModalUpdateProduct] =
-    useState(false);
+  const [isModaUpdateProduct, setIsModalUpdateProduct] = useState(false);
   const showModalUpdateProduct = async (e, id) => {
     await BillApi.getDetaiProductInBill(id).then((res) => {
       console.log(res);
       setUpdateProduct({
         ...updateProduct,
         idProduct: res.data.data.idProduct,
-        size: (res.data.data.nameSize),
+        size: res.data.data.nameSize,
       });
       setIdProductInBill(res.data.data.id);
       setDetailProduct(res.data.data);
@@ -439,60 +438,58 @@ function DetailBill() {
 
   const handleOkUpdateProduct = () => {
     var listProduct = [...detailProductInBill];
-    var index = listProduct.findIndex(item => item.id == idProductInBill);
-    var newProduct = {...listProduct[index]};
+    var index = listProduct.findIndex((item) => item.id == idProductInBill);
+    var newProduct = { ...listProduct[index] };
     newProduct.quantity = quantity;
     listProduct.splice(index, 1, newProduct);
     // newProduct.quantity = quantity
-    listProduct.splice(index, 1, newProduct)
+    listProduct.splice(index, 1, newProduct);
     var total = listProduct.reduce((accumulator, currentValue) => {
-      return (
-        accumulator + currentValue.price * currentValue.quantity
-      );
+      return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
     console.log(total);
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có xác nhận thay đổi không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: async () => {
-          var data = {
-            idBill: updateProduct.idBill,
-            idProduct: updateProduct.idProduct,
-            size: updateProduct.size,
-            quantity: quantity,
-            price: "",
-            totalMoney: total
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có xác nhận thay đổi không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async () => {
+        var data = {
+          idBill: updateProduct.idBill,
+          idProduct: updateProduct.idProduct,
+          size: updateProduct.size,
+          quantity: quantity,
+          price: "",
+          totalMoney: total,
+        };
+        await BillApi.updateProductInBill(idProductInBill, data).then((res) => {
+          toast("Thay đổi thành công");
+        });
+        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+          dispatch(getProductInBillDetail(res.data.data));
+        });
+        await BillApi.fetchDetailBill(id).then((res) => {
+          dispatch(getBill(res.data.data));
+          var index = listStatus.findIndex(
+            (item) => item.status == res.data.data.statusBill
+          );
+          if (res.data.data.statusBill == "TRA_HANG") {
+            index = 6;
           }
-         await BillApi.updateProductInBill(idProductInBill, data).then(res => {
-            toast("Thay đổi thành công");
-          })
-          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-            dispatch(getProductInBillDetail(res.data.data));
-          });
-          await BillApi.fetchDetailBill(id).then((res) => {
-            dispatch(getBill(res.data.data));
-            var index = listStatus.findIndex(
-              (item) => item.status == res.data.data.statusBill
-            );
-            if (res.data.data.statusBill == "TRA_HANG") {
-              index = 6;
-            }
-            if (res.data.data.statusBill == "DA_HUY") {
-              index = 7;
-            }
-            dispatch(addStatusPresent(index));
-          });
-          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-            dispatch(getBillHistory(res.data.data));
-          });
-          setIsModalRefundProductOpen(false);
-        },
-        onCancel: () => {
-          setIsModalRefundProductOpen(false);
-        },
-      });
+          if (res.data.data.statusBill == "DA_HUY") {
+            index = 7;
+          }
+          dispatch(addStatusPresent(index));
+        });
+        await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+          dispatch(getBillHistory(res.data.data));
+        });
+        setIsModalRefundProductOpen(false);
+      },
+      onCancel: () => {
+        setIsModalRefundProductOpen(false);
+      },
+    });
     setIsModalUpdateProduct(false);
     setQuantity(1);
   };
@@ -501,7 +498,6 @@ function DetailBill() {
     setQuantity(1);
   };
   // end modal refundProduct
-
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
@@ -922,16 +918,16 @@ function DetailBill() {
 
   // begin delete product
 
-  const removeProductInBill = (idProduct, size) =>{
+  const removeProductInBill = (idProduct, size) => {
     Modal.confirm({
       title: "Xác nhận",
       content: "Bạn có xác nhận xóa sản phẩmkhông?",
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: async () => {
-        await BillApi.removeProductInBill(idProduct, size).then(res =>{
-          toast("xóa thành công")
-        })
+        await BillApi.removeProductInBill(idProduct, size).then((res) => {
+          toast("xóa thành công");
+        });
         await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
           dispatch(getProductInBillDetail(res.data.data));
         });
@@ -954,8 +950,8 @@ function DetailBill() {
       },
       onCancel: () => {},
     });
-  }
-  // end delete product 
+  };
+  // end delete product
 
   return (
     <div>
@@ -1503,7 +1499,9 @@ function DetailBill() {
                             border: "1px solid #eb5a36",
                             borderRadius: "10px",
                           }}
-                          onClick={(e) => removeProductInBill( item.id, item.nameSize)}
+                          onClick={(e) =>
+                            removeProductInBill(item.id, item.nameSize)
+                          }
                         >
                           Xóa
                         </Button>
@@ -1772,38 +1770,7 @@ function DetailBill() {
         onCancel={handleCancelBill}
       >
         <Form initialValues={initialValues}>
-          <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24} style={{ marginTop: "10px" }}>
-              {/* <label style={{ top: "-15px" }}>Giá</label>
-              <Form.Item
-                label=""
-                name="price"
-                style={{ marginBottom: "20px" }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập số tiền",
-                  },
-                ]}
-              >
-                <NumberFormat
-                  thousandSeparator={true}
-                  suffix=" VND"
-                  placeholder="Vui lòng nhập số tiền"
-                  style={{
-                    width: "100%",
-                    position: "relative",
-                    height: "37px",
-                  }}
-                  customInput={Input}
-                  value={statusBill.totalMoney}
-                  onChange={(e) =>
-                    onChangeDescStatusBill("totalMoney", e.target.value)
-                  }
-                />
-              </Form.Item> */}
-            </Col>
-          </Row>
+          <Row style={{ width: "100%", marginTop: "10px" }}></Row>
 
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
@@ -2042,9 +2009,7 @@ function DetailBill() {
       >
         <Form initialValues={initialValues}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24} style={{ marginTop: "10px" }}>
-             
-            </Col>
+            <Col span={24} style={{ marginTop: "10px" }}></Col>
           </Row>
 
           <Row style={{ marginTop: "10px", width: "100%" }}>
@@ -2176,9 +2141,7 @@ function DetailBill() {
       >
         <Form initialValues={initialValues}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24} style={{ marginTop: "10px" }}>
-             
-            </Col>
+            <Col span={24} style={{ marginTop: "10px" }}></Col>
           </Row>
 
           <Row style={{ marginTop: "10px", width: "100%" }}>

@@ -2,6 +2,7 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
+  Form,
   Input,
   InputNumber,
   Modal,
@@ -71,6 +72,10 @@ function CreateBill() {
   };
 
   const typeAddProductBill = "CREATE_BILL";
+
+  const initialValues = {
+    status: "DANG_SU_DUNG",
+  };
 
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
@@ -301,7 +306,7 @@ function CreateBill() {
       ...billRequest,
       phoneNumber: record.phoneNumber,
       userName: record.fullName,
-      idUser: record.id
+      idUser: record.id,
     });
     console.log(billRequest);
     dispatch(addUserBillWait(record));
@@ -327,7 +332,20 @@ function CreateBill() {
     vouchers: vouchers,
   });
   const navigate = useNavigate();
-  const orderBill = async (e) => {
+
+  const checkNotEmptyBill = () => {
+    return Object.keys(billRequest)
+      .filter((key) => key !== "note")
+      .every((key) => billRequest[key] !== "");
+  };
+  const checkNotEmptyAddress = () => {
+    return (
+      Object.keys(address).filter((key) => address[key] !== "").length ===
+      Object.keys(address).length - 1
+    );
+  };
+
+  const orderBill = (e) => {
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -341,41 +359,84 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    if (totalBill > 0) {
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có xác nhận đặt hàng không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: async () => {
-          var addressuser =
-            address.detail +
-            ", " +
-            address.wards +
-            ", " +
-            address.district +
-            ", " +
-            address.city;
-          var data = {
-            phoneNumber: billRequest.phoneNumber,
-            address: addressuser,
-            userName: billRequest.userName,
-            itemDiscount: voucher.discountPrice,
-            totalMoney: totalBill,
-            note: billRequest.note,
-            moneyShip: shipFee,
-            billDetailRequests: newProduct,
-            vouchers: newVoucher,
-          };
-          await BillApi.createBillWait(data).then((res) => {
-            navigate("/bill-management/detail-bill/" + res.data.data.id);
+    if(isOpenDelivery){
+      if(checkNotEmptyAddress() && checkNotEmptyBill()){
+        if (totalBill > 0) {
+          Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có xác nhận đặt hàng không?",
+            okText: "Đồng ý",
+            cancelText: "Hủy",
+            onOk: async () => {
+              var addressuser =
+                address.detail +
+                ", " +
+                address.wards +
+                ", " +
+                address.district +
+                ", " +
+                address.city;
+              var data = {
+                phoneNumber: billRequest.phoneNumber,
+                address: addressuser,
+                userName: billRequest.userName,
+                itemDiscount: voucher.discountPrice,
+                totalMoney: totalBill,
+                note: billRequest.note,
+                moneyShip: shipFee,
+                billDetailRequests: newProduct,
+                vouchers: newVoucher,
+              };
+              await BillApi.createBillWait(data).then((res) => {
+                navigate("/bill-management/detail-bill/" + res.data.data.id);
+              });
+            },
+            onCancel: () => {},
           });
-        },
-        onCancel: () => {},
-      });
-    } else {
-      toast("vui lòng chọn sản phẩm");
+        } else {
+          toast("vui lòng chọn sản phẩm");
+        }
+      }else{
+        toast('Vui lòng Nhập địa chỉ')
+      }
+    }else{
+      if (totalBill > 0) {
+        Modal.confirm({
+          title: "Xác nhận",
+          content: "Bạn có xác nhận đặt hàng không?",
+          okText: "Đồng ý",
+          cancelText: "Hủy",
+          onOk: async () => {
+            var addressuser =
+              address.detail +
+              ", " +
+              address.wards +
+              ", " +
+              address.district +
+              ", " +
+              address.city;
+            var data = {
+              phoneNumber: billRequest.phoneNumber,
+              address: addressuser,
+              userName: billRequest.userName,
+              itemDiscount: voucher.discountPrice,
+              totalMoney: totalBill,
+              note: billRequest.note,
+              moneyShip: shipFee,
+              billDetailRequests: newProduct,
+              vouchers: newVoucher,
+            };
+            await BillApi.createBillWait(data).then((res) => {
+              navigate("/bill-management/detail-bill/" + res.data.data.id);
+            });
+          },
+          onCancel: () => {},
+        });
+      } else {
+        toast("vui lòng chọn sản phẩm");
+      }
     }
+   
   };
 
   useEffect(() => {}, []);
@@ -1014,205 +1075,280 @@ function CreateBill() {
         <Row style={{ width: "100%" }}>
           <Col span={14}>
             {isOpenDelivery ? (
-              <div>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    {" "}
-                    <Input
-                      placeholder="Nhập họ và tên"
-                      style={{ width: "90%" }}
-                      value={billRequest.userName}
-                      onChange={(e) =>
-                        ChangeBillRequest("userName", e.target.value)
-                      }
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    {" "}
-                    <Input
-                      placeholder="Nhập số điện thoại"
-                      style={{ width: "90%" }}
-                      onChange={(e) =>
-                        ChangeBillRequest("phoneNumber", e.target.value)
-                      }
-                      value={billRequest.phoneNumber}
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    {" "}
-                    <Input
-                      placeholder="Nhập địa chỉ"
-                      style={{ width: "90%" }}
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    <Row style={{ width: "100%" }}>
-                      <Col span={7}>
-                        {" "}
-                        <Select
-                          showSearch
-                          placeholder="Chọn tỉnh"
-                          optionFilterProp="children"
-                          // // onChange={onChange}
-                          // // onSearch={onSearch}
-                          onChange={handleProvinceChange}
-                          style={{ width: "90%" }}
-                          filterOption={(input, option) =>
-                            (option?.label ?? "")
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          // options={[]}
-                        >
-                          {listProvince?.map((item) => {
-                            return (
-                              <Option
-                                key={item.ProvinceID}
-                                value={item.ProvinceName}
-                                valueProvince={item.ProvinceID}
-                              >
-                                {item.ProvinceName}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Col>
-                      <Col span={8}>
-                        {" "}
-                        <Select
-                          showSearch
-                          placeholder="Chọn Quận"
-                          optionFilterProp="children"
-                          style={{ width: "90%" }}
-                          // onChange={onChange}
-                          // onSearch={onSearch}
-                          onChange={handleDistrictChange}
-                          filterOption={(input, option) =>
-                            (option?.label ?? "")
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          // options={[]}
-                        >
-                          {listDistricts?.map((item) => {
-                            return (
-                              <Option
-                                key={item.DistrictID}
-                                value={item.DistrictName}
-                                valueDistrict={item.DistrictID}
-                              >
-                                {item.DistrictName}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Col>
-                      <Col span={7}>
-                        {" "}
-                        <Select
-                          showSearch
-                          placeholder="Chọn Phường xã"
-                          optionFilterProp="children"
-                          style={{ width: "95%" }}
-                          // onChange={onChange}
-                          // onSearch={onSearch}
-                          onChange={handleWardChange}
-                          filterOption={(input, option) =>
-                            (option?.label ?? "")
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          // options={[]}
-                        >
-                          {listWard?.map((item) => {
-                            return (
-                              <Option
-                                key={item.WardCode}
-                                value={item.WardName}
-                                valueWard={item.WardCode}
-                                valueDistrict={item.DistrictID}
-                              >
-                                {item.WardName}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    <TextArea
-                      rows={4}
-                      style={{ width: "90%" }}
-                      placeholder="Ghi chú"
-                      onChange={(e) =>
-                        ChangeBillRequest("note", e.target.value)
-                      }
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    marginTop: "30px",
-                    marginLeft: "10px",
-                    width: "100%",
-                  }}
-                >
-                  <Col span={2}>
-                    <CiDeliveryTruck
-                      style={{ height: "30px", width: "50px" }}
-                    />
-                  </Col>
-                  <Col
-                    span={22}
+              <Form initialValues={initialValues}>
+                <div>
+                  <Row
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      fontWeight: "500",
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
                     }}
                   >
-                    <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
-                  </Col>
-                </Row>
-              </div>
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
+                        name="name"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập tên khách hàng",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập họ và tên"
+                          style={{ width: "90%", height: "39px" }}
+                          value={billRequest.userName}
+                          onChange={(e) =>
+                            ChangeBillRequest("userName", e.target.value)
+                          }
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
+                        name="phoneNumber"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập số điện thoại",
+                          },
+                          {
+                            pattern:
+                              "(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}",
+                            message: "Vui lòng nhập đúng số điện thoại",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập số điện thoại"
+                          style={{ width: "90%", height: "39px" }}
+                          onChange={(e) =>
+                            ChangeBillRequest("phoneNumber", e.target.value)
+                          }
+                          value={billRequest.phoneNumber}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
+                        name="detail"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn Quận",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập địa chỉ"
+                          style={{ width: "90%", height: "39px" }}
+                          onChange={(e) => onChangeAddress("detail", e.target.value)}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Row style={{ width: "100%" }}>
+                        <Col span={7}>
+                          <Form.Item
+                            label=""
+                            name="city"
+                            style={{ marginBottom: "20px" }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng chọn tỉnh",
+                              },
+                            ]}
+                          >
+                            <Select
+                              showSearch
+                              placeholder="Chọn tỉnh"
+                              optionFilterProp="children"
+                              // // onChange={onChange}
+                              // // onSearch={onSearch}
+                              onChange={handleProvinceChange}
+                              style={{ width: "90%", height: "39px" }}
+                              filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
+                              // options={[]}
+                            >
+                              {listProvince?.map((item) => {
+                                return (
+                                  <Option
+                                    key={item.ProvinceID}
+                                    value={item.ProvinceName}
+                                    valueProvince={item.ProvinceID}
+                                  >
+                                    {item.ProvinceName}
+                                  </Option>
+                                );
+                              })}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                          <Form.Item
+                            label=""
+                            name="district"
+                            style={{ marginBottom: "20px" }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng chọn Quận",
+                              },
+                            ]}
+                          >
+                            <Select
+                              showSearch
+                              placeholder="Chọn Quận"
+                              optionFilterProp="children"
+                              style={{ width: "90%" }}
+                              // onChange={onChange}
+                              // onSearch={onSearch}
+                              onChange={handleDistrictChange}
+                              filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
+                              // options={[]}
+                            >
+                              {listDistricts?.map((item) => {
+                                return (
+                                  <Option
+                                    key={item.DistrictID}
+                                    value={item.DistrictName}
+                                    valueDistrict={item.DistrictID}
+                                  >
+                                    {item.DistrictName}
+                                  </Option>
+                                );
+                              })}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={7}>
+                          <Form.Item
+                            label=""
+                            name="wards"
+                            style={{ marginBottom: "20px" }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng chọn Quận",
+                              },
+                            ]}
+                          >
+                            <Select
+                              showSearch
+                              placeholder="Chọn Phường xã"
+                              optionFilterProp="children"
+                              style={{ width: "95%" }}
+                              // onChange={onChange}
+                              // onSearch={onSearch}
+                              onChange={handleWardChange}
+                              filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
+                              // options={[]}
+                            >
+                              {listWard?.map((item) => {
+                                return (
+                                  <Option
+                                    key={item.WardCode}
+                                    value={item.WardName}
+                                    valueWard={item.WardCode}
+                                    valueDistrict={item.DistrictID}
+                                  >
+                                    {item.WardName}
+                                  </Option>
+                                );
+                              })}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <TextArea
+                        rows={4}
+                        style={{ width: "90%" }}
+                        placeholder="Ghi chú"
+                        onChange={(e) =>
+                          ChangeBillRequest("note", e.target.value)
+                        }
+                      />
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      marginTop: "30px",
+                      marginLeft: "10px",
+                      width: "100%",
+                    }}
+                  >
+                    <Col span={2}>
+                      <CiDeliveryTruck
+                        style={{ height: "30px", width: "50px" }}
+                      />
+                    </Col>
+                    <Col
+                      span={22}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        fontWeight: "500",
+                        marginBottom: "20px"
+                      }}
+                    >
+                      <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
+                    </Col>
+                  </Row>
+                </div>
+              </Form>
             ) : (
               <div></div>
             )}
@@ -1325,22 +1461,24 @@ function CreateBill() {
                 }, 0) +
                   shipFee >=
                 1000
-                  ? (products.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0) +
-                    shipFee )
-                      .toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                  : (products.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0) +
-                    shipFee ) + " đ"}
+                  ? (
+                      products.reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0) + shipFee
+                    ).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
+                    shipFee +
+                    " đ"}
               </Col>
             </Row>
             <Row style={{ margin: "40px 20px 30px 0" }} justify="end">
@@ -1474,7 +1612,7 @@ function CreateBill() {
       {/* end modal voucher */}
       <ToastContainer
         position="top-right"
-        autoClose={500}
+        autoClose={100}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
