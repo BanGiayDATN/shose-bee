@@ -55,6 +55,8 @@ function CreateBill() {
     vouchers: [],
   });
 
+  const typeAddProductBill = "CREATE_BILL"
+
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
   };
@@ -1233,7 +1235,7 @@ function CreateBill() {
 
       {/* begin modal product */}
       <Modal
-        title="Basic Modal"
+        title=""
         open={isModalProductOpen}
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
@@ -1243,6 +1245,7 @@ function CreateBill() {
           handleCancelProduct={handleCancelProduct}
           products={products}
           setProducts={setProducts}
+          typeAddProductBill={typeAddProductBill}
         />
       </Modal>
       {/* end bigin modal product */}

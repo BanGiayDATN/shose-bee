@@ -18,9 +18,9 @@ public interface BillDetailService {
 
     BillDetail refundProduct(RefundProductRequest request);
 
-    BillDetail create(CreateBillDetailRequest request);
+    String create(CreateBillDetailRequest request);
 
-    BillDetail update(String id, CreateBillDetailRequest request);
+    String update(String id, CreateBillDetailRequest request);
 
     boolean delete(String id, Integer sizeName);
 }

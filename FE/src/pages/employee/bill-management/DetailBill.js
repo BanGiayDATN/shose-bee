@@ -31,6 +31,7 @@ import TextArea from "antd/es/input/TextArea";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NumberFormat from "react-number-format";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -320,6 +321,9 @@ function DetailBill() {
   // begin detail product
 
   const [detaiProduct, setDetailProduct] = useState({});
+  const [products, setProducts] = useState([]);
+
+  const typeAddProductBill = id;
 
   //  end detail product
 
@@ -352,9 +356,18 @@ function DetailBill() {
     useState(false);
   const showModalRefundProduct = async (e, id) => {
     await BillApi.getDetaiProductInBill(id).then((res) => {
-      setRefundProduct({ ...refundProduct, [refundProduct.idProduct]: res.data.data.idProduct });
-      setRefundProduct({ ...refundProduct, [refundProduct.size]: res.data.data.size });
-      setRefundProduct({ ...refundProduct, [refundProduct.id]: res.data.data.id });
+      setRefundProduct({
+        ...refundProduct,
+        [refundProduct.idProduct]: res.data.data.idProduct,
+      });
+      setRefundProduct({
+        ...refundProduct,
+        [refundProduct.size]: res.data.data.size,
+      });
+      setRefundProduct({
+        ...refundProduct,
+        [refundProduct.id]: res.data.data.id,
+      });
       setDetailProduct(res.data.data);
       setQuantity(res.data.data.quantity);
     });
@@ -388,6 +401,29 @@ function DetailBill() {
     setIsModalRefundProductOpen(false);
   };
   // end modal refundProduct
+
+  // begin modal product
+  const [isModalProductOpen, setIsModalProductOpen] = useState(false);
+
+  const handleQuantityDecrease = (record) => {};
+
+  const handleQuantityChange = (value, record) => {};
+
+  const handleQuantityIncrease = (record) => {};
+
+  const showModalProduct = (e) => {
+    setIsModalProductOpen(true);
+  };
+  const handleOkProduct = () => {
+    setIsModalProductOpen(false);
+  };
+  const handleCancelProduct = () => {
+    setIsModalProductOpen(false);
+  };
+
+  // dispatch(addProductBillWait(res.data.data));
+
+  //  end modal product
 
   //  begin modal change status
 
@@ -878,7 +914,9 @@ function DetailBill() {
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
                       <Col span={24} style={{ marginTop: "10px" }}>
-                        <label className="label-bill" style={{ top: "-15px" }}>Giá</label>
+                        <label className="label-bill" style={{ top: "-15px" }}>
+                          Giá
+                        </label>
                         <Form.Item
                           label=""
                           name="price"
@@ -913,7 +951,12 @@ function DetailBill() {
                     </Row>
                     <Row style={{ width: "100%" }}>
                       <Col span={24} style={{ marginTop: "10px" }}>
-                        <label className="label-bill" style={{ marginTop: "-4px" }}>Hình thức</label>
+                        <label
+                          className="label-bill"
+                          style={{ marginTop: "-4px" }}
+                        >
+                          Hình thức
+                        </label>
                         <Select
                           showSearch
                           style={{
@@ -1067,7 +1110,7 @@ function DetailBill() {
         </Row>
       </Row>
       <Row style={{ width: "100%" }}>
-        <div style={{ backgroundColor: "white", width:"100%" }}>
+        <div style={{ backgroundColor: "white", width: "100%" }}>
           <Row
             style={{
               width: "96%",
@@ -1098,7 +1141,7 @@ function DetailBill() {
               </Button>
             </Col>
           </Row>
-          <Row style={{width: "100%"}}>
+          <Row style={{ width: "100%" }}>
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px" }}>
                 <Col span={8}>Trạng thái:</Col>
@@ -1141,9 +1184,8 @@ function DetailBill() {
                       Khách lẻ
                     </span>
                   ) : (
-                    <span style={{color: "black",}}>{bill.userName}</span>
+                    <span style={{ color: "black" }}>{bill.userName}</span>
                   )}
-                  
                 </Col>
               </Row>
             </Col>
@@ -1169,7 +1211,7 @@ function DetailBill() {
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                 <Col span={8}> Số điện thoại:</Col>
                 <Col span={16}>
-                  <span style={{color: "black",}}>{bill.phoneNumber}</span>
+                  <span style={{ color: "black" }}>{bill.phoneNumber}</span>
                 </Col>
               </Row>
             </Col>
@@ -1181,7 +1223,7 @@ function DetailBill() {
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                 <Col span={8}>Địa chỉ:</Col>
                 <Col span={16}>
-                  <span style={{color: "black",}}>{bill.address}</span>
+                  <span style={{ color: "black" }}>{bill.address}</span>
                 </Col>
               </Row>
             </Col>
@@ -1238,7 +1280,11 @@ function DetailBill() {
       >
         {bill.statusBill == "TAO_HOA_DON" ? (
           <Row style={{ width: "100%" }} justify="end">
-            <Button type="primary" style={{ margin: "10px 20px 0 0 " }}>
+            <Button
+              type="primary"
+              style={{ margin: "10px 20px 0 0 " }}
+              onClick={(e) => showModalProduct(e)}
+            >
               Thêm sản phẩm
             </Button>
           </Row>
@@ -1346,32 +1392,31 @@ function DetailBill() {
                         <div></div>
                       )}
                     </Col>
-                    {
-                      bill.statusBill == "TAO_HOA_DON" ||
-                      bill.statusBill == "CHO_XAC_NHAN" ? (
-                        <Col span={12}>
-                      <Button
-                        type=""
-                        style={{
-                          color: "#eb5a36",
-                          marginLeft: "20px",
-                          fontWeight: "500",
-                          marginBottom: "30px",
-                          border: "1px solid #eb5a36",
-                          borderRadius: "10px",
-                        }}
-                        // onClick={(e) => showModalRefundProduct(e, item.id)}
-                      >
-                        Xóa
-                      </Button>
-                    </Col>
-                      ): (<div></div>)
-                    }
-                    {
-                      bill.statusBill == "DA_THANH_TOAN" ||
-                      bill.statusBill == "KHONG_TRA_HANG" ||
-                      bill.statusBill == "TRA_HANG" ? (
-                        <Col span={12}>
+                    {bill.statusBill == "TAO_HOA_DON" ||
+                    bill.statusBill == "CHO_XAC_NHAN" ? (
+                      <Col span={12}>
+                        <Button
+                          type=""
+                          style={{
+                            color: "#eb5a36",
+                            marginLeft: "20px",
+                            fontWeight: "500",
+                            marginBottom: "30px",
+                            border: "1px solid #eb5a36",
+                            borderRadius: "10px",
+                          }}
+                          // onClick={(e) => showModalRefundProduct(e, item.id)}
+                        >
+                          Xóa
+                        </Button>
+                      </Col>
+                    ) : (
+                      <div></div>
+                    )}
+                    {bill.statusBill == "DA_THANH_TOAN" ||
+                    bill.statusBill == "KHONG_TRA_HANG" ||
+                    bill.statusBill == "TRA_HANG" ? (
+                      <Col span={12}>
                         <Button
                           type=""
                           style={{
@@ -1387,10 +1432,9 @@ function DetailBill() {
                           Trả hàng
                         </Button>
                       </Col>
-                      ): (<div></div>)
-                    }
-
-                    
+                    ) : (
+                      <div></div>
+                    )}
                   </Row>
                 </Col>
               </Row>
@@ -1448,7 +1492,7 @@ function DetailBill() {
               </Col>
               <Col span={10} align={"end"}>
                 <span style={{ color: "red", fontWeight: "bold" }}>
-                  {bill.totalMoney + bill.moneyShip - bill.itemDiscount >= 1000
+                  {/* {bill.totalMoney + bill.moneyShip - bill.itemDiscount >= 1000
                     ? (
                         bill.totalMoney +
                         bill.moneyShip -
@@ -1460,6 +1504,43 @@ function DetailBill() {
                     : bill.totalMoney + bill.moneyShip - bill.itemDiscount < 0
                     ? "0 đ"
                     : bill.totalMoney +
+                      bill.moneyShip -
+                      bill.itemDiscount +
+                      " đ"} */}
+
+                  {detailProductInBill.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0) +
+                    bill.moneyShip -
+                    bill.itemDiscount >=
+                  1000
+                    ? (
+                        detailProductInBill.reduce(
+                          (accumulator, currentValue) => {
+                            return (
+                              accumulator +
+                              currentValue.price * currentValue.quantity
+                            );
+                          },
+                          0
+                        ) +
+                        bill.moneyShip -
+                        bill.itemDiscount
+                      ).toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : detailProductInBill.reduce(
+                        (accumulator, currentValue) => {
+                          return (
+                            accumulator +
+                            currentValue.price * currentValue.quantity
+                          );
+                        },
+                        0
+                      ) +
                       bill.moneyShip -
                       bill.itemDiscount +
                       " đ"}
@@ -1479,7 +1560,9 @@ function DetailBill() {
         <Form>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
-              <label className="label-bill" style={{ top: "-14px" }}>Giá</label>
+              <label className="label-bill" style={{ top: "-14px" }}>
+                Giá
+              </label>
               <Form.Item
                 label=""
                 name="price"
@@ -1511,7 +1594,9 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
-              <label className="label-bill" style={{ marginTop: "2px" }}>Hình thức</label>
+              <label className="label-bill" style={{ marginTop: "2px" }}>
+                Hình thức
+              </label>
               <Select
                 showSearch
                 style={{
@@ -1547,7 +1632,9 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
-              <label className="label-bill" style={{ top: "-6%" }}>Loại thanh toán</label>
+              <label className="label-bill" style={{ top: "-6%" }}>
+                Loại thanh toán
+              </label>
               <Select
                 showSearch
                 style={{
@@ -1638,7 +1725,10 @@ function DetailBill() {
 
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label className="label-bill" style={{ marginTop: "3px", top: "-31%" }}>
+              <label
+                className="label-bill"
+                style={{ marginTop: "3px", top: "-31%" }}
+              >
                 Tên khách hàng
               </label>
               <Form.Item
@@ -1663,7 +1753,10 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
+              <label
+                className="label-bill"
+                style={{ marginTop: "-4px", top: "-25%" }}
+              >
                 Số điện thoại
               </label>
               <Form.Item
@@ -1697,7 +1790,10 @@ function DetailBill() {
                 <Col span={8}>
                   <Row>
                     <Col span={24}>
-                      <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
+                      <label
+                        className="label-bill"
+                        style={{ marginTop: "-4px", top: "-25%" }}
+                      >
                         Tỉnh
                       </label>
                       <Form.Item
@@ -1732,7 +1828,10 @@ function DetailBill() {
                 <Col span={8}>
                   <Row>
                     <Col span={24}>
-                      <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
+                      <label
+                        className="label-bill"
+                        style={{ marginTop: "-4px", top: "-25%" }}
+                      >
                         Quận
                       </label>
 
@@ -1768,7 +1867,10 @@ function DetailBill() {
                 <Col span={8}>
                   <Row>
                     <Col span={24}>
-                      <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
+                      <label
+                        className="label-bill"
+                        style={{ marginTop: "-4px", top: "-25%" }}
+                      >
                         xã
                       </label>
                       <Form.Item
@@ -1805,7 +1907,10 @@ function DetailBill() {
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
-              <label className="label-bill" style={{ marginTop: "-4px", top: "-25%" }}>
+              <label
+                className="label-bill"
+                style={{ marginTop: "-4px", top: "-25%" }}
+              >
                 Địa chỉ cụ thể
               </label>
               <Form.Item
@@ -1972,7 +2077,7 @@ function DetailBill() {
                   <InputNumber
                     min={1}
                     value={quantity}
-                    style={{marginLeft: "4px"}}
+                    style={{ marginLeft: "4px" }}
                     onChange={(value) => setQuantity(value)}
                   />
                 </Col>
@@ -2003,6 +2108,24 @@ function DetailBill() {
         </Form>
       </Modal>
       {/* end modal bill  */}
+
+      {/* begin modal product */}
+      <Modal
+        title="Basic Modal"
+        open={isModalProductOpen}
+        onOk={handleOkProduct}
+        onCancel={handleCancelProduct}
+        width={1000}
+      >
+        <ModalAddProductDetail
+          handleCancelProduct={handleCancelProduct}
+          products={products}
+          setProducts={setProducts}
+          typeAddProductBill={typeAddProductBill}
+        />
+      </Modal>
+      {/* end bigin modal product */}
+
       <ToastContainer
         position="top-right"
         autoClose={500}
@@ -2017,7 +2140,6 @@ function DetailBill() {
       />
       {/* Same as */}
       <ToastContainer />
-      
     </div>
   );
 }

@@ -46,7 +46,6 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
     console.log(id);
     ProducDetailtApi.getByIdProductDetail(id).then((res) => {
       console.log(res.data.data);
-
       setProductDetail(res.data.data);
     });
   };

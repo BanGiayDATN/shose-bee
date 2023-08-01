@@ -38,10 +38,18 @@ import tinycolor from "tinycolor2";
 import { Link, useNavigate } from "react-router-dom";
 import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
 import ModalDetailProduct from "./ModalDetailProduct";
-import { addProductBillWait } from "../../../../app/reducer/Bill.reducer";
+import {
+  addProductBillWait,
+  addProductInBillDetail,
+} from "../../../../app/reducer/Bill.reducer";
+import { BillApi } from "../../../../api/employee/bill/bill.api";
 
-      
-function ModalAddProductDetail({ handleCancelProduct, setProducts, products }) {
+function ModalAddProductDetail({
+  handleCancelProduct,
+  setProducts,
+  products,
+  typeAddProductBill,
+}) {
   const [listProduct, setListProduct] = useState([]);
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState("");
@@ -330,36 +338,63 @@ function ModalAddProductDetail({ handleCancelProduct, setProducts, products }) {
   const [product, setProduct] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
-    setSizes([])
+    setSizes([]);
     setProductSelect(record);
     setIsModalOpen(true);
     setProduct(record);
   };
   const handleOk = () => {
     setIsModalOpen(false);
-    var list = products
-    console.log(sizes);
-    sizes.map((item) => {
-      var index =  list.findIndex(x => x.idSizeProduct === item.id);
-      var data = {
-        image: productSelect.image,
-        productName: productSelect.nameProduct,
-        nameSize: item.nameSize,
-        idProduct: productSelect.id,
-        quantity: quantity,
-        price: productSelect.price,
-        idSizeProduct: item.id,
-        maxQuantity: item.quantity
-      };
-      if(index == -1){
-        list.push(data)
-      }else{
-        data.quantity = list[index].quantity + quantity
-        list.splice(index, 1, data)
-      }
-      dispatch(addProductBillWait(data));
-    });
-    setProducts(list)
+
+    if (typeAddProductBill === "CREATE_BILL") {
+      var list = products;
+      console.log(sizes);
+      sizes.map((item) => {
+        var index = list.findIndex((x) => x.idSizeProduct === item.id);
+        var data = {
+          image: productSelect.image,
+          productName: productSelect.nameProduct,
+          nameSize: item.nameSize,
+          idProduct: productSelect.id,
+          quantity: quantity,
+          price: productSelect.price,
+          idSizeProduct: item.id,
+          maxQuantity: item.quantity,
+        };
+        if (index == -1) {
+          list.push(data);
+        } else {
+          data.quantity = list[index].quantity + quantity;
+          list.splice(index, 1, data);
+        }
+        dispatch(addProductBillWait(data));
+      });
+      setProducts(list);
+    } else {
+      sizes.map((item) => {
+        var data = {
+          idBill: typeAddProductBill,
+          idProduct: productSelect.id,
+          size: item.nameSize,
+          quantity: quantity,
+          price: productSelect.price,
+        };
+        BillApi.addProductInBill(data).then((res) => {
+          console.log(res.data.data);
+          var product = {
+            id: res.data.data,
+            image: productSelect.image,
+            productName: productSelect.nameProduct,
+            nameSize: item.nameSize,
+            idProduct: productSelect.id,
+            quantity: quantity,
+            price: productSelect.price,
+            idSizeProduct: item.id,
+          };
+          dispatch(addProductInBillDetail(product));
+        });
+      });
+    }
     // handleCancelProduct();
   };
   const handleCancel = () => {

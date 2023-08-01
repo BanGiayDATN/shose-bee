@@ -110,9 +110,9 @@ public class BillDetailServiceImpl implements BillDetailService {
     }
 
     @Override
-    public BillDetail create(CreateBillDetailRequest request) {
+    public String create(CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
-        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdBill());
+        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
         Optional<Size> size = sizeRepository.findByName(request.getSize());
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -133,14 +133,18 @@ public class BillDetailServiceImpl implements BillDetailService {
         sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
         sizeProductDetailRepository.save(sizeProductDetail.get());
 
-        BillDetail billDetail = formUtils.convertToObject(BillDetail.class, request);
+        bill.get().setTotalMoney(bill.get().getTotalMoney().add(new BigDecimal(request.getPrice()).multiply(BigDecimal.valueOf(request.getQuantity()))));
+        billRepository.save(bill.get());
+        BillDetail billDetail = new BillDetail();
+        billDetail.setQuantity(request.getQuantity());
         billDetail.setPrice(new BigDecimal(request.getPrice()));
         billDetail.setProductDetail(productDetail.get());
         billDetail.setBill(bill.get());
-        return billDetailRepository.save(billDetail);
+        billDetailRepository.save(billDetail);
+        return billDetail.getId();
     }
     @Override
-    public BillDetail update(String id, CreateBillDetailRequest request) {
+    public String update(String id, CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
         Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdBill());
         Optional<Size> size = sizeRepository.findByName(request.getSize());
@@ -167,7 +171,8 @@ public class BillDetailServiceImpl implements BillDetailService {
 
         billDetail.get().setPrice(new BigDecimal(request.getPrice()));
         billDetail.get().setQuantity(request.getQuantity());
-        return billDetailRepository.save(billDetail.get());
+        billDetailRepository.save(billDetail.get());
+        return billDetail.get().getId();
     }
 
     @Override

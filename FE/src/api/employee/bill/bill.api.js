@@ -88,6 +88,13 @@ export class BillApi {
       });
     };
 
+    static addProductInBill = (data) => {
+      return request({
+        method: "POST",
+        url: `/admin/bill-detail/add-product` ,
+        data: data
+      });
+    };
     // static getOne = (id) => {
     //   return request({
     //     method: "GET",

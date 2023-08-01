@@ -74,6 +74,9 @@ const billSlice = createSlice({
     getProductInBillDetail: (state, action) => {
       state.bill.billDetail = [...action.payload];
     },
+    addProductInBillDetail: (state, action) => {
+      state.bill.billDetail.push(action.payload);
+    },
     getBillHistory: (state, action) => {
       state.bill.billHistory = [...action.payload];
     },
@@ -107,7 +110,8 @@ export const {
   addPaymentsMethod,
   addUserBillWait,
   addVoucherBillWait,
-  getAllBillAtCounter
+  getAllBillAtCounter,
+  addProductInBillDetail
 } = billSlice.actions;
 export default billSlice.reducer;
 export const GetBill = (state) => state.bill;
