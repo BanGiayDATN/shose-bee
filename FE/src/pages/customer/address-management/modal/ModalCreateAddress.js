@@ -40,7 +40,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
             form.resetFields();
           })
           .catch((error) => {
-            toast.error("Thêm thất bại");
+            toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
       })
@@ -64,6 +64,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
   };
 
   const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -101,7 +102,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "8ae00573-7e45-4d07-a283-2c2a4a64e973",
+          userId: "f01cb41d-cf72-46b0-8bb4-290e28863062",
         }}
       >
         <Form.Item
@@ -148,7 +149,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
 
         <Form.Item
           label="Xã/Phường"
-          name="werd"
+          name="ward"
           rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
         >
           <Select defaultValue="">
@@ -172,10 +173,19 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         >
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
+        <Form.Item label="Trạng thái" name="status">
+          <Select>
+            <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
+            <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+          </Select>
+        </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="userId" hidden>
           <Input disabled />
         </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="toDistrictId" hidden>
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="provinceId" hidden>
           <Input disabled />
         </Form.Item>
       </Form>

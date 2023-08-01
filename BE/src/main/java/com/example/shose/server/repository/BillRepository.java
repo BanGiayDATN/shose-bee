@@ -19,7 +19,7 @@ import java.util.List;
 public interface BillRepository extends JpaRepository<Bill, String> {
 
     @Query(value = """
-            SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
+            SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
             LEFT JOIN account ac ON ac.id = bi.id_account
             LEFT JOIN account em ON em.id = bi.id_employees
             LEFT JOIN customer cu ON cu.id = bi.id_customer
@@ -36,19 +36,12 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             AND ( :#{#request.converStatus} IS NULL
                      OR :#{#request.converStatus} LIKE '[]'
                      OR bi.status_bill IN (:#{#request.status}))
-            AND ( :#{#request.code} IS NULL
-                     OR :#{#request.code} LIKE ''
-                     OR bi.code LIKE :#{#request.code})
-            AND ( :#{#request.employees} IS NULL
-                     OR :#{#request.employees} LIKE ''
-                     OR em.id LIKE :#{#request.employees})
-            AND ( :#{#request.user} IS NULL
-                     OR :#{#request.user} LIKE ''
-                     OR usac.id LIKE :#{#request.user}
-                     OR cu.id LIKE :#{#request.user})
-            AND ( :#{#request.phoneNumber} IS NULL
-                     OR :#{#request.phoneNumber} LIKE ''
-                     OR usac.phone_number LIKE :#{#request.phoneNumber})
+            AND ( :#{#request.key} IS NULL
+                     OR :#{#request.key} LIKE ''
+                     OR bi.code LIKE %:#{#request.key}% 
+                     OR bi.user_name LIKE %:#{#request.key}% 
+                     OR usem.full_name LIKE %:#{#request.key}% 
+                     OR bi.phone_number LIKE %:#{#request.key}% )
             AND ( :#{#request.type} = -1
                      OR bi.type = :#{#request.type})
             ORDER BY bi.created_date
@@ -64,8 +57,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                         LEFT JOIN customer cu ON cu.id = bi.id_customer
                         LEFT JOIN user usac ON usac.id = ac.id_user
                         LEFT JOIN user usem ON usem.id = em.id_user
-            WHERE bi.type = 1 
-            AND (:#{#request.startCreateBill} <= bi.created_date)
+            WHERE (:#{#request.startCreateBill} <= bi.created_date)
             AND ( :#{#request.key} IS NULL
                      OR :#{#request.key} LIKE ''
                      OR bi.user_name LIKE :#{#request.key}

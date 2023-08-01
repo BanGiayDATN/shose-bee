@@ -23,12 +23,14 @@ public interface ProductDetailService {
     ProductDetailDTO create(final CreateProductDetailRequest req,
                             List<MultipartFile> multipartFiles,
                             List<CreateSizeData> listSize,
-                            List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException;
+                            List<Boolean> listStatusImage,
+                            List<String> listColor) throws IOException, ExecutionException, InterruptedException;
 
     ProductDetailDTO update(final UpdateProductDetailRequest req,
-                         List<MultipartFile> multipartFiles,
-                         List<CreateSizeData> listSize,
-                         List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException;
+                            List<MultipartFile> multipartFiles,
+                            List<CreateSizeData> listSize,
+                            List<Boolean> listStatusImage,
+                            List<String> listColor) throws IOException, ExecutionException, InterruptedException;
 
     Boolean delete(String id);
 

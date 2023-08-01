@@ -2,8 +2,10 @@ package com.example.shose.server.controller;
 
 
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
+import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.FindCustomerRequest;
+import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
@@ -67,7 +69,9 @@ public class CustomerRestController {
         addressRequest.setLine(jsonObject.get("line").getAsString());
         addressRequest.setProvince(jsonObject.get("province").getAsString());
         addressRequest.setDistrict(jsonObject.get("district").getAsString());
-        addressRequest.setWerd(jsonObject.get("werd").getAsString());
+        addressRequest.setWard(jsonObject.get("ward").getAsString());
+        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
+        addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
 
         return new ResponseObject(customerService.create(customerRequest,addressRequest,file));
     }
@@ -77,9 +81,32 @@ public class CustomerRestController {
     }
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id,
-                                 @RequestBody UpdateEmployeeRequest req) {
-        req.setId(id);
-        return new ResponseObject(customerService.update(req));
+                                 @RequestParam("request") String req,
+                                 @RequestParam("multipartFile") MultipartFile file) {
+        JsonObject jsonObject = JsonParser.parseString(req).getAsJsonObject();
+
+        // update khách hàng
+        UpdateCustomerRequest customerRequest = new UpdateCustomerRequest();
+//        customerRequest.setId(id);
+        customerRequest.setId(id);
+        customerRequest.setFullName(jsonObject.get("fullName").getAsString());
+        customerRequest.setPhoneNumber(jsonObject.get("phoneNumber").getAsString());
+        customerRequest.setEmail(jsonObject.get("email").getAsString());
+        customerRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
+        customerRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
+        customerRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
+
+        // update địa chỉ
+        UpdateAddressRequest addressRequest = new UpdateAddressRequest();
+        addressRequest.setLine(jsonObject.get("line").getAsString());
+        addressRequest.setProvince(jsonObject.get("province").getAsString());
+        addressRequest.setDistrict(jsonObject.get("district").getAsString());
+        addressRequest.setWard(jsonObject.get("ward").getAsString());
+        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
+        addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
+        addressRequest.setUserId(id);
+
+        return new ResponseObject(customerService.update(customerRequest,addressRequest,file));
     }
 
 }

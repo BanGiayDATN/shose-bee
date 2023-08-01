@@ -8,6 +8,7 @@ import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.entity.Category;
 import com.example.shose.server.entity.Color;
+import com.example.shose.server.entity.ColorProductDetail;
 import com.example.shose.server.entity.Customer;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Material;
@@ -34,6 +35,7 @@ import com.example.shose.server.repository.BrandRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
 import com.example.shose.server.repository.CategoryRepository;
+import com.example.shose.server.repository.ColorProductDetailRepositry;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.repository.CustomerRepository;
 import com.example.shose.server.repository.ImageRepository;
@@ -142,6 +144,9 @@ public class DBGenerator implements CommandLineRunner {
     @Autowired
     private SizeProductDetailRepository sizeProductDetailRepository;
 
+    @Autowired
+    private ColorProductDetailRepositry colorProductDetailRepository;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -155,7 +160,6 @@ public class DBGenerator implements CommandLineRunner {
         categoryRepository.save(category2);
         categoryRepository.save(category3);
         categoryRepository.save(category4);
-
 
 
         Material material = Material.builder().name("Da").status(Status.DANG_SU_DUNG).build();
@@ -201,21 +205,21 @@ public class DBGenerator implements CommandLineRunner {
         colorRepository.save(color6);
         colorRepository.save(color7);
 
-        Product product1 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO ATH-1FW").status(Status.DANG_SU_DUNG).build();
-        Product product2 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO ASTIR LITE M").status(Status.DANG_SU_DUNG).build();
-        Product product3 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO 2ND COZMO W").status(Status.DANG_SU_DUNG).build();
-        Product product4 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO 2ND COZMO W").status(Status.DANG_SU_DUNG).build();
-        Product product5 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO ULT-TRN M").status(Status.DANG_SU_DUNG).build();
-        Product product6 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO MX M").status(Status.DANG_SU_DUNG).build();
-        Product product7 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO ST1 LITE M").status(Status.DANG_SU_DUNG).build();
-        Product product8 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("ECCO STREET LITE M").status(Status.DANG_SU_DUNG).build();
-        Product product9 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("Giày Sneakers Nam NEW04 - BSN028").status(Status.DANG_SU_DUNG).build();
-        Product product10 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("Giày Sneakers Nữ NEW03 - BSN027").status(Status.DANG_SU_DUNG).build();
-        Product product11 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("Giày Sneakers Nam NEW01 - BSN025").status(Status.DANG_SU_DUNG).build();
-        Product product12 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("Giày Sneakers Nam BELSPORTS 113 - BSN021").status(Status.DANG_SU_DUNG).build();
-        Product product13 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("Giày Sneakers Nam BELSPORTS HJ06 - BSN020").status(Status.DANG_SU_DUNG).build();
-        Product product14 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("Giày Sneakers Nam BELSPORTS 808-BSN006").status(Status.DANG_SU_DUNG).build();
-        Product product15 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 15)).name("Giày Sneakers Nữ BELSPORTS 5827-BSN007").status(Status.DANG_SU_DUNG).build();
+        Product product1 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO ATH-1FW").status(Status.DANG_SU_DUNG).build();
+        Product product2 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO ASTIR LITE M").status(Status.DANG_SU_DUNG).build();
+        Product product3 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO 2ND COZMO W").status(Status.DANG_SU_DUNG).build();
+        Product product4 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO 2ND COZMO W").status(Status.DANG_SU_DUNG).build();
+        Product product5 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO ULT-TRN M").status(Status.DANG_SU_DUNG).build();
+        Product product6 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO MX M").status(Status.DANG_SU_DUNG).build();
+        Product product7 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO ST1 LITE M").status(Status.DANG_SU_DUNG).build();
+        Product product8 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("ECCO STREET LITE M").status(Status.DANG_SU_DUNG).build();
+        Product product9 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("Giày Sneakers Nam NEW04 - BSN028").status(Status.DANG_SU_DUNG).build();
+        Product product10 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("Giày Sneakers Nữ NEW03 - BSN027").status(Status.DANG_SU_DUNG).build();
+        Product product11 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("Giày Sneakers Nam NEW01 - BSN025").status(Status.DANG_SU_DUNG).build();
+        Product product12 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("Giày Sneakers Nam BELSPORTS 113 - BSN021").status(Status.DANG_SU_DUNG).build();
+        Product product13 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("Giày Sneakers Nam BELSPORTS HJ06 - BSN020").status(Status.DANG_SU_DUNG).build();
+        Product product14 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("Giày Sneakers Nam BELSPORTS 808-BSN006").status(Status.DANG_SU_DUNG).build();
+        Product product15 = Product.builder().code(new RandomNumberGenerator().randomToString("SP", 1500000000)).name("Giày Sneakers Nữ BELSPORTS 5827-BSN007").status(Status.DANG_SU_DUNG).build();
         productRepository.save(product1);
         productRepository.save(product2);
         productRepository.save(product3);
@@ -261,52 +265,52 @@ public class DBGenerator implements CommandLineRunner {
         sizeRepository.save(size8);
 
         ProductDetail productDetail1 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product1)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail2 = ProductDetail.builder()
-                .sole(sole2).category(category2).color(color2).material(material2).brand(brand2).product(product2)
+                .sole(sole2).category(category2).material(material2).brand(brand2).product(product2)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail3 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product3)
+                .sole(sole1).category(category).material(material).brand(brand).product(product3)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail4 = ProductDetail.builder()
-                .sole(sole4).category(category3).color(color3).material(material3).brand(brand).product(product4)
+                .sole(sole4).category(category3).material(material3).brand(brand).product(product4)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail5 = ProductDetail.builder()
-                .sole(sole3).category(category4).color(color7).material(material2).brand(brand).product(product5)
+                .sole(sole3).category(category4).material(material2).brand(brand).product(product5)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail6 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product6)
+                .sole(sole1).category(category).material(material).brand(brand).product(product6)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail7 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product7)
+                .sole(sole1).category(category).material(material).brand(brand).product(product7)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail8 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product8)
+                .sole(sole1).category(category).material(material).brand(brand).product(product8)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail9 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product9)
+                .sole(sole1).category(category).material(material).brand(brand).product(product9)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail10 = ProductDetail.builder()
-                .sole(sole1).category(category).color(color).material(material).brand(brand).product(product10)
+                .sole(sole1).category(category).material(material).brand(brand).product(product10)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("19000010")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
@@ -344,8 +348,28 @@ public class DBGenerator implements CommandLineRunner {
         sizeProductDetailRepository.save(sizeProductDetail10);
         sizeProductDetailRepository.save(sizeProductDetail11);
 
-
-
+        ColorProductDetail colorProductDetail1 = ColorProductDetail.builder().color(color).productDetail(productDetail1).build();
+        ColorProductDetail colorProductDetail2 = ColorProductDetail.builder().color(color1).productDetail(productDetail2).build();
+        ColorProductDetail colorProductDetail3 = ColorProductDetail.builder().color(color2).productDetail(productDetail3).build();
+        ColorProductDetail colorProductDetail4 = ColorProductDetail.builder().color(color3).productDetail(productDetail4).build();
+        ColorProductDetail colorProductDetail5 = ColorProductDetail.builder().color(color4).productDetail(productDetail5).build();
+        ColorProductDetail colorProductDetail6 = ColorProductDetail.builder().color(color5).productDetail(productDetail6).build();
+        ColorProductDetail colorProductDetail7 = ColorProductDetail.builder().color(color3).productDetail(productDetail7).build();
+        ColorProductDetail colorProductDetail8 = ColorProductDetail.builder().color(color6).productDetail(productDetail8).build();
+        ColorProductDetail colorProductDetail9 = ColorProductDetail.builder().color(color7).productDetail(productDetail9).build();
+        ColorProductDetail colorProductDetail10 = ColorProductDetail.builder().color(color3).productDetail(productDetail10).build();
+        ColorProductDetail colorProductDetail11 = ColorProductDetail.builder().color(color6).productDetail(productDetail10).build();
+        colorProductDetailRepository.save(colorProductDetail1);
+        colorProductDetailRepository.save(colorProductDetail2);
+        colorProductDetailRepository.save(colorProductDetail3);
+        colorProductDetailRepository.save(colorProductDetail4);
+        colorProductDetailRepository.save(colorProductDetail5);
+        colorProductDetailRepository.save(colorProductDetail6);
+        colorProductDetailRepository.save(colorProductDetail7);
+        colorProductDetailRepository.save(colorProductDetail8);
+        colorProductDetailRepository.save(colorProductDetail9);
+        colorProductDetailRepository.save(colorProductDetail10);
+        colorProductDetailRepository.save(colorProductDetail11);
 
 
         //image
@@ -449,11 +473,11 @@ public class DBGenerator implements CommandLineRunner {
         billHistoryRepository.save(billHistory5);
         billHistoryRepository.save(billHistory6);
         billHistoryRepository.save(billHistory7);
-        Voucher voucher1 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC",5))
+        Voucher voucher1 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC", 5))
                 .name("Sale ngày khai trương").value(new BigDecimal(100000))
                 .startDate(new ConvertDateToLong().dateToLong("25/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
                 .quantity(100).status(Status.DANG_SU_DUNG).build();
-        Voucher voucher2 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC",5))
+        Voucher voucher2 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC", 5))
                 .name("Sale sốc").value(new BigDecimal(100000))
                 .startDate(new ConvertDateToLong().dateToLong("15/06/2023")).endDate(new ConvertDateToLong().dateToLong("25/06/2023"))
                 .quantity(100).status(Status.DANG_SU_DUNG).build();

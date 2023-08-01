@@ -3,7 +3,7 @@ export class BillApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/admin/bill?startTimeString=`+ filter.startTimeString + `&endTimeString=`+ filter.endTimeString +`&status=` + filter.status + `&endDeliveryDateString=` + filter.endDeliveryDateString + `&startDeliveryDateString=` + filter.startDeliveryDateString + `&code=` + filter.code + `&employees=` + filter.employees + `&user=` + filter.user + `&phoneNumber=` + filter.phoneNumber + `&type=` + filter.type + `&page=` + filter.page ,
+      url: `/admin/bill?startTimeString=`+ filter.startTimeString + `&endTimeString=`+ filter.endTimeString +`&status=` + filter.status + `&endDeliveryDateString=` + filter.endDeliveryDateString + `&startDeliveryDateString=` + filter.startDeliveryDateString + `&key=` + filter.key + `&employees=` + filter.employees + `&user=` + filter.user + `&phoneNumber=` + filter.phoneNumber + `&type=` + filter.type + `&page=` + filter.page ,
     });
   };
 
@@ -50,6 +50,14 @@ export class BillApi {
       });
     };
 
+    static updateBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/update-offline/`+ id,
+        data: data,
+      });
+    };
+
     static changeCancelStatusBill = (id, data) => {
       return request({
         method: "PUT",
@@ -70,6 +78,13 @@ export class BillApi {
       return request({
         method: "GET",
         url: `/admin/bill/details-invoices-counter`
+      });
+    };
+
+    static getDetaiProductInBill = (id) => {
+      return request({
+        method: "GET",
+        url: `/admin/bill-detail/detail/` +id
       });
     };
 

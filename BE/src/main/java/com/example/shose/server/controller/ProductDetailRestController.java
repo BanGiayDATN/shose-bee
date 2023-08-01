@@ -8,7 +8,9 @@ import com.example.shose.server.dto.response.ImageResponse;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.FormUtils;
 import com.example.shose.server.util.ResponseObject;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -37,8 +40,6 @@ public class ProductDetailRestController {
 
     @Autowired
     private ProductDetailService productDetailService;
-
-    private FormUtils formUtils = new FormUtils();
 
     @GetMapping()
     public ResponseObject view(final FindProductDetailRequest request) {
@@ -54,31 +55,21 @@ public class ProductDetailRestController {
     public ResponseObject add(@RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
                               @RequestParam("data") String requestData,
                               @RequestParam("status") List<Boolean> listStatusImage,
+                              @RequestParam("listColor") String litsColor,
                               @RequestParam("listSize") String dataSize) throws IOException, ExecutionException, InterruptedException {
 
-        CreateProductDetailRequest request = new CreateProductDetailRequest();
-        JsonObject jsonObject = JsonParser.parseString(requestData).getAsJsonObject();
-        request.setDescription(jsonObject.get("description").getAsString());
-        request.setGender(jsonObject.get("gender").getAsString());
-        request.setPrice(jsonObject.get("price").getAsString());
-        request.setStatus(jsonObject.get("status").getAsString());
-        request.setCategoryId(jsonObject.get("categoryId").getAsString());
-        request.setProductId(jsonObject.get("productId").getAsString());
-        request.setColorId(jsonObject.get("colorId").getAsString());
-        request.setMaterialId(jsonObject.get("materialId").getAsString());
-        request.setSoleId(jsonObject.get("soleId").getAsString());
-        request.setBrandId(jsonObject.get("brandId").getAsString());
+        Gson gson = new Gson();
+        CreateProductDetailRequest request = gson.fromJson(requestData, CreateProductDetailRequest.class);
+
+        List<String> listCodeColor = gson.fromJson(litsColor, List.class);
 
         JsonArray jsonListSize = JsonParser.parseString(dataSize).getAsJsonArray();
-        System.out.println(jsonListSize);
         List<CreateSizeData> listSize = new ArrayList<>();
-        for (int i = 0; i < jsonListSize.size(); i++) {
-            JsonObject sizeDataObject = jsonListSize.get(i).getAsJsonObject();
-            CreateSizeData sizeData = formUtils.convertToObject(CreateSizeData.class, sizeDataObject);
+        for (JsonElement sizeDataElement : jsonListSize) {
+            CreateSizeData sizeData = gson.fromJson(sizeDataElement, CreateSizeData.class);
             listSize.add(sizeData);
         }
-        listSize.stream().forEach(a-> System.out.println(a.getNameSize()));
-        return new ResponseObject(productDetailService.create(request, multipartFiles, listSize, listStatusImage));
+        return new ResponseObject(productDetailService.create(request, multipartFiles, listSize, listStatusImage, listCodeColor));
     }
 
 
@@ -87,32 +78,22 @@ public class ProductDetailRestController {
                                  @RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
                                  @RequestParam("data") String requestData,
                                  @RequestParam("status") List<Boolean> listStatusImage,
+                                 @RequestParam("listColor") String litsColor,
                                  @RequestParam("listSize") String dataSize) throws IOException, ExecutionException, InterruptedException {
 
-        UpdateProductDetailRequest request = new UpdateProductDetailRequest();
+        Gson gson = new Gson();
+        UpdateProductDetailRequest request = gson.fromJson(requestData, UpdateProductDetailRequest.class);
         request.setId(id);
-        JsonObject jsonObject = JsonParser.parseString(requestData).getAsJsonObject();
-        request.setDescription(jsonObject.get("description").getAsString());
-        request.setGender(jsonObject.get("gender").getAsString());
-        request.setPrice(jsonObject.get("price").getAsString());
-        request.setStatus(jsonObject.get("status").getAsString());
-        request.setCategoryId(jsonObject.get("categoryId").getAsString());
-        request.setProductId(jsonObject.get("productId").getAsString());
-        request.setColorId(jsonObject.get("colorId").getAsString());
-        request.setMaterialId(jsonObject.get("materialId").getAsString());
-        request.setSoleId(jsonObject.get("soleId").getAsString());
-        request.setBrandId(jsonObject.get("brandId").getAsString());
 
         JsonArray jsonListSize = JsonParser.parseString(dataSize).getAsJsonArray();
         List<CreateSizeData> listSize = new ArrayList<>();
-        for (int i = 0; i < jsonListSize.size(); i++) {
-            JsonObject sizeDataObject = jsonListSize.get(i).getAsJsonObject();
-            CreateSizeData sizeData = formUtils.convertToObject(CreateSizeData.class, sizeDataObject);
+        for (JsonElement sizeDataElement : jsonListSize) {
+            CreateSizeData sizeData = gson.fromJson(sizeDataElement, CreateSizeData.class);
             listSize.add(sizeData);
         }
-        multipartFiles.stream().forEach(s-> System.out.println());
-        listSize.forEach(s-> System.out.println(s.getStatus()));
-        return new ResponseObject(productDetailService.update(request,multipartFiles,listSize,listStatusImage));
+
+        List<String> listCodeColor = gson.fromJson(litsColor, List.class);
+        return new ResponseObject(productDetailService.update(request, multipartFiles, listSize, listStatusImage, listCodeColor));
     }
 
     @GetMapping("/byProduct/{id}")

@@ -26,6 +26,9 @@ public interface AddressResponse {
     @Value("#{target.ward}")
     String getWard();
 
+    @Value("#{target.status}")
+    String getStatus();
+
     @Value("#{target.createdDate}")
     Long getCreatedDate();
 
