@@ -12,8 +12,6 @@ import lombok.Setter;
 public class FindEmployeeRequest extends PageableRequest {
     private String fullName;
 
-    private String avata;
-
     private String email;
 
     private String phoneNumber;

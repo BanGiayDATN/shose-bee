@@ -36,7 +36,9 @@ const accountSlice = createSlice({
         state[index].phoneNumber = updatedAccount.phoneNumber;
         state[index].dateOfBirth = updatedAccount.dateOfBirth;
         state[index].password = updatedAccount.password;
+        state[index].avata = updatedAccount.avata;
         state[index].status = updatedAccount.status;
+        state[index].gender = updatedAccount.gender;
       }
     },
   },

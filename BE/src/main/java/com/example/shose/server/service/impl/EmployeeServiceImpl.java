@@ -1,24 +1,29 @@
 package com.example.shose.server.service.impl;
 
 
+import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.entity.Account;
+import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.User;
+import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
+import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.EmployeeService;
-import com.example.shose.server.util.PasswordGenerator;
-import jakarta.mail.MessagingException;
+import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,10 +40,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private PasswordGenerator passwordEncoder;
+    private AddressRepository addressRepository;
 
-//    @Autowired
-//    private SendEmail mail;
+    @Autowired
+    private UploadImageToCloudinary imageToCloudinary;
+
+    @Autowired
+    private SendEmailService sendEmailService;
 
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
@@ -51,27 +59,47 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public User create(CreateEmployeeRequest req) throws MessagingException {
-        String randomPassword = passwordEncoder.generatePassword();
-//        String email = req.getEmail();
-//        mail.testMail(email, randomPassword);
-        Account employeeAccount = new Account();
-        employeeAccount.setEmail(req.getEmail());
-        employeeAccount.setRoles(Roles.NHAN_VIEN);
-        employeeAccount.setPassword(randomPassword);
+    public User create(CreateEmployeeRequest req, CreateAddressRequest addressRequest,
+                       MultipartFile file) {
+        User checkUser = userReposiory.getOneUserByPhoneNumber(req.getPhoneNumber());
+        if (checkUser != null) {
+            throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
+        }
+        // xử lý ảnh
+        String urlImage = imageToCloudinary.uploadImage(file);
 
+        //  thông tin user
         User user = User.builder()
                 .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
                 .email(req.getEmail())
-                .status(Status.DANG_SU_DUNG)
+                .status(req.getStatus())
                 .dateOfBirth(req.getDateOfBirth())
-                .avata(null)
                 .gender(req.getGender())
+                .avata(urlImage) // đường dẫn ảnh từ url
                 .build();
-        user = userReposiory.save(user);
+        userReposiory.save(user); // add user vào database
+
+        Account employeeAccount = new Account();
         employeeAccount.setUser(user);
-        employeeAccount = accountRepository.save(employeeAccount);
+        employeeAccount.setEmail(user.getEmail());
+        employeeAccount.setRoles(Roles.NHAN_VIEN);
+        employeeAccount.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
+        employeeAccount.setStatus(Status.DANG_SU_DUNG);
+        accountRepository.save(employeeAccount); // add tài khoản vào database
+
+        //  địa chỉ user
+        Address address = new Address();
+        address.setWard(addressRequest.getWerd());
+        address.setLine(addressRequest.getLine());
+        address.setProvince(addressRequest.getProvince());
+        address.setDistrict(addressRequest.getDistrict());
+        address.setUser(user); // add địa chỉ vào database
+        addressRepository.save(address);
+
+        // gửi email
+        String subject = "Xin chào, bạn đã đăng ký thành công ";
+        sendEmailService.sendEmailPasword(employeeAccount.getEmail(),subject,employeeAccount.getPassword());
         return user;
     }
     @Override
@@ -87,7 +115,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setDateOfBirth(req.getDateOfBirth());
         user.setEmail(req.getEmail());
         user.setGender(req.getGender());
-        user.setAvata(null);
         user.setStatus(req.getStatus());
 
         if (req.getPassword() != null) {

@@ -383,11 +383,7 @@ public class DBGenerator implements CommandLineRunner {
         User user3 = User.builder()
                 .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
                 .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdt@fpt.edu.vn")
-<<<<<<< HEAD
-                .gender(true).avata("https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg").phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-=======
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
->>>>>>> 480c98af49abab798b9adaac03e39e8750103e24
                 .build();
         userReposiory.save(user1);
         userReposiory.save(user2);
@@ -399,7 +395,6 @@ public class DBGenerator implements CommandLineRunner {
         accountRepository.save(account1);
         accountRepository.save(account2);
         accountRepository.save(account3);
-
 
         Customer customer1 = Customer.builder().fullName("Hà Phương Na").phoneNumber("0951753852").email("phuongna@gmail.com").status(Status.DANG_SU_DUNG).build();
         customerRepository.save(customer1);

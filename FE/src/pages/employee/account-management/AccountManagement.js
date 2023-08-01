@@ -5,6 +5,8 @@ import "./style-account.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetAccount, SetAccount } from "../../../app/reducer/Account.reducer";
+import { GetAddress, SetAddress } from "../../../app/reducer/Address.reducer";
+
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,9 +18,15 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
+import { AddressApi } from "../../../api/customer/address/address.api";
+
 const { Option } = Select;
 
 const AccountManagement = () => {
+  const [listAddress, setListAddress] = useState([]);
+  const [listProvinceSearch, setListProvinceSearch] = useState([]);
+  const [listDistrictsSearch, setListDistrictsSearch] = useState([]);
+  const [listWardSearch, setListWardSearch] = useState([]);
   const [initialAccountList, setInitialAccountList] = useState([]);
   const [listaccount, setListaccount] = useState([]);
   const [initialStartDate, setInitialStartDate] = useState(null);
@@ -31,15 +39,19 @@ const AccountManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [addressId, setAddressId] = useState("");
+  const [addressIdDeatail, setAddressIdDetail] = useState("");
 
   // Lấy mảng redux ra
-  const data = useAppSelector(GetAccount);
+  const data = useAppSelector(GetAccount, GetAddress);
   useEffect(() => {
     if (data != null) {
       setListaccount(data);
     }
+    if (data != null) {
+      setListAddress(data);
+    }
   }, [data]);
-
   // Search account
   const handleInputChangeSearch = (name, value) => {
     setSearchAccount((prevSearchAccount) => ({
@@ -71,6 +83,60 @@ const AccountManagement = () => {
     });
   }, [searchAccount.status]);
 
+  //     setListDistrictsSearch(res.data.data);
+  //   });
+  //   AddressApi.fetchAll({
+  //     line: searchAddress.keyword,
+  //     province: valueProvinceS.valueProvince,
+  //     district: searchAddress.district,
+  //     ward: searchAddress.ward,
+  //   }).then((res) => {
+  //     setListAddress(res.data.data);
+  //     dispatch(SetAddress(res.data.data));
+  //   });
+  // };
+
+  // const handledistrictChangeSearch = (value, valueDistrictS) => {
+  //   handleInputChangeSearch("district", valueDistrictS.valueDistrict);
+  //   handleClearWardSearch(valueDistrictS.valueDistrict);
+  //   AddressApi.fetchAllProvinceWard(value).then((res) => {
+  //     setListWardSearch(res.data.data);
+  //   });
+  //   AddressApi.fetchAll({
+  //     line: searchAddress.keyword,
+  //     province: searchAddress.province,
+  //     district: valueDistrictS.valueDistrict,
+  //     ward: searchAddress.ward,
+  //   }).then((res) => {
+  //     setListAddress(res.data.data);
+  //     dispatch(SetAddress(res.data.data));
+  //   });
+  // };
+
+  // const handlewardChangeSearch = (value) => {
+  //   handleInputChangeSearch("ward", value);
+  //   AddressApi.fetchAll({
+  //     line: searchAddress.keyword,
+  //     province: searchAddress.province,
+  //     district: searchAddress.district,
+  //     ward: value,
+  //   }).then((res) => {
+  //     setListAddress(res.data.data);
+  //     dispatch(SetAddress(res.data.data));
+  //   });
+  // };
+
+  //load dataProvince
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvinceSearch(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
   const handleSubmitSearch = (event) => {
     event.preventDefault();
     const { keyword, status } = searchAccount;
@@ -153,20 +219,25 @@ const AccountManagement = () => {
   };
 
   const loadData = () => {
-    AccountApi.fetchAll().then(
-      (res) => {
-        const accounts = res.data.data.map((account, index) => ({
+    Promise.all([AccountApi.fetchAll(), AddressApi.fetchAll()]).then(
+      ([accountRes, addressRes]) => {
+        const accounts = accountRes.data.data.map((account, index) => ({
           ...account,
           stt: index + 1,
         }));
-        setListaccount(res.data.data);
+        setListaccount(accounts);
         setInitialAccountList(accounts);
         setInitialStartDate(null);
         setInitialEndDate(null);
-        dispatch(SetAccount(res.data.data));
-      },
-      (err) => {
-        console.log(err);
+        dispatch(SetAccount(accounts));
+
+        // Lưu danh sách địa chỉ vào state listAddress
+        const addresses = addressRes.data.data.map((address, index) => ({
+          ...address,
+          stt: index + 1,
+        }));
+        setListAddress(addresses);
+        dispatch(SetAddress(addresses));
       }
     );
   };
@@ -211,6 +282,12 @@ const AccountManagement = () => {
       key: "fullName",
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
+    // {
+    //   title: "Xã/Phường",
+    //   dataIndex: "ward",
+    //   key: "ward",
+    //   sorter: (a, b) => a.ward.localeCompare(b.ward),
+    // },
     {
       title: "Email",
       dataIndex: "email",
@@ -229,6 +306,13 @@ const AccountManagement = () => {
       key: "dateOfBirth",
       sorter: (a, b) => a.dateOfBirth - b.dateOfBirth,
       render: (date) => moment(date).format("DD-MM-YYYY"),
+    },
+    {
+      title: "Giới tính",
+      dataIndex: "gender",
+      key: "gender",
+      sorter: (a, b) => a.gender.localeCompare(b.gender),
+      render: (gender) => (gender ? "Nam" : "Nữ"),
     },
     {
       title: "Trạng Thái",
@@ -359,7 +443,6 @@ const AccountManagement = () => {
             </Row>
           </div>
         </div>
-
         <div>
           <div className="box_btn_filter">
             <Button

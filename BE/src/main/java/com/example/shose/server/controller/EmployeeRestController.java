@@ -1,6 +1,8 @@
 package com.example.shose.server.controller;
 
 
+import com.example.shose.server.dto.request.address.CreateAddressRequest;
+import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
@@ -49,10 +51,28 @@ public class EmployeeRestController {
     }
 
     @PostMapping
-    public ResponseObject add(@RequestBody CreateEmployeeRequest req) throws MessagingException {
-        return new ResponseObject(userService.create(req));
-    }
+    public ResponseObject add(@RequestParam("request") String req,
+                              @RequestParam("multipartFile") MultipartFile file) {
 
+        JsonObject jsonObject = JsonParser.parseString(req).getAsJsonObject();
+
+        CreateEmployeeRequest employeeRequest = new CreateEmployeeRequest();
+        employeeRequest.setFullName(jsonObject.get("fullName").getAsString());
+        employeeRequest.setPhoneNumber(jsonObject.get("phoneNumber").getAsString());
+        employeeRequest.setEmail(jsonObject.get("email").getAsString());
+        employeeRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
+        employeeRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
+        employeeRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
+
+        // add địa chỉ
+        CreateAddressRequest addressRequest = new CreateAddressRequest();
+        addressRequest.setLine(jsonObject.get("line").getAsString());
+        addressRequest.setProvince(jsonObject.get("province").getAsString());
+        addressRequest.setDistrict(jsonObject.get("district").getAsString());
+        addressRequest.setWerd(jsonObject.get("ward").getAsString());
+
+        return new ResponseObject(userService.create(employeeRequest,addressRequest,file));
+    }
     @GetMapping("/{id}")
     public ResponseObject getOneById(@PathVariable("id") String id) {
         return new ResponseObject(userService.getOneById(id));

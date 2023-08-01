@@ -1,34 +1,123 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Input,
   Select,
   Button,
   Form,
-  Upload,
-  message,
   Row,
   Col,
+  Upload,
+  message,
   Radio,
 } from "antd";
 import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
 import { AccountApi } from "../../../../api/employee/account/account.api";
 import { CreateAccount } from "../../../../app/reducer/Account.reducer";
-import moment from "moment";
-import { useNavigate } from "react-router-dom";
 import "../style-account.css";
-import { faKaaba } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
+
+import { AddressApi } from "../../../../api/customer/address/address.api";
+import { useNavigate } from "react-router";
+import { PlusOutlined } from "@ant-design/icons";
+
+// import { QrReader } from "react-qr-reader";
 
 const { Option } = Select;
 
-const ModalCreateAccount = ({ visible }) => {
+const ModalCreateAccount = () => {
   const [form] = Form.useForm();
+  const [listProvince, setListProvince] = useState([]);
+  const [listDistricts, setListDistricts] = useState([]);
+  const [listWard, setListWard] = useState([]);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // ảnh
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [uploadedFile, setUploadedFile] = useState(null);
+
+  const handleCancelImagel = () => setPreviewOpen(false);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+  const handleChange = ({ file }) => {
+    if (file.type !== "image/jpeg" && file.type !== "image/png") {
+      toast.error("Bạn chỉ có thể tải lên tệp JPG/PNG!");
+      return;
+    }
+    setUploadedFile(file);
+    if (file.status === "removed") {
+      // Nếu tệp bị xóa, đặt giá trị uploadedFile về null
+      setUploadedFile(null);
+    }
+  };
+
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
+
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvince(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+
+  const handleProvinceChange = (value, valueProvince) => {
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+
+  const handleDistrictChange = (value, valueDistrict) => {
+    form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+  // useEffect(() => {
+  //   loadDataProvince();
+  // }, []);
+  // const [qrData, setQrData] = useState("");
+
+  // const handleError = (error) => {
+  //   console.error("QR Scan Error:", error);
+  // };
+
   const handleOk = () => {
     form
       .validateFields()
@@ -50,16 +139,24 @@ const ModalCreateAccount = ({ visible }) => {
           "YYYY-MM-DD"
         ).valueOf();
         const updatedValues = { ...values, dateOfBirth: formattedDate };
-        AccountApi.create(updatedValues)
-          .then((res) => {
-            dispatch(CreateAccount(res.data.data));
-            toast.success("Thêm thành công");
-            navigate("/staff-management");
-          })
-          .catch((error) => {
-            toast.error("Thêm thất bại");
-            console.log("Create failed:", error);
-          });
+        if (uploadedFile == null) {
+          toast.error("Bạn cần thêm ảnh đai diện ");
+        } else {
+          console.log(updatedValues);
+          const formData = new FormData();
+          formData.append(`multipartFile`, uploadedFile.originFileObj);
+          formData.append(`request`, JSON.stringify(updatedValues));
+          AccountApi.create(formData)
+            .then((res) => {
+              dispatch(CreateAccount(res.data.data));
+              toast.success("Thêm thành công");
+              navigate("/staff-management");
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+              console.log("Create failed:", error);
+            });
+        }
       })
       .catch(() => {
         // Xử lý khi người dùng từ chối xác nhận
@@ -82,287 +179,311 @@ const ModalCreateAccount = ({ visible }) => {
     }
     return Promise.resolve();
   };
-
-  const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-  const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-      message.error("You can only upload JPG/PNG file!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
-  };
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
-  const handleChange = (info) => {
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      getBase64(info.file.originFileObj, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });
-    }
-  };
-  const uploadButton = (
-    <div className="upload-button">
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
   return (
     <div>
-      <div className="title_account">
-        <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
-        <span style={{ marginLeft: "10px" }}>Quản lý nhân viên</span>
-      </div>
-      <div>
-        <div
-          className="content-wrapper"
+      <div
+        className="content-wrapper"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            fontSize: "25px",
+            fontWeight: "bold",
+            marginTop: "10px",
+            marginBottom: "20px",
           }}
         >
-          <span
+          THÊM NHÂN VIÊN
+        </span>
+      </div>
+      <Row gutter={[24, 8]}>
+        <Col
+          className="filter"
+          span={6}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "50px",
+                marginBottom: "50px",
+                fontSize: "20px",
+              }}
+            >
+              Ảnh đại diện
+            </h1>
+            <div>
+              <Upload
+                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                listType="picture-circle"
+                fileList={uploadedFile ? [uploadedFile] : []}
+                onPreview={handlePreview}
+                onChange={handleChange}
+                showUploadList={{
+                  showPreviewIcon: true,
+                  showRemoveIcon: true,
+                  showErrorTips: true,
+                }}
+              >
+                {uploadedFile ? null : uploadButton}
+              </Upload>
+              <Modal
+                open={previewOpen}
+                title={previewTitle}
+                footer={null}
+                onCancel={handleCancelImagel}
+              >
+                <img
+                  alt="example"
+                  style={{
+                    width: "100%",
+                  }}
+                  src={previewImage}
+                />
+              </Modal>
+            </div>
+          </div>
+        </Col>
+
+        <Col className="filter" span={17} style={{ marginLeft: "20px" }}>
+          <h1
             style={{
-              fontSize: "25px",
-              fontWeight: "bold",
-              marginTop: "10px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "15px",
+              marginBottom: "30px",
+              fontSize: "20px",
             }}
           >
-            THÊM NHÂN VIÊN
-          </span>
-        </div>
-        <div className="title_add">
+            Thông tin nhân viên
+          </h1>
           <Form form={form} layout="vertical">
-            <Row className="form-container">
-              <Col span={24}>
-                {" "}
-                <div className="upload-container">
-                  <label
-                    style={{
-                      fontSize: "24px",
-                      fontWeight: "bold",
-                      marginLeft: "30%",
-                    }}
-                  >
-                    {" "}
-                    Ảnh đại diện
-                  </label>
-
-                  <div className="upload">
-                    <Upload
-                      name="avata"
-                      listType="picture-circle"
-                      showUploadList={false}
-                      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                      beforeUpload={beforeUpload}
-                      onChange={handleChange}
-                    >
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt="avata"
-                          style={{
-                            width: "100%",
-                          }}
-                        />
-                      ) : (
-                        uploadButton
-                      )}
-                    </Upload>
-                  </div>
-                </div>
-              </Col>
-
-              <div className="input-container">
-                <label
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    marginLeft: "30%",
-                  }}
-                >
-                  {" "}
-                  Thông tin nhân viên
-                </label>
-                <Form.Item
-                  label="Tên nhân viên"
-                  name="fullName"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập tên nhân viên",
-                    },
-                    { max: 30, message: "Tên nhân viên tối đa 30 ký tự" },
-                  ]}
-                >
-                  <Input placeholder="Tên nhân viên" />
-                </Form.Item>
-
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập email" },
-                    { max: 30, message: "Email tối đa 30 ký tự" },
-                    {
-                      pattern:
-                        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
-                      message: "Email không đúng định dạng",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Email" />
-                </Form.Item>
-
-                <Form.Item
-                  label="Số điện thoại"
-                  name="phoneNumber"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập số điện thoại",
-                    },
-                    {
-                      pattern: /^0\d{9}$/,
-                      message:
-                        "Số điện thoại phải bắt đầu từ số 0 và gồm 10 chữ số",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Số điện thoại" />
-                </Form.Item>
-
-                <Form.Item
-                  label="Ngày sinh"
-                  name="dateOfBirth"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn ngày sinh",
-                    },
-                    { validator: validateAge },
-                  ]}
-                >
-                  <Input type="date" />
-                </Form.Item>
-                <Form.Item
-                  label="Giới tính"
-                  name="gender"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn giới tính",
-                    },
-                  ]}
-                >
-                  <Radio.Group>
-                    <Radio value={true}>Nam</Radio>
-                    <Radio value={false}>Nữ</Radio>
-                  </Radio.Group>
-                </Form.Item>
-
-                <Col style={{ display: "flex" }}>
+            <div className="title_add">
+              <Row gutter={[24, 8]}>
+                <Col span={10} style={{ marginLeft: "6%" }}>
                   <Form.Item
-                    style={{ marginRight: "15px" }}
+                    label="Tên nhân viên"
+                    name="fullName"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập tên nhân viên",
+                      },
+                      { max: 30, message: "Tên nhân viên tối đa 30 ký tự" },
+                    ]}
+                  >
+                    <Input className="input-item" placeholder="Tên nhân viên" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Email"
+                    name="email"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập email" },
+                      { max: 50, message: "Email tối đa 50 ký tự" },
+                      {
+                        pattern:
+                          /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                        message: "Email không đúng định dạng",
+                      },
+                    ]}
+                  >
+                    <Input className="input-item" placeholder="Email" />
+                  </Form.Item>
+                  <Form.Item
                     label="Tỉnh/Thành phố"
                     name="province"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: "Vui lòng chọn Tỉnh/Thành phố",
-                    //   },
-                    // ]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn Tỉnh/Thành phố",
+                      },
+                    ]}
                   >
-                    <Select defaultValue="">
+                    <Select defaultValue="" onChange={handleProvinceChange}>
                       <Option value="">--Chọn Tỉnh/Thành phố--</Option>
+                      {listProvince?.map((item) => {
+                        return (
+                          <Option
+                            key={item.ProvinceID}
+                            value={item.ProvinceName}
+                            valueProvince={item.ProvinceID}
+                          >
+                            {item.ProvinceName}
+                          </Option>
+                        );
+                      })}
                     </Select>
-                  </Form.Item>{" "}
+                  </Form.Item>
+
                   <Form.Item
-                    style={{ marginRight: "15px" }}
-                    label="Quận/Huyện"
-                    name="district"
-                    // rules={[
-                    //   { required: true, message: "Vui lòng chọn Quận/Huyện" },
-                    // ]}
-                  >
-                    <Select defaultValue=" ">
-                      <Option value=" ">--Chọn Quận/Huyện--</Option>
-                    </Select>
-                  </Form.Item>{" "}
-                  <Form.Item
-                    style={{ marginRight: "15px" }}
                     label="Xã/Phường"
-                    name="werd"
-                    // rules={[
-                    //   { required: true, message: "Vui lòng chọn Xã/Phường" },
-                    // ]}
+                    name="ward"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn Xã/Phường" },
+                    ]}
                   >
                     <Select defaultValue="">
                       <Option value="">--Chọn Xã/Phường--</Option>
+                      {listWard?.map((item) => {
+                        return (
+                          <Option key={item.WardCode} value={item.WardName}>
+                            {item.WardName}
+                          </Option>
+                        );
+                      })}
                     </Select>
-                  </Form.Item>{" "}
-                </Col>
-                <Col>
+                  </Form.Item>
                   <Form.Item
-                    style={{ marginRight: "15px" }}
-                    label="Số nhà/Ngõ/Đường"
-                    name="line"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: "Vui lòng nhập số nhà/ngõ/đường",
-                    //   },
-                    // ]}
+                    label="Trạng thái"
+                    name="status"
+                    initialValue="DANG_SU_DUNG"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn trạng thái" },
+                    ]}
                   >
-                    <Input placeholder="Số nhà/Ngõ/Đường" />
+                    <Select>
+                      <Option value="DANG_SU_DUNG">
+                        <span style={{ fontWeight: "bold" }}>Kích hoạt</span>
+                      </Option>
+                    </Select>
                   </Form.Item>
                 </Col>
-                <Button
-                  key="submit"
-                  type="primary"
-                  onClick={handleOk}
-                  style={{ marginRight: "10px" }}
-                >
-                  Thêm
-                </Button>
-                <Button key="cancel" onClick={handleCancel}>
-                  Hủy
-                </Button>
-              </div>
 
-              {/* <Form.Item label="Trạng thái" name="status">
-                  <Select
-                    placeholder="Vui lòng chọn trạng thái"
-                    defaultValue="DANG_SU_DUNG"
-                    disabled
+                <Col span={10} style={{ marginLeft: "40px" }}>
+                  <Form.Item
+                    label="Ngày sinh"
+                    name="dateOfBirth"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn ngày sinh" },
+                      { validator: validateAge },
+                    ]}
                   >
-                    <Option value="DANG_SU_DUNG">Kích hoạt</Option>
-                    <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
-                  </Select>
-                </Form.Item> */}
-            </Row>
+                    <Input className="input-item" type="date" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Số điện thoại"
+                    name="phoneNumber"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số điện thoại",
+                      },
+                      {
+                        pattern: /^0\d{9}$/,
+                        message:
+                          "Số điện thoại phải bắt đầu từ số 0 và gồm 10 chữ số",
+                      },
+                    ]}
+                  >
+                    <Input className="input-item" placeholder="Số điện thoại" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Quận/Huyện"
+                    name="district"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn Quận/Huyện" },
+                    ]}
+                  >
+                    <Select defaultValue=" " onChange={handleDistrictChange}>
+                      <Option value=" ">--Chọn Quận/Huyện--</Option>
+                      {listDistricts?.map((item) => {
+                        return (
+                          <Option
+                            key={item.DistrictID}
+                            value={item.DistrictName}
+                            valueDistrict={item.DistrictID}
+                          >
+                            {item.DistrictName}
+                          </Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Số nhà/Ngõ/Đường"
+                    name="line"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số nhà/ngõ/đường",
+                      },
+                    ]}
+                  >
+                    <Input
+                      className="input-item"
+                      placeholder="Số nhà/Ngõ/Đường"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="Giới tính"
+                    name="gender"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn giới tinh" },
+                    ]}
+                    initialValue="true"
+                  >
+                    <Radio.Group>
+                      <Radio value="true" checked>
+                        Nam
+                      </Radio>
+                      <Radio value="false">Nữ</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  {/* <div>
+                    <QrReader
+                      delay={300}
+                      onError={handleError}
+                      onResult={onResult}
+                      style={{ width: "100%" }}
+                    />
+                    <p>{qrData}</p>
+                  </div> */}
+                </Col>
+              </Row>
+            </div>
           </Form>
-        </div>
-      </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: "15px",
+              marginRight: "8%",
+              marginBottom: "20px",
+            }}
+          >
+            <Button
+              key="submit"
+              type="primary"
+              onClick={handleOk}
+              style={{ marginRight: "10px", width: "100px", height: "40px" }}
+            >
+              Thêm
+            </Button>
+            <Button
+              key="cancel"
+              onClick={handleCancel}
+              style={{ width: "100px", height: "40px" }}
+            >
+              Hủy
+            </Button>
+          </div>
+        </Col>
+      </Row>
     </div>
   );
 };

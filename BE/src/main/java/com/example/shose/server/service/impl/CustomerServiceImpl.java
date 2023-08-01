@@ -58,13 +58,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-<<<<<<< HEAD
-    public User create(CreateEmployeeRequest req) {
-        Account employeeAccount = new Account();
-        employeeAccount.setEmail(req.getEmail());
-        employeeAccount.setPassword(req.getPassword());
-        employeeAccount.setRoles(Roles.USER);
-=======
     public User create(CreateCustomerRequest request,
                        CreateAddressRequest addressRequest,
                        MultipartFile file) {
@@ -73,7 +66,6 @@ public class CustomerServiceImpl implements CustomerService {
         if (checkUser != null) {
             throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
         }
->>>>>>> 480c98af49abab798b9adaac03e39e8750103e24
 
         // xử lý ảnh
         String urlImage = imageToCloudinary.uploadImage(file);
