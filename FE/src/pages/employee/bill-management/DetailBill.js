@@ -375,64 +375,69 @@ function DetailBill() {
   };
 
   const handleOkRefundProduct = () => {
-    var listProduct = [...detailProductInBill];
-    var index = listProduct.findIndex((item) => item.id == idProductInBill);
-    var newProduct = { ...listProduct[index] };
-    newProduct.quantity = quantity;
-    listProduct.splice(index, 1, newProduct);
-    // newProduct.quantity = quantity
-    listProduct.splice(index, 1, newProduct);
-    var total = listProduct.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
-    }, 0);
-    if (checkNotEmptyRefundProduct()) {
-      setIsModalRefundProductOpen(false);
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có xác nhận Hoàn hàng không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: async () => {
-          var data = {
-            id: refundProduct.id,
-            idBill: refundProduct.idBill,
-            idProduct: refundProduct.idProduct,
-            size: refundProduct.size,
-            quantity: quantity,
-            totalMoney: total,
-            note: refundProduct.note
-          };
-          await BillApi.refundProduct( data).then((res) => {
-            toast("Hoàn hàng thành công");
-          });
-          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-            dispatch(getProductInBillDetail(res.data.data));
-          });
-          await BillApi.fetchDetailBill(id).then((res) => {
-            dispatch(getBill(res.data.data));
-            var index = listStatus.findIndex(
-              (item) => item.status == res.data.data.statusBill
-            );
-            if (res.data.data.statusBill == "TRA_HANG") {
-              index = 6;
-            }
-            if (res.data.data.statusBill == "DA_HUY") {
-              index = 7;
-            }
-            dispatch(addStatusPresent(index));
-          });
-          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-            dispatch(getBillHistory(res.data.data));
-          });
-          
-          setIsModalRefundProductOpen(false);
-        },
-        onCancel: () => {
-          setIsModalRefundProductOpen(false);
-        },
-      });
+    if(quantity < 1){
+      toast("vui lòng nhập số lượng lớn hơn 0 ")
+    }else{
+      var listProduct = [...detailProductInBill];
+      var index = listProduct.findIndex((item) => item.id == idProductInBill);
+      var newProduct = { ...listProduct[index] };
+      newProduct.quantity = quantity;
+      listProduct.splice(index, 1, newProduct);
+      // newProduct.quantity = quantity
+      listProduct.splice(index, 1, newProduct);
+      var total = listProduct.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0);
+      if (checkNotEmptyRefundProduct()) {
+        setIsModalRefundProductOpen(false);
+        Modal.confirm({
+          title: "Xác nhận",
+          content: "Bạn có xác nhận Hoàn hàng không?",
+          okText: "Đồng ý",
+          cancelText: "Hủy",
+          onOk: async () => {
+            var data = {
+              id: refundProduct.id,
+              idBill: refundProduct.idBill,
+              idProduct: refundProduct.idProduct,
+              size: refundProduct.size,
+              quantity: quantity,
+              totalMoney: total,
+              note: refundProduct.note
+            };
+            await BillApi.refundProduct( data).then((res) => {
+              toast("Hoàn hàng thành công");
+            });
+            await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+              dispatch(getProductInBillDetail(res.data.data));
+            });
+            await BillApi.fetchDetailBill(id).then((res) => {
+              dispatch(getBill(res.data.data));
+              var index = listStatus.findIndex(
+                (item) => item.status == res.data.data.statusBill
+              );
+              if (res.data.data.statusBill == "TRA_HANG") {
+                index = 6;
+              }
+              if (res.data.data.statusBill == "DA_HUY") {
+                index = 7;
+              }
+              dispatch(addStatusPresent(index));
+            });
+            await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+              dispatch(getBillHistory(res.data.data));
+            });
+            
+            setIsModalRefundProductOpen(false);
+          },
+          onCancel: () => {
+            setIsModalRefundProductOpen(false);
+          },
+        });
+      }
+      setQuantity(1);
     }
-    setQuantity(1);
+   
   };
   const handleCancelRefundProduct = () => {
     setIsModalRefundProductOpen(false);
@@ -478,60 +483,64 @@ function DetailBill() {
   };
 
   const handleOkUpdateProduct = () => {
-    var listProduct = [...detailProductInBill];
-    var index = listProduct.findIndex((item) => item.id == idProductInBill);
-    var newProduct = { ...listProduct[index] };
-    newProduct.quantity = quantity;
-    listProduct.splice(index, 1, newProduct);
-    // newProduct.quantity = quantity
-    listProduct.splice(index, 1, newProduct);
-    var total = listProduct.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
-    }, 0);
-    Modal.confirm({
-      title: "Xác nhận",
-      content: "Bạn có xác nhận thay đổi không?",
-      okText: "Đồng ý",
-      cancelText: "Hủy",
-      onOk: async () => {
-        var data = {
-          idBill: updateProduct.idBill,
-          idProduct: updateProduct.idProduct,
-          size: updateProduct.size,
-          quantity: quantity,
-          price: "",
-          totalMoney: total,
-        };
-        await BillApi.updateProductInBill(idProductInBill, data).then((res) => {
-          toast("Thay đổi thành công");
-        });
-        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-          dispatch(getProductInBillDetail(res.data.data));
-        });
-        await BillApi.fetchDetailBill(id).then((res) => {
-          dispatch(getBill(res.data.data));
-          var index = listStatus.findIndex(
-            (item) => item.status == res.data.data.statusBill
-          );
-          if (res.data.data.statusBill == "TRA_HANG") {
-            index = 6;
-          }
-          if (res.data.data.statusBill == "DA_HUY") {
-            index = 7;
-          }
-          dispatch(addStatusPresent(index));
-        });
-        await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-          dispatch(getBillHistory(res.data.data));
-        });
-        setIsModalRefundProductOpen(false);
-      },
-      onCancel: () => {
-        setIsModalRefundProductOpen(false);
-      },
-    });
-    setIsModalUpdateProduct(false);
-    setQuantity(1);
+    if(quantity < 1){
+      toast("vui lòng nhập số lượng lớn hơn 0 ")
+    }else{
+      var listProduct = [...detailProductInBill];
+      var index = listProduct.findIndex((item) => item.id == idProductInBill);
+      var newProduct = { ...listProduct[index] };
+      newProduct.quantity = quantity;
+      listProduct.splice(index, 1, newProduct);
+      // newProduct.quantity = quantity
+      listProduct.splice(index, 1, newProduct);
+      var total = listProduct.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0);
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận thay đổi không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          var data = {
+            idBill: updateProduct.idBill,
+            idProduct: updateProduct.idProduct,
+            size: updateProduct.size,
+            quantity: quantity,
+            price: "",
+            totalMoney: total,
+          };
+          await BillApi.updateProductInBill(idProductInBill, data).then((res) => {
+            toast("Thay đổi thành công");
+          });
+          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+            dispatch(getProductInBillDetail(res.data.data));
+          });
+          await BillApi.fetchDetailBill(id).then((res) => {
+            dispatch(getBill(res.data.data));
+            var index = listStatus.findIndex(
+              (item) => item.status == res.data.data.statusBill
+            );
+            if (res.data.data.statusBill == "TRA_HANG") {
+              index = 6;
+            }
+            if (res.data.data.statusBill == "DA_HUY") {
+              index = 7;
+            }
+            dispatch(addStatusPresent(index));
+          });
+          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+            dispatch(getBillHistory(res.data.data));
+          });
+          setIsModalRefundProductOpen(false);
+        },
+        onCancel: () => {
+          setIsModalRefundProductOpen(false);
+        },
+      });
+      setIsModalUpdateProduct(false);
+      setQuantity(1);
+    }
   };
   const handleCancelUpdateProduct = () => {
     setIsModalUpdateProduct(false);

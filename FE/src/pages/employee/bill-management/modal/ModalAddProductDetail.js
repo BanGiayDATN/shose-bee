@@ -344,45 +344,14 @@ function ModalAddProductDetail({
     setProduct(record);
   };
   const handleOk = () => {
-    setIsModalOpen(false);
-
-    if (typeAddProductBill === "CREATE_BILL") {
-      var list = products;
-      console.log(sizes);
-      sizes.map((item) => {
-        var index = list.findIndex((x) => x.idSizeProduct === item.id);
-        var data = {
-          image: productSelect.image,
-          productName: productSelect.nameProduct,
-          nameSize: item.nameSize,
-          idProduct: productSelect.id,
-          quantity: quantity,
-          price: productSelect.price,
-          idSizeProduct: item.id,
-          maxQuantity: item.quantity,
-        };
-        if (index == -1) {
-          list.push(data);
-        } else {
-          data.quantity = list[index].quantity + quantity;
-          list.splice(index, 1, data);
-        }
-        dispatch(addProductBillWait(data));
-      });
-      setProducts(list);
-    } else {
-      sizes.map((item) => {
-        var data = {
-          idBill: typeAddProductBill,
-          idProduct: productSelect.id,
-          size: item.nameSize,
-          quantity: quantity,
-          price: productSelect.price,
-        };
-        BillApi.addProductInBill(data).then((res) => {
-          console.log(res.data.data);
-          var product = {
-            id: res.data.data,
+    if(sizes.length > 0  && quantity >= 1){
+      setIsModalOpen(false);
+      if (typeAddProductBill === "CREATE_BILL") {
+        var list = products;
+        console.log(sizes);
+        sizes.map((item) => {
+          var index = list.findIndex((x) => x.idSizeProduct === item.id);
+          var data = {
             image: productSelect.image,
             productName: productSelect.nameProduct,
             nameSize: item.nameSize,
@@ -390,11 +359,44 @@ function ModalAddProductDetail({
             quantity: quantity,
             price: productSelect.price,
             idSizeProduct: item.id,
+            maxQuantity: item.quantity,
           };
-          dispatch(addProductInBillDetail(product));
+          if (index == -1) {
+            list.push(data);
+          } else {
+            data.quantity = list[index].quantity + quantity;
+            list.splice(index, 1, data);
+          }
+          dispatch(addProductBillWait(data));
         });
-      });
+        setProducts(list);
+      } else {
+        sizes.map((item) => {
+          var data = {
+            idBill: typeAddProductBill,
+            idProduct: productSelect.id,
+            size: item.nameSize,
+            quantity: quantity,
+            price: productSelect.price,
+          };
+          BillApi.addProductInBill(data).then((res) => {
+            console.log(res.data.data);
+            var product = {
+              id: res.data.data,
+              image: productSelect.image,
+              productName: productSelect.nameProduct,
+              nameSize: item.nameSize,
+              idProduct: productSelect.id,
+              quantity: quantity,
+              price: productSelect.price,
+              idSizeProduct: item.id,
+            };
+            dispatch(addProductInBillDetail(product));
+          });
+        });
+      }
     }
+   
     // handleCancelProduct();
   };
   const handleCancel = () => {
