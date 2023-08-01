@@ -39,6 +39,12 @@ import {
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  GetPromotion,
+  SetPromotion,
+} from "../../../app/reducer/Promotion.reducer";
+import dayjs from "dayjs";
+import { AddressApi } from "../../../api/customer/address/address.api";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -62,7 +68,7 @@ function CreateBill() {
   };
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
-
+  const { Option } = Select;
   //  begin khách hàng
   const [isModalAccountOpen, setIsModalAccountOpen] = useState(false);
   const showModalAccount = (e) => {
@@ -76,6 +82,12 @@ function CreateBill() {
   };
   const [listaccount, setListaccount] = useState([]);
   const [initialCustomerList, setInitialCustomerList] = useState([]);
+  //tạo list chứa tỉnh, quận/huyện, xã/phường, ngày dự kiến ship, phí ship
+  const [listProvince, setListProvince] = useState([]);
+  const [listDistricts, setListDistricts] = useState([]);
+  const [listWard, setListWard] = useState([]);
+  const [dayShip, setDayShip] = useState([]);
+  const [shipFee, setShipFee] = useState([]);
   const [searchCustomer, setSearchCustomer] = useState({
     keyword: "",
     status: "",
@@ -89,6 +101,7 @@ function CreateBill() {
   }, [data]);
   useEffect(() => {
     loadData();
+    loadDataProvince();
   }, []);
 
   const loadData = () => {
@@ -124,6 +137,53 @@ function CreateBill() {
         console.log(err);
       }
     );
+  };
+  //load data tỉnh
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvince(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  //load data quận/huyện khi chọn tỉnh
+  const handleProvinceChange = (value, valueProvince) => {
+    // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+  //load data xã/phường khi chọn quận/huyện
+  const handleDistrictChange = (value, valueDistrict) => {
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+
+  //load data phí ship và ngày ship
+  const handleWardChange = (value, valueWard) => {
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+
+    AddressApi.fetchAllMoneyShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      setShipFee(res.data.data.total);
+    });
+    AddressApi.fetchAllDayShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      const leadtimeInSeconds = res.data.data.leadtime;
+      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+      setDayShip(formattedDate);
+    });
   };
 
   const handleInputChangeSearch = (name, value) => {
@@ -1010,16 +1070,29 @@ function CreateBill() {
                           showSearch
                           placeholder="Chọn tỉnh"
                           optionFilterProp="children"
-                          // onChange={onChange}
-                          // onSearch={onSearch}
+                          // // onChange={onChange}
+                          // // onSearch={onSearch}
+                          onChange={handleProvinceChange}
                           style={{ width: "90%" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listProvince?.map((item) => {
+                            return (
+                              <Option
+                                key={item.ProvinceID}
+                                value={item.ProvinceName}
+                                valueProvince={item.ProvinceID}
+                              >
+                                {item.ProvinceName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Col>
                       <Col span={8}>
                         {" "}
@@ -1030,13 +1103,26 @@ function CreateBill() {
                           style={{ width: "90%" }}
                           // onChange={onChange}
                           // onSearch={onSearch}
+                          onChange={handleDistrictChange}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listDistricts?.map((item) => {
+                            return (
+                              <Option
+                                key={item.DistrictID}
+                                value={item.DistrictName}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.DistrictName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Col>
                       <Col span={7}>
                         {" "}
@@ -1047,13 +1133,27 @@ function CreateBill() {
                           style={{ width: "95%" }}
                           // onChange={onChange}
                           // onSearch={onSearch}
+                          onChange={handleWardChange}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listWard?.map((item) => {
+                            return (
+                              <Option
+                                key={item.WardCode}
+                                value={item.WardName}
+                                valueWard={item.WardCode}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.WardName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Col>
                     </Row>
                   </Col>
@@ -1094,6 +1194,28 @@ function CreateBill() {
                     }}
                   >
                     <span>Thời gian nhận hàng dự kiến: {}</span>
+                  </Col>
+                <Row
+                  style={{
+                    marginTop: "30px",
+                    marginLeft: "10px",
+                    width: "100%",
+                  }}
+                >
+                  <Col span={2}>
+                    <CiDeliveryTruck
+                      style={{ height: "30px", width: "50px" }}
+                    />
+                  </Col>
+                  <Col
+                    span={22}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      fontWeight: "500",
+                    }}
+                  >
+                    <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
                   </Col>
                 </Row>
               </div>
@@ -1172,7 +1294,7 @@ function CreateBill() {
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={8}>Phí vận chuyển: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} đ{" "}
+                {shipFee} đ{" "}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>

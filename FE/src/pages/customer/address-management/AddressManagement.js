@@ -254,6 +254,20 @@ const AddressManagement = () => {
       sorter: (a, b) => a.province.localeCompare(b.province),
     },
     {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
+          </button>
+        );
+      },
+    },
+    {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",

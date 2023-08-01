@@ -1,5 +1,6 @@
 package com.example.shose.server.dto.request.address;
 
+import com.example.shose.server.infrastructure.constant.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,9 +20,13 @@ public abstract class BaseAddressRequest {
 
     private String province;
 
-    private String werd;
+    private String ward;
+
+    private Integer provinceId;
 
     private Integer toDistrictId;
+
+    private Status status;
 
     private String userId;
 }

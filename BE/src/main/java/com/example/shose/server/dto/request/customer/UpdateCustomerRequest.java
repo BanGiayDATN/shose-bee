@@ -11,8 +11,6 @@ import lombok.Setter;
 public class UpdateCustomerRequest extends BaseCustomerRequest {
     private String id;
 
-    private String password;
 
-    private String email;
 
 }

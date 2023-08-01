@@ -58,6 +58,7 @@ public class ProductDetailRestController {
                               @RequestParam("status") List<Boolean> listStatusImage,
                               @RequestParam("listSize") String dataSize) throws IOException, ExecutionException, InterruptedException {
 
+
         CreateProductDetailRequest request = new CreateProductDetailRequest();
         JsonObject jsonObject = JsonParser.parseString(requestData).getAsJsonObject();
         request.setDescription(jsonObject.get("description").getAsString());

@@ -9,6 +9,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.Image;
+import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.SizeProductDetail;
@@ -29,6 +30,7 @@ import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.ProductDetailService;
+import com.example.shose.server.util.RandomNumberGenerator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,13 +98,22 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                                    List<MultipartFile> multipartFiles,
                                    List<CreateSizeData> listSize,
                                    List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException {
+        Product product = productRepository.getOneByName(req.getProductId());
+        if (product == null) {
+            product = new Product();
+            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
+            product.setName(req.getProductId());
+            product.setStatus(Status.DANG_SU_DUNG);
+            productRepository.save(product);
+        }
+
         List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
         ProductDetail add = new ProductDetail();
         add.setBrand(brandRepository.getById(req.getBrandId()));
         add.setCategory(categoryRepository.getById(req.getCategoryId()));
         add.setMaterial(materialRepository.getById(req.getMaterialId()));
         add.setSole(soleRepository.getById(req.getSoleId()));
-        add.setProduct(productRepository.getOneByName(req.getProductId()));
+        add.setProduct(product);
         add.setColor(colorRepository.getOneByCode(req.getColorId()));
         add.setDescription(req.getDescription());
         add.setGender("NAM".equals(req.getGender()) ? GenderProductDetail.NAM :
@@ -157,12 +168,20 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
+        Product product = productRepository.getOneByName(req.getProductId());
+        if (product == null) {
+            product = new Product();
+            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
+            product.setName(req.getProductId());
+            product.setStatus(Status.DANG_SU_DUNG);
+            productRepository.save(product);
+        }
         ProductDetail update = optional.get();
         update.setBrand(brandRepository.getById(req.getBrandId()));
         update.setCategory(categoryRepository.getById(req.getCategoryId()));
         update.setMaterial(materialRepository.getById(req.getMaterialId()));
         update.setSole(soleRepository.getById(req.getSoleId()));
-        update.setProduct(productRepository.getOneByName(req.getProductId()));
+        update.setProduct(product);
         update.setColor(colorRepository.getOneByCode(req.getColorId()));
         update.setDescription(req.getDescription());
         update.setGender("NAM".equals(req.getGender()) ? GenderProductDetail.NAM :
