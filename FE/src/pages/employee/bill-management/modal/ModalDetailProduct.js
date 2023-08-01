@@ -25,12 +25,11 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
         ? prevSelected.filter((selected) => selected !== size)
         : [...prevSelected, size]
     );
-    ChangedSelectSize(e, size)
-    if(max < size.quantity){
-      setMax(size.quantity)
+    ChangedSelectSize(e, size);
+    if (max < size.quantity) {
+      setMax(size.quantity);
     }
   };
-
 
   const getSizeProductDetail = () => {
     SizeProductDetailApi.fetchAll(id).then((res) => {
@@ -53,33 +52,32 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
   useEffect(() => {
     getSizeProductDetail();
     getProductDetail();
-    setQuantity(1)
-    setSelectedSizes([])
+    setQuantity(1);
+    setSelectedSizes([]);
   }, [id]);
 
   const handleIncrease = () => {
     console.log(max);
     console.log(max > quantity);
-    if(max > quantity){
+    if (max > quantity) {
       setQuantity((prevQuantity) => prevQuantity + 1);
-      ChangeQuantity(quantity)
+      ChangeQuantity(quantity);
     }
   };
 
   const handleDecrease = () => {
     if (quantity > 1) {
       setQuantity((prevQuantity) => prevQuantity - 1);
-      ChangeQuantity(quantity)
+      ChangeQuantity(quantity);
     }
   };
 
-  const changeInputNumber = (v) =>{
-    if(max > quantity){
+  const changeInputNumber = (v) => {
+    if (max > quantity) {
       setQuantity(v);
-      ChangeQuantity(v)
+      ChangeQuantity(v);
     }
-    
-  }
+  };
 
   return (
     <div>
@@ -168,31 +166,91 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
             </Row>
           </Row>
           <Row style={{ marginTop: "15px", width: "100%" }}>
-            {" "}
-            <span style={{ fontWeight: "600", fontSize: "18px", color: "red" }}>
-              {" "}
-              {productDetail.price >= 1000
-                ? productDetail.price.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
-                : productDetail.price + " đ"}{" "}
-            </span>
+            {productDetail.promotion != null ? (
+              <Row>
+                <Row style={{ marginTop: "15px", width: "100%" }}>
+                  <span
+                    style={{
+                      fontWeight: "600",
+                      fontSize: "18px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    {(productDetail.price * (100 - productDetail.promotion)) /
+                      100 >=
+                    1000
+                      ? (
+                          (productDetail.price *
+                            (100 - productDetail.promotion)) /
+                          100
+                        ).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : (productDetail.price *
+                          (100 - productDetail.promotion)) /
+                          100 +
+                        " đ"}{" "}
+                  </span>
+                </Row>
+                <Row style={{ marginTop: "15px", width: "100%" }}>
+                  <span
+                    style={{
+                      fontWeight: "400",
+                      fontSize: "12px",
+                      color: "red",
+                      textDecoration: "line-through",
+                    }}
+                  >
+                    {" "}
+                    {productDetail.price >= 1000
+                      ? productDetail.price.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : productDetail.price + " đ"}{" "}
+                  </span>
+                </Row>
+              </Row>
+            ) : (
+              <Row style={{ marginTop: "15px", width: "100%" }}>
+                <span
+                  style={{
+                    fontWeight: "600",
+                    fontSize: "18px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  {productDetail.price >= 1000
+                    ? productDetail.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : productDetail.price + " đ"}{" "}
+                </span>
+              </Row>
+            )}
           </Row>
-          <Row gutter={[16, 16]} style={{ marginTop: "15px", width: "100%" }} justify={"center"}>
-          {/* Hiển thị các nút button cho các kích thước */}
-          {listSize.map((size) => (
-            <Col key={size.id} span={6}>
-              <Button
-                block
-                className={selectedSizes.includes(size) ? "selected" : ""}
-                onClick={(e) => toggleSizeSelection(e, size)}
-              >
-                {size.nameSize}
-              </Button>
-            </Col>
-          ))}
-        </Row>
+          <Row
+            gutter={[16, 16]}
+            style={{ marginTop: "15px", width: "100%" }}
+            justify={"center"}
+          >
+            {/* Hiển thị các nút button cho các kích thước */}
+            {listSize.map((size) => (
+              <Col key={size.id} span={6}>
+                <Button
+                  block
+                  className={selectedSizes.includes(size) ? "selected" : ""}
+                  onClick={(e) => toggleSizeSelection(e, size)}
+                >
+                  {size.nameSize}
+                </Button>
+              </Col>
+            ))}
+          </Row>
           <Row style={{ marginTop: "15px", width: "100%" }} justify={"center"}>
             <Button onClick={handleDecrease} style={{ margin: "0 4px 0 10px" }}>
               -

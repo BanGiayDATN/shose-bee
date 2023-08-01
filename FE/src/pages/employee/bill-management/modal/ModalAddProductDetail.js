@@ -380,6 +380,10 @@ function ModalAddProductDetail({
             price: productSelect.price,
           };
           BillApi.addProductInBill(data).then((res) => {
+            const price = productSelect.price 
+            if(productSelect.promotion != null ){
+              price = (productSelect.price * (100 - productSelect.promotion) ) /100
+            }
             console.log(res.data.data);
             var product = {
               id: res.data.data,
@@ -388,7 +392,7 @@ function ModalAddProductDetail({
               nameSize: item.nameSize,
               idProduct: productSelect.id,
               quantity: quantity,
-              price: productSelect.price,
+              price: price,
               idSizeProduct: item.id,
             };
             dispatch(addProductInBillDetail(product));
