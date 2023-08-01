@@ -7,6 +7,8 @@ import com.example.shose.server.dto.request.productdetail.FindProductDetailReque
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.entity.Color;
+import com.example.shose.server.entity.ColorProductDetail;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Product;
@@ -20,6 +22,7 @@ import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.BrandRepository;
 import com.example.shose.server.repository.CategoryRepository;
+import com.example.shose.server.repository.ColorProductDetailRepositry;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.repository.ImageRepository;
 import com.example.shose.server.repository.MaterialRepository;
@@ -87,6 +90,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Autowired
     private PromotionRepository promotionRepository;
 
+    @Autowired
+    private ColorProductDetailRepositry colorProductDetailRepositry;
+
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
         return productDetailRepository.getAll(findProductDetailRequest);
@@ -97,7 +103,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     public ProductDetailDTO create(CreateProductDetailRequest req,
                                    List<MultipartFile> multipartFiles,
                                    List<CreateSizeData> listSize,
-                                   List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException {
+                                   List<Boolean> listStatusImage,
+                                   List<String> listColor) throws IOException, ExecutionException, InterruptedException {
         Product product = productRepository.getOneByName(req.getProductId());
         if (product == null) {
             product = new Product();
@@ -114,13 +121,22 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         add.setMaterial(materialRepository.getById(req.getMaterialId()));
         add.setSole(soleRepository.getById(req.getSoleId()));
         add.setProduct(product);
-        add.setColor(colorRepository.getOneByCode(req.getColorId()));
         add.setDescription(req.getDescription());
-        add.setGender("NAM".equals(req.getGender()) ? GenderProductDetail.NAM :
-                "NU".equals(req.getGender()) ? GenderProductDetail.NU : GenderProductDetail.NAM_VA_NU);
+        add.setGender(getGenderProductDetail(req.getGender()));
         add.setPrice(new BigDecimal(req.getPrice()));
-        add.setStatus("DANG_SU_DUNG".equals(req.getStatus()) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        add.setStatus(getStatus(req.getStatus()));
         productDetailRepository.save(add);
+
+        List<ColorProductDetail> listSaveAllColorPD = listColor.stream()
+                .map(code -> {
+                    Color color = colorRepository.getOneByCode(code);
+                    ColorProductDetail colorProductDetail = new ColorProductDetail();
+                    colorProductDetail.setColor(color);
+                    colorProductDetail.setProductDetail(add);
+                    return colorProductDetail;
+                })
+                .collect(Collectors.toList());
+        colorProductDetailRepositry.saveAll(listSaveAllColorPD);
 
         List<SizeProductDetail> sizeProductDetails = new ArrayList<>();
         for (CreateSizeData data : listSize) {
@@ -163,7 +179,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     public ProductDetailDTO update(UpdateProductDetailRequest req,
                                    List<MultipartFile> multipartFiles,
                                    List<CreateSizeData> listSize,
-                                   List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException {
+                                   List<Boolean> listStatusImage,
+                                   List<String> listColor) throws IOException, ExecutionException, InterruptedException {
         Optional<ProductDetail> optional = productDetailRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -182,13 +199,26 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         update.setMaterial(materialRepository.getById(req.getMaterialId()));
         update.setSole(soleRepository.getById(req.getSoleId()));
         update.setProduct(product);
-        update.setColor(colorRepository.getOneByCode(req.getColorId()));
         update.setDescription(req.getDescription());
-        update.setGender("NAM".equals(req.getGender()) ? GenderProductDetail.NAM :
-                "NU".equals(req.getGender()) ? GenderProductDetail.NU : GenderProductDetail.NAM_VA_NU);
+        update.setGender(getGenderProductDetail(req.getGender()));
         update.setPrice(new BigDecimal(req.getPrice()));
-        update.setStatus("DANG_SU_DUNG".equals(req.getStatus()) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        update.setStatus(getStatus(req.getStatus()));
         productDetailRepository.save(update);
+
+
+        List<ColorProductDetail> existingColor = colorProductDetailRepositry.listColorByIdPD(req.getId());
+        colorProductDetailRepositry.deleteAll(existingColor);
+
+        List<ColorProductDetail> listSaveAllColorPD = listColor.stream()
+                .map(code -> {
+                    Color color = colorRepository.getOneByCode(code);
+                    ColorProductDetail colorProductDetail = new ColorProductDetail();
+                    colorProductDetail.setColor(color);
+                    colorProductDetail.setProductDetail(update);
+                    return colorProductDetail;
+                })
+                .collect(Collectors.toList());
+        colorProductDetailRepositry.saveAll(listSaveAllColorPD);
 
         List<Image> existingImagesDetail = imageRepository.getAllByIdProductDetail(req.getId());
         imageRepository.deleteAll(existingImagesDetail);
@@ -268,6 +298,20 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.getByIdProduct(id);
     }
 
+    private GenderProductDetail getGenderProductDetail(String gender) {
+        switch (gender) {
+            case "NAM":
+                return GenderProductDetail.NAM;
+            case "NU":
+                return GenderProductDetail.NU;
+            default:
+                return GenderProductDetail.NAM_VA_NU;
+        }
+    }
+
+    private Status getStatus(String status) {
+        return "DANG_SU_DUNG".equals(status) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
+    }
     @Override
     public ProductDetailResponse findByIdProductDetail(String id) {
         return productDetailRepository.findByIdProductDetail(id);

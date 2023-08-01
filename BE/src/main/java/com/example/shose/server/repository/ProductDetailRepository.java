@@ -19,55 +19,53 @@ import java.util.List;
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, String> {
 
     @Query(value = """
-             SELECT
-                 ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
-                 detail.id AS id,
-                 i.name AS image,
-                 p.name AS nameProduct,
-                 detail.price AS price,
-                 detail.created_date AS created_date,
-                 detail.gender AS gender,
-                 detail.status AS status,
-                 (
+                SELECT
+                   ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
+                   detail.id AS id,
+                   i.name AS image,
+                   p.name AS nameProduct,
+                   detail.price AS price,
+                   detail.created_date AS created_date,
+                   detail.gender AS gender,
+                   detail.status AS status,
+                   SUM(spd.quantity) AS total_quantity,
+                   (
+                       SELECT p2.value
+                       FROM promotion p2
+                       WHERE detail.id_promotion = p2.id AND p2.status = 'DANG_SU_DUNG'
+                       ORDER BY p2.value DESC
+                   ) AS promotion
+                FROM product_detail detail
+                JOIN product p ON detail.id_product = p.id
+                JOIN image i ON detail.id = i.id_product_detail
+                JOIN sole s ON s.id = detail.id_sole
+                JOIN material m ON detail.id_material = m.id
+                JOIN category c ON detail.id_category = c.id
+                JOIN brand b ON detail.id_brand = b.id
+                JOIN size_product_detail spd ON detail.id = spd.id_product_detail
+                JOIN size s2 ON spd.id_size = s2.id
+                JOIN color_product_detail cpd ON detail.id = cpd.id_product_detail
+                JOIN color c2 ON cpd.id_color = c2.id
+                WHERE i.status = true
+                AND  ( :#{#req.color} IS NULL OR :#{#req.color} LIKE '' OR c2.name LIKE %:#{#req.color}% )
+                AND  ( :#{#req.brand} IS NULL OR :#{#req.brand} LIKE '' OR b.name LIKE %:#{#req.brand}% )
+                AND  ( :#{#req.material} IS NULL OR :#{#req.material} LIKE '' OR m.name LIKE %:#{#req.material}% ) 
+                AND  ( :#{#req.product} IS NULL OR :#{#req.product} LIKE ''  OR p.name LIKE %:#{#req.product}% ) 
+                AND  ( :#{#req.sole} IS NULL  OR :#{#req.sole} LIKE '' OR s.name LIKE %:#{#req.sole}% )
+                AND  ( :#{#req.category} IS NULL OR :#{#req.category} LIKE '' OR c.name LIKE %:#{#req.category}% )
+                AND  ( :#{#req.status} IS NULL   OR :#{#req.status} LIKE '' OR detail.status LIKE :#{#req.status} )
+                AND  ( :#{#req.gender} IS NULL OR :#{#req.gender} LIKE '' OR detail.gender LIKE :#{#req.gender} )
+                AND  ( :#{#req.minPrice} IS NULL OR detail.price >= :#{#req.minPrice} ) 
+                AND  ( :#{#req.maxPrice} IS NULL OR detail.price <= :#{#req.maxPrice} )
+                AND (
                      SELECT SUM(spd.quantity)
                      FROM size_product_detail spd
                      JOIN size si ON spd.id_size = si.id
                      WHERE detail.id = spd.id_product_detail
-                 ) AS total_quantity,
-                 (
-                      SELECT p2.value
-                      FROM promotion p2
-                      WHERE detail.id_promotion = p2.id AND p2.status = 'DANG_SU_DUNG'
-                      ORDER BY p2.value DESC
-                 ) AS promotion
-             FROM product_detail detail
-             JOIN product p ON detail.id_product = p.id
-             JOIN image i ON detail.id = i.id_product_detail
-             JOIN sole s ON s.id = detail.id_sole
-             JOIN material m ON detail.id_material = m.id
-             JOIN category c ON detail.id_category = c.id
-             JOIN brand b ON detail.id_brand = b.id
-             JOIN color col ON detail.id_color = col.id
-             WHERE i.status = true
-             AND  ( :#{#req.color} IS NULL OR :#{#req.color} LIKE '' OR col.code LIKE %:#{#req.color}% ) 
-             AND  ( :#{#req.brand} IS NULL OR :#{#req.brand} LIKE '' OR b.name LIKE %:#{#req.brand}% )
-             AND  ( :#{#req.material} IS NULL OR :#{#req.material} LIKE '' OR m.name LIKE %:#{#req.material}% ) 
-             AND  ( :#{#req.product} IS NULL OR :#{#req.product} LIKE ''  OR p.name LIKE %:#{#req.product}% ) 
-             AND  ( :#{#req.sole} IS NULL  OR :#{#req.sole} LIKE '' OR s.name LIKE %:#{#req.sole}% )
-             AND  ( :#{#req.category} IS NULL OR :#{#req.category} LIKE '' OR c.name LIKE %:#{#req.category}% )
-             AND  ( :#{#req.status} IS NULL   OR :#{#req.status} LIKE '' OR detail.status LIKE :#{#req.status} )
-             AND  ( :#{#req.gender} IS NULL OR :#{#req.gender} LIKE '' OR detail.gender LIKE :#{#req.gender} )
-             AND  ( :#{#req.minPrice} IS NULL OR detail.price >= :#{#req.minPrice} ) 
-             AND  ( :#{#req.maxPrice} IS NULL OR detail.price <= :#{#req.maxPrice} )
-             AND (
-                 SELECT SUM(spd.quantity)
-                 FROM size_product_detail spd
-                 JOIN size si ON spd.id_size = si.id
-                 WHERE detail.id = spd.id_product_detail
-                 AND ( :#{#req.sizeProduct} IS NULL OR si.name = :#{#req.sizeProduct} OR :#{#req.sizeProduct} = '' )
-             ) IS NOT NULL
-             GROUP BY detail.id, i.name, p.name, detail.price, detail.created_date, detail.gender, detail.status
-             ORDER BY detail.last_modified_date DESC 
+                     AND ( :#{#req.sizeProduct} IS NULL OR si.name = :#{#req.sizeProduct} OR :#{#req.sizeProduct} = '' )
+                ) IS NOT NULL
+                GROUP BY detail.id, i.name, p.name, detail.price, detail.created_date, detail.gender, detail.status
+                ORDER BY detail.last_modified_date DESC 
             """, nativeQuery = true)
     List<ProductDetailReponse> getAll(@Param("req") FindProductDetailRequest req);
 
