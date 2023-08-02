@@ -83,50 +83,6 @@ const AccountManagement = () => {
     });
   }, [searchAccount.status]);
 
-  //     setListDistrictsSearch(res.data.data);
-  //   });
-  //   AddressApi.fetchAll({
-  //     line: searchAddress.keyword,
-  //     province: valueProvinceS.valueProvince,
-  //     district: searchAddress.district,
-  //     ward: searchAddress.ward,
-  //   }).then((res) => {
-  //     setListAddress(res.data.data);
-  //     dispatch(SetAddress(res.data.data));
-  //   });
-  // };
-
-  // const handledistrictChangeSearch = (value, valueDistrictS) => {
-  //   handleInputChangeSearch("district", valueDistrictS.valueDistrict);
-  //   handleClearWardSearch(valueDistrictS.valueDistrict);
-  //   AddressApi.fetchAllProvinceWard(value).then((res) => {
-  //     setListWardSearch(res.data.data);
-  //   });
-  //   AddressApi.fetchAll({
-  //     line: searchAddress.keyword,
-  //     province: searchAddress.province,
-  //     district: valueDistrictS.valueDistrict,
-  //     ward: searchAddress.ward,
-  //   }).then((res) => {
-  //     setListAddress(res.data.data);
-  //     dispatch(SetAddress(res.data.data));
-  //   });
-  // };
-
-  // const handlewardChangeSearch = (value) => {
-  //   handleInputChangeSearch("ward", value);
-  //   AddressApi.fetchAll({
-  //     line: searchAddress.keyword,
-  //     province: searchAddress.province,
-  //     district: searchAddress.district,
-  //     ward: value,
-  //   }).then((res) => {
-  //     setListAddress(res.data.data);
-  //     dispatch(SetAddress(res.data.data));
-  //   });
-  // };
-
-  //load dataProvince
   const loadDataProvince = () => {
     AddressApi.fetchAllProvince().then(
       (res) => {
@@ -219,25 +175,21 @@ const AccountManagement = () => {
   };
 
   const loadData = () => {
-    Promise.all([AccountApi.fetchAll(), AddressApi.fetchAll()]).then(
-      ([accountRes, addressRes]) => {
-        const accounts = accountRes.data.data.map((account, index) => ({
+    AccountApi.fetchAll().then(
+      (res) => {
+        const accounts = res.data.data.map((account, index) => ({
           ...account,
           stt: index + 1,
+          province: listProvinceSearch[index]?.name,
         }));
-        setListaccount(accounts);
+        setListaccount(res.data.data);
         setInitialAccountList(accounts);
         setInitialStartDate(null);
         setInitialEndDate(null);
-        dispatch(SetAccount(accounts));
-
-        // Lưu danh sách địa chỉ vào state listAddress
-        const addresses = addressRes.data.data.map((address, index) => ({
-          ...address,
-          stt: index + 1,
-        }));
-        setListAddress(addresses);
-        dispatch(SetAddress(addresses));
+        dispatch(SetAccount(res.data.data));
+      },
+      (err) => {
+        console.log(err);
       }
     );
   };
@@ -282,12 +234,6 @@ const AccountManagement = () => {
       key: "fullName",
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
-    // {
-    //   title: "Xã/Phường",
-    //   dataIndex: "ward",
-    //   key: "ward",
-    //   sorter: (a, b) => a.ward.localeCompare(b.ward),
-    // },
     {
       title: "Email",
       dataIndex: "email",

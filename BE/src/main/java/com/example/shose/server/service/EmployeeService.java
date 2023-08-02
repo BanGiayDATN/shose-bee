@@ -1,6 +1,7 @@
 package com.example.shose.server.service;
 
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
+import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
@@ -23,7 +24,8 @@ public interface EmployeeService {
     User create(CreateEmployeeRequest req , CreateAddressRequest addressRequest,
                 MultipartFile file);
 
-    User update(final UpdateEmployeeRequest req);
+    User update(final UpdateEmployeeRequest req,  UpdateAddressRequest addressRequest,
+                MultipartFile file);
 
     Boolean delete(String id);
 

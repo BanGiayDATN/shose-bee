@@ -2,6 +2,7 @@ package com.example.shose.server.service.impl;
 
 
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
+import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
@@ -79,6 +80,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .avata(urlImage) // đường dẫn ảnh từ url
                 .build();
         userReposiory.save(user); // add user vào database
+        User addressUser = userReposiory.getById(user.getId());
 
         Account employeeAccount = new Account();
         employeeAccount.setUser(user);
@@ -90,11 +92,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //  địa chỉ user
         Address address = new Address();
-        address.setWard(addressRequest.getWerd());
+        address.setStatus(Status.DANG_SU_DUNG);
+        address.setWard(addressRequest.getWard());
+        address.setToDistrictId(addressRequest.getToDistrictId());
+        address.setProvinceId(addressRequest.getProvinceId());
         address.setLine(addressRequest.getLine());
         address.setProvince(addressRequest.getProvince());
         address.setDistrict(addressRequest.getDistrict());
-        address.setUser(user); // add địa chỉ vào database
+        address.setUser(addressUser); // add địa chỉ vào database
         addressRepository.save(address);
 
         // gửi email
@@ -104,7 +109,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     @Override
     @Transactional
-    public User update(UpdateEmployeeRequest req) {
+    public User update(UpdateEmployeeRequest req,  UpdateAddressRequest addressRequest,
+                       MultipartFile file) {
+        String urlImage = imageToCloudinary.uploadImage(file);
         Optional<User> optional = userReposiory.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -116,14 +123,30 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setEmail(req.getEmail());
         user.setGender(req.getGender());
         user.setStatus(req.getStatus());
+        user.setAvata(urlImage);
+//         if (req.getPassword() != null) {
+//            accountRepository.updatePasswordByUserId(user.getId(), req.getPassword());
+//        }
+//        if (req.getEmail() != null) {
+//            accountRepository.updateEmailByUserId(user.getId(), req.getEmail());
+//        }
+        userReposiory.save(user); // update user vào database
 
-        if (req.getPassword() != null) {
-            accountRepository.updatePasswordByUserId(user.getId(), req.getPassword());
-        }
-        if (req.getEmail() != null) {
-            accountRepository.updateEmailByUserId(user.getId(), req.getEmail());
-        }
-        return userReposiory.save(user);
+        //  địa chỉ user
+        Address addressUser=  addressRepository.getAddressByUserIdAndStatus(user.getId(), Status.DANG_SU_DUNG);
+        Address address = new Address();
+        address.setId(addressUser.getId());
+        address.setWard(addressRequest.getWard());
+        address.setToDistrictId(addressRequest.getToDistrictId());
+        address.setProvinceId(addressRequest.getProvinceId());
+        address.setLine(addressRequest.getLine());
+        address.setProvince(addressRequest.getProvince());
+        address.setStatus(Status.DANG_SU_DUNG);
+        address.setDistrict(addressRequest.getDistrict());
+        address.setUser(user);
+        addressRepository.save(address);
+
+        return user;
     }
 
 

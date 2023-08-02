@@ -8,7 +8,6 @@ import {
   Row,
   Col,
   Upload,
-  message,
   Radio,
 } from "antd";
 import moment from "moment";
@@ -19,19 +18,22 @@ import { AccountApi } from "../../../../api/employee/account/account.api";
 import { UpdateAccount } from "../../../../app/reducer/Account.reducer";
 import { useParams, useNavigate } from "react-router-dom";
 import "../style-account.css";
-import { AddressApi } from "../../../../api/customer/address/address.api";
 import { PlusOutlined } from "@ant-design/icons";
+import { AddressApi } from "../../../../api/customer/address/address.api";
+import axios from "axios";
 const { Option } = Select;
 
 const ModalUpdateAccount = ({ visible }) => {
   const { id } = useParams();
   const [form] = Form.useForm();
+  const [formAddres] = Form.useForm();
   const [account, setAccount] = useState({});
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
+
   // ảnh
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -44,7 +46,6 @@ const ModalUpdateAccount = ({ visible }) => {
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
-
   const handleCancelImagel = () => setPreviewOpen(false);
 
   const handlePreview = async (file) => {
@@ -57,15 +58,17 @@ const ModalUpdateAccount = ({ visible }) => {
       file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
     );
   };
+
   const handleChange = ({ file }) => {
-    if (file.type !== "image/jpeg" && file.type !== "image/png") {
+    if (file.status === "removed") {
+      // If the file is being uploaded or removed, set the uploadedFile state accordingly
+      setUploadedFile(null);
+    } else if (file.type !== "image/jpeg" && file.type !== "image/png") {
+      // If the file is not a JPG or PNG image, display an error message
       toast.error("Bạn chỉ có thể tải lên tệp JPG/PNG!");
       return;
-    }
-    setUploadedFile(file);
-    if (file.status === "removed") {
-      // Nếu tệp bị xóa, đặt giá trị uploadedFile về null
-      setUploadedFile(null);
+    } else {
+      setUploadedFile(file);
     }
   };
 
@@ -81,14 +84,81 @@ const ModalUpdateAccount = ({ visible }) => {
       </div>
     </div>
   );
-  const getOne = () => {
+
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvince(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+
+  const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+
+  const handleDistrictChange = (value, valueDistrict) => {
+    form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+
+  const getOneAddress = () => {
     if (id != null && id !== "") {
-      AccountApi.getOne(id).then((res) => {
+      AddressApi.getOne(id).then((res) => {
         setAccount(res.data.data);
         form.setFieldsValue({
           ...res.data.data,
           dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
         });
+      });
+    }
+  };
+  const getOne = () => {
+    if (id != null && id !== "") {
+      console.log(id);
+      AccountApi.getOne(id).then((res) => {
+        AddressApi.getAddressByUserIdAndStatus(id).then((resAddress) => {
+          setAccount(res.data.data);
+          form.setFieldsValue({
+            ...res.data.data,
+            dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
+            province: resAddress.data.data.province,
+            district: resAddress.data.data.district,
+            ward: resAddress.data.data.ward,
+            line: resAddress.data.data.line,
+            toDistrictId: resAddress.data.data.toDistrictId,
+            provinceId: resAddress.data.data.provinceId,
+          });
+          AddressApi.fetchAllProvinceWard(
+            resAddress.data.data.toDistrictId
+          ).then((resWard) => {
+            setListWard(resWard.data.data);
+          });
+          AddressApi.fetchAllProvinceDistricts(
+            resAddress.data.data.provinceId
+          ).then((resDistrict) => {
+            setListDistricts(resDistrict.data.data);
+          });
+        });
+
+        if (res.data.data?.avata) {
+          setUploadedFile({
+            url: res.data.data.avata,
+            uid: "-1",
+            name: "avatar.png",
+            status: "done",
+          });
+        }
       });
     }
   };
@@ -102,6 +172,10 @@ const ModalUpdateAccount = ({ visible }) => {
       setAccount({});
     };
   }, [id, visible]);
+
+  useEffect(() => {
+    loadDataProvince();
+  }, []);
 
   const handleOk = () => {
     form
@@ -119,27 +193,67 @@ const ModalUpdateAccount = ({ visible }) => {
         });
       })
       .then((values) => {
-        const updatedValues = {
-          ...values,
-          dateOfBirth: moment(values.dateOfBirth).valueOf(),
-        };
-        form.resetFields();
+        const formattedDate = moment(
+          values.dateOfBirth,
+          "YYYY-MM-DD"
+        ).valueOf();
+        const updatedValues = { ...values, dateOfBirth: formattedDate };
         if (uploadedFile == null) {
           toast.error("Bạn cần thêm ảnh đai diện ");
-        }
-        const formData = new FormData();
-        formData.append(`multipartFile`, uploadedFile.originFileObj);
-        formData.append(`request`, JSON.stringify(updatedValues));
+        } else {
+          console.log(updatedValues);
+          console.log(uploadedFile);
+          const formData = new FormData();
 
-        AccountApi.update(id, formData).then((res) => {
-          dispatch(UpdateAccount(res.data.data));
-          toast.success("Cập nhật thành công");
-          navigate("/staff-management");
-        });
+          const promises = () => {
+            return new Promise((resolve, reject) => {
+              if (uploadedFile.originFileObj) {
+                formData.append(`multipartFiles`, uploadedFile.originFileObj);
+                resolve(); // Resolve the promise immediately if there is originFileObj
+              } else if (uploadedFile.url) {
+                axios
+                  .get(uploadedFile.url, { responseType: "arraybuffer" })
+                  .then((response) => {
+                    const imageFile = new File(
+                      [response.data],
+                      "your_image_public_id.jpg",
+                      { type: "image/jpeg" }
+                    );
+                    formData.append(`multipartFile`, imageFile);
+                    resolve(); // Resolve the promise after adding the imageFile to formData
+                  })
+                  .catch((error) => {
+                    console.error("Error fetching image:", error);
+                    reject(error); // Reject the promise if there is an error
+                  });
+              } else {
+                resolve(); // Resolve the promise immediately if there is neither originFileObj nor url
+              }
+            });
+          };
+
+          promises() // Call the 'promises' function to execute the file conversion promise
+            .then(() => {
+              formData.append(`request`, JSON.stringify(updatedValues));
+              console.log(id);
+              AccountApi.update(id, formData)
+                .then((res) => {
+                  dispatch(UpdateAccount(res.data.data));
+                  toast.success("Cập nhật thành công");
+                  navigate("/staff-management");
+                })
+                .catch((error) => {
+                  toast.error(error.response.data.message);
+                  console.log("Update failed:", error);
+                });
+            })
+            .catch((error) => {
+              console.error("Error converting and appending file:", error);
+            });
+        }
       })
-      .catch((error) => {
-        toast.error("Cập nhật thất bại");
-        console.log("Validation failed:", error);
+      .catch(() => {
+        // Xử lý khi người dùng từ chối xác nhận
       });
   };
 
@@ -159,34 +273,6 @@ const ModalUpdateAccount = ({ visible }) => {
     }
     return Promise.resolve();
   };
-  const loadDataProvince = () => {
-    AddressApi.fetchAllProvince().then(
-      (res) => {
-        setListProvince(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-  };
-
-  const handleProvinceChange = (value, valueProvince) => {
-    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
-      (res) => {
-        setListDistricts(res.data.data);
-      }
-    );
-  };
-
-  const handleDistrictChange = (value, valueDistrict) => {
-    form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
-    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
-      setListWard(res.data.data);
-    });
-  };
-  useEffect(() => {
-    loadDataProvince();
-  }, []);
   return (
     <div>
       <div
@@ -238,6 +324,7 @@ const ModalUpdateAccount = ({ visible }) => {
                 fileList={uploadedFile ? [uploadedFile] : []}
                 onPreview={handlePreview}
                 onChange={handleChange}
+                onRemove={() => setUploadedFile(null)}
                 showUploadList={{
                   showPreviewIcon: true,
                   showRemoveIcon: true,
@@ -319,8 +406,8 @@ const ModalUpdateAccount = ({ visible }) => {
                       },
                     ]}
                   >
-                    <Select defaultValue="" onChange={handleProvinceChange}>
-                      <Option value="">--Chọn Tỉnh/Thành phố--</Option>
+                    <Select onChange={handleProvinceChange}>
+                      {/* <Option value="">--Chọn Tỉnh/Thành phố--</Option> */}
                       {listProvince?.map((item) => {
                         return (
                           <Option
@@ -337,13 +424,13 @@ const ModalUpdateAccount = ({ visible }) => {
 
                   <Form.Item
                     label="Xã/Phường"
-                    name="werd"
+                    name="ward"
                     rules={[
                       { required: true, message: "Vui lòng chọn Xã/Phường" },
                     ]}
                   >
-                    <Select defaultValue="">
-                      <Option value="">--Chọn Xã/Phường--</Option>
+                    <Select>
+                      {/* <Option value="">--Chọn Xã/Phường--</Option> */}
                       {listWard?.map((item) => {
                         return (
                           <Option key={item.WardCode} value={item.WardName}>
@@ -356,27 +443,21 @@ const ModalUpdateAccount = ({ visible }) => {
                   <Form.Item
                     label="Trạng thái"
                     name="status"
+                    // initialValue="DANG_SU_DUNG"
                     rules={[
                       { required: true, message: "Vui lòng chọn trạng thái" },
                     ]}
                   >
-                    <Select placeholder="Vui lòng chọn trạng thái">
-                      <Option value="DANG_SU_DUNG">Kích hoạt</Option>
-                      <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
+                    <Select>
+                      <Option value="DANG_SU_DUNG">
+                        <span style={{ fontWeight: "bold" }}>Kích hoạt</span>
+                      </Option>
+                      <Option value="KHONG_SU_DUNG">
+                        <span style={{ fontWeight: "bold" }}>
+                          Ngừng kích hoạt
+                        </span>
+                      </Option>
                     </Select>
-                  </Form.Item>
-                  <Form.Item
-                    label="Giới tính"
-                    name="gender"
-                    rules={[
-                      { required: true, message: "Vui lòng chọn giới tinh" },
-                    ]}
-                    initialValue={account.gender === true ? "Nam" : "Nữ"}
-                  >
-                    <Radio.Group>
-                      <Radio value={true}>Nam</Radio>
-                      <Radio value={false}>Nữ</Radio>
-                    </Radio.Group>
                   </Form.Item>
                 </Col>
 
@@ -396,7 +477,11 @@ const ModalUpdateAccount = ({ visible }) => {
                       },
                     ]}
                   >
-                    <Input className="input-item" placeholder="Số điện thoại" />
+                    <Input
+                      className="input-item"
+                      placeholder="Số điện thoại"
+                      readOnly
+                    />
                   </Form.Item>
                   <Form.Item
                     label="Ngày sinh"
@@ -415,8 +500,8 @@ const ModalUpdateAccount = ({ visible }) => {
                       { required: true, message: "Vui lòng chọn Quận/Huyện" },
                     ]}
                   >
-                    <Select defaultValue=" " onChange={handleDistrictChange}>
-                      <Option value=" ">--Chọn Quận/Huyện--</Option>
+                    <Select onChange={handleDistrictChange}>
+                      {/* <Option value={}>--Chọn Quận/Huyện--</Option> */}
                       {listDistricts?.map((item) => {
                         return (
                           <Option
@@ -446,16 +531,44 @@ const ModalUpdateAccount = ({ visible }) => {
                       placeholder="Số nhà/Ngõ/Đường"
                     />
                   </Form.Item>
+                  {/* <Form.Item
+                  label="Mật khẩu"
+                  name="password"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập mật khẩu" },
+                    { min: 8, message: "Mật khẩu phải 8 ký tự" },
+                  ]}
+                >
+                  <Input type="password" placeholder="Mật khẩu" />
+                </Form.Item> */}
                   <Form.Item
-                    label="Mật khẩu"
-                    name="password"
+                    label="Giới tính"
+                    name="gender"
                     rules={[
-                      { required: true, message: "Vui lòng nhập mật khẩu" },
-                      { min: 8, message: "Mật khẩu phải 8 ký tự" },
+                      { required: true, message: "Vui lòng chọn giới tinh" },
                     ]}
+                    initialValue={account.gender === true ? "Nam" : "Nữ"}
                   >
-                    <Input type="password" placeholder="Mật khẩu" />
+                    <Radio.Group>
+                      <Radio value={true}>Nam</Radio>
+                      <Radio value={false}>Nữ</Radio>
+                    </Radio.Group>
                   </Form.Item>
+                  <Form.Item name="toDistrictId" hidden>
+                    <Input disabled />
+                  </Form.Item>
+                  <Form.Item name="provinceId" hidden>
+                    <Input disabled />
+                  </Form.Item>
+                  {/* <div>
+                  <QrReader
+                    delay={300}
+                    onError={handleError}
+                    onScan={handleScan}
+                    style={{ width: "100%" }}
+                  />
+                  <p>Scanned Data: {qrData}</p>
+                </div> */}
                 </Col>
               </Row>
             </div>
@@ -491,5 +604,4 @@ const ModalUpdateAccount = ({ visible }) => {
     </div>
   );
 };
-
 export default ModalUpdateAccount;
