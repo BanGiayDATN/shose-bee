@@ -272,8 +272,12 @@ function CreateBill() {
     },
   ];
   const selectedAccount = (record) => {
+    console.log(record);
     dispatch(addUserBillWait(record));
     setIsModalAccountOpen(true);
+    AddressApi.fetchAllAddressByUser(record.id).then((res) => {
+      setListAddress(res.data.data);
+    });
   };
   // end khách hàng
   const user = useSelector((state) => state.bill.billWaitProduct.user);
@@ -599,6 +603,110 @@ function CreateBill() {
     },
   ];
 
+  const columnsAddress = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+      sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Họ tên",
+      dataIndex: "fullname",
+      key: "fullname",
+      sorter: (a, b) => a.fullname.localeCompare(b.fullname),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phonenumber",
+      key: "phonenumber",
+      sorter: (a, b) => a.phonenumber.localeCompare(b.phonenumber),
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",
+      key: "address",
+      sorter: (a, b) => a.address.localeCompare(b.address),
+    },
+
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Mặc định " : "Không sử dụng"}
+          </button>
+        );
+      },
+    },
+    {
+      title: "Hành động",
+      dataIndex: "hanhDong",
+      key: "hanhDong",
+      render: (text, record) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            type="dashed"
+            title="Chọn"
+            style={{
+              color: "#02bdf0",
+              border: "1px solid #02bdf0",
+              fontWeight: "500",
+            }}
+            onClick={() => selectedAddress(record)}
+          >
+            Chọn
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
+
+  const showModalAddress = (e) => {
+    setIsModalAddressOpen(true);
+  };
+  const handleOkAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const handleCancelAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const [listAddress, setListAddress] = useState([]);
+  const [initialAddressList, setInitialAddressList] = useState([]);
+  const [listInfoUser, setListInfoUser] = useState([]);
+
+  const selectedAddress = (record) => {
+    setIsModalAddressOpen(false);
+    setListInfoUser(record);
+    console.log(listInfoUser);
+    AddressApi.fetchAllMoneyShip(record.toDistrictId, record.wardCode).then(
+      (res) => {
+        setShipFee(res.data.data.total);
+      }
+    );
+    AddressApi.fetchAllDayShip(record.toDistrictId, record.wardCode).then(
+      (res) => {
+        const leadtimeInSeconds = res.data.data.leadtime;
+        const formattedDate = moment
+          .unix(leadtimeInSeconds)
+          .format("DD/MM/YYYY");
+        setDayShip(formattedDate);
+      }
+    );
+    AddressApi.fetchAllProvinceDistricts(record.provinceId).then((res) => {
+      setListDistricts(res.data.data);
+    });
+    AddressApi.fetchAllProvinceWard(record.toDistrictId).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+
   return (
     <div>
       <Row justify="space-between">
@@ -709,6 +817,20 @@ function CreateBill() {
           <Col span={8}>
             <h2>Khách hàng</h2>
           </Col>
+
+          <Col span={12}></Col>
+          <Col span={4} align={"end"}>
+            {isOpenDelivery ? (
+              <Button
+                style={{ margin: "10px 00px 0px 0", width: "127px" }}
+                onClick={(e) => showModalAddress(e)}
+              >
+                Chọn địa chỉ
+              </Button>
+            ) : (
+              <div></div>
+            )}
+          </Col>
         </Row>
         <Row style={{ width: "100%" }}>
           <Col span={14}>
@@ -724,6 +846,7 @@ function CreateBill() {
                   <Col span={24}>
                     {" "}
                     <Input
+                      value={listInfoUser.fullname}
                       placeholder="Nhập họ và tên"
                       style={{ width: "90%" }}
                     />
@@ -739,6 +862,7 @@ function CreateBill() {
                   <Col span={24}>
                     {" "}
                     <Input
+                      value={listInfoUser.phonenumber}
                       placeholder="Nhập số điện thoại"
                       style={{ width: "90%" }}
                     />
@@ -754,6 +878,7 @@ function CreateBill() {
                   <Col span={24}>
                     {" "}
                     <Input
+                      value={listInfoUser.line}
                       placeholder="Nhập địa chỉ"
                       style={{ width: "90%" }}
                     />
@@ -783,6 +908,8 @@ function CreateBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
+                          value={listInfoUser.province}
+
                           // options={[]}
                         >
                           {listProvince?.map((item) => {
@@ -813,6 +940,7 @@ function CreateBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
+                          value={listInfoUser.district}
                           // options={[]}
                         >
                           {listDistricts?.map((item) => {
@@ -843,8 +971,13 @@ function CreateBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
+                          value={listInfoUser.ward}
                           // options={[]}
                         >
+                          {" "}
+                          {/* <Option value={listInfoUser.ward}>
+                            {listInfoUser.ward}
+                          </Option> */}
                           {listWard?.map((item) => {
                             return (
                               <Option
@@ -950,19 +1083,19 @@ function CreateBill() {
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} đ{" "}
+                {} VND{" "}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={8}>Phí vận chuyển: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {shipFee} đ{" "}
+                {shipFee} VND{" "}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Giảm giá: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} đ{" "}
+                {} VND{" "}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
@@ -981,7 +1114,7 @@ function CreateBill() {
                 }}
                 align={"end"}
               >
-                {} đ{" "}
+                {} VND{" "}
               </Col>
             </Row>
             <Row style={{ margin: "40px 20px 30px 0" }} justify="end">
@@ -1109,6 +1242,53 @@ function CreateBill() {
         </Row>
       </Modal>
       {/* end modal voucher */}
+      {/* begin modal Address */}
+      <Modal
+        title="Địa chỉ"
+        open={isModalAddressOpen}
+        onOk={handleOkAddress}
+        className="account"
+        onCancel={handleCancelAddress}
+      >
+        <Row style={{ width: "100%" }}>
+          <Col span={20}>
+            <Input
+              style={{
+                // width: "250px",
+                height: "38px",
+                marginRight: "8px",
+              }}
+              placeholder="Tìm kiếm"
+              type="text"
+              name="keyword"
+              value={searchCustomer.keyword}
+              onChange={handleKeywordChange}
+            />
+          </Col>
+          <Col span={1}></Col>
+          <Col span={3}>
+            {" "}
+            <Button
+              className="btn_filter"
+              type="submit"
+              onClick={handleSubmitSearch}
+            >
+              Tìm kiếm
+            </Button>
+          </Col>
+        </Row>
+        <Row style={{ width: "100%", marginTop: "20px" }}>
+          <Table
+            style={{ width: "100%" }}
+            dataSource={listAddress}
+            rowKey="id"
+            columns={columnsAddress}
+            pagination={{ pageSize: 3 }}
+            className="customer-table"
+          />
+        </Row>
+      </Modal>
+      {/* end  modal Address */}
     </div>
   );
 }

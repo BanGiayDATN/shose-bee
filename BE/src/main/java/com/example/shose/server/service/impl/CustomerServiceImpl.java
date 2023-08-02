@@ -107,6 +107,7 @@ public class CustomerServiceImpl implements CustomerService {
         address.setWard(addressRequest.getWard());
         address.setToDistrictId(addressRequest.getToDistrictId());
         address.setProvinceId(addressRequest.getProvinceId());
+        address.setWardCode(addressRequest.getWardCode());
         address.setLine(addressRequest.getLine());
         address.setProvince(addressRequest.getProvince());
         address.setDistrict(addressRequest.getDistrict());
@@ -157,6 +158,7 @@ public class CustomerServiceImpl implements CustomerService {
         address.setWard(addressRequest.getWard());
         address.setToDistrictId(addressRequest.getToDistrictId());
         address.setProvinceId(addressRequest.getProvinceId());
+        address.setWardCode(addressRequest.getWardCode());
         address.setLine(addressRequest.getLine());
         address.setProvince(addressRequest.getProvince());
         address.setStatus(Status.DANG_SU_DUNG);

@@ -3,11 +3,11 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.FindAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
-import com.example.shose.server.dto.response.AddressResponse;
+import com.example.shose.server.dto.response.address.AddressResponse;
+import com.example.shose.server.dto.response.address.AddressUserReponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.User;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -15,9 +15,6 @@ import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,8 +33,8 @@ public class AddressServiceImpl implements AddressService {
     private UserReposiory userReposiory;
 
     @Override
-    public List<Address> getAll() {
-        return addressRepository.findAll();
+    public List<AddressUserReponse> findAddressByUserId(String idUser) {
+        return addressRepository.findAddressByUserId(idUser);
     }
 
     @Override
@@ -52,7 +49,8 @@ public class AddressServiceImpl implements AddressService {
         Optional<User> user = userReposiory.findById(req.getUserId());
         if(checkStatusAddress == null){
             Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
-                    .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
+                    .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId())
+                    .wardCode(req.getWardCode()).user(user.get()).build();
             return addressRepository.save(address);
         }
         else if (checkStatusAddress.getStatus() != Status.KHONG_SU_DUNG) {
@@ -61,7 +59,8 @@ public class AddressServiceImpl implements AddressService {
 
 
         Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
-                .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
+                .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId())
+                .wardCode(req.getWardCode()).user(user.get()).build();
         return addressRepository.save(address);
     }
 
@@ -79,6 +78,7 @@ public class AddressServiceImpl implements AddressService {
         address.setStatus(req.getStatus());
         address.setToDistrictId(req.getToDistrictId());
         address.setProvinceId(req.getProvinceId());
+        address.setWardCode(req.getWardCode());
         address.setUser(user.get());
         return addressRepository.save(address);
     }
