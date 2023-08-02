@@ -17,16 +17,18 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
 
   const getOne = () => {
     AddressApi.getOne(id).then((res) => {
+      console.log(res.data.data);
       setAddress(res.data.data);
+
       form.setFieldsValue(res.data.data);
-      AddressApi.fetchAllProvinceDistricts(res.data.data.toDistrictId).then(
-        (resDistrict) => {
-          setListDistricts(resDistrict.data.data);
+      AddressApi.fetchAllProvinceWard(res.data.data.toDistrictId).then(
+        (resWard) => {
+          setListWard(resWard.data.data);
         }
       );
       AddressApi.fetchAllProvinceDistricts(res.data.data.provinceId).then(
-        (resWard) => {
-          setListWard(resWard.data.data);
+        (resDistrict) => {
+          setListDistricts(resDistrict.data.data);
         }
       );
     });
@@ -128,7 +130,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "88ceddbe-94fa-4ee5-9ba7-bdcf2227a8a0",
+          userId: "f01cb41d-cf72-46b0-8bb4-290e28863062",
         }}
       >
         <Form.Item

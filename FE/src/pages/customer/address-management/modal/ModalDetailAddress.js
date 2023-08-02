@@ -31,7 +31,7 @@ const ModalDeatailAddress = ({ visible, id, onCancel }) => {
 
   return (
     <Modal
-      title="Cập nhật địa chỉ"
+      title="Thông tin địa chỉ"
       visible={visible}
       onCancel={handleCancel}
       footer={[null]}

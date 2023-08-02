@@ -100,12 +100,16 @@ const ModalDetailCustomer = ({ visible }) => {
             ward: resAddress.data.data.ward,
             line: resAddress.data.data.line,
           });
-          // AddressApi.fetchAllProvinceWard(resAddress.data.data.toDistrictId).then((resWard) => {
-          //   setListWard(resWard.data.data);
-          // });
-          // AddressApi.fetchAllProvinceDistricts(resAddress.data.data.provinceId).then((resDistrict) => {
-          //   setListDistricts(resDistrict.data.data);
-          // });
+          AddressApi.fetchAllProvinceWard(
+            resAddress.data.data.toDistrictId
+          ).then((resWard) => {
+            setListWard(resWard.data.data);
+          });
+          AddressApi.fetchAllProvinceDistricts(
+            resAddress.data.data.provinceId
+          ).then((resDistrict) => {
+            setListDistricts(resDistrict.data.data);
+          });
         });
 
         if (res.data.data?.avata) {

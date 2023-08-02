@@ -49,10 +49,16 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address create(CreateAddressRequest req) {
         Address checkStatusAddress = addressRepository.getOneAddressByStatus(req.getStatus(), req.getUserId());
-        if (checkStatusAddress != null) {
+        Optional<User> user = userReposiory.findById(req.getUserId());
+        if(checkStatusAddress == null){
+            Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
+                    .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
+            return addressRepository.save(address);
+        }
+        else if (checkStatusAddress.getStatus() != Status.KHONG_SU_DUNG) {
             throw new RestApiException(Message.STATUS_ADDRESS_EXIST);
         }
-        Optional<User> user = userReposiory.findById(req.getUserId());
+
 
         Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
                 .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId()).user(user.get()).build();
