@@ -96,6 +96,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         billDetail.get().setQuantity(billDetail.get().getQuantity() - request.getQuantity());
 
         bill.get().setStatusBill(StatusBill.TRA_HANG);
+        bill.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         billRepository.save(bill.get());
 
         BillHistory billHistory = new BillHistory();
@@ -110,9 +111,9 @@ public class BillDetailServiceImpl implements BillDetailService {
     }
 
     @Override
-    public BillDetail create(CreateBillDetailRequest request) {
+    public String create(CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
-        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdBill());
+        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
         Optional<Size> size = sizeRepository.findByName(request.getSize());
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -133,17 +134,23 @@ public class BillDetailServiceImpl implements BillDetailService {
         sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
         sizeProductDetailRepository.save(sizeProductDetail.get());
 
-        BillDetail billDetail = formUtils.convertToObject(BillDetail.class, request);
+        bill.get().setTotalMoney(bill.get().getTotalMoney().add(new BigDecimal(request.getPrice()).multiply(BigDecimal.valueOf(request.getQuantity()))));
+        billRepository.save(bill.get());
+        BillDetail billDetail = new BillDetail();
+        billDetail.setStatusBill(StatusBill.TAO_HOA_DON);
+        billDetail.setQuantity(request.getQuantity());
         billDetail.setPrice(new BigDecimal(request.getPrice()));
         billDetail.setProductDetail(productDetail.get());
         billDetail.setBill(bill.get());
-        return billDetailRepository.save(billDetail);
+        billDetailRepository.save(billDetail);
+        return billDetail.getId();
     }
     @Override
-    public BillDetail update(String id, CreateBillDetailRequest request) {
+    public String update(String id, CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
-        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdBill());
+        Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
         Optional<Size> size = sizeRepository.findByName(request.getSize());
+        Optional<BillDetail> billDetail = billDetailRepository.findById(id);
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
@@ -157,17 +164,20 @@ public class BillDetailServiceImpl implements BillDetailService {
         if (!productDetail.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if (sizeProductDetail.get().getQuantity() < request.getQuantity()) {
+        if ((sizeProductDetail.get().getQuantity() + billDetail.get().getQuantity()) < request.getQuantity()) {
             throw new RestApiException(Message.ERROR_QUANTITY);
         }
-        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
+        sizeProductDetail.get().setQuantity( (sizeProductDetail.get().getQuantity() + billDetail.get().getQuantity() ) - request.getQuantity());
         sizeProductDetailRepository.save(sizeProductDetail.get());
 
-        Optional<BillDetail> billDetail = billDetailRepository.findById(id);
 
-        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
+        bill.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
+        billRepository.save(bill.get());
+//        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
         billDetail.get().setQuantity(request.getQuantity());
-        return billDetailRepository.save(billDetail.get());
+        billDetail.get().setStatusBill(StatusBill.TAO_HOA_DON);
+        billDetailRepository.save(billDetail.get());
+        return billDetail.get().getId();
     }
 
     @Override

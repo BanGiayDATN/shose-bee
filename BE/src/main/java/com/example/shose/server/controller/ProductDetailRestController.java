@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ImageResponse;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.FormUtils;
 import com.example.shose.server.util.ResponseObject;
@@ -14,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -99,5 +101,10 @@ public class ProductDetailRestController {
     @GetMapping("/byProduct/{id}")
     public ResponseObject getByIdProduct(@PathVariable("id") String id) {
         return new ResponseObject(productDetailService.getByIdProduct(id));
+    }
+
+    @GetMapping("/custom-product/{id}")
+    public ResponseObject findByIdProductDetail(@PathVariable("id") String id){
+        return new ResponseObject(productDetailService.findByIdProductDetail(id));
     }
 }

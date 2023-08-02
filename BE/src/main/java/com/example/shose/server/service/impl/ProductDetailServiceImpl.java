@@ -9,6 +9,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.Color;
 import com.example.shose.server.entity.ColorProductDetail;
+import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
@@ -311,4 +312,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private Status getStatus(String status) {
         return "DANG_SU_DUNG".equals(status) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
     }
+    @Override
+    public ProductDetailResponse findByIdProductDetail(String id) {
+        return productDetailRepository.findByIdProductDetail(id);
+    }
+
 }

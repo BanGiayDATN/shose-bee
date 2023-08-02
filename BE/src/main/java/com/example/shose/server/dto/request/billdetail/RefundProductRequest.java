@@ -20,6 +20,8 @@ public class RefundProductRequest {
 
     private Integer quantity;
 
+    private String totalMoney;
+
     private String note;
 
 }
