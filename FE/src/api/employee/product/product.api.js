@@ -8,6 +8,14 @@ export class ProductApi {
     });
   };
 
+  static fetchAllByName = (filter) => {
+    return request({
+      method: "GET",
+      url: `/admin/product/getByName`,
+      params: filter,
+    });
+  };
+
   static create = (data) => {
     return request({
       method: "POST",
@@ -28,7 +36,6 @@ export class ProductApi {
       url: `/admin/product/use`,
     });
   };
-  
 
   static update = (id, data) => {
     return request({

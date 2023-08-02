@@ -43,15 +43,15 @@ public class ProductDetailRestController {
     @Autowired
     private ProductDetailService productDetailService;
 
-    @GetMapping()
+    @GetMapping("")
     public ResponseObject view(final FindProductDetailRequest request) {
         return new ResponseObject(productDetailService.getAll(request));
     }
 
-    @GetMapping("/{id}")
-    public ResponseObject getOneById(@PathVariable("id") String id) {
-        return new ResponseObject(productDetailService.getOneById(id));
-    }
+//    @GetMapping("/{id}")
+//    public ResponseObject getOneById(@PathVariable("id") String id) {
+//        return new ResponseObject(productDetailService.getOneById(id));
+//    }
 
     @PostMapping("")
     public ResponseObject add(@RequestParam("multipartFiles") List<MultipartFile> multipartFiles,

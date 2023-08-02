@@ -56,7 +56,6 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
       const selectedSizeData = selectedSizes.map((size) => ({
         id: size.id,
         size: size.name,
-        quantity: quantity,
       }));
 
       onSaveData(selectedSizeData);
@@ -79,20 +78,11 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
     onCancel();
   };
 
-  const handleIncrease = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
-  };
-
-  const handleDecrease = () => {
-    if (quantity > 1) {
-      setQuantity((prevQuantity) => prevQuantity - 1);
-    }
-  };
 
   return (
     <>
       <Modal
-        title="Chọn kích cỡ và số lượng"
+        title="Chọn kích cỡ "
         visible={visible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -127,22 +117,6 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
             </Col>
           ))}
         </Row>
-
-        {/* Label và input để nhập số lượng */}
-        <div style={{ marginTop: 16 }}>
-          <label>Số lượng:</label>
-          <Button onClick={handleDecrease} style={{ margin: "0 4px 0 10px" }}>
-            -
-          </Button>
-          <InputNumber
-            min={1}
-            value={quantity}
-            onChange={(value) => setQuantity(value)}
-          />
-          <Button onClick={handleIncrease} style={{ margin: "0 4px 0 4px" }}>
-            +
-          </Button>
-        </div>
       </Modal>
       <Modal
         title="Nhập kích cỡ"

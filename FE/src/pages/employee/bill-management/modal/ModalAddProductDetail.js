@@ -24,10 +24,6 @@ import {
   faListAlt,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  GetProduct,
-  SetProduct,
-} from "../../../../app/reducer/Product.reducer";
 import { Option } from "antd/es/mentions";
 import { MaterialApi } from "../../../../api/employee/material/Material.api";
 import { SoleApi } from "../../../../api/employee/sole/sole.api";
@@ -35,7 +31,7 @@ import { CategoryApi } from "../../../../api/employee/category/category.api";
 import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
 import tinycolor from "tinycolor2";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
 import ModalDetailProduct from "./ModalDetailProduct";
 import {
@@ -65,12 +61,12 @@ function ModalAddProductDetail({
   };
 
   // lấy mảng redux ra
-  const data = useAppSelector(GetProduct);
-  useEffect(() => {
-    if (data != null) {
-      setListProduct(data);
-    }
-  }, [data]);
+  // const data = useAppSelector(GetProduct);
+  // useEffect(() => {
+  //   if (data != null) {
+  //     setListProduct(data);
+  //   }
+  // }, [data]);
 
   const handleChange = (e) => {
     setSearch(e.target.value);
@@ -88,7 +84,7 @@ function ModalAddProductDetail({
         }
       });
       setListProduct(data);
-      dispatch(SetProduct(data));
+      // dispatch(SetPr(data));
     });
   };
 
@@ -105,7 +101,7 @@ function ModalAddProductDetail({
         }
       });
       setListProduct(data);
-      dispatch(SetProduct(data));
+      // dispatch(SetProduct(data));
     });
   };
 
@@ -177,7 +173,7 @@ function ModalAddProductDetail({
         });
 
         setListProduct(data);
-        dispatch(SetProduct(data));
+        // dispatch(SetProduct(data));
         setIsSubmitted(false);
       },
       (err) => {
@@ -344,7 +340,7 @@ function ModalAddProductDetail({
     setProduct(record);
   };
   const handleOk = () => {
-    if(sizes.length > 0  && quantity >= 1){
+    if (sizes.length > 0 && quantity >= 1) {
       setIsModalOpen(false);
       if (typeAddProductBill === "CREATE_BILL") {
         var list = products;
@@ -380,9 +376,10 @@ function ModalAddProductDetail({
             price: productSelect.price,
           };
           BillApi.addProductInBill(data).then((res) => {
-            const price = productSelect.price 
-            if(productSelect.promotion != null ){
-              price = (productSelect.price * (100 - productSelect.promotion) ) /100
+            const price = productSelect.price;
+            if (productSelect.promotion != null) {
+              price =
+                (productSelect.price * (100 - productSelect.promotion)) / 100;
             }
             console.log(res.data.data);
             var product = {
@@ -400,7 +397,7 @@ function ModalAddProductDetail({
         });
       }
     }
-   
+
     // handleCancelProduct();
   };
   const handleCancel = () => {

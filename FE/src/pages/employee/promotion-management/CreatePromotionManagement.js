@@ -28,14 +28,10 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
-import {
-  CreateProduct,
-  SetProduct,
-  GetProduct,
-} from "../../../app/reducer/Product.reducer";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { ProductApi } from "../../../api/employee/product/product.api";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { GetProductDetail, SetProductDetail } from "../../../app/reducer/ProductDetail.reducer";
+import { ProductApi } from "../../../api/employee/product/product.api";
 
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
@@ -48,11 +44,11 @@ function CreateVoucherManagement() {
   const [listProductDetail, setListProductDetail] = useState([]);
   const [listProduct, setListProduct] = useState([]);
   const { Option } = Select;
-  const datas = useAppSelector(GetProduct);
+  const datas = useAppSelector(GetProductDetail);
 
   useEffect(() => {
     if (datas != null) {
-      SetProduct(datas);
+      SetProductDetail(datas);
     }
   }, [datas]);
 
@@ -98,7 +94,7 @@ function CreateVoucherManagement() {
     ProductApi.getProductUse().then(
       (res) => {
         setList(res.data.data);
-        dispatch(SetProduct(res.data.data));
+        // dispatch(SetProductDetail(res.data.data));
       },
       (err) => {
         console.log(err);
