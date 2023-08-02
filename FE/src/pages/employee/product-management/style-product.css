@@ -194,5 +194,26 @@
   background-color: #ffffff; /* Màu nền cho các hàng lẻ */
 }
 
+/* custom-button.css */
 
-  
+.custom-button {
+  position: relative;
+  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 23px;
+  margin-bottom: 15px;
+  width: 50px;
+  height: 43px;
+}
+.custom-button .custom-icon {
+  margin-left: 10px;
+  margin-top: -30px; /* Điều chỉnh khoảng cách icon lên phía trên */
+  font-size: 23px;
+  color: #ff4d4f;
+}
+
+
+
+
+

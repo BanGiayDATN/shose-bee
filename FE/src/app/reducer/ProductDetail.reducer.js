@@ -2,14 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = [];
 
-const productSlice = createSlice({
-  name: "product",
+const productDetailSlice = createSlice({
+  name: "productDetail",
   initialState,
   reducers: {
-    SetProduct: (state, action) => {
+    SetProductDetail: (state, action) => {
       return action.payload;
     },
-    CreateProduct: (state, action) => {
+    CreateProductDetail: (state, action) => {
       const data = action.payload;
       const newProduct = {
         stt: state.length + 1,
@@ -26,7 +26,7 @@ const productSlice = createSlice({
         item.stt = index + 1;
       });
     },
-    UpdateProduct: (state, action) => {
+    UpdateProductDetail: (state, action) => {
       const update = action.payload; // backend
       const index = state.findIndex((period) => period.id === update.id);
       if (index !== -1) {
@@ -41,7 +41,7 @@ const productSlice = createSlice({
   },
 });
 
-export const { SetProduct, CreateProduct, UpdateProduct } =
-  productSlice.actions;
-export default productSlice.reducer;
-export const GetProduct = (state) => state.product;
+export const { SetProductDetail, CreateProductDetail, UpdateProductDetail } =
+  productDetailSlice.actions;
+export default productDetailSlice.reducer;
+export const GetProductDetail = (state) => state.productDetail;

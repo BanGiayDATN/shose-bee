@@ -21,23 +21,23 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query(value = """
             SELECT
-                ROW_NUMBER() OVER (ORDER BY p.last_modified_date DESC ) AS stt,
+                ROW_NUMBER() OVER (ORDER BY p.last_modified_date DESC) AS stt,
                 p.id AS id,
                 p.code AS code,
-                p.name AS name,
+                p.name AS nameProduct,
                 p.status AS status,
-                p.created_date AS createdDate,
-                p.last_modified_date AS lastModifiedDate
+                SUM(pd.quantity) AS totalQuantity
             FROM product p
-            WHERE 
-                ( :#{#req.code} IS NULL 
-                    OR :#{#req.code} LIKE '' 
-                    OR code LIKE %:#{#req.code}% ) 
-            AND 
-                ( :#{#req.name} IS NULL 
-                    OR :#{#req.name} LIKE '' 
-                    OR name LIKE %:#{#req.name}% ) 
-            GROUP BY p.id
+            JOIN product_detail pd ON p.id = pd.id_product
+            WHERE (
+                          :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''\s
+                          OR p.code LIKE %:#{#req.keyword}% 
+                          OR p.name LIKE %:#{#req.keyword}%
+                      )
+            AND  ( :#{#req.status} IS NULL   OR :#{#req.status} LIKE '' OR p.status LIKE :#{#req.status} )
+            AND  ( :#{#req.minQuantity} IS NULL OR pd.quantity >= :#{#req.minQuantity} ) 
+            AND  ( :#{#req.maxQuantity} IS NULL OR pd.quantity <= :#{#req.maxQuantity} )
+            GROUP BY  p.id, p.status
             ORDER BY p.last_modified_date DESC  
             """, nativeQuery = true)
     List<ProductResponse> getAll(@Param("req") FindProductRequest req);
@@ -53,4 +53,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT p FROM Product p where p.status = 'DANG_SU_DUNG'")
     List<Product> getProductUse();
+
+    @Query(value = """ 
+        SELECT p.name FROM product p WHERE ( :name IS NULL   OR :name LIKE '' OR p.name LIKE %:name% )
+ """,nativeQuery = true)
+    List<String> findAllByName(@Param("name")String name);
 }

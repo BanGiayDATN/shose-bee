@@ -1,6 +1,7 @@
 import { Option } from "antd/es/mentions";
 import "./style-product.css";
 import {
+  Alert,
   AutoComplete,
   Button,
   Col,
@@ -8,6 +9,7 @@ import {
   Input,
   InputNumber,
   Modal,
+  Popconfirm,
   Row,
   Select,
   Space,
@@ -15,7 +17,14 @@ import {
   Upload,
 } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircle,
+  faCircleMinus,
+  faPlus,
+  faRemove,
+  faTrash,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
@@ -50,6 +59,7 @@ import AddColorModal from "./modal/ModalAddColor";
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
   const status = "DANG_SU_DUNG";
+  const [form] = Form.useForm();
   const [modalAddSole, setModalAddSole] = useState(false);
   const [modalAddCategopry, setModalAddCategory] = useState(false);
   const [modalAddMaterial, setModalAddMaterial] = useState(false);
@@ -119,21 +129,11 @@ const CreateProductManagment = () => {
     });
     ColorApi.getAllCode().then((res) => {
       setListColor(res.data.data);
-      console.log(res.data.data);
     });
   };
 
-  const onFinish = (values) => {
-    const priceValue = values.price;
-    if (typeof priceValue === "string") {
-      const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ""));
-      values.price = numericPrice + "";
-    }
-    setProductDetail(values);
-  };
-
   const handleSearch = (value) => {
-    ProductApi.fetchAll({
+    ProductApi.fetchAllByName({
       name: value,
     }).then((res) => {
       setListProduct(res.data.data);
@@ -142,9 +142,9 @@ const CreateProductManagment = () => {
 
   const renderOptions = (nameList) => {
     return nameList.map((product, index) => ({
-      key: `${product.id}-${index}`,
-      value: product.name,
-      label: product.name,
+      key: `${product}-${index}`,
+      value: product,
+      label: product,
     }));
   };
 
@@ -180,41 +180,36 @@ const CreateProductManagment = () => {
   };
 
   const handleSaveData = (selectedSizeData) => {
+    console.log(selectedSizeData);
     selectedSizeData.forEach((selectedSizeData) => {
       // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
       const existingSize = listSizeAdd.find(
-        (item) => item.size === selectedSizeData.size
+        (item) => item.nameSize === selectedSizeData.size
       );
 
       if (existingSize) {
-        // Nếu kích thước đã tồn tại, cộng dồn số lượng
-        setListSizeAdd((prevList) =>
-          prevList.map((item) =>
-            item.size === selectedSizeData.size
-              ? { ...item, quantity: item.quantity + selectedSizeData.quantity }
-              : item
-          )
+        // Nếu kích thước đã tồn tại, hiển thị cảnh báo
+        toast.warning(
+          `Kích cỡ ${selectedSizeData.size} đã tồn tại trong danh sách!`
         );
       } else {
+        // Nếu kích thước chưa tồn tại, thêm vào listSizeAdd
         setListSizeAdd((prevList) => [
           ...prevList,
           {
-            stt: prevList.length + 1,
             nameSize: selectedSizeData.size,
-            quantity: selectedSizeData.quantity,
             status: "DANG_SU_DUNG",
           },
         ]);
       }
     });
   };
-  const handleDelete = (index) => {
-    const updatedList = listSizeAdd.filter((item, i) => i !== index);
-    const updatedListWithStt = updatedList.map((item, i) => ({
-      ...item,
-      stt: i + 1,
-    }));
-    setListSizeAdd(updatedListWithStt);
+
+  const handleDeleteSize = (index) => {
+    const updatedList = [...listSizeAdd];
+    updatedList.splice(index, 1);
+    setListSizeAdd(updatedList);
+    toast.success("Đã xóa kích cỡ thành công");
   };
 
   // ảnh
@@ -271,68 +266,86 @@ const CreateProductManagment = () => {
   }, [isSubmitting]);
 
   const handleUpload = () => {
-    console.log(productDetail);
-    if (Object.entries(productDetail).length != 0) {
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có đồng ý thêm sản phẩm không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: () => {
-          if (!listSizeAdd || listSizeAdd.length === 0) {
-            toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
-            return;
-          }
-
-          if (!fileList || fileList.length === 0) {
-            toast.error("Bạn cần thêm ảnh cho sản phẩm");
-            return;
-          }
-          // check ảnh được chọn là mặc định chưa
-          const isAnyStarred = Object.values(starredFiles).some(
-            (file) => file.isStarred
-          );
-          if (!isAnyStarred) {
-            toast.error("Bạn cần chọn ảnh để làm mặc định");
-            return;
-          }
-          const formData = new FormData();
-          fileList.forEach((file) => {
-            formData.append(`multipartFiles`, file.originFileObj);
-            // Check if the file is starred and set the status accordingly
-            const isStarred = starredFiles[file.uid]?.isStarred || false;
-            formData.append(`status`, isStarred ? "true" : "false");
-            console.log(file);
+    form
+      .validateFields()
+      .then((values) => {
+        return new Promise((resolve, reject) => {
+          Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có đồng ý thêm không?",
+            okText: "Đồng ý",
+            cancelText: "Hủy",
+            onOk: () => resolve(values),
+            onCancel: () => reject(),
           });
-          console.log(productDetail);
-          const requestData = {
-            description: productDetail.description,
-            gender: productDetail.gender,
-            price: productDetail.price,
-            status: productDetail.status,
-            categoryId: productDetail.categoryId,
-            productId: productDetail.productId,
-            materialId: productDetail.materialId,
-            soleId: productDetail.soleId,
-            brandId: productDetail.brandId,
-          };
-
-          formData.append("listSize", JSON.stringify(listSizeAdd));
-          formData.append("data", JSON.stringify(requestData));
-          formData.append("listColor", JSON.stringify(selectedColors));
-
-          axios
-            .post("http://localhost:8080/admin/product-detail", formData)
-            .then((response) => {
-              console.log(response.data);
-              setIsSubmitting(true);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        },
+        });
+      })
+      .then((values) => {
+        console.log(values);
+        console.log(listSizeAdd);
+      })
+      .catch(() => {
+        // Xử lý khi người dùng từ chối xác nhận
       });
-    }
+    // console.log(productDetail);
+    // if (Object.entries(productDetail).length != 0) {
+    //   Modal.confirm({
+    //     title: "Xác nhận",
+    //     content: "Bạn có đồng ý thêm sản phẩm không?",
+    //     okText: "Đồng ý",
+    //     cancelText: "Hủy",
+    //     onOk: () => {
+    //       if (!listSizeAdd || listSizeAdd.length === 0) {
+    //         toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
+    //         return;
+    //       }
+    //       if (!fileList || fileList.length === 0) {
+    //         toast.error("Bạn cần thêm ảnh cho sản phẩm");
+    //         return;
+    //       }
+    //       // check ảnh được chọn là mặc định chưa
+    //       const isAnyStarred = Object.values(starredFiles).some(
+    //         (file) => file.isStarred
+    //       );
+    //       if (!isAnyStarred) {
+    //         toast.error("Bạn cần chọn ảnh để làm mặc định");
+    //         return;
+    //       }
+    //       const formData = new FormData();
+    //       fileList.forEach((file) => {
+    //         formData.append(`multipartFiles`, file.originFileObj);
+    //         // Check if the file is starred and set the status accordingly
+    //         const isStarred = starredFiles[file.uid]?.isStarred || false;
+    //         formData.append(`status`, isStarred ? "true" : "false");
+    //         console.log(file);
+    //       });
+    //       console.log(productDetail);
+    //       const requestData = {
+    //         description: productDetail.description,
+    //         gender: productDetail.gender,
+    //         price: productDetail.price,
+    //         status: productDetail.status,
+    //         categoryId: productDetail.categoryId,
+    //         productId: productDetail.productId,
+    //         materialId: productDetail.materialId,
+    //         soleId: productDetail.soleId,
+    //         brandId: productDetail.brandId,
+    //       };
+    //       formData.append("listSize", JSON.stringify(listSizeAdd));
+    //       formData.append("data", JSON.stringify(requestData));
+    //       formData.append("listColor", JSON.stringify(selectedColors));
+    //       axios
+    //         .post("http://localhost:8080/admin/product-detail", formData)
+    //         .then((response) => {
+    //           console.log(response.data);
+    //           setIsSubmitting(true);
+    //         })
+    //         .catch((error) => {
+    //           console.error(error);
+    //         });
+    //     },
+    //   });
+    // }
   };
 
   const [starredFiles, setStarredFiles] = useState({});
@@ -406,97 +419,26 @@ const CreateProductManagment = () => {
     }
   }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
 
-  const columns = [
-    {
-      title: "STT",
-      dataIndex: "stt",
-      key: "stt",
-      sorter: (a, b) => a.stt - b.stt,
-    },
-    {
-      title: "Kích cỡ",
-      dataIndex: "nameSize",
-      key: "nameSize",
-      sorter: (a, b) => a.stt - b.stt,
-    },
-    {
-      title: "Số Lượng",
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (text, record) => (
-        <Space>
-          <Button
-            onClick={() => handleQuantityDecrease(record)}
-            style={{ margin: "0 0 0 4px" }}
-          >
-            -
-          </Button>
-          <InputNumber
-            min={1}
-            value={text}
-            onChange={(value) => handleQuantityChange(value, record)}
-          />
-          <Button
-            onClick={() => handleQuantityIncrease(record)}
-            style={{ margin: "0 10px 0 0" }}
-          >
-            +
-          </Button>
-        </Space>
-      ),
-    },
-    {
-      title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
-      render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
-        return (
-          <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
-          </button>
-        );
-      },
-    },
-    {
-      title: "Hành động",
-      dataIndex: "hanhDong",
-      key: "hanhDong",
-      render: (text, record, index) => (
-        <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            type="primary"
-            title="xóa "
-            style={{ backgroundColor: "Red", borderColor: "Red" }}
-            onClick={() => handleDelete(index)} // Gọi hàm xóa và truyền vị trí của phần tử
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  // const [selectedColors, setSelectedColors] = useState([]);
+  // const handleChangeColor = (selectedColors) => {
+  //   setSelectedColors(selectedColors);
+  // };
 
-  const [selectedColors, setSelectedColors] = useState([]);
-  const handleChangeColor = (selectedColors) => {
-    setSelectedColors(selectedColors);
-  };
-  const getColoredOption = (color) => {
-    return (
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div
-          style={{
-            width: "50px",
-            height: "25px",
-            borderRadius: "10%",
-            backgroundColor: color,
-            marginRight: "8px",
-          }}
-        />
-      </div>
-    );
-  };
+  // const getColoredOption = (color) => {
+  //   return (
+  //     <div style={{ display: "flex", alignItems: "center" }}>
+  //       <div
+  //         style={{
+  //           width: "50px",
+  //           height: "25px",
+  //           borderRadius: "10%",
+  //           backgroundColor: color,
+  //           marginRight: "8px",
+  //         }}
+  //       />
+  //     </div>
+  //   );
+  // };
 
   return (
     <>
@@ -518,7 +460,7 @@ const CreateProductManagment = () => {
 
         <div style={{ marginTop: "25px" }}>
           <div className="content">
-            <Form onFinish={onFinish} initialValues={initialValues}>
+            <Form form={form} initialValues={initialValues}>
               <Form.Item>
                 <Button
                   type="primary"
@@ -564,46 +506,7 @@ const CreateProductManagment = () => {
                   className="form-textarea"
                 />
               </Form.Item>
-
-              <Row gutter={16} justify="center">
-                <Col span={8}>
-                  <Form.Item
-                    label="Giá"
-                    name="price"
-                    style={{ fontWeight: "bold" }}
-                    rules={[
-                      { required: true, message: "Vui lòng nhập giá sản phẩm" },
-                    ]}
-                  >
-                    <NumberFormat
-                      thousandSeparator={true}
-                      suffix=" VND"
-                      placeholder="Nhập giá sản phẩm"
-                      style={{ fontWeight: "bold", height: "40px" }}
-                      customInput={Input}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    label="Trạng thái"
-                    name="status"
-                    style={{ fontWeight: "bold" }}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng chọn trạng thái sản phẩm",
-                      },
-                    ]}
-                  >
-                    <Select>
-                      <Option value="DANG_SU_DUNG">
-                        <span style={{ fontWeight: "bold" }}>Kinh Doanh</span>
-                      </Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
+              <br />
 
               <Row gutter={7} justify="space-around">
                 <Col span={8}>
@@ -645,7 +548,10 @@ const CreateProductManagment = () => {
                       { required: true, message: "Vui lòng chọn thể loại" },
                     ]}
                   >
-                    <Select placeholder="Chọn thể loại">
+                    <Select
+                      placeholder="Chọn thể loại"
+                      style={{ marginLeft: "15px", width: "95%" }}
+                    >
                       {listCategory.map((category, index) => (
                         <Option key={index} value={category.id}>
                           <span style={{ fontWeight: "bold" }}>
@@ -679,7 +585,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select
-                      placeholder="Chọn giới tính"
+                      placeholder="Chọn chất liệu"
                       style={{ marginLeft: "20px", width: "260px" }}
                     >
                       {listMaterial.map((material, index) => (
@@ -711,7 +617,10 @@ const CreateProductManagment = () => {
                       { required: true, message: "Vui lòng chọn thể loại" },
                     ]}
                   >
-                    <Select placeholder="Chọn thể loại">
+                    <Select
+                      placeholder="Chọn đế giày"
+                      style={{ marginLeft: "15px", width: "95%" }}
+                    >
                       {listSole.map((sole, index) => (
                         <Option key={index} value={sole.id}>
                           <span style={{ fontWeight: "bold" }}>
@@ -745,7 +654,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select
-                      placeholder="Chọn chọn giới tính"
+                      placeholder="Chọn giới tính"
                       style={{ marginLeft: "20px", width: "260px" }}
                     >
                       <Option value="NAM">
@@ -773,35 +682,20 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Màu Sắc"
+                    label="Trạng thái"
+                    name="status"
                     style={{ fontWeight: "bold" }}
                     rules={[
-                      { required: true, message: "Vui lòng chọn màu sắc" },
+                      {
+                        required: true,
+                        message: "Vui lòng chọn trạng thái sản phẩm",
+                      },
                     ]}
                   >
-                    <Select
-                      mode="multiple"
-                      placeholder="Chọn màu sắc"
-                      value={selectedColors}
-                      onChange={handleChangeColor}
-                      optionLabelProp="colorLabel"
-                    >
-                      {listColor.map((color, index) => (
-                        <Option
-                          key={index}
-                          value={color}
-                          colorLabel={getColoredOption(color)}
-                        >
-                          <div
-                            style={{
-                              backgroundColor: color,
-                              width: "100%",
-                              height: "100%",
-                              borderRadius: "5px",
-                            }}
-                          ></div>
-                        </Option>
-                      ))}
+                    <Select>
+                      <Option value="DANG_SU_DUNG">
+                        <span style={{ fontWeight: "bold" }}>Kinh Doanh</span>
+                      </Option>
                     </Select>
                   </Form.Item>
                 </Col>
@@ -844,41 +738,120 @@ const CreateProductManagment = () => {
           <span
             style={{ fontSize: "20px", fontWeight: "bold", marginTop: "10px" }}
           >
-            KÍCH THƯỚC VÀ SỐ LƯỢNG
+            KÍCH CỠ VÀ MÀU SẮC
           </span>
         </div>
         <div style={{ marginTop: "25px" }}>
-          <Table
-            dataSource={listSizeAdd}
-            rowKey="id"
-            columns={columns}
-            pagination={{ pageSize: 3 }}
-            className="size-table"
-          />
-          {!listSizeAdd.length && (
-            <div
-              style={{
-                textAlign: "center",
-                fontSize: "18px",
-                fontWeight: "bold",
-                marginBottom: "20px",
-              }}
-            ></div>
-          )}
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              style={{ height: "40px" }}
-              type="primary"
-              onClick={() => setModalAddSize(true)}
-            >
-              Thêm kích cỡ
-            </Button>
-          </div>
-          <ModalAddSizeProduct
-            visible={modalAddSize}
-            onCancel={handleCancel}
-            onSaveData={handleSaveData}
-          />
+          <Row
+            align="middle"
+            gutter={16}
+            style={{ marginTop: "30px", marginBottom: "80px" }}
+          >
+            <Col span={3} style={{ marginLeft: "25px" }}>
+              <h2>Kích Cỡ : </h2>
+            </Col>
+            <Col span={16}>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {listSizeAdd.map((item, index) => (
+                  <Popconfirm
+                    key={index}
+                    title="Bạn có chắc muốn xóa kích cỡ này?"
+                    onConfirm={() => handleDeleteSize(index)}
+                    okText="Đồng ý"
+                    cancelText="Hủy"
+                  >
+                    <Button className="custom-button">
+                      <span
+                        style={{ fontWeight: "bold" }}
+                      >{`${item.nameSize}`}</span>
+                      <FontAwesomeIcon
+                        icon={faCircleMinus}
+                        className="custom-icon"
+                      />
+                    </Button>
+                  </Popconfirm>
+                ))}
+                <Col
+                  span={5}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    style={{ height: "40px" }}
+                    type="primary"
+                    onClick={() => {
+                      setModalAddSize(true);
+                    }}
+                  >
+                    Thêm kích cỡ
+                  </Button>
+                  <ModalAddSizeProduct
+                    visible={modalAddSize}
+                    onCancel={handleCancel}
+                    onSaveData={handleSaveData}
+                  />
+                </Col>
+              </div>
+            </Col>
+          </Row>
+
+          <Row
+            align="middle"
+            gutter={16}
+            style={{ marginTop: "80px", marginBottom: "80px" }}
+          >
+            <Col span={3} style={{ marginLeft: "25px" }}>
+              <h2>Màu Sắc : </h2>
+            </Col>
+            <Col span={16}>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {listSizeAdd.map((item, index) => (
+                  <Popconfirm
+                    key={index}
+                    title="Bạn có chắc muốn xóa kích cỡ này?"
+                    onConfirm={() => handleDeleteSize(index)}
+                    okText="Đồng ý"
+                    cancelText="Hủy"
+                  >
+                    <Button className="custom-button">
+                      <span
+                        style={{ fontWeight: "bold" }}
+                      >{`${item.nameSize}`}</span>
+                      <FontAwesomeIcon
+                        icon={faCircleMinus}
+                        className="custom-icon"
+                      />
+                    </Button>
+                  </Popconfirm>
+                ))}
+                <Col
+                  span={5}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    style={{ height: "40px" }}
+                    type="primary"
+                    onClick={() => {
+                      setModalAddSize(true);
+                    }}
+                  >
+                    Thêm màu sắc
+                  </Button>
+                  <AddColorModal
+                    visible={modalAddSize}
+                    onCancel={handleCancel}
+                  />
+                </Col>
+              </div>
+            </Col>
+          </Row>
         </div>
       </div>
 

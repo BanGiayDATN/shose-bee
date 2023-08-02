@@ -8,7 +8,6 @@ import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
-import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -16,7 +15,6 @@ import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
-import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.service.BillDetailService;
 import com.example.shose.server.util.FormUtils;
@@ -48,9 +46,6 @@ public class BillDetailServiceImpl implements BillDetailService {
     private BillHistoryRepository billHistoryRepository;
 
     @Autowired
-    private SizeProductDetailRepository sizeProductDetailRepository;
-
-    @Autowired
     private SizeRepository sizeRepository;
 
     private FormUtils formUtils = new FormUtils();
@@ -74,10 +69,10 @@ public class BillDetailServiceImpl implements BillDetailService {
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
-        if (!sizeProductDetail.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
+//        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
+//        if (!sizeProductDetail.isPresent()) {
+//            throw new RestApiException(Message.NOT_EXISTS);
+//        }
 
         if (billDetail.get().getQuantity() < request.getQuantity()) {
             throw new RestApiException(Message.ERROR_QUANTITY);
@@ -89,8 +84,8 @@ public class BillDetailServiceImpl implements BillDetailService {
             throw new RestApiException(Message.BILL_NOT_REFUND);
         }
 
-        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() + request.getQuantity());
-        sizeProductDetailRepository.save(sizeProductDetail.get());
+//        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() + request.getQuantity());
+//        sizeProductDetailRepository.save(sizeProductDetail.get());
 
         billDetail.get().setStatusBill(StatusBill.TRA_HANG);
         billDetail.get().setQuantity(billDetail.get().getQuantity() - request.getQuantity());
@@ -117,21 +112,21 @@ public class BillDetailServiceImpl implements BillDetailService {
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
-        if (!sizeProductDetail.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
+//        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
+//        if (!sizeProductDetail.isPresent()) {
+//            throw new RestApiException(Message.NOT_EXISTS);
+//        }
         if(!bill.isPresent()){
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         if (!productDetail.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if (sizeProductDetail.get().getQuantity() < request.getQuantity()) {
-            throw new RestApiException(Message.ERROR_QUANTITY);
-        }
-        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
-        sizeProductDetailRepository.save(sizeProductDetail.get());
+//        if (sizeProductDetail.get().getQuantity() < request.getQuantity()) {
+//            throw new RestApiException(Message.ERROR_QUANTITY);
+//        }
+//        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
+//        sizeProductDetailRepository.save(sizeProductDetail.get());
 
         BillDetail billDetail = formUtils.convertToObject(BillDetail.class, request);
         billDetail.setPrice(new BigDecimal(request.getPrice()));
@@ -147,21 +142,21 @@ public class BillDetailServiceImpl implements BillDetailService {
         if (!size.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
-        if (!sizeProductDetail.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
+//        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
+//        if (!sizeProductDetail.isPresent()) {
+//            throw new RestApiException(Message.NOT_EXISTS);
+//        }
         if(!bill.isPresent()){
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         if (!productDetail.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if (sizeProductDetail.get().getQuantity() < request.getQuantity()) {
-            throw new RestApiException(Message.ERROR_QUANTITY);
-        }
-        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
-        sizeProductDetailRepository.save(sizeProductDetail.get());
+//        if (sizeProductDetail.get().getQuantity() < request.getQuantity()) {
+//            throw new RestApiException(Message.ERROR_QUANTITY);
+//        }
+//        sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - request.getQuantity());
+//        sizeProductDetailRepository.save(sizeProductDetail.get());
 
         Optional<BillDetail> billDetail = billDetailRepository.findById(id);
 
@@ -184,12 +179,12 @@ public class BillDetailServiceImpl implements BillDetailService {
         bill.setTotalMoney(bill.getTotalMoney().subtract(billDetail.get().getPrice()));
         billRepository.save(bill);
 
-        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), billDetail.get().getProductDetail());
-        if (!sizeProductDetail.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
-        sizeProductDetail.get().setQuantity(billDetail.get().getQuantity() + sizeProductDetail.get().getQuantity());
-        sizeProductDetailRepository.save(sizeProductDetail.get());
+//        Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), billDetail.get().getProductDetail());
+//        if (!sizeProductDetail.isPresent()) {
+//            throw new RestApiException(Message.NOT_EXISTS);
+//        }
+//        sizeProductDetail.get().setQuantity(billDetail.get().getQuantity() + sizeProductDetail.get().getQuantity());
+//        sizeProductDetailRepository.save(sizeProductDetail.get());
         billDetailRepository.deleteById(id);
         return true;
     }

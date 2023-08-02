@@ -8,12 +8,10 @@ import com.example.shose.server.dto.request.productdetail.UpdateProductDetailReq
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.Color;
-import com.example.shose.server.entity.ColorProductDetail;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
-import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -21,14 +19,12 @@ import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.BrandRepository;
 import com.example.shose.server.repository.CategoryRepository;
-import com.example.shose.server.repository.ColorProductDetailRepositry;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.repository.ImageRepository;
 import com.example.shose.server.repository.MaterialRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
 import com.example.shose.server.repository.PromotionRepository;
-import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.ProductDetailService;
@@ -80,17 +76,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private SizeProductDetailRepository sizeProductDetailRepository;
 
     @Autowired
     private UploadImageToCloudinary imageToCloudinary;
 
     @Autowired
     private PromotionRepository promotionRepository;
-
-    @Autowired
-    private ColorProductDetailRepositry colorProductDetailRepositry;
 
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
@@ -126,35 +117,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         add.setStatus(getStatus(req.getStatus()));
         productDetailRepository.save(add);
 
-        List<ColorProductDetail> listSaveAllColorPD = listColor.stream()
-                .map(code -> {
-                    Color color = colorRepository.getOneByCode(code);
-                    ColorProductDetail colorProductDetail = new ColorProductDetail();
-                    colorProductDetail.setColor(color);
-                    colorProductDetail.setProductDetail(add);
-                    return colorProductDetail;
-                })
-                .collect(Collectors.toList());
-        colorProductDetailRepositry.saveAll(listSaveAllColorPD);
-
-        List<SizeProductDetail> sizeProductDetails = new ArrayList<>();
-        for (CreateSizeData data : listSize) {
-            SizeProductDetail sizeProductDetail = new SizeProductDetail();
-            Size size = sizeRepository.getOneByName(data.getNameSize());
-            if (size == null) {
-                size = new Size();
-                size.setName(data.getNameSize());
-                size.setStatus(Status.DANG_SU_DUNG);
-                sizeRepository.save(size);
-            }
-            sizeProductDetail.setQuantity(data.getQuantity());
-            sizeProductDetail.setProductDetail(add);
-            sizeProductDetail.setSize(size);
-            sizeProductDetail.setStatus(Status.DANG_SU_DUNG);
-            sizeProductDetails.add(sizeProductDetail);
-        }
-        sizeProductDetailRepository.saveAll(sizeProductDetails);
-
         // Process images for each size
         List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
                 .parallel()
@@ -170,7 +132,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 .collect(Collectors.toList());
         imageRepository.saveAll(imagesToAdd);
 
-        ProductDetailDTO detailDTO = new ProductDetailDTO(add); // Return the first item in the list as an example
+        ProductDetailDTO detailDTO = new ProductDetailDTO(add);
         return detailDTO;
     }
 
@@ -205,50 +167,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetailRepository.save(update);
 
 
-        List<ColorProductDetail> existingColor = colorProductDetailRepositry.listColorByIdPD(req.getId());
-        colorProductDetailRepositry.deleteAll(existingColor);
-
-        List<ColorProductDetail> listSaveAllColorPD = listColor.stream()
-                .map(code -> {
-                    Color color = colorRepository.getOneByCode(code);
-                    ColorProductDetail colorProductDetail = new ColorProductDetail();
-                    colorProductDetail.setColor(color);
-                    colorProductDetail.setProductDetail(update);
-                    return colorProductDetail;
-                })
-                .collect(Collectors.toList());
-        colorProductDetailRepositry.saveAll(listSaveAllColorPD);
-
         List<Image> existingImagesDetail = imageRepository.getAllByIdProductDetail(req.getId());
         imageRepository.deleteAll(existingImagesDetail);
-
-        List<SizeProductDetail> listSizeProductDetails = new ArrayList<>();
-        for (CreateSizeData data : listSize) {
-            Size size = sizeRepository.getOneByName(data.getNameSize());
-            if (size == null) {
-                size = new Size();
-                size.setName(data.getNameSize());
-                size.setStatus(Status.DANG_SU_DUNG);
-                size = sizeRepository.save(size);
-            }
-
-            SizeProductDetail sizeProductDetail = sizeProductDetailRepository.getOneSizeDetailBySizeAndProductDetail(req.getId(), size.getName());
-            if (sizeProductDetail == null) {
-                // Tạo mới SizeProductDetail chỉ khi nó chưa tồn tại
-                sizeProductDetail = new SizeProductDetail();
-                sizeProductDetail.setSize(size);
-                sizeProductDetail.setQuantity(data.getQuantity());
-                sizeProductDetail.setProductDetail(update);
-                sizeProductDetail.setStatus(data.getStatus());
-            } else {
-                // Nếu SizeProductDetail đã tồn tại, chỉ cập nhật trạng thái và số lượng
-                sizeProductDetail.setStatus(data.getStatus());
-                sizeProductDetail.setQuantity(data.getQuantity());
-            }
-
-            listSizeProductDetails.add(sizeProductDetail);
-        }
-        sizeProductDetailRepository.saveAll(listSizeProductDetails);
 
         // Process images for each size
         List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
