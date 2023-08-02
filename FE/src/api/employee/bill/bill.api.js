@@ -88,6 +88,35 @@ export class BillApi {
       });
     };
 
+    static addProductInBill = (data) => {
+      return request({
+        method: "POST",
+        url: `/admin/bill-detail/add-product` ,
+        data: data
+      });
+    };
+
+    static removeProductInBill = (id, size) => {
+      return request({
+        method: "DELETE",
+        url: `/admin/bill-detail/remove/${id}/${size}` ,
+      });
+    };
+
+    static updateProductInBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill-detail/${id}` ,
+        data: data
+      });
+    };
+    static refundProduct = ( data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill-detail/refund` ,
+        data: data
+      });
+    };
     // static getOne = (id) => {
     //   return request({
     //     method: "GET",

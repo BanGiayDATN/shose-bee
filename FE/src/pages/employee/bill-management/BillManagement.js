@@ -62,16 +62,16 @@ function BillManagement() {
     });
   };
 
-  const handleSelectChange = async (value, fileName) =>{
+  const handleSelectChange = async (value, fileName) => {
     // setFillter({ ...fillter, [fileName]: value });
     var data = fillter;
     data.status = status;
-    data.type = value
+    data.type = value;
     setFillter(data);
     await BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
-  }
+  };
   const handleSelectMultipleChange = (value) => {
     var arr = Object.keys(value).map(function (key) {
       return value[key];
@@ -83,7 +83,7 @@ function BillManagement() {
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
-  }
+  };
 
   const clearFillter = (e) => {
     setFillter({
@@ -252,10 +252,10 @@ function BillManagement() {
               employess={employees}
               onChangeStatusBillInFillter={onChangeStatusBillInFillter}
               status={status}
-              handleSubmitSearch = {handleSubmitSearch}
-              clearFillter = {clearFillter}
-              handleSelectMultipleChange = {handleSelectMultipleChange}
-              handleSelectChange = {handleSelectChange}
+              handleSubmitSearch={handleSubmitSearch}
+              clearFillter={clearFillter}
+              handleSelectMultipleChange={handleSelectMultipleChange}
+              handleSelectChange={handleSelectChange}
             />
           </div>
         </div>

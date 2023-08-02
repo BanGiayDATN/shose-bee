@@ -2,6 +2,7 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
+  Form,
   Input,
   InputNumber,
   Modal,
@@ -13,6 +14,7 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import "./create-bill.css";
+import { BsTrash } from "react-icons/bs";
 import "./style-bill.css";
 import { useSelector } from "react-redux";
 import { BillApi } from "../../../api/employee/bill/bill.api";
@@ -35,11 +37,50 @@ import {
   GetPromotion,
   SetPromotion,
 } from "../../../app/reducer/Promotion.reducer";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
+import { set } from "lodash";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
+  const [products, setProducts] = useState([]);
+  const [billRequest, setBillRequest] = useState({
+    phoneNumber: "",
+    address: "",
+    userName: "",
+    idUser: "",
+    itemDiscount: 0,
+    totalMoney: 0,
+    note: "",
+    moneyShip: 0,
+    billDetailRequests: [],
+    vouchers: [],
+  });
+
+  const [address, setAddress] = useState({
+    city: "",
+    district: "",
+    wards: "",
+    detail: "",
+  });
+
+  const onChangeAddress = (fileName, value) => {
+    setAddress({ ...address, [fileName]: value });
+  };
+
+  const typeAddProductBill = "CREATE_BILL";
+
+  const initialValues = {
+    status: "DANG_SU_DUNG",
+  };
+
+  const ChangeBillRequest = (filleName, value) => {
+    setBillRequest({ ...billRequest, [filleName]: value });
+    console.log(billRequest);
+  };
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
   const { Option } = Select;
@@ -61,7 +102,7 @@ function CreateBill() {
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
   const [dayShip, setDayShip] = useState([]);
-  const [shipFee, setShipFee] = useState([]);
+  const [shipFee, setShipFee] = useState(0);
   const [searchCustomer, setSearchCustomer] = useState({
     keyword: "",
     status: "",
@@ -126,6 +167,7 @@ function CreateBill() {
   //load data quận/huyện khi chọn tỉnh
   const handleProvinceChange = (value, valueProvince) => {
     // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    setAddress({ ...address, city: valueProvince.value });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -134,6 +176,7 @@ function CreateBill() {
   };
   //load data xã/phường khi chọn quận/huyện
   const handleDistrictChange = (value, valueDistrict) => {
+    setAddress({ ...address, district: valueDistrict.value });
     // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
@@ -143,7 +186,7 @@ function CreateBill() {
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
     // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
-
+    setAddress({ ...address, wards: valueWard.value });
     AddressApi.fetchAllMoneyShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -235,20 +278,7 @@ function CreateBill() {
       key: "points",
       sorter: (a, b) => a.points.localeCompare(b.points),
     },
-    {
-      title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
-      render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
-        return (
-          <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Kích hoạt " : "Ngừng kích hoạt"}
-          </button>
-        );
-      },
-    },
+
     {
       title: "Hành động",
       dataIndex: "hanhDong",
@@ -278,6 +308,15 @@ function CreateBill() {
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
     });
+    setBillRequest({
+      ...billRequest,
+      phoneNumber: record.phoneNumber,
+      userName: record.fullName,
+      idUser: record.id,
+    });
+    console.log(billRequest);
+    dispatch(addUserBillWait(record));
+    setIsModalAccountOpen(false);
   };
   // end khách hàng
   const user = useSelector((state) => state.bill.billWaitProduct.user);
@@ -299,11 +338,110 @@ function CreateBill() {
     vouchers: vouchers,
   });
   const navigate = useNavigate();
+
+  const checkNotEmptyBill = () => {
+    return Object.keys(billRequest)
+      .filter((key) => key !== "note")
+      .every((key) => billRequest[key] !== "");
+  };
+  const checkNotEmptyAddress = () => {
+    return (
+      Object.keys(address).filter((key) => address[key] !== "").length ===
+      Object.keys(address).length - 1
+    );
+  };
+
   const orderBill = (e) => {
-    console.log(e);
-    BillApi.createBillWait(bill).then((res) => {
-      navigate("/bill-management/detail-bill/" + res.data.data.id);
-    });
+    var newProduct = products.map((product) => ({
+      idProduct: product.idProduct,
+      size: product.nameSize,
+      quantity: product.quantity,
+      price: product.price,
+    }));
+    var newVoucher = [];
+    if (voucher.idVoucher != "") {
+      newVoucher.push(voucher);
+    }
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    if (isOpenDelivery) {
+      if (checkNotEmptyAddress() && checkNotEmptyBill()) {
+        if (totalBill > 0) {
+          Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có xác nhận đặt hàng không?",
+            okText: "Đồng ý",
+            cancelText: "Hủy",
+            onOk: async () => {
+              var addressuser =
+                address.detail +
+                ", " +
+                address.wards +
+                ", " +
+                address.district +
+                ", " +
+                address.city;
+              var data = {
+                phoneNumber: billRequest.phoneNumber,
+                address: addressuser,
+                userName: billRequest.userName,
+                itemDiscount: voucher.discountPrice,
+                totalMoney: totalBill,
+                note: billRequest.note,
+                moneyShip: shipFee,
+                billDetailRequests: newProduct,
+                vouchers: newVoucher,
+              };
+              await BillApi.createBillWait(data).then((res) => {
+                navigate("/bill-management/detail-bill/" + res.data.data.id);
+              });
+            },
+            onCancel: () => {},
+          });
+        } else {
+          toast("vui lòng chọn sản phẩm");
+        }
+      } else {
+        toast("Vui lòng Nhập địa chỉ");
+      }
+    } else {
+      if (totalBill > 0) {
+        Modal.confirm({
+          title: "Xác nhận",
+          content: "Bạn có xác nhận đặt hàng không?",
+          okText: "Đồng ý",
+          cancelText: "Hủy",
+          onOk: async () => {
+            var addressuser =
+              address.detail +
+              ", " +
+              address.wards +
+              ", " +
+              address.district +
+              ", " +
+              address.city;
+            var data = {
+              phoneNumber: billRequest.phoneNumber,
+              address: addressuser,
+              userName: billRequest.userName,
+              itemDiscount: voucher.discountPrice,
+              totalMoney: totalBill,
+              note: billRequest.note,
+              moneyShip: shipFee,
+              billDetailRequests: newProduct,
+              vouchers: newVoucher,
+            };
+            await BillApi.createBillWait(data).then((res) => {
+              navigate("/bill-management/detail-bill/" + res.data.data.id);
+            });
+          },
+          onCancel: () => {},
+        });
+      } else {
+        toast("vui lòng chọn sản phẩm");
+      }
+    }
   };
 
   useEffect(() => {}, []);
@@ -433,10 +571,14 @@ function CreateBill() {
   ];
 
   const selectedVoucher = (record) => {
+    var price = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+
     setVoucher({
       idVoucher: record.id,
-      beforPrice: 0,
-      afterPrice: 0,
+      beforPrice: price,
+      afterPrice: price - record.value,
       discountPrice: record.value,
     });
     setCodeVoucher(record.code);
@@ -457,18 +599,37 @@ function CreateBill() {
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
-  const [product, setProduct] = useState({
-    productDetail: {
-      image: "",
-      productName: "",
-      price: 0,
-      nameSize: "",
-      quantity: 0,
-    },
-    idProduct: "",
-    quantity: 0,
-    price: 0,
-  });
+
+  const handleQuantityDecrease = (record) => {
+    const updatedListSole = products.map((item) =>
+      item.idSizeProduct === record.idSizeProduct
+        ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
+        : item
+    );
+    setProducts(updatedListSole);
+  };
+
+  const handleQuantityChange = (value, record) => {
+    // Ensure the value is at least 1
+    const newQuantity = Math.max(value, 1);
+    const updatedListSole = products.map((item) =>
+      item.idSizeProduct === record.idSizeProduct
+        ? { ...item, quantity: newQuantity }
+        : item
+    );
+    setProducts(updatedListSole);
+  };
+
+  const handleQuantityIncrease = (record) => {
+    const updatedListSole = products.map((item) =>
+      item.idSizeProduct === record.idSizeProduct &&
+      record.maxQuantity > item.quantity
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    );
+    setProducts(updatedListSole);
+  };
+
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
   };
@@ -477,6 +638,11 @@ function CreateBill() {
   };
   const handleCancelProduct = () => {
     setIsModalProductOpen(false);
+  };
+
+  const removeProductInBill = (e, id) => {
+    var data = products.filter((x) => x.idSizeProduct !== id);
+    setProducts(data);
   };
   // dispatch(addProductBillWait(res.data.data));
 
@@ -490,14 +656,14 @@ function CreateBill() {
           sản phẩm
         </div>
       ),
-      dataIndex: "productDetail",
-      key: "productDetail",
-      render: (item) => {
+      dataIndex: "productName",
+      key: "productName",
+      render: (productName, record) => {
         return (
           <Row style={{ marginTop: "10px" }}>
             <Col span={5}>
               <img
-                src={item.image}
+                src={record.image}
                 alt="Ảnh sản phẩm"
                 style={{
                   width: "170px",
@@ -517,26 +683,26 @@ function CreateBill() {
                     marginTop: "10px",
                   }}
                 >
-                  {item.productName}
+                  {record.productName}
                 </span>{" "}
               </Row>
               <Row>
                 <span style={{ color: "red", fontWeight: "500" }}>
-                  {item.price >= 1000
-                    ? item.price.toLocaleString("vi-VN", {
+                  {record.price >= 1000
+                    ? record.price.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })
-                    : item.price + " đ"}
+                    : record.price + " đ"}
                 </span>{" "}
               </Row>
               <Row>
                 <span style={{ fontSize: "12", marginTop: "10px" }}>
-                  Size: {item.nameSize}
+                  Size: {record.nameSize}
                 </span>{" "}
               </Row>
               <Row>
-                <span style={{ fontSize: "12" }}>x {item.quantity}</span>{" "}
+                <span style={{ fontSize: "12" }}>x {record.quantity}</span>{" "}
               </Row>
             </Col>
           </Row>
@@ -562,9 +728,9 @@ function CreateBill() {
     },
     {
       title: <div className="title-product">Giá</div>,
-      dataIndex: "product",
-      key: "product",
-      render: (item) => (
+      dataIndex: "price",
+      key: "price",
+      render: (price) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <span
             style={{
@@ -573,12 +739,35 @@ function CreateBill() {
               marginBottom: "30px",
             }}
           >
-            {item.price * item.quantity >= 1000
-              ? (item.price * item.quantity).toLocaleString("vi-VN", {
+            {price >= 1000
+              ? price.toLocaleString("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 })
-              : item.price * item.quantity + " đ"}
+              : price + " đ"}
+          </span>{" "}
+        </div>
+      ),
+    },
+    {
+      title: <div className="title-product">Tổng</div>,
+      dataIndex: "sum",
+      key: "sum",
+      render: (sum) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span
+            style={{
+              color: "red",
+              fontWeight: "bold",
+              marginBottom: "30px",
+            }}
+          >
+            {sum >= 1000
+              ? sum.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })
+              : sum + " đ"}
           </span>{" "}
         </div>
       ),
@@ -733,18 +922,208 @@ function CreateBill() {
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
         <Row style={{ width: "100%" }}>
           {" "}
-          <Table
-            dataSource={[]}
+          {/* <Table
+            dataSource={listProduct}
             columns={columns}
             rowKey="id"
             style={{ width: "100%" }}
             pagination={false} // Disable default pagination
             className="product-table"
-          />
+          /> */}
+          <Row
+            style={{
+              marginBottom: "20px",
+              width: "100%",
+              borderBottom: "2px solid #ccc",
+              padding: "5px",
+            }}
+          >
+            <Col span={13} align={"center"}>
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >
+                Sản phẩm
+              </span>
+            </Col>
+            <Col span={5} align={"center"}>
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >
+                Số lượng
+              </span>
+            </Col>
+            <Col span={4} align={"center"}>
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >
+                Tổng tiền
+              </span>
+            </Col>
+            <Col span={2} align={"center"}>
+              <span
+                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
+              >
+                Thao tác
+              </span>
+            </Col>
+          </Row>
+          {products.map((item) => {
+            return (
+              <Row style={{ marginTop: "10px", width: "100%" }}>
+                <Col span={4}>
+                  <img
+                    src={item.image}
+                    alt="Ảnh sản phẩm"
+                    style={{
+                      width: "170px",
+                      borderRadius: "10%",
+                      height: "140px",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </Col>
+                <Col span={9}>
+                  <Row>
+                    {" "}
+                    <span
+                      style={{
+                        fontSize: "19",
+                        fontWeight: "500",
+                        marginTop: "10px",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      {item.productName}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span
+                      style={{
+                        color: "red",
+                        fontWeight: "500",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      {item.price >= 1000
+                        ? item.price.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })
+                        : item.price + " đ"}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span
+                      style={{
+                        fontSize: "12",
+                        marginTop: "10px",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      Size: {item.nameSize}
+                    </span>{" "}
+                  </Row>
+                  <Row>
+                    <span style={{ fontSize: "12", marginLeft: "15px" }}>
+                      x {item.quantity}
+                    </span>{" "}
+                  </Row>
+                </Col>
+                <Col
+                  span={5}
+                  align={"center"}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <Button
+                    onClick={() => handleQuantityDecrease(item)}
+                    style={{ margin: "0 0 0 4px" }}
+                  >
+                    -
+                  </Button>
+                  <InputNumber
+                    min={1}
+                    max={item.maxQuantity}
+                    value={item.quantity}
+                    onChange={(value) => handleQuantityChange(value, item)}
+                  />
+                  <Button
+                    onClick={() => handleQuantityIncrease(item)}
+                    style={{ margin: "0 10px 0 0" }}
+                  >
+                    +
+                  </Button>
+                </Col>
+                <Col
+                  span={4}
+                  align={"center"}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <span
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {item.price * item.quantity >= 1000
+                      ? (item.price * item.quantity).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : item.price * item.quantity + " đ"}
+                  </span>{" "}
+                </Col>
+                <Col span={2} style={{ display: "flex", alignItems: "center" }}>
+                  <Button
+                    style={{
+                      marginLeft: "10px",
+                      fontWeight: "500",
+                      fontSize: "16px",
+                      color: "white",
+                      backgroundColor: "red",
+                    }}
+                    onClick={(e) => removeProductInBill(e, item.idSizeProduct)}
+                  >
+                    <BsTrash />
+                  </Button>
+                </Col>
+              </Row>
+            );
+          })}
         </Row>
-        <Row justify="end" style={{ marginBottom: "10px", width: "100%" }}>
+        <Row
+          justify="end"
+          style={{
+            marginBottom: "10px",
+            width: "100%",
+            borderTop: "2px solid #ccc",
+            padding: "10px 0 0 0",
+            marginTop: "20px",
+          }}
+        >
           <Col span={3}>Tổng tiền: </Col>
-          <Col span={4}>{}</Col>
+          <Col
+            span={4}
+            style={{ fontWeight: "500", fontSize: "16px", color: "red" }}
+          >
+            {products.reduce((accumulator, currentValue) => {
+              return accumulator + currentValue.price * currentValue.quantity;
+            }, 0) >= 1000
+              ? products
+                  .reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0)
+                  .toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })
+              : products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) + " đ"}
+          </Col>
         </Row>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
@@ -835,205 +1214,282 @@ function CreateBill() {
         <Row style={{ width: "100%" }}>
           <Col span={14}>
             {isOpenDelivery ? (
-              <div>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    {" "}
-                    <Input
-                      value={listInfoUser.fullname}
-                      placeholder="Nhập họ và tên"
-                      style={{ width: "90%" }}
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    {" "}
-                    <Input
-                      value={listInfoUser.phonenumber}
-                      placeholder="Nhập số điện thoại"
-                      style={{ width: "90%" }}
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    {" "}
-                    <Input
-                      value={listInfoUser.line}
-                      placeholder="Nhập địa chỉ"
-                      style={{ width: "90%" }}
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    <Row style={{ width: "100%" }}>
-                      <Col span={7}>
-                        {" "}
-                        <Select
-                          showSearch
-                          placeholder="Chọn tỉnh"
-                          optionFilterProp="children"
-                          // // onChange={onChange}
-                          // // onSearch={onSearch}
-                          onChange={handleProvinceChange}
-                          style={{ width: "90%" }}
-                          filterOption={(input, option) =>
-                            (option?.label ?? "")
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          value={listInfoUser.province}
-
-                          // options={[]}
-                        >
-                          {listProvince?.map((item) => {
-                            return (
-                              <Option
-                                key={item.ProvinceID}
-                                value={item.ProvinceName}
-                                valueProvince={item.ProvinceID}
-                              >
-                                {item.ProvinceName}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Col>
-                      <Col span={8}>
-                        {" "}
-                        <Select
-                          showSearch
-                          placeholder="Chọn Quận"
-                          optionFilterProp="children"
-                          style={{ width: "90%" }}
-                          // onChange={onChange}
-                          // onSearch={onSearch}
-                          onChange={handleDistrictChange}
-                          filterOption={(input, option) =>
-                            (option?.label ?? "")
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          value={listInfoUser.district}
-                          // options={[]}
-                        >
-                          {listDistricts?.map((item) => {
-                            return (
-                              <Option
-                                key={item.DistrictID}
-                                value={item.DistrictName}
-                                valueDistrict={item.DistrictID}
-                              >
-                                {item.DistrictName}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Col>
-                      <Col span={7}>
-                        {" "}
-                        <Select
-                          showSearch
-                          placeholder="Chọn Phường xã"
-                          optionFilterProp="children"
-                          style={{ width: "95%" }}
-                          // onChange={onChange}
-                          // onSearch={onSearch}
-                          onChange={handleWardChange}
-                          filterOption={(input, option) =>
-                            (option?.label ?? "")
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          value={listInfoUser.ward}
-                          // options={[]}
-                        >
-                          {" "}
-                          {/* <Option value={listInfoUser.ward}>
-                            {listInfoUser.ward}
-                          </Option> */}
-                          {listWard?.map((item) => {
-                            return (
-                              <Option
-                                key={item.WardCode}
-                                value={item.WardName}
-                                valueWard={item.WardCode}
-                                valueDistrict={item.DistrictID}
-                              >
-                                {item.WardName}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    width: "100%",
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Col span={24}>
-                    <TextArea
-                      rows={4}
-                      style={{ width: "90%" }}
-                      placeholder="Ghi chú"
-                    />
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    marginTop: "30px",
-                    marginLeft: "10px",
-                    width: "100%",
-                  }}
-                >
-                  <Col span={2}>
-                    <CiDeliveryTruck
-                      style={{ height: "30px", width: "50px" }}
-                    />
-                  </Col>
-                  <Col
-                    span={22}
+              <Form initialValues={initialValues}>
+                <div>
+                  <Row
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      fontWeight: "500",
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
                     }}
                   >
-                    <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
-                  </Col>
-                </Row>
-              </div>
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
+                        name="name"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập tên khách hàng",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập họ và tên"
+                          style={{ width: "90%", height: "39px" }}
+                          value={billRequest.userName}
+                          onChange={(e) =>
+                            ChangeBillRequest("userName", e.target.value)
+                          }
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
+                        name="phoneNumber"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập số điện thoại",
+                          },
+                          {
+                            pattern:
+                              "(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}",
+                            message: "Vui lòng nhập đúng số điện thoại",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập số điện thoại"
+                          style={{ width: "90%", height: "39px" }}
+                          onChange={(e) =>
+                            ChangeBillRequest("phoneNumber", e.target.value)
+                          }
+                          value={billRequest.phoneNumber}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
+                        name="detail"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn Quận",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập địa chỉ"
+                          style={{ width: "90%", height: "39px" }}
+                          onChange={(e) =>
+                            onChangeAddress("detail", e.target.value)
+                          }
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Row style={{ width: "100%" }}>
+                        <Col span={7}>
+                          <Form.Item
+                            label=""
+                            name="city"
+                            style={{ marginBottom: "20px" }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng chọn tỉnh",
+                              },
+                            ]}
+                          >
+                            <Select
+                              showSearch
+                              placeholder="Chọn tỉnh"
+                              optionFilterProp="children"
+                              // // onChange={onChange}
+                              // // onSearch={onSearch}
+                              onChange={handleProvinceChange}
+                              style={{ width: "90%", height: "39px" }}
+                              filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
+                              // options={[]}
+                            >
+                              {listProvince?.map((item) => {
+                                return (
+                                  <Option
+                                    key={item.ProvinceID}
+                                    value={item.ProvinceName}
+                                    valueProvince={item.ProvinceID}
+                                  >
+                                    {item.ProvinceName}
+                                  </Option>
+                                );
+                              })}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                          <Form.Item
+                            label=""
+                            name="district"
+                            style={{ marginBottom: "20px" }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng chọn Quận",
+                              },
+                            ]}
+                          >
+                            <Select
+                              showSearch
+                              placeholder="Chọn Quận"
+                              optionFilterProp="children"
+                              style={{ width: "90%" }}
+                              // onChange={onChange}
+                              // onSearch={onSearch}
+                              onChange={handleDistrictChange}
+                              filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
+                              // options={[]}
+                            >
+                              {listDistricts?.map((item) => {
+                                return (
+                                  <Option
+                                    key={item.DistrictID}
+                                    value={item.DistrictName}
+                                    valueDistrict={item.DistrictID}
+                                  >
+                                    {item.DistrictName}
+                                  </Option>
+                                );
+                              })}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col span={7}>
+                          <Form.Item
+                            label=""
+                            name="wards"
+                            style={{ marginBottom: "20px" }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng chọn Quận",
+                              },
+                            ]}
+                          >
+                            <Select
+                              showSearch
+                              placeholder="Chọn Phường xã"
+                              optionFilterProp="children"
+                              style={{ width: "95%" }}
+                              // onChange={onChange}
+                              // onSearch={onSearch}
+                              onChange={handleWardChange}
+                              filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
+                              // options={[]}
+                            >
+                              {listWard?.map((item) => {
+                                return (
+                                  <Option
+                                    key={item.WardCode}
+                                    value={item.WardName}
+                                    valueWard={item.WardCode}
+                                    valueDistrict={item.DistrictID}
+                                  >
+                                    {item.WardName}
+                                  </Option>
+                                );
+                              })}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <TextArea
+                        rows={4}
+                        style={{ width: "90%" }}
+                        placeholder="Ghi chú"
+                        onChange={(e) =>
+                          ChangeBillRequest("note", e.target.value)
+                        }
+                      />
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      marginTop: "30px",
+                      marginLeft: "10px",
+                      width: "100%",
+                    }}
+                  >
+                    <Col span={2}>
+                      <CiDeliveryTruck
+                        style={{ height: "30px", width: "50px" }}
+                      />
+                    </Col>
+                    <Col
+                      span={22}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        fontWeight: "500",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
+                    </Col>
+                  </Row>
+                </div>
+              </Form>
             ) : (
               <div></div>
             )}
@@ -1083,13 +1539,38 @@ function CreateBill() {
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} VND{" "}
+                {products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) >= 1000
+                  ? products
+                      .reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0)
+                      .toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                  : products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) + " đ"}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={8}>Phí vận chuyển: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {shipFee} VND{" "}
+                {shipFee >= 1000
+                  ? shipFee.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : shipFee + " đ"}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
@@ -1114,7 +1595,31 @@ function CreateBill() {
                 }}
                 align={"end"}
               >
-                {} VND{" "}
+                {products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) +
+                  shipFee >=
+                1000
+                  ? (
+                      products.reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0) + shipFee
+                    ).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
+                    shipFee +
+                    " đ"}
               </Col>
             </Row>
             <Row style={{ margin: "40px 20px 30px 0" }} justify="end">
@@ -1132,14 +1637,18 @@ function CreateBill() {
 
       {/* begin modal product */}
       <Modal
-        title="Basic Modal"
+        title=""
         open={isModalProductOpen}
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
+        width={1000}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <ModalAddProductDetail
+          handleCancelProduct={handleCancelProduct}
+          products={products}
+          setProducts={setProducts}
+          typeAddProductBill={typeAddProductBill}
+        />
       </Modal>
       {/* end bigin modal product */}
 
@@ -1289,6 +1798,21 @@ function CreateBill() {
         </Row>
       </Modal>
       {/* end  modal Address */}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={100}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {/* Same as */}
+      <ToastContainer />
     </div>
   );
 }

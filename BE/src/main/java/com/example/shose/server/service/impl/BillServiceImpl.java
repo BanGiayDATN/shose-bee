@@ -15,7 +15,6 @@ import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
-import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -31,7 +30,6 @@ import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
-import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.VoucherDetailRepository;
 import com.example.shose.server.repository.VoucherRepository;
@@ -87,8 +85,8 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private SizeRepository sizeRepository;
 
-    @Autowired
-    private SizeProductDetailRepository sizeProductDetailRepository;
+//    @Autowired
+//    private SizeProductDetailRepository sizeProductDetailRepository;
 
 
     private FormUtils formUtils = new FormUtils();
@@ -135,13 +133,14 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill saveOffline(String idEmployee, CreateBillOfflineRequest request) {
         Optional<Account> account = accountRepository.findById(idEmployee);
+        Optional<Account> user = accountRepository.findById(request.getIdUser());
         if (!account.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
         }
         if (account.get().getRoles() == Roles.USER) {
             throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
         }
-        Bill bill = billRepository.save(Bill.builder()
+        Bill bill = Bill.builder()
                 .employees(account.get())
                 .statusBill(StatusBill.TAO_HOA_DON)
                 .typeBill(TypeBill.OFFLINE)
@@ -152,9 +151,13 @@ public class BillServiceImpl implements BillService {
                 .phoneNumber(request.getPhoneNumber())
                 .itemDiscount(new BigDecimal(request.getItemDiscount()))
                 .totalMoney(new BigDecimal(request.getTotalMoney()))
-                .moneyShip(new BigDecimal(request.getMoneyShip())).build());
+                .moneyShip(new BigDecimal(request.getMoneyShip())).build();
+        if (user.isPresent()) {
+            bill.setAccount(user.get());
+        }
+        billRepository.save(bill);
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-
+        System.out.println(bill);
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
             Optional<Size> size = sizeRepository.findByName(billDetailRequest.getSize());
@@ -165,18 +168,18 @@ public class BillServiceImpl implements BillService {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
 
-            Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
-            if (!sizeProductDetail.isPresent()) {
-                throw new RestApiException(Message.NOT_EXISTS);
-            }
-            if (sizeProductDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
-            }
-            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
-            billDetailRepository.save(billDetail);
-
-            sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - billDetailRequest.getQuantity());
-            sizeProductDetailRepository.save(sizeProductDetail.get());
+//            Optional<SizeProductDetail> sizeProductDetail = sizeProductDetailRepository.findBySizeAndProductDetail(size.get(), productDetail.get());
+//            if (!sizeProductDetail.isPresent()) {
+//                throw new RestApiException(Message.NOT_EXISTS);
+//            }
+//            if (sizeProductDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
+//                throw new RestApiException(Message.ERROR_QUANTITY);
+//            }
+//            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+//            billDetailRepository.save(billDetail);
+//            System.out.println("hello");
+//            sizeProductDetail.get().setQuantity( sizeProductDetail.get().getQuantity() - billDetailRequest.getQuantity());
+//            sizeProductDetailRepository.save(sizeProductDetail.get());
         });
         request.getVouchers().forEach(voucher -> {
             Optional<Voucher> optional = voucherRepository.findById(voucher.getIdVoucher());

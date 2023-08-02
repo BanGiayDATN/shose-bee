@@ -1,17 +1,10 @@
 package com.example.shose.server.dto.response;
 
-import com.example.shose.server.entity.ProductDetail;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.rest.core.config.Projection;
 
 import java.math.BigDecimal;
 
-/**
- * @author Nguyễn Vinh
- */
-
-@Projection(types = {ProductDetail.class})
-public interface ProductDetailReponse {
+public interface ProductDetailDTOResponse {
 
     @Value("#{target.id}")
     String getId();
@@ -28,9 +21,6 @@ public interface ProductDetailReponse {
     @Value("#{target.price}")
     BigDecimal getPrice();
 
-    @Value("#{target.created_date}")
-    Long getCreateDate();
-
     @Value("#{target.gender}")
     String getGender();
 
@@ -40,11 +30,9 @@ public interface ProductDetailReponse {
     @Value("#{target.quantity}")
     Integer getQuantity();
 
-    @Value("#{target.color}")
-    String getColor();
+    @Value("#{target.sizeName}")
+    String getSizeName();
 
-    @Value("#{target.size}")
-    String getSize();
-
-
+    @Value("#{target.colorCode}")
+    String getColorCode();
 }

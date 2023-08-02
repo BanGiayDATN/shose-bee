@@ -14,6 +14,7 @@ import java.util.List;
 public interface ProductService {
 
     List<ProductResponse> findAll(final FindProductRequest req);
+    List<String> fillAllByName(String name);
 
     Product create(final CreateProductRequest req);
 

@@ -99,6 +99,9 @@ public interface AddressRepository extends JpaRepository<Address, String> {
             nativeQuery = true
     )
     List<AddressUserReponse> findAddressByUserId(@Param("idUser") String idUser);
-
+//    Address getOneAddressByStatus(@Param("status") Status status,@Param("idUser") String idUser);
 
 }
+
+
+

@@ -34,6 +34,11 @@ public class ProductRestController {
         return new ResponseObject(productService.findAll(req));
     }
 
+    @GetMapping("/getByName")
+    public ResponseObject viewAllByName(String name) {
+        return new ResponseObject(productService.fillAllByName(name));
+    }
+
     @GetMapping("/{id}")
     public ResponseObject getOneById(@PathVariable("id") String id) {
         return new ResponseObject(productService.getOneById(id));
