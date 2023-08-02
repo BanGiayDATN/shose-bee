@@ -24,14 +24,9 @@ public abstract class BaseEmployeeRequest {
 
     private Status status;
 
-    private Long startTime;
-
-    private Long endTime;
-
-    private String id;
-
     private String password;
 
     private Integer points;
 
+    private String id;
 }

@@ -420,7 +420,6 @@ public class DBGenerator implements CommandLineRunner {
         accountRepository.save(account2);
         accountRepository.save(account3);
 
-
         Customer customer1 = Customer.builder().fullName("Hà Phương Na").phoneNumber("0951753852").email("phuongna@gmail.com").status(Status.DANG_SU_DUNG).build();
         customerRepository.save(customer1);
 
