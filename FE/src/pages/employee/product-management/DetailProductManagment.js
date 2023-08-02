@@ -21,7 +21,6 @@ import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../api/employee/color/Color.api";
-import { SizeProductDetailApi } from "../../../api/employee/size-product-detail/SizeProductDetail.api";
 import "./style-detail.css";
 import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { IamgeApi } from "../../../api/employee/image/Image.api";
@@ -55,15 +54,7 @@ const DetailProductManagment = () => {
   const [listSize, setListSize] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const getSizeProductDetail = () => {
-    SizeProductDetailApi.fetchAll(id).then((res) => {
-      const dataWithSTT = res.data.data.map((item, index) => ({
-        ...item,
-        stt: index + 1,
-      }));
-      setListSize(dataWithSTT);
-    });
-  };
+
 
   const status = "DANG_SU_DUNG";
 
@@ -128,7 +119,6 @@ const DetailProductManagment = () => {
   }, []);
 
   useEffect(() => {
-    getSizeProductDetail();
     getListImage();
     fetchProductDetails();
   }, [id]);

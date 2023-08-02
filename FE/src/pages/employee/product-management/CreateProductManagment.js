@@ -1,30 +1,19 @@
 import { Option } from "antd/es/mentions";
 import "./style-product.css";
 import {
-  Alert,
   AutoComplete,
   Button,
   Col,
   Form,
   Input,
-  InputNumber,
   Modal,
   Popconfirm,
   Row,
   Select,
-  Space,
-  Table,
   Upload,
 } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircle,
-  faCircleMinus,
-  faPlus,
-  faRemove,
-  faTrash,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
@@ -149,35 +138,6 @@ const CreateProductManagment = () => {
   };
 
   const [listSizeAdd, setListSizeAdd] = useState([]);
-
-  const handleQuantityChange = (value, record) => {
-    // Ensure the value is at least 1
-    const newQuantity = Math.max(value, 1);
-    const updatedListSole = listSizeAdd.map((item) =>
-      item.nameSize === record.nameSize
-        ? { ...item, quantity: newQuantity }
-        : item
-    );
-    setListSizeAdd(updatedListSole);
-  };
-
-  const handleQuantityDecrease = (record) => {
-    const updatedListSole = listSizeAdd.map((item) =>
-      item.nameSize === record.nameSize
-        ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ensure quantity is at least 1
-        : item
-    );
-    setListSizeAdd(updatedListSole);
-  };
-
-  const handleQuantityIncrease = (record) => {
-    const updatedListSole = listSizeAdd.map((item) =>
-      item.nameSize === record.nameSize
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    );
-    setListSizeAdd(updatedListSole);
-  };
 
   const handleSaveData = (selectedSizeData) => {
     console.log(selectedSizeData);
@@ -808,25 +768,6 @@ const CreateProductManagment = () => {
             </Col>
             <Col span={16}>
               <div style={{ display: "flex", flexWrap: "wrap" }}>
-                {listSizeAdd.map((item, index) => (
-                  <Popconfirm
-                    key={index}
-                    title="Bạn có chắc muốn xóa kích cỡ này?"
-                    onConfirm={() => handleDeleteSize(index)}
-                    okText="Đồng ý"
-                    cancelText="Hủy"
-                  >
-                    <Button className="custom-button">
-                      <span
-                        style={{ fontWeight: "bold" }}
-                      >{`${item.nameSize}`}</span>
-                      <FontAwesomeIcon
-                        icon={faCircleMinus}
-                        className="custom-icon"
-                      />
-                    </Button>
-                  </Popconfirm>
-                ))}
                 <Col
                   span={5}
                   style={{
@@ -839,13 +780,13 @@ const CreateProductManagment = () => {
                     style={{ height: "40px" }}
                     type="primary"
                     onClick={() => {
-                      setModalAddSize(true);
+                      setModalAddColor(true);
                     }}
                   >
                     Thêm màu sắc
                   </Button>
                   <AddColorModal
-                    visible={modalAddSize}
+                    visible={modalAddColor}
                     onCancel={handleCancel}
                   />
                 </Col>

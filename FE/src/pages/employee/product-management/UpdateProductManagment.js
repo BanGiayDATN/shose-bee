@@ -23,7 +23,6 @@ import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../api/employee/color/Color.api";
-import { SizeProductDetailApi } from "../../../api/employee/size-product-detail/SizeProductDetail.api";
 import "./style-detail.css";
 import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { IamgeApi } from "../../../api/employee/image/Image.api";
@@ -49,7 +48,6 @@ import ModalCreateCategory from "../category-management/modal/ModalCreateCategor
 import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { ColorProductDetailApi } from "../../../api/employee/color-product-detail/ColorProductDetail";
 
 const UpdateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -260,16 +258,6 @@ const UpdateProductManagment = () => {
     setListSizeAdd(updatedListSole);
   };
 
-  const getSizeProductDetail = () => {
-    SizeProductDetailApi.fetchAll(id).then((res) => {
-      const dataWithSTT = res.data.data.map((item, index) => ({
-        ...item,
-        stt: index + 1,
-      }));
-      setListSizeAdd(dataWithSTT);
-    });
-  };
-
   const getList = () => {
     MaterialApi.fetchAll({
       status: status,
@@ -356,11 +344,7 @@ const UpdateProductManagment = () => {
   const handleChangeColor = (color) => {
     setSelectedColors(color);
   };
-  const getColorProductDetail = () => {
-    ColorProductDetailApi.fetchAll(id).then((res) => {
-      setSelectedColors(res.data.data);
-    });
-  };
+
 
   useEffect(() => {
     setIsSubmitted(true);
@@ -368,10 +352,8 @@ const UpdateProductManagment = () => {
   }, []);
 
   useEffect(() => {
-    getColorProductDetail();
     getListImage();
     fetchProductDetails();
-    getSizeProductDetail();
   }, [id]);
 
   const [checkStatus, setCheckStatus] = useState(false);

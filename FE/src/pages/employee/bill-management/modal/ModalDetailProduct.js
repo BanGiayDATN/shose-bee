@@ -1,6 +1,5 @@
 import { Button, Col, InputNumber, Row } from "antd";
 import React, { useEffect, useState } from "react";
-import { SizeProductDetailApi } from "../../../../api/employee/size-product-detail/SizeProductDetail.api";
 import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
@@ -31,16 +30,17 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
     }
   };
 
-  const getSizeProductDetail = () => {
-    SizeProductDetailApi.fetchAll(id).then((res) => {
-      console.log(res.data.data);
-      const dataWithSTT = res.data.data.map((item, index) => ({
-        ...item,
-        stt: index + 1,
-      }));
-      setListSize(dataWithSTT);
-    });
-  };
+  // const getSizeProductDetail = () => {
+  //   SizeProductDetailApi.fetchAll(id).then((res) => {
+  //     console.log(res.data.data);
+  //     const dataWithSTT = res.data.data.map((item, index) => ({
+  //       ...item,
+  //       stt: index + 1,
+  //     }));
+  //     setListSize(dataWithSTT);
+  //   });
+  // };
+
   const getProductDetail = () => {
     console.log(id);
     ProducDetailtApi.getByIdProductDetail(id).then((res) => {
@@ -50,7 +50,7 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
   };
 
   useEffect(() => {
-    getSizeProductDetail();
+    // getSizeProductDetail();
     getProductDetail();
     setQuantity(1);
     setSelectedSizes([]);
