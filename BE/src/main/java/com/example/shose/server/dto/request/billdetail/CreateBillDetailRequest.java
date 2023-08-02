@@ -18,5 +18,7 @@ public class CreateBillDetailRequest {
 
     private int quantity;
 
+    private String totalMoney;
+
     private String price;
 }

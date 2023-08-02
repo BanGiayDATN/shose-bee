@@ -7,11 +7,10 @@ import com.example.shose.server.dto.request.productdetail.FindProductDetailReque
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.entity.Color;
+import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.entity.Size;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -36,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -231,4 +229,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private Status getStatus(String status) {
         return "DANG_SU_DUNG".equals(status) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
     }
+    @Override
+    public ProductDetailResponse findByIdProductDetail(String id) {
+        return productDetailRepository.findByIdProductDetail(id);
+    }
+
 }

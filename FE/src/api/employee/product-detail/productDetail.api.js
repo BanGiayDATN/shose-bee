@@ -29,6 +29,13 @@ export class ProducDetailtApi {
     });
   };
 
+  static getByIdProductDetail = (id) => {
+    return request({
+      method: "GET",
+      url: `/admin/product-detail/custom-product/${id}`,
+    });
+  };
+
   static update = (id, data) => {
     return request({
       method: "PUT",
