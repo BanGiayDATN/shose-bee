@@ -255,7 +255,7 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
             <Row
             gutter={[16, 16]}
             style={{ width: "100%" }}
-            justify={"center"}
+            justify={"start"}
           >
             {/* Hiển thị các nút button cho các kích thước */}
             {listColor.map((item, index) => (
