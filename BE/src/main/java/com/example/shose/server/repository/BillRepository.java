@@ -76,4 +76,12 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          ORDER BY bi.created_date
             """, nativeQuery = true)
     List<UserBillResponse> getAllUserInBill();
+
+    @Query(value = """
+            SELECT bi.id FROM bill bi
+            LEFT JOIN bill_detail bide ON bide.id_bill = bi.id
+            GROUP BY bi.id
+            HAVING COUNT(bide.id) = 0
+            """, nativeQuery = true)
+    List<String> getAllBillTrash();
 }
