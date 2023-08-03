@@ -42,7 +42,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                      OR bi.user_name LIKE %:#{#request.key}% 
                      OR usem.full_name LIKE %:#{#request.key}% 
                      OR bi.phone_number LIKE %:#{#request.key}% )
-            AND ( :#{#request.type} = -1
+            AND ( :#{#request.type} IS NULL
+                     OR :#{#request.type} LIKE ''
                      OR bi.type = :#{#request.type})
             ORDER BY bi.created_date DESC
                         

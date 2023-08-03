@@ -33,7 +33,7 @@ public interface BillResponse {
     String getNameEmployees();
 
     @Value("#{target.type}")
-    int getType();
+    String getType();
 
     @Value("#{target.status_bill}")
     String getStatusBill();

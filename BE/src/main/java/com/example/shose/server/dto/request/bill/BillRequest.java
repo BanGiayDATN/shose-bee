@@ -24,5 +24,5 @@ public class BillRequest {
     private String employees;
     private String user;
     private String phoneNumber;
-    private int type = -1;
+    private String type ;
 }
