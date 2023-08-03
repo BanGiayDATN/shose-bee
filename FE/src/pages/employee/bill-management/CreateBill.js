@@ -67,6 +67,8 @@ function CreateBill() {
     detail: "",
   });
 
+  const [form] = Form.useForm();
+
   const onChangeAddress = (fileName, value) => {
     setAddress({ ...address, [fileName]: value });
   };
@@ -304,6 +306,12 @@ function CreateBill() {
     },
   ];
   const selectedAccount = (record) => {
+    console.log(record);
+    dispatch(addUserBillWait(record));
+    setIsModalAccountOpen(true);
+    AddressApi.fetchAllAddressByUser(record.id).then((res) => {
+      setListAddress(res.data.data);
+    });
     setBillRequest({
       ...billRequest,
       phoneNumber: record.phoneNumber,
@@ -777,6 +785,118 @@ function CreateBill() {
     },
   ];
 
+  const columnsAddress = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+      sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Họ tên",
+      dataIndex: "fullname",
+      key: "fullname",
+      sorter: (a, b) => a.fullname.localeCompare(b.fullname),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phonenumber",
+      key: "phonenumber",
+      sorter: (a, b) => a.phonenumber.localeCompare(b.phonenumber),
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",
+      key: "address",
+      sorter: (a, b) => a.address.localeCompare(b.address),
+    },
+
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Mặc định " : "Không sử dụng"}
+          </button>
+        );
+      },
+    },
+    {
+      title: "Hành động",
+      dataIndex: "hanhDong",
+      key: "hanhDong",
+      render: (text, record) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            type="dashed"
+            title="Chọn"
+            style={{
+              color: "#02bdf0",
+              border: "1px solid #02bdf0",
+              fontWeight: "500",
+            }}
+            onClick={() => selectedAddress(record)}
+          >
+            Chọn
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
+
+  const showModalAddress = (e) => {
+    setIsModalAddressOpen(true);
+  };
+  const handleOkAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const handleCancelAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const [listAddress, setListAddress] = useState([]);
+  const [initialAddressList, setInitialAddressList] = useState([]);
+  const [listInfoUser, setListInfoUser] = useState([]);
+
+  const selectedAddress = (record) => {
+    setIsModalAddressOpen(false);
+    setListInfoUser(record);
+    console.log(record);
+    form.setFieldsValue({
+      phoneNumber: record.phonenumber,
+      name: record.fullname,
+      city: record.province,
+      district: record.district,
+      wards: record.ward,
+      detail: record.line,
+    });
+    AddressApi.fetchAllMoneyShip(record.toDistrictId, record.wardCode).then(
+      (res) => {
+        setShipFee(res.data.data.total);
+      }
+    );
+    AddressApi.fetchAllDayShip(record.toDistrictId, record.wardCode).then(
+      (res) => {
+        const leadtimeInSeconds = res.data.data.leadtime;
+        const formattedDate = moment
+          .unix(leadtimeInSeconds)
+          .format("DD/MM/YYYY");
+        setDayShip(formattedDate);
+      }
+    );
+    AddressApi.fetchAllProvinceDistricts(record.provinceId).then((res) => {
+      setListDistricts(res.data.data);
+    });
+    AddressApi.fetchAllProvinceWard(record.toDistrictId).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+
   return (
     <div>
       <Row justify="space-between">
@@ -814,26 +934,30 @@ function CreateBill() {
             <Col span={13} align={"center"}>
               <span
                 style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >Sản phẩm</span>
-              
+              >
+                Sản phẩm
+              </span>
             </Col>
             <Col span={5} align={"center"}>
               <span
                 style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >Số lượng</span>
-              
+              >
+                Số lượng
+              </span>
             </Col>
             <Col span={4} align={"center"}>
               <span
                 style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >Tổng tiền</span>
-              
+              >
+                Tổng tiền
+              </span>
             </Col>
             <Col span={2} align={"center"}>
               <span
                 style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >Thao tác</span>
-              
+              >
+                Thao tác
+              </span>
             </Col>
           </Row>
           ) : (
@@ -1072,11 +1196,25 @@ function CreateBill() {
           <Col span={8}>
             <h2>Khách hàng</h2>
           </Col>
+
+          <Col span={12}></Col>
+          <Col span={4} align={"end"}>
+            {isOpenDelivery ? (
+              <Button
+                style={{ margin: "10px 00px 0px 0", width: "127px" }}
+                onClick={(e) => showModalAddress(e)}
+              >
+                Chọn địa chỉ
+              </Button>
+            ) : (
+              <div></div>
+            )}
+          </Col>
         </Row>
         <Row style={{ width: "100%" }}>
           <Col span={14}>
             {isOpenDelivery ? (
-              <Form initialValues={initialValues}>
+              <Form form={form} initialValues={initialValues}>
                 <div>
                   <Row
                     style={{
@@ -1158,7 +1296,7 @@ function CreateBill() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng chọn Quận",
+                            message: "Vui lòng nhập địa chỉ",
                           },
                         ]}
                       >
@@ -1438,7 +1576,7 @@ function CreateBill() {
             <Row justify="space-between" style={{ marginTop: "20px" }}>
               <Col span={5}>Giảm giá: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} đ{" "}
+                {} VND{" "}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "20px" }}>
@@ -1613,6 +1751,54 @@ function CreateBill() {
         </Row>
       </Modal>
       {/* end modal voucher */}
+      {/* begin modal Address */}
+      <Modal
+        title="Địa chỉ"
+        open={isModalAddressOpen}
+        onOk={handleOkAddress}
+        className="account"
+        onCancel={handleCancelAddress}
+      >
+        <Row style={{ width: "100%" }}>
+          <Col span={20}>
+            <Input
+              style={{
+                // width: "250px",
+                height: "38px",
+                marginRight: "8px",
+              }}
+              placeholder="Tìm kiếm"
+              type="text"
+              name="keyword"
+              value={searchCustomer.keyword}
+              onChange={handleKeywordChange}
+            />
+          </Col>
+          <Col span={1}></Col>
+          <Col span={3}>
+            {" "}
+            <Button
+              className="btn_filter"
+              type="submit"
+              onClick={handleSubmitSearch}
+            >
+              Tìm kiếm
+            </Button>
+          </Col>
+        </Row>
+        <Row style={{ width: "100%", marginTop: "20px" }}>
+          <Table
+            style={{ width: "100%" }}
+            dataSource={listAddress}
+            rowKey="id"
+            columns={columnsAddress}
+            pagination={{ pageSize: 3 }}
+            className="customer-table"
+          />
+        </Row>
+      </Modal>
+      {/* end  modal Address */}
+
       <ToastContainer
         position="top-right"
         autoClose={100}

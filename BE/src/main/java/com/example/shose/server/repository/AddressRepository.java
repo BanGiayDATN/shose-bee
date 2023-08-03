@@ -1,7 +1,8 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.address.FindAddressRequest;
-import com.example.shose.server.dto.response.AddressResponse;
+import com.example.shose.server.dto.response.address.AddressResponse;
+import com.example.shose.server.dto.response.address.AddressUserReponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -72,5 +73,35 @@ public interface AddressRepository extends JpaRepository<Address, String> {
     Address getAddressByUserIdAndStatus(String id, Status status);
 
     @Query("SELECT a FROM  Address a WHERE (a.status =:status) and (a.user.id =:idUser)")
-    Address getOneAddressByStatus(@Param("status") Status status,@Param("idUser") String idUser);
+    Address getOneAddressByStatus(@Param("status") Status status, @Param("idUser") String idUser);
+
+    @Query(value = """
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY a.last_modified_date DESC ) AS stt,
+                a.id AS id,
+                CONCAT(a.line, ', ', a.district,', ', a.ward,', ', a.province ) AS address,
+                a.line AS line,
+                a.district AS district,
+                a.province AS province,
+                a.ward AS ward,
+                a.status AS status,
+                a.province_id AS provinceId,
+                a.to_district_id AS toDistrictId,
+                a.ward_code AS wardCode,
+                u.full_name AS fullName,
+                u.phone_number AS phonenumber
+            FROM address a
+            JOIN user u on a.id_user = u.id
+            WHERE u.id LIKE :#{#idUser}
+            GROUP BY a.id
+            ORDER BY a.last_modified_date DESC
+                  """,
+            nativeQuery = true
+    )
+    List<AddressUserReponse> findAddressByUserId(@Param("idUser") String idUser);
+//    Address getOneAddressByStatus(@Param("status") Status status,@Param("idUser") String idUser);
+
 }
+
+
+
