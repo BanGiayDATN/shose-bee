@@ -328,7 +328,7 @@ function ModalAddProductDetail({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
     setSizes([]);
-    setProductSelect(record);
+    // setProductSelect(record);
     setIsModalOpen(true);
     setProduct(record);
   };
@@ -399,7 +399,7 @@ function ModalAddProductDetail({
   };
   // end modal detail product size
   const [sizes, setSizes] = useState([]);
-  const [productSelect, setProductSelect] = useState({});
+  // const [productSelect, setProductSelect] = useState({});
   const [quantity, setQuantity] = useState(1);
   const ChangedSelectSize = (e, size) => {
     setSizes((prevSelected) =>
