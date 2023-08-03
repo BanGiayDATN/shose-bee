@@ -3,10 +3,10 @@ package com.example.shose.server.service;
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.FindAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
-import com.example.shose.server.dto.response.AddressResponse;
+import com.example.shose.server.dto.response.address.AddressResponse;
+import com.example.shose.server.dto.response.address.AddressUserReponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Address;
-import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Status;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface AddressService {
 
-    List<Address> getAll();
+    List<AddressUserReponse> findAddressByUserId(String idUser);
 
     List<AddressResponse> getList(FindAddressRequest req);
 
@@ -29,6 +29,7 @@ public interface AddressService {
     Address getOneById(String id);
 
     List<SimpleUserResponse> getAllSimpleEntityUser();
+
     Address getAddressByUserIdAndStatus(String id, Status status);
 
 }

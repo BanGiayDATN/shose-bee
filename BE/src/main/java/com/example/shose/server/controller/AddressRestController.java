@@ -32,9 +32,9 @@ public class AddressRestController {
     public ResponseObject view(@ModelAttribute final FindAddressRequest request) {
         return new ResponseObject(addressService.getList(request));
     }
-    @GetMapping("/list")
-    public ResponseObject view() {
-        return new ResponseObject(addressService.getAll());
+    @GetMapping("/address-user/{idUser}")
+    public ResponseObject view(@PathVariable("idUser") String idUser) {
+        return new ResponseObject(addressService.findAddressByUserId(idUser));
     }
 
     @GetMapping("/{id}")
@@ -64,7 +64,7 @@ public class AddressRestController {
         return new ResponseObject(addressService.getAllSimpleEntityUser());
     }
 
-    @GetMapping("/address-user/{id}")
+    @GetMapping("/address-user-status/{id}")
     public ResponseObject getAddressByUserIdAndStatus(@PathVariable("id") String id) {
         return new ResponseObject(addressService.getAddressByUserIdAndStatus(id, Status.DANG_SU_DUNG));
     }

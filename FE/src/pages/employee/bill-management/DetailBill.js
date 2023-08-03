@@ -32,6 +32,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NumberFormat from "react-number-format";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import { AddressApi } from "../../../api/customer/address/address.api";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -57,6 +58,11 @@ function DetailBill() {
     status: "THANH_TOAN",
   });
   const dispatch = useDispatch();
+
+  const [listProvince, setListProvince] = useState([]);
+  const [listDistricts, setListDistricts] = useState([]);
+  const [listWard, setListWard] = useState([]);
+  const { Option } = Select;
 
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
@@ -84,7 +90,57 @@ function DetailBill() {
     PaymentsMethodApi.findByIdBill(id).then((res) => {
       dispatch(getPaymentsMethod(res.data.data));
     });
+    loadDataProvince();
   }, []);
+
+  //load data tỉnh
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvince(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  //load data quận/huyện khi chọn tỉnh
+  const handleProvinceChange = (value, valueProvince) => {
+    // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    setAddress({ ...address, city: valueProvince.value });
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+  //load data xã/phường khi chọn quận/huyện
+  const handleDistrictChange = (value, valueDistrict) => {
+    setAddress({ ...address, district: valueDistrict.value });
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+  //load data phí ship và ngày ship
+  const handleWardChange = (value, valueWard) => {
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    setAddress({ ...address, wards: valueWard.value });
+    AddressApi.fetchAllMoneyShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      // setShipFee(res.data.data.total);
+    });
+    AddressApi.fetchAllDayShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      const leadtimeInSeconds = res.data.data.leadtime;
+      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+      // setDayShip(formattedDate);
+    });
+  };
 
   console.log(bill);
 
@@ -375,9 +431,9 @@ function DetailBill() {
   };
 
   const handleOkRefundProduct = () => {
-    if(quantity < 1){
-      toast("vui lòng nhập số lượng lớn hơn 0 ")
-    }else{
+    if (quantity < 1) {
+      toast("vui lòng nhập số lượng lớn hơn 0 ");
+    } else {
       var listProduct = [...detailProductInBill];
       var index = listProduct.findIndex((item) => item.id == idProductInBill);
       var newProduct = { ...listProduct[index] };
@@ -403,9 +459,9 @@ function DetailBill() {
               size: refundProduct.size,
               quantity: quantity,
               totalMoney: total,
-              note: refundProduct.note
+              note: refundProduct.note,
             };
-            await BillApi.refundProduct( data).then((res) => {
+            await BillApi.refundProduct(data).then((res) => {
               toast("Hoàn hàng thành công");
             });
             await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
@@ -427,7 +483,7 @@ function DetailBill() {
             await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
               dispatch(getBillHistory(res.data.data));
             });
-            
+
             setIsModalRefundProductOpen(false);
           },
           onCancel: () => {
@@ -437,7 +493,6 @@ function DetailBill() {
       }
       setQuantity(1);
     }
-   
   };
   const handleCancelRefundProduct = () => {
     setIsModalRefundProductOpen(false);
@@ -483,9 +538,9 @@ function DetailBill() {
   };
 
   const handleOkUpdateProduct = () => {
-    if(quantity < 1){
-      toast("vui lòng nhập số lượng lớn hơn 0 ")
-    }else{
+    if (quantity < 1) {
+      toast("vui lòng nhập số lượng lớn hơn 0 ");
+    } else {
       var listProduct = [...detailProductInBill];
       var index = listProduct.findIndex((item) => item.id == idProductInBill);
       var newProduct = { ...listProduct[index] };
@@ -510,9 +565,11 @@ function DetailBill() {
             price: "",
             totalMoney: total,
           };
-          await BillApi.updateProductInBill(idProductInBill, data).then((res) => {
-            toast("Thay đổi thành công");
-          });
+          await BillApi.updateProductInBill(idProductInBill, data).then(
+            (res) => {
+              toast("Thay đổi thành công");
+            }
+          );
           await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
             dispatch(getProductInBillDetail(res.data.data));
           });
@@ -1291,6 +1348,7 @@ function DetailBill() {
           />
         </Row>
       </Row>
+
       <Row style={{ width: "100%" }}>
         <div style={{ backgroundColor: "white", width: "100%" }}>
           <Row
@@ -1558,6 +1616,7 @@ function DetailBill() {
                     ) : (
                       <div></div>
                     )}
+
                     {bill.statusBill == "DA_THANH_TOAN" ||
                     bill.statusBill == "KHONG_TRA_HANG" ||
                     bill.statusBill == "TRA_HANG" ? (
@@ -1575,8 +1634,9 @@ function DetailBill() {
                           disabled={item.status == "TRA_HANG"}
                           onClick={(e) => showModalRefundProduct(e, item.id)}
                         >
-                          
-                          {item.status == "TRA_HANG"? "Trả hàng" : "Đã hoàn hàng"}
+                          {item.status == "TRA_HANG"
+                            ? "Trả hàng"
+                            : "Đã hoàn hàng"}
                         </Button>
                       </Col>
                     ) : (
@@ -1911,7 +1971,8 @@ function DetailBill() {
                           showSearch
                           placeholder="Chọn tỉnh"
                           optionFilterProp="children"
-                          onChange={(v) => onChangeAddress("city", v)}
+                          // onChange={(v) => onChangeAddress("city", v)}
+                          onChange={handleProvinceChange}
                           defaultValue={address.city}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
@@ -1919,8 +1980,20 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listProvince?.map((item) => {
+                            return (
+                              <Option
+                                key={item.ProvinceID}
+                                value={item.ProvinceName}
+                                valueProvince={item.ProvinceID}
+                              >
+                                {item.ProvinceName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -1950,7 +2023,8 @@ function DetailBill() {
                           showSearch
                           placeholder="Chọn Quận"
                           optionFilterProp="children"
-                          onChange={(v) => onChangeAddress("district", v)}
+                          // onChange={(v) => onChangeAddress("district", v)}
+                          onChange={handleDistrictChange}
                           defaultValue={address.district}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
@@ -1958,8 +2032,20 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listDistricts?.map((item) => {
+                            return (
+                              <Option
+                                key={item.DistrictID}
+                                value={item.DistrictName}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.DistrictName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -1980,7 +2066,7 @@ function DetailBill() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng chọn Quận",
+                            message: "Vui lòng chọn Xã",
                           },
                         ]}
                       >
@@ -1988,7 +2074,8 @@ function DetailBill() {
                           showSearch
                           placeholder="Chọn Phường xã"
                           optionFilterProp="children"
-                          onChange={(v) => onChangeAddress("wards", v)}
+                          // onChange={(v) => onChangeAddress("wards", v)}
+                          onChange={handleWardChange}
                           defaultValue={address.wards}
                           style={{ width: "94%", position: "relative" }}
                           filterOption={(input, option) =>
@@ -1996,8 +2083,21 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listWard?.map((item) => {
+                            return (
+                              <Option
+                                key={item.WardCode}
+                                value={item.WardName}
+                                valueWard={item.WardCode}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.WardName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Form.Item>
                     </Col>
                   </Row>

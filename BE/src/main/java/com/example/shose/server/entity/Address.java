@@ -40,6 +40,8 @@ public class Address extends PrimaryEntity {
 
     private Integer toDistrictId;
 
+    private String wardCode;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
