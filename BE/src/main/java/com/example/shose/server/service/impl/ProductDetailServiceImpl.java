@@ -230,8 +230,13 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return "DANG_SU_DUNG".equals(status) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
     }
     @Override
-    public ProductDetailResponse findByIdProductDetail(String id) {
-        return productDetailRepository.findByIdProductDetail(id);
+    public List<ProductDetailReponse> findAllByIdProduct(String id) {
+        return productDetailRepository.findAllByIdProduct(id);
+    }
+
+    @Override
+    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
+        return productDetailRepository.getAllProductDetail(req);
     }
 
 }

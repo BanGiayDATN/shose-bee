@@ -34,6 +34,8 @@ public class CreateBillOfflineRequest {
 
     private String note;
 
+    private String typeBill;
+
     private String moneyShip;
 
     private List<CreateBillDetailRequest> billDetailRequests;

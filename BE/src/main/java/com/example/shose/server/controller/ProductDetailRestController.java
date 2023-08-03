@@ -105,6 +105,11 @@ public class ProductDetailRestController {
 
     @GetMapping("/custom-product/{id}")
     public ResponseObject findByIdProductDetail(@PathVariable("id") String id){
-        return new ResponseObject(productDetailService.findByIdProductDetail(id));
+        return new ResponseObject(productDetailService.findAllByIdProduct(id));
+    }
+
+    @GetMapping("/all-product-detail")
+    public ResponseObject getAllProductDetail(FindProductDetailRequest req){
+        return  new ResponseObject(productDetailService.getAllProductDetail(req));
     }
 }

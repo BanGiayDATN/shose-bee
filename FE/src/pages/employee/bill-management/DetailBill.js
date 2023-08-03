@@ -35,9 +35,9 @@ import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
-  { id: 1, name: "Chờ xác nhận", status: "CHO_XAC_NHAN" },
+  { id: 1, name: "Xác nhận", status: "CHO_XAC_NHAN" },
   { id: 2, name: "Vận chuyển", status: "VAN_CHUYEN" },
-  { id: 3, name: "Đã thanh toán", status: "DA_THANH_TOAN" },
+  { id: 3, name: "Thanh toán", status: "DA_THANH_TOAN" },
   { id: 4, name: "Thành công", status: "KHONG_TRA_HANG" },
 ];
 
@@ -64,6 +64,7 @@ function DetailBill() {
       dispatch(getProductInBillDetail(res.data.data));
     });
     BillApi.fetchDetailBill(id).then((res) => {
+      console.log("121313");
       console.log(res);
       dispatch(getBill(res.data.data));
       var index = listStatus.findIndex(
@@ -83,6 +84,7 @@ function DetailBill() {
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
       dispatch(getPaymentsMethod(res.data.data));
+      console.log(res.data.data)
     });
   }, []);
 
@@ -340,7 +342,10 @@ function DetailBill() {
   const [quantity, setQuantity] = useState(1);
 
   const handleIncrease = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
+    if(quantity  < (detaiProduct.maxQuantity + detaiProduct.quantity)){
+      setQuantity((prevQuantity) => prevQuantity + 1);
+    }
+    
   };
 
   const handleDecrease = () => {
@@ -368,11 +373,6 @@ function DetailBill() {
     });
     setIsModalRefundProductOpen(true);
   };
-  const checkNotEmptyRefundProduct = () => {
-    return Object.keys(refundProduct)
-      .filter((key) => key !== "note")
-      .every((key) => refundProduct[key] !== "");
-  };
 
   const handleOkRefundProduct = () => {
     if(quantity < 1){
@@ -388,7 +388,6 @@ function DetailBill() {
       var total = listProduct.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
       }, 0);
-      if (checkNotEmptyRefundProduct()) {
         setIsModalRefundProductOpen(false);
         Modal.confirm({
           title: "Xác nhận",
@@ -434,7 +433,6 @@ function DetailBill() {
             setIsModalRefundProductOpen(false);
           },
         });
-      }
       setQuantity(1);
     }
    
@@ -483,10 +481,13 @@ function DetailBill() {
   };
 
   const handleOkUpdateProduct = () => {
-    if(quantity < 1){
-      toast("vui lòng nhập số lượng lớn hơn 0 ")
+    if(quantity < 1 && quantity < detaiProduct.quantity ){
+      toast("vui lòng nhập số lượng lớn hơn 0 và nhỏ hơn " + detaiProduct.quantity)
     }else{
-      var listProduct = [...detailProductInBill];
+      if(quantity == detaiProduct.quantity){
+        setIsModalUpdateProduct(false)
+      }else{
+        var listProduct = [...detailProductInBill];
       var index = listProduct.findIndex((item) => item.id == idProductInBill);
       var newProduct = { ...listProduct[index] };
       newProduct.quantity = quantity;
@@ -532,14 +533,16 @@ function DetailBill() {
           await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
             dispatch(getBillHistory(res.data.data));
           });
-          setIsModalRefundProductOpen(false);
+          setIsModalUpdateProduct(false);
         },
         onCancel: () => {
-          setIsModalRefundProductOpen(false);
+          setIsModalUpdateProduct(false);
         },
       });
       setIsModalUpdateProduct(false);
       setQuantity(1);
+      }
+
     }
   };
   const handleCancelUpdateProduct = () => {
@@ -595,7 +598,7 @@ function DetailBill() {
 
   const handleOkChangeStatus = () => {
     setIsModalOpenChangeStatus(false);
-    if (statusBill.totalMoney < bill.totalMoney) {
+    if ((statusBill.totalMoney < bill.totalMoney) && bill.statusBill == "VAN_CHUYEN") {
       toast.error("Số tiền thanh toán không đủ");
     } else {
       Modal.confirm({
@@ -605,8 +608,6 @@ function DetailBill() {
         cancelText: "Hủy",
         onOk: () => {
           BillApi.changeStatusBill(id, statusBill).then((res) => {
-            console.log("change");
-            console.log(res.data.data);
             dispatch(getBill(res.data.data));
             var index = listStatus.findIndex(
               (item) => item.status == res.data.data.statusBill
@@ -967,14 +968,14 @@ function DetailBill() {
 
   // begin delete product
 
-  const removeProductInBill = (idProduct, size) => {
+  const removeProductInBill = (idBillDetail, idProduct) => {
     Modal.confirm({
       title: "Xác nhận",
       content: "Bạn có xác nhận xóa sản phẩmkhông?",
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: async () => {
-        await BillApi.removeProductInBill(idProduct, size).then((res) => {
+        await BillApi.removeProductInBill(idBillDetail, idProduct).then((res) => {
           toast("xóa thành công");
         });
         await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
@@ -1227,7 +1228,7 @@ function DetailBill() {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 className="widthModal"
-                style={{}}
+                width={800}
               >
                 <Table
                   dataSource={billHistory}
@@ -1549,7 +1550,7 @@ function DetailBill() {
                             borderRadius: "10px",
                           }}
                           onClick={(e) =>
-                            removeProductInBill(item.id, item.nameSize)
+                            removeProductInBill(item.id, item.idProduct)
                           }
                         >
                           Xóa
@@ -1576,7 +1577,7 @@ function DetailBill() {
                           onClick={(e) => showModalRefundProduct(e, item.id)}
                         >
                           
-                          {item.status == "TRA_HANG"? "Trả hàng" : "Đã hoàn hàng"}
+                          {item.status != "TRA_HANG"? "Trả hàng" : "Đã hoàn hàng"}
                         </Button>
                       </Col>
                     ) : (
@@ -2150,7 +2151,11 @@ function DetailBill() {
                     value={quantity}
                     max={detaiProduct.quantity}
                     style={{ marginLeft: "4px" }}
-                    onChange={(value) => setQuantity(value)}
+                    onChange={(value) => {
+                      if(value < detaiProduct.quantity || value > 1 || value != undefined){
+                        setQuantity(value)
+                      }
+                    }}
                   />
                 </Col>
                 <Col span={6}>
@@ -2282,7 +2287,11 @@ function DetailBill() {
                     max={detaiProduct.maxQuantity}
                     value={quantity}
                     style={{ marginLeft: "4px" }}
-                    onChange={(value) => setQuantity(value)}
+                    onChange={(value) => {
+                      if(value <= (detaiProduct.maxQuantity + detaiProduct.quantity) && value > 0 && value != undefined){
+                        setQuantity(value)
+                      }
+                    }}
                   />
                 </Col>
                 <Col span={6}>

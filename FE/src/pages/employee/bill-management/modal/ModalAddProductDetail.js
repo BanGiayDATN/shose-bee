@@ -39,6 +39,7 @@ import {
   addProductInBillDetail,
 } from "../../../../app/reducer/Bill.reducer";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
+import { size } from "lodash";
 
 function ModalAddProductDetail({
   handleCancelProduct,
@@ -136,7 +137,7 @@ function ModalAddProductDetail({
     brand: "",
     material: "",
     product: "",
-    sizeProduct: null,
+    size: null,
     sole: "",
     category: "",
     gender: "",
@@ -152,6 +153,8 @@ function ModalAddProductDetail({
     }));
   };
 
+ 
+
   const handleChangeValuePrice = (value) => {
     const [minPrice, maxPrice] = value;
 
@@ -163,7 +166,7 @@ function ModalAddProductDetail({
   };
 
   const loadData = () => {
-    ProducDetailtApi.fetchAll(selectedValues).then(
+    ProducDetailtApi.getAllProductDetail(selectedValues).then(
       (res) => {
         var data = [];
         res.data.data.map((item) => {
@@ -177,7 +180,6 @@ function ModalAddProductDetail({
         setIsSubmitted(false);
       },
       (err) => {
-        console.log(err);
       }
     );
   };
@@ -287,9 +289,9 @@ function ModalAddProductDetail({
     },
     {
       title: "Số Lượng Tồn ",
-      dataIndex: "totalQuantity",
-      key: "totalQuantity",
-      sorter: (a, b) => a.totalQuantity - b.totalQuantity,
+      dataIndex: "quantity",
+      key: "quantity",
+      sorter: (a, b) => a.quantity - b.quantity,
       align: "center",
     },
     {
@@ -339,21 +341,23 @@ function ModalAddProductDetail({
     setIsModalOpen(true);
     setProduct(record);
   };
+  const clearSelectSize = () => {
+    setSizes([]);
+  };
   const handleOk = () => {
     if (sizes.length > 0 && quantity >= 1) {
       setIsModalOpen(false);
       if (typeAddProductBill === "CREATE_BILL") {
         var list = products;
-        console.log(sizes);
         sizes.map((item) => {
           var index = list.findIndex((x) => x.idSizeProduct === item.id);
           var data = {
-            image: productSelect.image,
-            productName: productSelect.nameProduct,
+            image: item.image,
+            productName: item.nameProduct,
             nameSize: item.nameSize,
-            idProduct: productSelect.id,
+            idProduct: item.id,
             quantity: quantity,
-            price: productSelect.price,
+            price: item.price,
             idSizeProduct: item.id,
             maxQuantity: item.quantity,
           };
@@ -370,24 +374,23 @@ function ModalAddProductDetail({
         sizes.map((item) => {
           var data = {
             idBill: typeAddProductBill,
-            idProduct: productSelect.id,
+            idProduct: item.id,
             size: item.nameSize,
             quantity: quantity,
-            price: productSelect.price,
+            price: item.price,
           };
           BillApi.addProductInBill(data).then((res) => {
-            const price = productSelect.price;
-            if (productSelect.promotion != null) {
+            const price = item.price;
+            if (item.promotion != null) {
               price =
-                (productSelect.price * (100 - productSelect.promotion)) / 100;
+                (item.price * (100 - item.promotion)) / 100;
             }
-            console.log(res.data.data);
             var product = {
               id: res.data.data,
-              image: productSelect.image,
-              productName: productSelect.nameProduct,
+              image: item.image,
+              productName: item.nameProduct,
               nameSize: item.nameSize,
-              idProduct: productSelect.id,
+              idProduct: item.id,
               quantity: quantity,
               price: price,
               idSizeProduct: item.id,
@@ -636,6 +639,7 @@ function ModalAddProductDetail({
           id={product.id}
           ChangedSelectSize={ChangedSelectSize}
           ChangeQuantity={ChangeQuantity}
+          clearSelectSize={clearSelectSize}
         />
       </Modal>
     </div>

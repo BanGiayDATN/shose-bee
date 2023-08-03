@@ -186,6 +186,11 @@
   border-radius: 15px;
 }
 
+.selected{
+  border: 2px solid #00ffd4;
+  color: white;
+}
+
 
 
   

@@ -79,7 +79,6 @@ function CreateBill() {
 
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
-    console.log(billRequest);
   };
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
@@ -117,6 +116,7 @@ function CreateBill() {
   useEffect(() => {
     loadData();
     loadDataProvince();
+    dispatch(addUserBillWait(null));
   }, []);
 
   const loadData = () => {
@@ -126,6 +126,8 @@ function CreateBill() {
           ...customer,
           stt: index + 1,
         }));
+        console.log("hdkjsahdkjas");
+        console.log(accounts);
         setListaccount(res.data.data);
         setInitialCustomerList(accounts);
         dispatch(SetCustomer(res.data.data));
@@ -250,7 +252,7 @@ function CreateBill() {
         <img
           src={avata}
           alt="Hình ảnh"
-          style={{ width: "150px", height: "110px", borderRadius: "20px" }}
+          style={{ width: "60px", height: "60px", borderRadius: "50%" }}
         />
       ),
     },
@@ -308,7 +310,6 @@ function CreateBill() {
       userName: record.fullName,
       idUser: record.id,
     });
-    console.log(billRequest);
     dispatch(addUserBillWait(record));
     setIsModalAccountOpen(false);
   };
@@ -359,6 +360,36 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
+    var addressuser = ""
+    if(checkNotEmptyAddress()){
+       addressuser =
+    address.detail +
+    ", " +
+    address.wards +
+    ", " +
+    address.district +
+    ", " +
+    address.city;
+    }
+    var idAccount = ""
+    if(user != null){
+      console.log(user);
+      idAccount = user.idAccount
+    }
+    var data = {
+                phoneNumber: billRequest.phoneNumber,
+                address: addressuser,
+                userName: billRequest.userName,
+                itemDiscount: voucher.discountPrice,
+                totalMoney: totalBill,
+                note: billRequest.note,
+                typeBill: 'OFFLINE',
+                moneyShip: shipFee,
+                billDetailRequests: newProduct,
+                vouchers: newVoucher,
+                idUser: idAccount
+              };
+              console.log(data);
     if (isOpenDelivery) {
       if (checkNotEmptyAddress() && checkNotEmptyBill()) {
         if (totalBill > 0) {
@@ -368,25 +399,6 @@ function CreateBill() {
             okText: "Đồng ý",
             cancelText: "Hủy",
             onOk: async () => {
-              var addressuser =
-                address.detail +
-                ", " +
-                address.wards +
-                ", " +
-                address.district +
-                ", " +
-                address.city;
-              var data = {
-                phoneNumber: billRequest.phoneNumber,
-                address: addressuser,
-                userName: billRequest.userName,
-                itemDiscount: voucher.discountPrice,
-                totalMoney: totalBill,
-                note: billRequest.note,
-                moneyShip: shipFee,
-                billDetailRequests: newProduct,
-                vouchers: newVoucher,
-              };
               await BillApi.createBillWait(data).then((res) => {
                 navigate("/bill-management/detail-bill/" + res.data.data.id);
               });
@@ -407,25 +419,6 @@ function CreateBill() {
           okText: "Đồng ý",
           cancelText: "Hủy",
           onOk: async () => {
-            var addressuser =
-              address.detail +
-              ", " +
-              address.wards +
-              ", " +
-              address.district +
-              ", " +
-              address.city;
-            var data = {
-              phoneNumber: billRequest.phoneNumber,
-              address: addressuser,
-              userName: billRequest.userName,
-              itemDiscount: voucher.discountPrice,
-              totalMoney: totalBill,
-              note: billRequest.note,
-              moneyShip: shipFee,
-              billDetailRequests: newProduct,
-              vouchers: newVoucher,
-            };
             await BillApi.createBillWait(data).then((res) => {
               navigate("/bill-management/detail-bill/" + res.data.data.id);
             });
@@ -437,8 +430,6 @@ function CreateBill() {
       }
     }
   };
-
-  useEffect(() => {}, []);
 
   //  begin voucher
 
@@ -811,15 +802,6 @@ function CreateBill() {
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
         <Row style={{ width: "100%" }}>
-          {" "}
-          {/* <Table
-            dataSource={listProduct}
-            columns={columns}
-            rowKey="id"
-            style={{ width: "100%" }}
-            pagination={false} // Disable default pagination
-            className="product-table"
-          /> */}
           <Row
             style={{
               marginBottom: "20px",

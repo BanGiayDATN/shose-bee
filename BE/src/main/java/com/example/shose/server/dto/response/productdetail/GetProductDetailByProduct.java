@@ -33,4 +33,5 @@ public interface GetProductDetailByProduct {
     String getStatus();
     @Value("#{target.idPromotion}")
     String getIdPromotion();
+
 }
