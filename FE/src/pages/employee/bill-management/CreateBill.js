@@ -67,6 +67,8 @@ function CreateBill() {
     detail: "",
   });
 
+  const [form] = Form.useForm();
+
   const onChangeAddress = (fileName, value) => {
     setAddress({ ...address, [fileName]: value });
   };
@@ -873,7 +875,15 @@ function CreateBill() {
   const selectedAddress = (record) => {
     setIsModalAddressOpen(false);
     setListInfoUser(record);
-    console.log(listInfoUser);
+    console.log(record);
+    form.setFieldsValue({
+      phoneNumber: record.phonenumber,
+      name: record.fullname,
+      city: record.province,
+      district: record.district,
+      wards: record.ward,
+      detail: record.line,
+    });
     AddressApi.fetchAllMoneyShip(record.toDistrictId, record.wardCode).then(
       (res) => {
         setShipFee(res.data.data.total);
@@ -1214,7 +1224,7 @@ function CreateBill() {
         <Row style={{ width: "100%" }}>
           <Col span={14}>
             {isOpenDelivery ? (
-              <Form initialValues={initialValues}>
+              <Form form={form} initialValues={initialValues}>
                 <div>
                   <Row
                     style={{
@@ -1296,7 +1306,7 @@ function CreateBill() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng chọn Quận",
+                            message: "Vui lòng nhập địa chỉ",
                           },
                         ]}
                       >

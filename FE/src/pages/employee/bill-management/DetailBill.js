@@ -32,6 +32,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NumberFormat from "react-number-format";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import { AddressApi } from "../../../api/customer/address/address.api";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -57,6 +58,11 @@ function DetailBill() {
     status: "THANH_TOAN",
   });
   const dispatch = useDispatch();
+
+  const [listProvince, setListProvince] = useState([]);
+  const [listDistricts, setListDistricts] = useState([]);
+  const [listWard, setListWard] = useState([]);
+  const { Option } = Select;
 
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
@@ -84,7 +90,57 @@ function DetailBill() {
     PaymentsMethodApi.findByIdBill(id).then((res) => {
       dispatch(getPaymentsMethod(res.data.data));
     });
+    loadDataProvince();
   }, []);
+
+  //load data tỉnh
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvince(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  //load data quận/huyện khi chọn tỉnh
+  const handleProvinceChange = (value, valueProvince) => {
+    // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    setAddress({ ...address, city: valueProvince.value });
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+  //load data xã/phường khi chọn quận/huyện
+  const handleDistrictChange = (value, valueDistrict) => {
+    setAddress({ ...address, district: valueDistrict.value });
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+  //load data phí ship và ngày ship
+  const handleWardChange = (value, valueWard) => {
+    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    setAddress({ ...address, wards: valueWard.value });
+    AddressApi.fetchAllMoneyShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      // setShipFee(res.data.data.total);
+    });
+    AddressApi.fetchAllDayShip(
+      valueWard.valueDistrict,
+      valueWard.valueWard
+    ).then((res) => {
+      const leadtimeInSeconds = res.data.data.leadtime;
+      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+      // setDayShip(formattedDate);
+    });
+  };
 
   console.log(bill);
 
@@ -1915,7 +1971,8 @@ function DetailBill() {
                           showSearch
                           placeholder="Chọn tỉnh"
                           optionFilterProp="children"
-                          onChange={(v) => onChangeAddress("city", v)}
+                          // onChange={(v) => onChangeAddress("city", v)}
+                          onChange={handleProvinceChange}
                           defaultValue={address.city}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
@@ -1923,8 +1980,20 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listProvince?.map((item) => {
+                            return (
+                              <Option
+                                key={item.ProvinceID}
+                                value={item.ProvinceName}
+                                valueProvince={item.ProvinceID}
+                              >
+                                {item.ProvinceName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -1954,7 +2023,8 @@ function DetailBill() {
                           showSearch
                           placeholder="Chọn Quận"
                           optionFilterProp="children"
-                          onChange={(v) => onChangeAddress("district", v)}
+                          // onChange={(v) => onChangeAddress("district", v)}
+                          onChange={handleDistrictChange}
                           defaultValue={address.district}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
@@ -1962,8 +2032,20 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listDistricts?.map((item) => {
+                            return (
+                              <Option
+                                key={item.DistrictID}
+                                value={item.DistrictName}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.DistrictName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -1984,7 +2066,7 @@ function DetailBill() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng chọn Quận",
+                            message: "Vui lòng chọn Xã",
                           },
                         ]}
                       >
@@ -1992,7 +2074,8 @@ function DetailBill() {
                           showSearch
                           placeholder="Chọn Phường xã"
                           optionFilterProp="children"
-                          onChange={(v) => onChangeAddress("wards", v)}
+                          // onChange={(v) => onChangeAddress("wards", v)}
+                          onChange={handleWardChange}
                           defaultValue={address.wards}
                           style={{ width: "94%", position: "relative" }}
                           filterOption={(input, option) =>
@@ -2000,8 +2083,21 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          options={[]}
-                        />
+                          // options={[]}
+                        >
+                          {listWard?.map((item) => {
+                            return (
+                              <Option
+                                key={item.WardCode}
+                                value={item.WardName}
+                                valueWard={item.WardCode}
+                                valueDistrict={item.DistrictID}
+                              >
+                                {item.WardName}
+                              </Option>
+                            );
+                          })}
+                        </Select>
                       </Form.Item>
                     </Col>
                   </Row>

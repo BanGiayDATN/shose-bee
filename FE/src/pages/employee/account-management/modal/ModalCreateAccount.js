@@ -22,7 +22,7 @@ import { AddressApi } from "../../../../api/customer/address/address.api";
 import { useNavigate } from "react-router";
 import { PlusOutlined } from "@ant-design/icons";
 
-import { QrReader } from "react-qr-reader";
+// import { QrReader } from "react-qr-reader";
 
 const { Option } = Select;
 
