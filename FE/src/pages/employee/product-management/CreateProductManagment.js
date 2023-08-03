@@ -10,6 +10,7 @@ import {
   Popconfirm,
   Row,
   Select,
+  Table,
   Upload,
 } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -82,11 +83,6 @@ const CreateProductManagment = () => {
   const [listColor, setListColor] = useState([]);
   const [listProduct, setListProduct] = useState([]);
   const [listSole, setListSole] = useState([]);
-
-  const getColorName = (color) => {
-    const colorObj = tinycolor(color);
-    return colorObj.toName() || colorObj.toHexString();
-  };
 
   const getList = () => {
     ProductApi.fetchAll().then((res) => {
@@ -165,10 +161,40 @@ const CreateProductManagment = () => {
     });
   };
 
+  const [listColorAdd, setListColorAdd] = useState([]);
+  const handleSaveDataColor = (color) => {
+    console.log(color);
+    color.forEach((color) => {
+      // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
+      const existingSize = listColorAdd.find((item) => item.color === color);
+
+      if (existingSize) {
+        // Nếu kích thước đã tồn tại, hiển thị cảnh báo
+        toast.warning(`Kích cỡ ${color} đã tồn tại trong danh sách!`);
+      } else {
+        // Nếu kích thước chưa tồn tại, thêm vào listSizeAdd
+        setListColorAdd((prevList) => [
+          ...prevList,
+          {
+            color: color,
+          },
+        ]);
+      }
+    });
+    setModalAddColor(false);
+  };
+
   const handleDeleteSize = (index) => {
     const updatedList = [...listSizeAdd];
     updatedList.splice(index, 1);
     setListSizeAdd(updatedList);
+    toast.success("Đã xóa kích cỡ thành công");
+  };
+
+  const handleDeleteColor = (index) => {
+    const updatedList = [...listColorAdd];
+    updatedList.splice(index, 1);
+    setListColorAdd(updatedList);
     toast.success("Đã xóa kích cỡ thành công");
   };
 
@@ -399,6 +425,64 @@ const CreateProductManagment = () => {
   //     </div>
   //   );
   // };
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+      sorter: (a, b) => a.age - b.age,
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+    },
+  ];
+
+  const data = [
+    {
+      key: "1",
+      name: "John Brown",
+      age: 32,
+      address: "New York No. 1 Lake Park",
+    },
+    {
+      key: "2",
+      name: "Jim Green",
+      age: 42,
+      address: "London No. 1 Lake Park",
+    },
+    {
+      key: "3",
+      name: "Joe Black",
+      age: 32,
+      address: "Sydney No. 1 Lake Park",
+    },
+    {
+      key: "4",
+      name: "Jim Red",
+      age: 32,
+      address: "London No. 2 Lake Park",
+    },
+  ];
+  const onChange = (pagination, filters, sorter, extra) => {
+    console.log("params", pagination, filters, sorter, extra);
+  };
+
+  // gen dữ liệu
+  const dataDetail = () => {
+    const formData = form.getFieldsValue();
+    console.log(formData);
+    console.log(listColorAdd);
+    console.log(listSizeAdd);
+  };
+
+  useEffect(() => {
+    dataDetail();
+  }, [listColorAdd, listSizeAdd]);
 
   return (
     <>
@@ -665,7 +749,6 @@ const CreateProductManagment = () => {
                       type="primary"
                       icon={<FontAwesomeIcon icon={faPlus} />}
                       style={{ height: 30 }}
-                      onClick={() => setModalAddColor(true)}
                     ></Button>
                   </Form.Item>
                 </Col>
@@ -705,7 +788,7 @@ const CreateProductManagment = () => {
           <Row
             align="middle"
             gutter={16}
-            style={{ marginTop: "30px", marginBottom: "80px" }}
+            style={{ marginTop: "50px", marginBottom: "80px" }}
           >
             <Col span={3} style={{ marginLeft: "25px" }}>
               <h2>Kích Cỡ : </h2>
@@ -720,7 +803,7 @@ const CreateProductManagment = () => {
                     okText="Đồng ý"
                     cancelText="Hủy"
                   >
-                    <Button className="custom-button">
+                    <Button className="custom-button-size">
                       <span
                         style={{ fontWeight: "bold" }}
                       >{`${item.nameSize}`}</span>
@@ -731,16 +814,9 @@ const CreateProductManagment = () => {
                     </Button>
                   </Popconfirm>
                 ))}
-                <Col
-                  span={5}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
+                <Col span={5}>
                   <Button
-                    style={{ height: "40px" }}
+                    style={{ height: "40px", marginLeft: "40px" }}
                     type="primary"
                     onClick={() => {
                       setModalAddSize(true);
@@ -768,6 +844,25 @@ const CreateProductManagment = () => {
             </Col>
             <Col span={16}>
               <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {listColorAdd.map((item, index) => (
+                  <Popconfirm
+                    key={index}
+                    title="Bạn có chắc muốn xóa kích cỡ này?"
+                    onConfirm={() => handleDeleteColor(index)}
+                    okText="Đồng ý"
+                    cancelText="Hủy"
+                  >
+                    <Button
+                      className="custom-button-color"
+                      style={{ backgroundColor: item.color }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faCircleMinus}
+                        className="custom-icon"
+                      />
+                    </Button>
+                  </Popconfirm>
+                ))}
                 <Col
                   span={5}
                   style={{
@@ -777,7 +872,7 @@ const CreateProductManagment = () => {
                   }}
                 >
                   <Button
-                    style={{ height: "40px" }}
+                    style={{ height: "40px", width: "75%" }}
                     type="primary"
                     onClick={() => {
                       setModalAddColor(true);
@@ -788,6 +883,7 @@ const CreateProductManagment = () => {
                   <AddColorModal
                     visible={modalAddColor}
                     onCancel={handleCancel}
+                    onSaveData={handleSaveDataColor}
                   />
                 </Col>
               </div>
@@ -842,6 +938,29 @@ const CreateProductManagment = () => {
           </Modal>
         </div>
         {/* Display the loading spinner while submitting */}
+      </div>
+
+      <div className="filter">
+        <div
+          className="title_product"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "20px",
+              fontWeight: "bold",
+              marginTop: "10px",
+              marginBottom: "20px",
+            }}
+          >
+            Chi tiết sản phẩm
+          </span>
+        </div>
+        <Table columns={columns} dataSource={data} onChange={onChange} />
       </div>
     </>
   );

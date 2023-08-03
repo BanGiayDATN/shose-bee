@@ -1,20 +1,34 @@
 import { Modal, Input, Select, Button, Form, Row, Col } from "antd";
-import { useAppDispatch } from "../../../../app/hook";
+import { useAppDispatch, useAppSelector } from "../../../../app/hook";
 import tinycolor from "tinycolor2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
-import { SetColor } from "../../../../app/reducer/Color.reducer";
+import {
+  CreateColor,
+  GetColor,
+  SetColor,
+} from "../../../../app/reducer/Color.reducer";
+import { toast } from "react-toastify";
 
-const AddColorModal = ({ visible, onCancel }) => {
+const AddColorModal = ({ visible, onCancel, onSaveData }) => {
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
   const [isAddModalVisible, setAddModalVisible] = useState(false);
+  const [selected, setSelected] = useState([]);
   const initialValues = {
+    code: "",
     name: "",
     status: "DANG_SU_DUNG",
   };
+
+  const data = useAppSelector(GetColor);
+  useEffect(() => {
+    if (data != null) {
+      setListColor(data);
+    }
+  }, [data]);
 
   const [listColor, setListColor] = useState([]);
 
@@ -30,6 +44,14 @@ const AddColorModal = ({ visible, onCancel }) => {
     });
   };
 
+  const toggleSelection = (color) => {
+    setSelected((prevSelected) =>
+      prevSelected.includes(color)
+        ? prevSelected.filter((selected) => selected !== color)
+        : [...prevSelected, color]
+    );
+  };
+
   useEffect(() => {
     getList();
   }, []);
@@ -37,6 +59,12 @@ const AddColorModal = ({ visible, onCancel }) => {
   // Trong hàm handleOk, chúng ta gọi form.validateFields() để kiểm tra và lấy giá trị
   // hàm onCreate để xử lý dữ liệu
   const handleOk = () => {
+    onSaveData(selected);
+    setSelected([]);
+    onCancel();
+  };
+
+  const handleOkAdd = () => {
     form
       .validateFields()
       .then((values) => {
@@ -52,17 +80,18 @@ const AddColorModal = ({ visible, onCancel }) => {
         });
       })
       .then((values) => {
-        //   BrandApi.create(values)
-        //     .then((res) => {
-        //       dispatch(CreateBrand(res.data.data));
-        //       toast.success("Thêm thành công");
-        //       form.resetFields();
-        //       onCancel();
-        //     })
-        //     .catch((error) => {
-        //       toast.error("Thêm thất bại");
-        //       console.log("Create failed:", error);
-        //     });
+        ColorApi.create(values)
+          .then((res) => {
+            console.log(res.data.data);
+            dispatch(CreateColor(res.data.data));
+            toast.success("Thêm thành công");
+            form.resetFields();
+            setAddModalVisible(false);
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+            console.log("Create failed:", error);
+          });
       })
       .catch(() => {
         // Xử lý khi người dùng từ chối xác nhận
@@ -70,20 +99,21 @@ const AddColorModal = ({ visible, onCancel }) => {
   };
 
   const handleCancel = () => {
-    form.resetFields();
     setAddModalVisible(false);
+    form.resetFields();
     onCancel();
   };
 
   return (
     <>
       <Modal
-        title="Chọn kích cỡ "
+        title="Chọn màu sắc "
         visible={visible}
         onOk={handleOk}
         onCancel={handleCancel}
         okText="Thêm"
         cancelText="Hủy"
+        bodyStyle={{ maxHeight: "50vh", overflowY: "auto" }}
       >
         <div
           style={{
@@ -96,21 +126,36 @@ const AddColorModal = ({ visible, onCancel }) => {
             onClick={() => setAddModalVisible(true)}
             icon={<FontAwesomeIcon icon={faPlus} />}
           >
-            Thêm kích thước
+            Thêm màu sắc
           </Button>
         </div>
-        <Row gutter={[16, 16]}></Row>
+        <Row gutter={[16, 16]}>
+          {/* Hiển thị các nút button cho các kích thước */}
+          {listColor.map((color) => (
+            <Col key={color} span={6}>
+              <Button
+                block
+                title={color.code}
+                style={{ backgroundColor: color.code }}
+                className={selected.includes(color.code) ? "selected" : ""}
+                onClick={() => toggleSelection(color.code)}
+              >
+                <span style={{ fontWeight: "bold" }}>{color.code}</span>
+              </Button>
+            </Col>
+          ))}
+        </Row>
       </Modal>
 
       <Modal
         title="Thêm màu sắc"
         visible={isAddModalVisible}
-        onCancel={handleCancel}
+        onCancel={() => setAddModalVisible(false)}
         footer={[
-          <Button key="cancel" onClick={handleCancel}>
+          <Button key="cancel" onClick={() => setAddModalVisible(false)}>
             Hủy
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button key="submit" type="primary" onClick={handleOkAdd}>
             Thêm
           </Button>,
         ]}

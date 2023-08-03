@@ -196,7 +196,7 @@
 
 /* custom-button.css */
 
-.custom-button {
+.custom-button-size {
   position: relative;
   padding: 5px 10px;
   display: inline-flex;
@@ -204,15 +204,30 @@
   margin-left: 23px;
   margin-bottom: 15px;
   width: 50px;
-  height: 43px;
+  height: 40px;
 }
-.custom-button .custom-icon {
+.custom-button-size .custom-icon {
   margin-left: 10px;
   margin-top: -30px; /* Điều chỉnh khoảng cách icon lên phía trên */
   font-size: 23px;
   color: #ff4d4f;
 }
 
+.custom-button-color {
+  position: relative;
+  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 23px;
+  width: 50px;
+  height: 40px;
+}
+.custom-button-color .custom-icon {
+  margin-left: 20px;
+  margin-top: -30px; /* Điều chỉnh khoảng cách icon lên phía trên */
+  font-size: 23px;
+  color: #ff4d4f;
+}
 
 
 

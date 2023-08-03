@@ -23,5 +23,5 @@ public interface ColorService {
 
     Color getOneById(String id);
 
-    List<String> getAllCode();
+    List<Color> getAllCode();
 }
