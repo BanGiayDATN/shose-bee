@@ -801,8 +801,9 @@ function CreateBill() {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        <Row style={{ width: "100%" }}>
-          <Row
+        <Row style={{ width: "100%", minHeight: "300px" }}>
+          {products.length != 0 ? (
+            <Row
             style={{
               marginBottom: "20px",
               width: "100%",
@@ -835,6 +836,10 @@ function CreateBill() {
               
             </Col>
           </Row>
+          ) : (
+            <Row></Row>
+          ) }
+          
           {products.map((item) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
@@ -958,7 +963,8 @@ function CreateBill() {
             );
           })}
         </Row>
-        <Row
+        { products.length != 0 ? (
+          <Row
           justify="end"
           style={{
             marginBottom: "10px",
@@ -993,6 +999,8 @@ function CreateBill() {
                 }, 0) + " đ"}
           </Col>
         </Row>
+        ) : (<Row></Row>) }
+        
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
         <Row
