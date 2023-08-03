@@ -259,7 +259,7 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
           >
             {/* Hiển thị các nút button cho các kích thước */}
             {listColor.map((item, index) => (
-              <Col key={"Cl"+ index} span={6}>
+              <Col key={"Cl"+ item} span={6}>
                 <Button
                   // block
                   className={selectedColor === item ? "selected" : ""}
