@@ -78,12 +78,9 @@ function ModalAddProductDetail({
     ProducDetailtApi.fetchAll({
       product: search,
     }).then((res) => {
-      var data = [];
-      res.data.data.map((item) => {
-        if (item.status == "DANG_SU_DUNG") {
-          data.push(item);
-        }
-      });
+      var data =  res.data.data.filter(
+        (product) => product.quantity > 0
+      );
       setListProduct(data);
       // dispatch(SetPr(data));
     });
@@ -95,12 +92,9 @@ function ModalAddProductDetail({
     ProducDetailtApi.fetchAll({
       product: "",
     }).then((res) => {
-      var data = [];
-      res.data.data.map((item) => {
-        if (item.status == "DANG_SU_DUNG") {
-          data.push(item);
-        }
-      });
+      var data =  res.data.data.filter(
+        (product) => product.quantity > 0
+      );
       setListProduct(data);
       // dispatch(SetProduct(data));
     });
@@ -141,7 +135,7 @@ function ModalAddProductDetail({
     sole: "",
     category: "",
     gender: "",
-    status: "",
+    status: "DANG_SU_DUNG",
     minPrice: 0,
     maxPrice: 50000000000,
   });
@@ -168,12 +162,9 @@ function ModalAddProductDetail({
   const loadData = () => {
     ProducDetailtApi.getAllProductDetail(selectedValues).then(
       (res) => {
-        var data = [];
-        res.data.data.map((item) => {
-          if (item.status == "DANG_SU_DUNG") {
-            data.push(item);
-          }
-        });
+        var data =  res.data.data.filter(
+          (product) => product.quantity > 0
+        );
 
         setListProduct(data);
         // dispatch(SetProduct(data));
@@ -417,6 +408,7 @@ function ModalAddProductDetail({
         : [...prevSelected, size]
     );
   };
+
   const ChangeQuantity = (value) => {
     setQuantity(value);
   };

@@ -261,57 +261,57 @@ public class DBGenerator implements CommandLineRunner {
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail2 = ProductDetail.builder().size(size2).color(color2).quantity(15)
-                .sole(sole2).category(category2).material(material2).brand(brand2).product(product2)
+                .sole(sole2).category(category2).material(material2).brand(brand2).product(product1)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail3 = ProductDetail.builder().size(size5).color(color1).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product3)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail4 = ProductDetail.builder().size(size3).color(color5).quantity(15)
-                .sole(sole4).category(category3).material(material3).brand(brand).product(product4)
+                .sole(sole4).category(category3).material(material3).brand(brand).product(product1)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail5 = ProductDetail.builder().size(size7).color(color7).quantity(15)
-                .sole(sole3).category(category4).material(material2).brand(brand).product(product5)
+                .sole(sole3).category(category4).material(material2).brand(brand).product(product1)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail6 = ProductDetail.builder().size(size2).color(color4).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product6)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail7 = ProductDetail.builder().size(size6).color(color6).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product7)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail8 = ProductDetail.builder().size(size8).color(color6).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product8)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail9 = ProductDetail.builder().size(size2).color(color).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product9)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail10 = ProductDetail.builder().size(size8).color(color7).quantity(20)
-                .sole(sole1).category(category).material(material).brand(brand).product(product10)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail11 = ProductDetail.builder().size(size).color(color1).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product10)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail12 = ProductDetail.builder().size(size).color(color7).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product11)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
