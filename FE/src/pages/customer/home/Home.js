@@ -15,8 +15,8 @@ function Home() {
       <div className="">
         <Row justify="center">
           <Col
-           
-            lg={{ span: 9, offset: 0 }}
+          //  style={{backgroundColor:"red"}}
+            lg={{ span:9, offset: 0 }}
           >
             <div className="type-gender">
               <Link>
@@ -27,7 +27,7 @@ function Home() {
           </Col>
 
           <Col
-          
+          // style={{backgroundColor:"green"}}
             lg={{ span: 9, offset: 1 }}
           >
             <div  className="type-gender">

@@ -31,13 +31,10 @@ public class PromotionRestController {
         return new ResponseObject(promotionService.getAll(findPromotionRequest));
     }
 
-    @GetMapping("/{id}")
-    public ResponseObject getById(@PathVariable("id") String id) {
-        return new ResponseObject(promotionService.getById(id));
-    }
 
     @PostMapping
     public ResponseObject add(@RequestBody CreatePromotionRequest request) {
+        System.out.println( request.getIdProductDetails());
         return new ResponseObject(promotionService.add(request));
     }
 
@@ -45,5 +42,13 @@ public class PromotionRestController {
     public ResponseObject update(@PathVariable("id") String id, @RequestBody UpdatePromotionRequest request) {
         request.setId(id);
         return new ResponseObject(promotionService.update(request));
+    }
+    @GetMapping("/{id}")
+    public ResponseObject getByIdPromotion(@PathVariable("id") String id) {
+        return new ResponseObject(promotionService.getByIdPromotion(id));
+    }
+    @GetMapping("/byProductDetail/{id}")
+    public ResponseObject getByIdProductDetail(@PathVariable("id") String id) {
+        return new ResponseObject(promotionService.getByIdProductDetail(id));
     }
 }

@@ -7,13 +7,16 @@ import com.example.shose.server.dto.request.productdetail.IdProductDetail;
 import com.example.shose.server.dto.request.promotion.CreatePromotionRequest;
 import com.example.shose.server.dto.request.promotion.FindPromotionRequest;
 import com.example.shose.server.dto.request.promotion.UpdatePromotionRequest;
+import com.example.shose.server.dto.response.promotion.PromotionByIdRespone;
+import com.example.shose.server.dto.response.promotion.PromotionByProDuctDetail;
 import com.example.shose.server.dto.response.promotion.PromotionRespone;
-import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Promotion;
+import com.example.shose.server.entity.PromotionProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ProductDetailRepository;
+import com.example.shose.server.repository.PromotionProductDetailRepository;
 import com.example.shose.server.repository.PromotionRepository;
 import com.example.shose.server.service.PromotionService;
 import com.example.shose.server.util.RandomNumberGenerator;
@@ -29,6 +32,8 @@ public class PromotionServiceImpl implements PromotionService {
     private PromotionRepository promotionRepository;
     @Autowired
     private ProductDetailRepository productDetailRepository;
+    @Autowired
+    private PromotionProductDetailRepository promotionProductDetailRepository;
 
     public static void main(String[] args) {
         System.out.println(System.currentTimeMillis());
@@ -45,7 +50,7 @@ public class PromotionServiceImpl implements PromotionService {
 
 
         request.setCode(new RandomNumberGenerator().randomToString("PR"));
-      Promotion promotion = Promotion.builder()
+        Promotion promotion = Promotion.builder()
                 .code(request.getCode())
                 .name(request.getName())
                 .value(request.getValue())
@@ -54,10 +59,12 @@ public class PromotionServiceImpl implements PromotionService {
                 .status(Status.DANG_SU_DUNG).build();
 
         promotionRepository.save(promotion);
-        for (IdProductDetail x: request.getIdProductDetails()) {
-            ProductDetail productDetail  = productDetailRepository.findById(x.getId()).get();
-            productDetail.setPromotion(promotionRepository.getById(promotion.getId()));
-            productDetailRepository.save(productDetail);
+        for (IdProductDetail x : request.getIdProductDetails()) {
+            PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
+            promotionProductDetail.setPromotion(promotion);
+            promotionProductDetail.setProductDetail(productDetailRepository.findById(x.getId()).get());
+            promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+            promotionProductDetailRepository.save(promotionProductDetail);
 
         }
         return promotion;
@@ -71,13 +78,56 @@ public class PromotionServiceImpl implements PromotionService {
         }
 
         Promotion promotion = optional.get();
-        promotion.setCode(request.getCode());
         promotion.setName(request.getName());
         promotion.setValue(request.getValue());
         promotion.setStartDate(request.getStartDate());
         promotion.setEndDate(request.getEndDate());
         promotion.setStatus(request.getStatus());
-        return promotionRepository.save(promotion);
+        promotionRepository.save(promotion);
+
+        PromotionByIdRespone promotionByIdRespone = promotionRepository.getByIdPromotion(request.getId());
+
+        for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
+            boolean foundInNew = false;
+
+
+            for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
+                if (idProductDetailNew.getId().contains(idProductDetailOld)) {
+                    foundInNew = true;
+                    break;
+                }
+            }
+
+            if (!foundInNew) {
+                PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
+                promotionProductDetail.setStatus(Status.KHONG_SU_DUNG);
+                promotionProductDetailRepository.save(promotionProductDetail);
+            }else{
+                PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
+                promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+                promotionProductDetailRepository.save(promotionProductDetail);
+            }
+        }
+
+        for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
+            boolean foundInOld = false;
+
+            for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
+                if (idProductDetailOld.contains(idProductDetailNew.getId())) {
+                    foundInOld = true;
+                    break;
+                }
+            }
+
+            if (!foundInOld) {
+                PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
+                promotionProductDetail.setPromotion(promotion);
+                promotionProductDetail.setProductDetail(productDetailRepository.findById(idProductDetailNew.getId()).get());
+                promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+                promotionProductDetailRepository.save(promotionProductDetail);
+            }
+        }
+        return promotion;
     }
 
 
@@ -106,5 +156,15 @@ public class PromotionServiceImpl implements PromotionService {
             promotionRepository.save(promotion);
         }
         return startPromotions;
+    }
+
+    @Override
+    public PromotionByIdRespone getByIdPromotion(String id) {
+        return promotionRepository.getByIdPromotion(id);
+    }
+
+    @Override
+    public List<PromotionByProDuctDetail> getByIdProductDetail(String id) {
+        return promotionRepository.getByIdProductDetail(id);
     }
 }

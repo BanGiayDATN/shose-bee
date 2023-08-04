@@ -31,6 +31,10 @@ public interface GetProductDetailByProduct {
 
     @Value("#{target.status}")
     String getStatus();
+    @Value("#{target.valuePromotion}")
+    String getValuePromotion();
+
+
     @Value("#{target.idPromotion}")
     String getIdPromotion();
 
