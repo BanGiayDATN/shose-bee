@@ -14,6 +14,7 @@ import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Promotion;
+import com.example.shose.server.entity.PromotionProductDetail;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.SizeProductDetail;
 import com.example.shose.server.entity.Sole;
@@ -42,6 +43,7 @@ import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
+import com.example.shose.server.repository.PromotionProductDetailRepository;
 import com.example.shose.server.repository.PromotionRepository;
 import com.example.shose.server.repository.SizeProductDetailRepository;
 import com.example.shose.server.repository.SizeRepository;
@@ -141,6 +143,8 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private SizeProductDetailRepository sizeProductDetailRepository;
+    @Autowired
+    private PromotionProductDetailRepository promotionProductDetailRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -468,6 +472,18 @@ public class DBGenerator implements CommandLineRunner {
                 .status(Status.KHONG_SU_DUNG).build();
         promotionRepository.save(promotion1);
         promotionRepository.save(promotion2);
+
+        PromotionProductDetail promotionProductDetail1 = PromotionProductDetail.builder().promotion(promotion1)
+                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
+        PromotionProductDetail promotionProductDetail2 = PromotionProductDetail.builder().promotion(promotion2)
+                .productDetail(productDetail2).status(Status.DANG_SU_DUNG).build();
+        PromotionProductDetail promotionProductDetail3 = PromotionProductDetail.builder().promotion(promotion1)
+                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
+
+        promotionProductDetailRepository.save(promotionProductDetail1);
+        promotionProductDetailRepository.save(promotionProductDetail2);
+        promotionProductDetailRepository.save(promotionProductDetail3);
+
 
         AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
         accountVoucherRepository.save(accountVoucher1);

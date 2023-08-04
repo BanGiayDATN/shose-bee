@@ -65,21 +65,25 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     List<ProductDetailReponse> getAll(@Param("req") FindProductDetailRequest req);
 
     @Query(value = """
-             SELECT 
-                               detail.id AS id,
-                               i.name AS image,
-                               p.code AS codeProduct,
-                               p.name AS nameProduct,
-                               detail.price AS price,
-                               detail.created_date AS created_date,
-                               detail.gender AS gender,
-                               detail.status AS status,
-                               detail.id_promotion AS idPromotion
-                        FROM product_detail detail
-                        JOIN product p on detail.id_product = p.id
-                        JOIN image i on detail.id = i.id_product_detail
-                        where p.id = :id
-            """,nativeQuery = true)
+                         SELECT 
+                                           detail.id AS id,
+                                           i.name AS image,
+                                           p.code AS codeProduct,
+                                           p.name AS nameProduct,
+                                           detail.price AS price,
+                                           detail.created_date AS created_date,
+                                           detail.gender AS gender,
+                                           detail.status AS status,
+                                           SUM(pr.value) AS valuePromotion
+                                    FROM product_detail detail
+                                    LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+                                    LEFT JOIN promotion pr on pr.id = ppd.id_promotion
+                                    JOIN product p on detail.id_product = p.id
+                                    JOIN image i on detail.id = i.id_product_detail
+                                    where p.id = :id 
+                                    group by detail.id
+                        """,nativeQuery = true)
     List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
 
+//    JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
 }
