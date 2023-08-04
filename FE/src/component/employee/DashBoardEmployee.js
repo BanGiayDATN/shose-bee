@@ -21,6 +21,7 @@ import {
   faUserGroup,
   faMap,
   faBoxesPacking,
+  faPercent,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
 
@@ -142,12 +143,18 @@ const DashBoardEmployee = ({ children }) => {
           </SubMenu>
           <Menu.Item
             key="8"
-            icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
+            icon={<FontAwesomeIcon icon={faPercent} style={{ color: "white" }}  />}
           >
             <Link to="/promotion-management">Khuyến Mại</Link>
           </Menu.Item>
           <Menu.Item
             key="9"
+            icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
+          >
+            <Link to="/voucher-management">Khuyến Mãi</Link>
+          </Menu.Item>
+          <Menu.Item
+            key="10"
             icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
           >
             <Link to="/address">Quản lý địa chỉ</Link>

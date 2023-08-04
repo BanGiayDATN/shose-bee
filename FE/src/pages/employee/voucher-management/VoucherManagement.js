@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import "./style-promotion.css";
+import React, { useEffect, useState } from "react";
+import "./style-voucher.css";
 import {
   Form,
   Input,
@@ -12,13 +12,13 @@ import {
   DatePicker,
 } from "antd";
 import { Link } from "react-router-dom";
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import {
-  CreatePromotion,
-  GetPromotion,
-  SetPromotion,
-  UpdatePromotion,
-} from "../../../app/reducer/Promotion.reducer";
+  CreateVoucher,
+  GetVoucher,
+  SetVoucher,
+  UpdateVoucher,
+} from "../../../app/reducer/Voucher.reducer";
 import {
   faEdit,
   faEye,
@@ -34,7 +34,7 @@ import utc from "dayjs/plugin/utc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 dayjs.extend(utc);
-const PromotionManagement = () => {
+const VoucherManagement = () => {
   const dispatch = useAppDispatch();
   const [list, setList] = useState([]);
   const [showDetail, setShowDetail] = useState(false);
@@ -43,9 +43,9 @@ const PromotionManagement = () => {
   const [formDataSearch, setFormDataSearch] = useState({});
   const [showData, setShowData] = useState(true);
   const [id, setId] = useState("");
+  const [adding, setAdding] = useState(false);
   const [formErrors, setFormErrors] = useState({});
-  const receiveFormData = useRef({});
-  const data = useAppSelector(GetPromotion);
+  const data = useAppSelector(GetVoucher);
 
   useEffect(() => {
     if (data != null) {
@@ -57,12 +57,13 @@ const PromotionManagement = () => {
     loadData();
   }, [showData, formDataSearch]);
 
- 
-
-  const closeModal = () => {
-    setModal(false);
-    setShowDetail(false);
-  };
+  const closeModal =()=>{
+    setModal(false)
+    setShowDetail(false)
+    setId("")
+    setFormData([])
+    setFormErrors([]);
+  }
 
   const resetFormSearch = () => {
     setFormDataSearch({});
@@ -92,10 +93,10 @@ const PromotionManagement = () => {
   };
 
   const loadData = () => {
-    PromotionApi.fetchAll(convertToLongSearch()).then(
+    VoucherApi.fetchAll(convertToLongSearch()).then(
       (res) => {
         setList(res.data.data);
-        dispatch(SetPromotion(res.data.data));
+        dispatch(SetVoucher(res.data.data));
         console.log(res.data.data);
       },
       (err) => {
@@ -103,22 +104,79 @@ const PromotionManagement = () => {
       }
     );
   };
-  const detailPromotion = (id) => {
-    PromotionApi.getOne(id).then(
+  const handleSubmit = (id) => {
+    console.log(formData);
+    const isFormValid =
+      formData.name &&
+      formData.value &&
+      formData.quantity &&
+      formData.startDate &&
+      formData.endDate &&
+      // formData.status &&
+      formData.startDate < formData.endDate;
+
+    if (!isFormValid) {
+      const errors = {
+        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
+        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
+        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+        quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
+        endDate: !formData.endDate
+          ? "Vui lòng chọn ngày kết thúc"
+          : formData.startDate >= formData.endDate
+          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+          : "",
+        // status: !formData.status ? "Vui lòng chọn trạng thái" : "",
+      };
+     setFormErrors(errors);
+      return;
+    }
+    
+   if(!id){
+    VoucherApi.create(convertToLong()).then((res) => {
+      dispatch(UpdateVoucher(res.data.data));
+
+      toast.success("Thêm thành công!", {
+        autoClose: 5000,
+      });
+    });
+    
+   }else{
+    VoucherApi.update(id, convertToLong()).then((res) => {
+      dispatch(UpdateVoucher(res.data.data));
+      setShowData(false);
+
+      toast.success("Cập nhập thành công!", {
+        autoClose: 5000,
+      });
+    });
+   }
+    setModal(false)
+    setShowData(true);
+    setFormData([]);
+    setFormErrors([]);
+    console.log(showData);
+  };
+
+  const detailVoucher = (id) => {
+    setId(id)
+    VoucherApi.getOne(id).then(
       (res) => {
-        const  getDetailPromotion = res.data.data
+        const voucherData = res.data.data;
         setFormData({
-          name: getDetailPromotion.name,
-          code:getDetailPromotion.code,
-          value: getDetailPromotion.value,
-          startDate: dayjs(getDetailPromotion.startDate),
-          endDate: dayjs(getDetailPromotion.endDate),
-          status: getDetailPromotion.status,
-          createdDate: dayjs(getDetailPromotion.createdDate),
-        })
+          code: voucherData.code,
+          name: voucherData.name,
+          value: voucherData.value,
+          quantity: voucherData.quantity,
+          startDate: dayjs(voucherData.startDate),
+          endDate: dayjs(voucherData.endDate),
+          status: voucherData.status,
+          createdDate: dayjs(voucherData.createdDate),
+        });
       },
       (err) => console.log(err)
     );
+    console.log(formData)
   };
 
   const handleInputChangeSearch = (name, value) => {
@@ -128,14 +186,24 @@ const PromotionManagement = () => {
     setFormData({ ...formData, [name]: value });
     setFormErrors({ ...formErrors, [name]: "" });
   };
-  const openUpdate = (id) => {
-    localStorage.setItem("id", id);
-  };
-  const openDetail = (id) => {
-    setModal(true);
-    detailPromotion(id);
-    setShowDetail(true);
-  };
+  const openUpdate = (id)=>{
+    setModal(true)
+    detailVoucher(id)
+    setShowDetail(false);
+    setAdding(false)
+    console.log(id);
+  }
+  const openAdd= ()=>{
+    setAdding(true)
+    setModal(true)
+    console.log(id);
+  }
+  const openDetail = (id)=>{
+    setModal(true)
+    detailVoucher(id)
+    setShowDetail(true)
+    console.log(id);
+  }
 
   const columns = [
     {
@@ -145,24 +213,28 @@ const PromotionManagement = () => {
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Mã khuyến mại",
+      title: "Mã khuyến mãi",
       dataIndex: "code",
       key: "code",
       sorter: (a, b) => a.code.localeCompare(b.code),
     },
     {
-      title: "Tên khuyến mại",
+      title: "Tên khuyến mãi",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
-
+    {
+      title: "Số lượng tồn",
+      dataIndex: "quantity",
+      key: "quantity",
+      sorter: (a, b) => a.quantity - b.quantity,
+    },
     {
       title: "Giá trị giảm",
       dataIndex: "value",
       key: "value",
       sorter: (a, b) => a.value - b.value,
-      render: (value) => `${value}%`,
     },
     {
       title: "Ngày bắt đầu",
@@ -213,45 +285,50 @@ const PromotionManagement = () => {
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          <Link to="/update-promotion-management">
-            <Button
-              type="primary"
-              title="Chỉnh sửa thể loại"
-              style={{ backgroundColor: "green", borderColor: "green" }}
-              onClick={() => openUpdate(record.id)}
-            >
-              <FontAwesomeIcon icon={faEdit} />
-            </Button>
-          </Link>
+          <Button
+            type="primary"
+            title="Chỉnh sửa thể loại"
+            style={{ backgroundColor: "green", borderColor: "green" }}
+            onClick={() => openUpdate(record.id)}
+          >
+            <FontAwesomeIcon icon={faEdit} />
+          </Button>
         </div>
       ),
     },
   ];
-
+ 
   const { Option } = Select;
   const fields = [
     {
       name: "code",
       type: "text",
-      label: "Mã khuyễn mại",
-      text: "mã khuyễn mại",
+      label: "Mã khuyễn mãi",
+      text: "mã khuyễn mãi",
       hidden: true,
       class: "input-form",
     },
     {
       name: "name",
       type: "text",
-      label: "Tên khuyễn mại",
-      text: "tên khuyễn mại",
+      label: "Tên khuyễn mãi",
+      text: "tên khuyễn mãi",
       class: "input-form",
     },
+   
     {
       name: "value",
       type: "number",
       label: "Giá trị giảm",
       text: "giá trị giảm",
       class: "input-form",
-      formatter: (value) => `${value}%`,
+    },
+    {
+      name: "quantity",
+      type: "number",
+      label: "Số lượng tồn",
+      text: "số lượng tồn",
+      class: "input-form",
     },
     {
       name: "startDate",
@@ -292,14 +369,14 @@ const PromotionManagement = () => {
     {
       name: "code",
       type: "text",
-      label: "Mã khuyễn mại",
+      label: "Mã khuyễn mãi",
       class: "input-search",
       placeholder: "Tìm kiếm",
     },
     {
       name: "name",
       type: "text",
-      label: "Tên khuyễn mại",
+      label: "Tên khuyễn mãi",
       class: "input-search",
       placeholder: "Tìm kiếm",
     },
@@ -309,7 +386,13 @@ const PromotionManagement = () => {
       label: "Giá trị giảm",
       class: "input-search",
       placeholder: "Tìm kiếm",
-      formatter: (value) => `${value}%`,
+    },
+    {
+      name: "quantity",
+      type: "number",
+      label: "Số lượng tồn",
+      class: "input-search",
+      placeholder: "Tìm kiếm",
     },
     {
       name: "status",
@@ -321,6 +404,7 @@ const PromotionManagement = () => {
       ],
       class: "input-search",
       placeholder: "Tìm kiếm",
+      
     },
     {
       name: "startDate",
@@ -336,12 +420,13 @@ const PromotionManagement = () => {
       class: "input-search",
       placeholder: "Tìm kiếm",
     },
+  
   ];
   return (
     <div className="promotion">
       <h1 className="title-promotion">
         {" "}
-        <FontAwesomeIcon icon={faKaaba} /> Quản lý khuyến mại
+        <FontAwesomeIcon icon={faKaaba} /> Quản lý khuyến mãi
       </h1>
 
       <div className="form-search">
@@ -365,7 +450,6 @@ const PromotionManagement = () => {
                         handleInputChangeSearch(field.name, value)
                       }
                       min="1"
-                      formatter={field.formatter}
                     />
                   )}
                   {field.type === "date" && (
@@ -377,7 +461,7 @@ const PromotionManagement = () => {
                       onChange={(value) => {
                         handleInputChangeSearch(field.name, value);
                       }}
-                      format="DD-MM-YYYY"
+                      format="DD-MM-YYYY" 
                     />
                   )}
 
@@ -435,11 +519,11 @@ const PromotionManagement = () => {
       </h3>
       <hr></hr>
       <div className="manager-promotion">
-        <Link to="/create-promotion-management">
-          <Button title="Thêm phiếu giảm giá" className="button-add">
+       
+          <Button title="Thêm phiếu giảm giá" onClick={openAdd} className="button-add">
             + Thêm
           </Button>
-        </Link>
+       
 
         <div className="promotion-table">
           <Table
@@ -455,9 +539,12 @@ const PromotionManagement = () => {
       </div>
 
       {/* modal */}
-      <Modal
+       <Modal
         title={
-          showDetail === true ? "Chi tiết khuyễn mại" : " Cập nhập khuyến mại"
+          showDetail === true
+            ? "Chi tiết khuyễn mãi" :
+            id ? "Cập nhập khuyến mãi" :
+             " Thêm khuyến mãi" 
         }
         visible={modal}
         onCancel={closeModal}
@@ -485,12 +572,13 @@ const PromotionManagement = () => {
             return (
               <div key={index}>
                 <Form.Item
-                  label={field.label}
+                  label={adding && field.label ==="Trạng thái" ?"" : field.label}
                   validateStatus={formErrors[field.name] ? "error" : ""}
                   help={formErrors[field.name] || ""}
                   style={{
-                    display: field.hidden && !showDetail ? "none" : "block",
+                    display: field.hidden && !showDetail  ? "none" : "block",
                   }}
+                
                 >
                   {field.type === "number" && (
                     <InputNumber
@@ -498,13 +586,14 @@ const PromotionManagement = () => {
                       readOnly={showDetail}
                       name={field.name}
                       placeholder={field.label}
-                      value={`${formData[field.name]}%` || ""}
+                      value={formData[field.name] || ""}
                       onChange={(value) => {
                         if (!showDetail) {
                           handleInputChange(field.name, value);
                         }
                       }}
                       min="1"
+                     
                     />
                   )}
                   {field.type === "date" &&
@@ -518,7 +607,7 @@ const PromotionManagement = () => {
                       />
                     ) : (
                       <DatePicker
-                        showTime
+                        showTime 
                         className={field.class}
                         readOnly={showDetail}
                         name={field.name}
@@ -528,42 +617,43 @@ const PromotionManagement = () => {
                           handleInputChange(field.name, value);
                         }}
                       />
+                     
                     ))}
-                  {field.type === "select" &&
-                    (showDetail ? (
+                     {field.type === "select" &&
+                    (showDetail  ? (
                       <Input
                         className={field.class}
                         readOnly={true}
                         name={field.name}
                         placeholder={field.label}
-                        value={
-                          formData[field.name] === "DANG_SU_DUNG"
-                            ? "Đang sử dụng"
-                            : "Không sử dụng"
-                        }
+                        value={formData[field.name] === "DANG_SU_DUNG" ? "Đang sử dụng": "Không sử dụng"}
                       />
                     ) : (
+                    
+                     !adding && (
                       <Select
-                        className={field.class}
-                        readOnly={showDetail}
-                        name={field.name}
-                        placeholder={field.label}
-                        value={formData[field.name] || ""}
-                        onChange={(value) => {
-                          if (!showDetail) {
-                            handleInputChange(field.name, value);
-                          }
-                        }}
-                      >
-                        <Option value="">Chọn trạng thái</Option>
-                        {field.options.map((option, optionIndex) => (
-                          <Option key={optionIndex} value={option.value}>
-                            {option.label}
-                          </Option>
-                        ))}
-                      </Select>
+                      className={field.class}
+                      readOnly={showDetail}
+                      name={field.name}
+                      placeholder={field.label}
+                      value={formData[field.name] || ""}
+                      onChange={(value) => {
+                        if (!showDetail) {
+                          handleInputChange(field.name, value);
+                        }
+                      }}
+                    >
+                      {field.options.map((option, optionIndex) => (
+                        <Option key={optionIndex} value={option.value}>
+                          {option.label}
+                        </Option>
+                      ))}
+                    </Select>
+                     )
+                     
+                     
                     ))}
-
+                 
                   {field.type !== "date" &&
                     field.type !== "select" &&
                     field.type !== "number" && (
@@ -587,11 +677,32 @@ const PromotionManagement = () => {
 
           <Form.Item label=" ">
             <Button onClick={closeModal}>Hủy</Button>
+            {showDetail === false ? (
+              <Popconfirm
+                title="Thông báo"
+                description={id ? "Bạn có chắc chắn muốn cập nhập không ?" : "Bạn có chắc chắn muốn thêm không ?"}
+                onConfirm={() => {
+                  handleSubmit(id);
+                }}
+                okText="Có"
+                cancelText="Không"
+              >
+                <Button
+                  className="button-submit"
+                  key="submit"
+                  title=  {id ? " Cập nhập" : "Thêm"}
+                >
+                {id ? " Cập nhập" : "Thêm"}
+                </Button>
+              </Popconfirm>
+            ) : (
+              ""
+            )}
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal> 
     </div>
   );
 };
 
-export default PromotionManagement;
+export default VoucherManagement;
