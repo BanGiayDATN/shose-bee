@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import Item from "antd/es/list/Item";
 
 const initialState = [];
 
@@ -7,7 +6,7 @@ const sizeSlice = createSlice({
   name: "size",
   initialState,
   reducers: {
-    SetBrand: (state, action) => {
+    SetSize: (state, action) => {
       return action.payload;
     },
     CreateSize: (state, action) => {
@@ -39,6 +38,6 @@ const sizeSlice = createSlice({
   },
 });
 
-export const { SetBrand, CreateSize, UpdateSize } = sizeSlice.actions;
+export const { SetSize, CreateSize, UpdateSize } = sizeSlice.actions;
 export default sizeSlice.reducer;
 export const GetSize = (state) => state.size;

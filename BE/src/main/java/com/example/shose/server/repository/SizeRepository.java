@@ -3,12 +3,15 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.size.FindSizeRequest;
 import com.example.shose.server.dto.response.SizeResponse;
 import com.example.shose.server.entity.Size;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.crypto.spec.OAEPParameterSpec;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Nguyễn Vinh
@@ -43,4 +46,9 @@ public interface SizeRepository extends JpaRepository<Size, String> {
 
     @Query("SELECT s FROM Size s WHERE s.name =:name AND s.id <> :id")
     Size getByNameExistence(@Param("name") String name, @Param("id") String id);
+
+    @Query("SELECT s FROM Size s ORDER BY s.name ASC ")
+    List<Size> findAll();
+
+    Optional<Size> findByName(Integer name);
 }

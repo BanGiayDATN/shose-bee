@@ -22,6 +22,8 @@ public class CreateBillOfflineRequest {
 
     private String phoneNumber;
 
+    private String idUser;
+
     private String address;
 
     private String userName;

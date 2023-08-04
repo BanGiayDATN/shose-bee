@@ -31,7 +31,7 @@ const ModalDeatailAddress = ({ visible, id, onCancel }) => {
 
   return (
     <Modal
-      title="Cập nhật địa chỉ"
+      title="Thông tin địa chỉ"
       visible={visible}
       onCancel={handleCancel}
       footer={[null]}
@@ -42,11 +42,11 @@ const ModalDeatailAddress = ({ visible, id, onCancel }) => {
         </Form.Item>
 
         <Form.Item label="Quận/Huyện">
-          <Input value={address != null ? address.city : null} readOnly />
+          <Input value={address != null ? address.district : null} readOnly />
         </Form.Item>
 
         <Form.Item label="Xã/Phường">
-          <Input value={address != null ? address.country : null} readOnly />
+          <Input value={address != null ? address.ward : null} readOnly />
         </Form.Item>
 
         <Form.Item label="Số nhà/Ngõ/Đường">

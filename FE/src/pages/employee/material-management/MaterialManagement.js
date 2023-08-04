@@ -14,10 +14,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
 import {
-  CreateMaterail,
   GetMaterail,
   SetMaterial,
-  UpdateMaterail,
 } from "../../../app/reducer/Materail.reducer";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
 import ModalCreateMaterial from "./modal/ModalCreateManterial";
@@ -168,7 +166,7 @@ const MaterialManagement = () => {
           <Button
             type="primary"
             title="Chỉnh sửa thể loại"
-            style={{ backgroundColor: "green", borderColor: "green" }}
+            style={{ backgroundColor: "#0099FF", borderColor: "#0099FF" }}
             onClick={() => handleUpdate(record.id)}
           >
             <FontAwesomeIcon icon={faEdit} />
@@ -196,7 +194,7 @@ const MaterialManagement = () => {
               <Input
                 placeholder="Tìm kiếm"
                 type="text"
-                style={{ width: "50%", marginLeft: "10px" }}
+                style={{ width: "50%", marginLeft: "10px", height: "40px" }}
                 name="keyword"
                 value={searchMaterail.keyword}
                 onChange={handleKeywordChange}
@@ -243,11 +241,12 @@ const MaterialManagement = () => {
           <span style={{ fontSize: "18px", fontWeight: "500" }}>
             Danh sách chất liệu
           </span>
-          <div style={{ marginLeft: "auto" }}>
+          <div style={{ marginLeft: "auto", marginRight: "3%" }}>
             <Button
               type="primary"
               icon={<FontAwesomeIcon icon={faPlus} />}
               onClick={() => setModalVisible(true)}
+              style={{ height: "40px" }}
             >
               Thêm
             </Button>

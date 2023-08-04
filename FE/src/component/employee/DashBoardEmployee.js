@@ -97,19 +97,9 @@ const DashBoardEmployee = ({ children }) => {
               />
             }
           >
-            <Link to="/product-management">Quản Lý Thu Chi</Link>
+            <Link to="/bill-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
-          <Menu.Item
-            key="5"
-            icon={
-              <FontAwesomeIcon
-                icon={faMoneyBill1Wave}
-                style={{ color: "white" }}
-              />
-            }
-          >
-            <Link to="/bill-management">Quản Lý Hóa đơn</Link>
-          </Menu.Item>
+         
           <SubMenu
             key="6"
             icon={

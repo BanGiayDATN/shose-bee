@@ -1,7 +1,10 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
+import com.example.shose.server.infrastructure.constant.Status;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -31,9 +34,16 @@ public class Address extends PrimaryEntity {
 
     private String province;
 
-    private String werd;
+    private String ward;
+
+    private Integer provinceId;
 
     private Integer toDistrictId;
+
+    private String wardCode;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @ManyToOne
     @JoinColumn(name = "id_user",referencedColumnName = "id")

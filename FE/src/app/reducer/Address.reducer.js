@@ -15,9 +15,10 @@ const addressSlice = createSlice({
         stt: state.length + 1,
         id: data.id,
         line: data.line,
-        city: data.city,
+        district: data.district,
         province: data.province,
-        country: data.country,
+        ward: data.ward,
+        status: data.status,
         createdDate: data.createdDate,
         lastModifiedDate: data.startTime,
         userId: data.userId,
@@ -32,9 +33,10 @@ const addressSlice = createSlice({
       console.log(index);
       if (index !== -1) {
         state[index].line = updatedAddress.line;
-        state[index].city = updatedAddress.city;
+        state[index].district = updatedAddress.district;
         state[index].province = updatedAddress.province;
-        state[index].country = updatedAddress.country;
+        state[index].ward = updatedAddress.ward;
+        state[index].status = updatedAddress.status;
         state[index].createdDate = updatedAddress.createdDate;
         state[index].lastModifiedDate = updatedAddress.lastModifiedDate;
       }

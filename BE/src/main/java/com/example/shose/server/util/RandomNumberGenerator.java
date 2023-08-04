@@ -21,6 +21,14 @@ public class RandomNumberGenerator {
         return stringBuilder.toString();
     }
 
+    public  int generateRandom6DigitNumber() {
+        Random random = new Random();
+        int minRange = 100000; // Số nhỏ nhất có 6 chữ số
+        int maxRange = 999999; // Số lớn nhất có 6 chữ số
+
+        return random.nextInt(maxRange - minRange + 1) + minRange;
+    }
+
     public static void main(String[] args) {
 
 

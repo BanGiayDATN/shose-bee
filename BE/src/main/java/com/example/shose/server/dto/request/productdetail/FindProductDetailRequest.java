@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 @Getter
 public class FindProductDetailRequest extends PageableRequest {
 
+    private String idProduct;
+
     private String color;
 
     private String brand;
@@ -21,7 +23,7 @@ public class FindProductDetailRequest extends PageableRequest {
 
     private String product;
 
-    private int sizeProduct;
+    private int size;
 
     private String sole;
 

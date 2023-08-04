@@ -31,6 +31,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<String> fillAllByName(String name) {
+        return productRepository.findAllByName(name);
+    }
+
+    @Override
     public Product create(CreateProductRequest req) {
         Product checkCode = productRepository.getOneByCode(req.getCode());
         if (checkCode != null) {

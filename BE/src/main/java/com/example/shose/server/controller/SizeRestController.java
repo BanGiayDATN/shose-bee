@@ -34,6 +34,16 @@ public class SizeRestController {
         return new ResponseObject(sizeService.findAll(req));
     }
 
+    @GetMapping("/list")
+    public ResponseObject getAll() {
+        return new ResponseObject(sizeService.getAll());
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseObject getOneByName(@PathVariable("name") int name) {
+        return new ResponseObject(sizeService.getOneByName(name));
+    }
+
     @GetMapping("/{id}")
     public ResponseObject getOneById(@PathVariable("id") String id) {
         return new ResponseObject(sizeService.getOneById(id));

@@ -37,7 +37,14 @@ public interface ProductDetailReponse {
     @Value("#{target.status}")
     String getStatus();
 
-    @Value("#{target.total_quantity}")
-    Integer getTotalQuantity();
+    @Value("#{target.quantity}")
+    Integer getQuantity();
+
+    @Value("#{target.color}")
+    String getColor();
+
+    @Value("#{target.size}")
+    String getSize();
+
 
 }

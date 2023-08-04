@@ -28,6 +28,7 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
+<<<<<<< HEAD
 import {
   CreateProduct,
   SetProduct,
@@ -35,7 +36,12 @@ import {
 } from "../../../app/reducer/Product.reducer";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
 import { ProductApi } from "../../../api/employee/product/product.api";
+=======
+import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+>>>>>>> develop
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { GetProductDetail, SetProductDetail } from "../../../app/reducer/ProductDetail.reducer";
+import { ProductApi } from "../../../api/employee/product/product.api";
 
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
@@ -49,11 +55,11 @@ function CreateVoucherManagement() {
   const [modal, setModal] = useState(false);
   const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
-  const datas = useAppSelector(GetProduct);
+  const datas = useAppSelector(GetProductDetail);
 
   useEffect(() => {
     if (datas != null) {
-      SetProduct(datas);
+      SetProductDetail(datas);
     }
   }, [datas]);
 
@@ -75,8 +81,17 @@ function CreateVoucherManagement() {
   }, [selectedRowKeysDetail]);
 
   useEffect(() => {
+<<<<<<< HEAD
     for (const key of selectedRowKeys) {
       getProdutDetailByproduct(key);
+=======
+    if (detailProduct) {
+      for (const key of selectedRowKeys) {
+        getProdutDetailByproduct(key);
+      }
+      setListProductDetail(updatedListProductDetail);
+    } else {
+>>>>>>> develop
     }
     setListProductDetail(updatedListProductDetail);
 
@@ -91,7 +106,7 @@ function CreateVoucherManagement() {
     ProductApi.getProductUse().then(
       (res) => {
         setList(res.data.data);
-        dispatch(SetProduct(res.data.data));
+        // dispatch(SetProductDetail(res.data.data));
       },
       (err) => {
         console.log(err);
@@ -190,6 +205,7 @@ function CreateVoucherManagement() {
     setListProductDetail([]);
     onSelectChange("");
     onSelectChangeDetail("");
+<<<<<<< HEAD
     setSelectedRowKeysDetail("");
    
   };
@@ -208,6 +224,12 @@ function CreateVoucherManagement() {
       }
     );
     setModal(true);
+=======
+
+    // for (const key of selectedRowKeysDetail) {
+    //   getProdutDetailByproduct(key);
+    // }
+>>>>>>> develop
   };
   const fields = [
     {
@@ -410,8 +432,12 @@ function CreateVoucherManagement() {
       dataIndex: "statusPromotion",
       key: "statusPromotion",
       render: (text) => {
+<<<<<<< HEAD
         const genderClass =
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+=======
+        const genderClass = text ? "trangthai-sd" : "trangthai-ksd";
+>>>>>>> develop
         return (
           <button className={`gender ${genderClass}`}>
             {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
@@ -419,7 +445,10 @@ function CreateVoucherManagement() {
         );
       },
     },
+<<<<<<< HEAD
   
+=======
+>>>>>>> develop
   ];
   const updatedList = list.map((item, index) => ({
     ...item,

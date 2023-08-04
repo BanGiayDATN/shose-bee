@@ -3,6 +3,7 @@ package com.example.shose.server.controller;
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.FindAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.service.AddressService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,9 @@ public class AddressRestController {
     public ResponseObject view(@ModelAttribute final FindAddressRequest request) {
         return new ResponseObject(addressService.getList(request));
     }
-    @GetMapping("/list")
-    public ResponseObject view() {
-        return new ResponseObject(addressService.getAll());
+    @GetMapping("/address-user/{idUser}")
+    public ResponseObject view(@PathVariable("idUser") String idUser) {
+        return new ResponseObject(addressService.findAddressByUserId(idUser));
     }
 
     @GetMapping("/{id}")
@@ -61,6 +62,11 @@ public class AddressRestController {
     @GetMapping("/simple-user")
     public ResponseObject getAllSimpleEntityEmployess() {
         return new ResponseObject(addressService.getAllSimpleEntityUser());
+    }
+
+    @GetMapping("/address-user-status/{id}")
+    public ResponseObject getAddressByUserIdAndStatus(@PathVariable("id") String id) {
+        return new ResponseObject(addressService.getAddressByUserIdAndStatus(id, Status.DANG_SU_DUNG));
     }
 
 }

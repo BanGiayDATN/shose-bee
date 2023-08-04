@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider } from "antd";
+import { Input, Button, Select, Table, Slider, Image, Row, Col } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-account.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetAccount, SetAccount } from "../../../app/reducer/Account.reducer";
+import { GetAddress, SetAddress } from "../../../app/reducer/Address.reducer";
+
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,9 +18,15 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
+import { AddressApi } from "../../../api/customer/address/address.api";
+
 const { Option } = Select;
 
 const AccountManagement = () => {
+  const [listAddress, setListAddress] = useState([]);
+  const [listProvinceSearch, setListProvinceSearch] = useState([]);
+  const [listDistrictsSearch, setListDistrictsSearch] = useState([]);
+  const [listWardSearch, setListWardSearch] = useState([]);
   const [initialAccountList, setInitialAccountList] = useState([]);
   const [listaccount, setListaccount] = useState([]);
   const [initialStartDate, setInitialStartDate] = useState(null);
@@ -31,15 +39,19 @@ const AccountManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [addressId, setAddressId] = useState("");
+  const [addressIdDeatail, setAddressIdDetail] = useState("");
 
   // Lấy mảng redux ra
-  const data = useAppSelector(GetAccount);
+  const data = useAppSelector(GetAccount, GetAddress);
   useEffect(() => {
     if (data != null) {
       setListaccount(data);
     }
+    if (data != null) {
+      setListAddress(data);
+    }
   }, [data]);
-
   // Search account
   const handleInputChangeSearch = (name, value) => {
     setSearchAccount((prevSearchAccount) => ({
@@ -71,6 +83,16 @@ const AccountManagement = () => {
     });
   }, [searchAccount.status]);
 
+  const loadDataProvince = () => {
+    AddressApi.fetchAllProvince().then(
+      (res) => {
+        setListProvinceSearch(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
   const handleSubmitSearch = (event) => {
     event.preventDefault();
     const { keyword, status } = searchAccount;
@@ -142,14 +164,14 @@ const AccountManagement = () => {
     });
     setStartDate(initialStartDate);
     setEndDate(initialEndDate);
-    filterByDateOfBirthRange(initialStartDate, initialEndDate);
+
     setListaccount(
       initialAccountList.map((account, index) => ({
         ...account,
         stt: index + 1,
       }))
     );
-    loadData();
+    setAgeRange([0, 100]);
   };
 
   const loadData = () => {
@@ -158,6 +180,7 @@ const AccountManagement = () => {
         const accounts = res.data.data.map((account, index) => ({
           ...account,
           stt: index + 1,
+          province: listProvinceSearch[index]?.name,
         }));
         setListaccount(res.data.data);
         setInitialAccountList(accounts);
@@ -178,22 +201,10 @@ const AccountManagement = () => {
   const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
-  const handleCancel = () => {
-    setModalVisible(false);
-    setModalVisibleUpdate(false);
-    setModalVisibleDetail(false);
-  };
-
   const handleViewDetail = (id) => {
     setIdDetail(id);
     setModalVisibleDetail(true);
   };
-
-  const handleUpdate = (id) => {
-    setIdUpdate(id);
-    setModalVisibleUpdate(true);
-  };
-
   const handleAgeRangeChange = (value) => {
     setAgeRange(value);
   };
@@ -203,12 +214,19 @@ const AccountManagement = () => {
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
   }, [ageRange, initialAccountList]);
+
   const columns = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
       sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "avata",
+      key: "avata",
+      render: (text) => <img src={text} alt="Ảnh " style={{ width: "60px" }} />,
     },
     {
       title: "Tên nhân viên",
@@ -234,6 +252,13 @@ const AccountManagement = () => {
       key: "dateOfBirth",
       sorter: (a, b) => a.dateOfBirth - b.dateOfBirth,
       render: (date) => moment(date).format("DD-MM-YYYY"),
+    },
+    {
+      title: "Giới tính",
+      dataIndex: "gender",
+      key: "gender",
+      sorter: (a, b) => a.gender.localeCompare(b.gender),
+      render: (gender) => (gender ? "Nam" : "Nữ"),
     },
     {
       title: "Trạng Thái",
@@ -291,40 +316,46 @@ const AccountManagement = () => {
         <hr />
         <div className="content_ac">
           <div className="content-wrapper-ac">
-            <div>
-              <Input
-                style={{
-                  marginBottom: "20px",
-                  marginLeft: "18%",
-                  width: "300px",
-                  display: "flex",
-                }}
-                placeholder="Tìm kiếm"
-                type="text"
-                name="keyword"
-                value={searchAccount.keyword}
-                onChange={handleKeywordChange}
-              />
-              <label>Trạng thái:</label>
-              <Select
-                style={{
-                  marginLeft: "5px",
-                  width: "300px",
-                }}
-                name="status"
-                value={searchAccount.status}
-                onChange={handleStatusChange}
-              >
-                <Option value="">Tất cả</Option>
-                <Option value="DANG_SU_DUNG">Kích hoạt</Option>
-                <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
-              </Select>
-            </div>
-            <div>
-              <div className="date-range">
-                <label className="date-label">Ngày sinh:</label>
+            <Row>
+              <Col span={24} style={{ marginBottom: "10px" }}>
+                <label>Tìm kiếm:</label>
                 <Input
-                  style={{ width: "200px" }}
+                  style={{
+                    width: "300px",
+                    marginLeft: "19px",
+                    marginBottom: "20px",
+                  }}
+                  placeholder="Tìm kiếm tên / sđt / email... "
+                  type="text"
+                  name="keyword"
+                  value={searchAccount.keyword}
+                  onChange={handleKeywordChange}
+                />
+              </Col>
+              <Col span={24}>
+                <label>Trạng thái:</label>
+                <Select
+                  style={{ width: "300px", marginLeft: "15px" }}
+                  name="status"
+                  value={searchAccount.status}
+                  onChange={handleStatusChange}
+                >
+                  <Option value="">Tất cả</Option>
+                  <Option value="DANG_SU_DUNG">Kích hoạt</Option>
+                  <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
+                </Select>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col span={24}>
+                <label>Ngày sinh:</label>
+                <Input
+                  style={{
+                    width: "200px",
+                    marginRight: "15px",
+                    marginLeft: "15px",
+                  }}
                   type="date"
                   value={startDate || initialStartDate}
                   onChange={handleStartDateChange}
@@ -335,11 +366,18 @@ const AccountManagement = () => {
                   value={endDate || initialEndDate}
                   onChange={handleEndDateChange}
                 />
-              </div>
-              <div className="age">
+              </Col>
+
+              <Col
+                span={24}
+                style={{
+                  display: "flex",
+                  marginTop: "30px",
+                }}
+              >
                 <label>Khoảng tuổi:</label>
                 <Slider
-                  style={{ width: "400px" }}
+                  style={{ width: "400px", marginLeft: "15px" }}
                   range
                   min={0}
                   max={100}
@@ -347,11 +385,10 @@ const AccountManagement = () => {
                   value={ageRange}
                   onChange={handleAgeRangeChange}
                 />
-              </div>
-            </div>
+              </Col>
+            </Row>
           </div>
         </div>
-
         <div>
           <div className="box_btn_filter">
             <Button

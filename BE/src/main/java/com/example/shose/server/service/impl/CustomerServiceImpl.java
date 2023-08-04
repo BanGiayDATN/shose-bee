@@ -1,35 +1,59 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.request.address.CreateAddressRequest;
+import com.example.shose.server.dto.request.address.UpdateAddressRequest;
+import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
+import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.entity.Account;
+import com.example.shose.server.entity.Address;
+import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.User;
+import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
+import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.UserReposiory;
+import com.example.shose.server.service.AddressService;
 import com.example.shose.server.service.CustomerService;
+import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * @author Phuong Oanh
  */
 @Service
 public class CustomerServiceImpl implements CustomerService {
+
     @Autowired
     private UserReposiory userReposiory;
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private UploadImageToCloudinary imageToCloudinary;
+
+    @Autowired
+    private SendEmailService sendEmailService;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
 
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
@@ -42,62 +66,109 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public User create(CreateEmployeeRequest req) {
-        List<Account> accounts = accountRepository.findAll();
-        Optional<Account> adminAccount = accounts.stream()
-                .filter(account -> account.getRoles().equals(Roles.ADMIN))
-                .findFirst();
-        Optional<Account> EmAccount = accounts.stream()
-                .filter(account -> account.getRoles().equals(Roles.NHAN_VIEN))
-                .findFirst();
-        if (!adminAccount.isPresent()) {
-            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
+    public User create(CreateCustomerRequest request,
+                       CreateAddressRequest addressRequest,
+                       MultipartFile file) {
+        // check xem có tồn tại sdt không => Khách hàng => roles là USER
+        User checkUser = userReposiory.getOneUserByPhoneNumber(request.getPhoneNumber());
+        if (checkUser != null) {
+            throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
         }
-        if (!EmAccount.isPresent()) {
-            throw new RestApiException(Message.ACCOUNT_NOT_PERMISSION);
-        }
-        Account employeeAccount = new Account();
-        employeeAccount.setEmail(req.getEmail());
-        employeeAccount.setPassword(req.getPassword());
-        employeeAccount.setRoles(Roles.USER);
 
+        // xử lý ảnh
+        String urlImage = imageToCloudinary.uploadImage(file);
+
+        //  thông tin user
         User user = User.builder()
-                .fullName(req.getFullName())
-                .phoneNumber(req.getPhoneNumber())
-                .email(req.getEmail())
-                .status(Status.DANG_SU_DUNG)
-                .dateOfBirth(req.getDateOfBirth())
-                .points(req.getPoints())
+                .fullName(request.getFullName())
+                .phoneNumber(request.getPhoneNumber())
+                .email(request.getEmail())
+                .status(request.getStatus())
+                .dateOfBirth(request.getDateOfBirth())
+                .gender(request.getGender())
+                .points(0) // điểm khi tạo mới max định 0
+                .avata(urlImage) // đường dẫn ảnh từ url
                 .build();
+        userReposiory.save(user); // add user vào database
+        User addressUser = userReposiory.getById(user.getId());
 
-        user = userReposiory.save(user);
-        employeeAccount.setUser(user);
-        employeeAccount = accountRepository.save(employeeAccount);
+        // tạo tài khoản cho khách hàng
+        Account account = new Account();
+        account.setUser(user);
+        account.setRoles(Roles.USER);
+        account.setEmail(user.getEmail());
+        account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
+        account.setStatus(Status.DANG_SU_DUNG);
+        accountRepository.save(account); // add tài khoản vào database
+
+        //  địa chỉ user
+        Address address = new Address();
+        address.setStatus(Status.DANG_SU_DUNG);
+        address.setWard(addressRequest.getWard());
+        address.setToDistrictId(addressRequest.getToDistrictId());
+        address.setProvinceId(addressRequest.getProvinceId());
+        address.setWardCode(addressRequest.getWardCode());
+        address.setLine(addressRequest.getLine());
+        address.setProvince(addressRequest.getProvince());
+        address.setDistrict(addressRequest.getDistrict());
+        address.setUser(addressUser); // add địa chỉ vào database
+        addressRepository.save(address);
+
+
+        // gửi email
+        String subject = "Xin chào, bạn đã đăng ký thành công ";
+        sendEmailService.sendEmailPasword(account.getEmail(), subject, account.getPassword());
+
         return user;
     }
 
+
     @Override
     @Transactional
-    public User update(UpdateEmployeeRequest req) {
-        Optional<User> optional = userReposiory.findById(req.getId());
-        if (!optional.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
-        User user = optional.get();
-        user.setFullName(req.getFullName());
-        user.setPhoneNumber(req.getPhoneNumber());
-        user.setDateOfBirth(req.getDateOfBirth());
-        user.setEmail(req.getEmail());
-        user.setPoints(req.getPoints());
-        user.setStatus(req.getStatus());
+    public User update(UpdateCustomerRequest request,
+                       UpdateAddressRequest addressRequest,
+                       MultipartFile file) {
+        // check xem có tồn tại sdt không => Khách hàng => roles là USER
+//        User checkUser = userReposiory.getOneUserByPhoneNumber(request.getPhoneNumber());
+//        if (checkUser != null) {
+//            throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
+//        }
 
-        if (req.getPassword() != null) {
-            accountRepository.updatePasswordByUserId(user.getId(), req.getPassword());
-        }
-        if (req.getEmail() != null) {
-            accountRepository.updateEmailByUserId(user.getId(), req.getEmail());
-        }
-        return userReposiory.save(user);
+        // xử lý ảnh
+        String urlImage = imageToCloudinary.uploadImage(file);
+
+        //  thông tin user
+        User user = new User();
+        user.setId(request.getId());
+        user.setFullName(request.getFullName());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setEmail(request.getEmail());
+        user.setGender(request.getGender());
+        user.setStatus(request.getStatus());
+        user.setPoints(0);
+        user.setAvata(urlImage);
+        user.setDateOfBirth(request.getDateOfBirth());
+
+        userReposiory.save(user); // update user vào database
+
+        //  địa chỉ user
+        Address addressUser=  addressRepository.getAddressByUserIdAndStatus(user.getId(), Status.DANG_SU_DUNG);
+        Address address = new Address();
+        address.setId(addressUser.getId());
+        address.setWard(addressRequest.getWard());
+        address.setToDistrictId(addressRequest.getToDistrictId());
+        address.setProvinceId(addressRequest.getProvinceId());
+        address.setWardCode(addressRequest.getWardCode());
+        address.setLine(addressRequest.getLine());
+        address.setProvince(addressRequest.getProvince());
+        address.setStatus(Status.DANG_SU_DUNG);
+        address.setDistrict(addressRequest.getDistrict());
+        address.setUser(user);
+        addressRepository.save(address);
+
+
+        return user;
+
     }
 
 

@@ -28,6 +28,9 @@ public interface BillDetailResponse {
     @Value("#{target.id}")
     String getId();
 
+    @Value("#{target.image}")
+    String getImage();
+
     @Value("#{target.code_product}")
     String getCodeProduct();
 
@@ -55,6 +58,9 @@ public interface BillDetailResponse {
     @Value("#{target.quantity}")
     Integer getQuantity();
 
-    @Value("#{target.quantity_product_detail}")
-    Integer getQuantityProductDetail();
+    @Value("#{target.max_quantity}")
+    Integer getMaxQuantity();
+
+    @Value("#{target.status_bill}")
+    Integer getStatus();
 }

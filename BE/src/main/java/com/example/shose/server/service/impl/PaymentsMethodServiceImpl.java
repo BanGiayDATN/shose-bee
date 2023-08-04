@@ -1,12 +1,14 @@
 package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
+import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
@@ -16,6 +18,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +36,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     private BillHistoryRepository billHistoryRepository;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private BillRepository billRepository;
 
     private FormUtils formUtils = new FormUtils();
@@ -47,23 +53,39 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public PaymentsMethod create(String idBill, CreatePaymentsMethodRequest request) {
+    public PaymentsMethod create(String idBill, String idEmployees, CreatePaymentsMethodRequest request) {
         Optional<Bill> bill = billRepository.findById(idBill);
+        Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
-        bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-        BillHistory billHistory = new BillHistory();
-        billHistory.setBill(bill.get());
-        billHistory.setStatusBill(bill.get().getStatusBill());
-        billHistory.setActionDescription(request.getActionDescription());
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        if(bill.get().getStatusBill() == StatusBill.DA_HUY ){
+            throw new RestApiException(Message.NOT_PAYMENT);
+        }
+        BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
+        if((bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN || bill.get().getStatusBill() != StatusBill.KHONG_TRA_HANG || bill.get().getStatusBill() != StatusBill.TRA_HANG)  && bill.get().getTotalMoney().compareTo(payment) >= 0){
 
-        billHistoryRepository.save(billHistory);
-        billRepository.save(bill.get());
-
+            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill.get());
+            billHistory.setStatusBill(StatusBill.DA_THANH_TOAN);
+            billHistory.setActionDescription(request.getActionDescription());
+            billHistory.setEmployees(account.get());
+            billHistoryRepository.save(billHistory);
+            billRepository.save(bill.get());
+        }
         PaymentsMethod paymentsMethod = formUtils.convertToObject(PaymentsMethod.class, request);
         paymentsMethod.setBill(bill.get());
         paymentsMethod.setDescription(request.getActionDescription());
+        paymentsMethod.setEmployees(account.get());
         return paymentsMethodRepository.save(paymentsMethod);
+    }
+
+    @Override
+    public BigDecimal sumTotalMoneyByIdBill(String idBill) {
+        return paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
     }
 }

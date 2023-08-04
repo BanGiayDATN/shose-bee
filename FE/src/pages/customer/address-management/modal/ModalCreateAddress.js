@@ -37,9 +37,10 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
             dispatch(CreateAddress(res.data.data));
             toast.success("Thêm thành công");
             onCancel();
+            form.resetFields();
           })
           .catch((error) => {
-            toast.error("Thêm thất bại");
+            toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
       })
@@ -55,7 +56,6 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
     AddressApi.fetchAllProvince().then(
       (res) => {
         setListProvince(res.data.data);
-        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -64,18 +64,23 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
   };
 
   const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
       }
     );
-    console.log(listDistricts);
   };
 
-  const handleCityChange = (value, valueDistrict) => {
+  const handleDistrictChange = (value, valueDistrict) => {
+    form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
     });
+  };
+
+  const handleWardChange = (value, valueWard) => {
+    form.setFieldsValue({ wardCode: valueWard.valueWard });
   };
 
   useEffect(() => {
@@ -101,7 +106,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "7d27cbd0-6569-48f8-8286-378b956dab26",
+          userId: "2dd6dc5e-ad8d-473b-a2aa-23f3477a6394",
         }}
       >
         <Form.Item
@@ -127,11 +132,11 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
 
         <Form.Item
           label="Quận/Huyện"
-          name="city"
+          name="district"
           rules={[{ required: true, message: "Vui lòng chọn Quận/Huyện" }]}
         >
-          <Select defaultValue="" onChange={handleCityChange}>
-            <Option value="">--Chọn Quận/Huyện--</Option>
+          <Select defaultValue=" " onChange={handleDistrictChange}>
+            <Option value=" ">--Chọn Quận/Huyện--</Option>
             {listDistricts?.map((item) => {
               return (
                 <Option
@@ -148,14 +153,18 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
 
         <Form.Item
           label="Xã/Phường"
-          name="country"
+          name="ward"
           rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
         >
-          <Select defaultValue="">
+          <Select defaultValue="" onChange={handleWardChange}>
             <Option value="">--Chọn Xã/Phường--</Option>
             {listWard?.map((item) => {
               return (
-                <Option key={item.WardCode} value={item.WardName}>
+                <Option
+                  key={item.WardCode}
+                  value={item.WardName}
+                  valueWard={item.WardCode}
+                >
                   {item.WardName}
                 </Option>
               );
@@ -172,8 +181,23 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         >
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
+        <Form.Item label="Trạng thái" name="status">
+          <Select>
+            <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
+            <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+          </Select>
+        </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="userId" hidden>
-          <Input defaultValue="7d27cbd0-6569-48f8-8286-378b956dab26" disabled />
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="toDistrictId" hidden>
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="provinceId" hidden>
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="wardCode" hidden>
+          <Input disabled />
         </Form.Item>
       </Form>
     </Modal>

@@ -67,7 +67,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.date_of_birth AS dateOfBirth,
                 u.avata AS avata,
                 u.email AS email,
-                  u.points AS points,
+                u.points AS points,
                 u.phone_number AS phoneNumber,
                 u.updated_by AS updatedBy,
                 u.created_by AS createdBy,
@@ -145,5 +145,9 @@ public interface UserReposiory extends JpaRepository<User, String> {
     AND    (YEAR(CURRENT_DATE()) - YEAR(u.date_of_birth) <= :#{#req.maxAge})
 """, nativeQuery = true)
     List<EmployeeResponse> findByDate(@Param("req") FindEmployeeRequest req);
+
+
+    @Query("SELECT u FROM  User u WHERE u.phoneNumber =:phoneNumber")
+    User getOneUserByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
 }

@@ -6,7 +6,6 @@ import com.example.shose.server.dto.request.size.UpdateSizeRequest;
 import com.example.shose.server.dto.response.SizeResponse;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.service.SizeService;
@@ -28,7 +27,12 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public List<SizeResponse> findAll(FindSizeRequest req) {
-       return sizeRepository.getAll(req);
+        return sizeRepository.getAll(req);
+    }
+
+    @Override
+    public List<Size> getAll() {
+        return sizeRepository.findAll();
     }
 
     @Override
@@ -72,5 +76,10 @@ public class SizeServiceImpl implements SizeService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public Size getOneByName(int name) {
+        return sizeRepository.getOneByName(name);
     }
 }

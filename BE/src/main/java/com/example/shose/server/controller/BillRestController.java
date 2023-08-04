@@ -55,12 +55,12 @@ public class BillRestController {
 
     @PutMapping("/change-status/{id}")
     public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
-        return  new ResponseObject(billService.changedStatusbill(id, request));
+        return  new ResponseObject(billService.changedStatusbill(id, userId, request));
     }
 
     @PutMapping("/cancel-status/{id}")
     public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
-        return  new ResponseObject(billService.cancelBill(id, request));
+        return  new ResponseObject(billService.cancelBill(id, userId, request));
     }
 
     @GetMapping("/details-invoices-counter")

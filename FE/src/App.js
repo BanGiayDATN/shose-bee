@@ -9,8 +9,12 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
+<<<<<<< HEAD
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement"
 import UpdatePromotionManagement from "./pages/employee/promotion-management/UpdatePromotionManagement"
+=======
+import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
+>>>>>>> develop
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
@@ -33,6 +37,9 @@ import ModalCreateCustomer from "./pages/employee/customer-management/modal/Moda
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
 import DetailProductManagment from "./pages/employee/product-management/DetailProductManagment";
+import UpdateProductManagment from "./pages/employee/product-management/UpdateProductManagment";
+import Sale from "./pages/employee/bill-management/Sale";
+import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 function App() {
   return (
     <div className="App">
@@ -86,6 +93,16 @@ function App() {
             element={
               <AuthGuard>
                 <DashBoardEmployee>
+                  <Sale />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-bill"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
                   <CreateBill />
                 </DashBoardEmployee>
               </AuthGuard>
@@ -117,6 +134,26 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <DetailProductManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/product-detail-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <UpdateProductDetailManagment />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/product-management/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <UpdateProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }
@@ -302,7 +339,6 @@ function App() {
             }
           />
         </Routes>
-        
       </BrowserRouter>
       <ToastContainer />
     </div>

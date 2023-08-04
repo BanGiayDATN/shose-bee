@@ -39,6 +39,8 @@ public class ProductDetail extends PrimaryEntity {
 
     private BigDecimal price;
 
+    private Integer quantity;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -59,6 +61,9 @@ public class ProductDetail extends PrimaryEntity {
     @JoinColumn(name = "id_color",referencedColumnName = "id")
     private Color color;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_size",referencedColumnName = "id")
+    private Size size;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_material",referencedColumnName = "id")

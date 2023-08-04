@@ -16,7 +16,11 @@ public class RefundProductRequest {
 
     private String idProduct;
 
+    private Integer size;
+
     private Integer quantity;
+
+    private String totalMoney;
 
     private String note;
 

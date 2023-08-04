@@ -3,7 +3,14 @@ export class BillApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/admin/bill?startTimeString=`+ filter.startTimeString + `&endTimeString=`+ filter.endTimeString +`&status=` + filter.status + `&endDeliveryDateString=` + filter.endDeliveryDateString + `&startDeliveryDateString=` + filter.startDeliveryDateString + `&code=` + filter.code + `&employees=` + filter.employees + `&user=` + filter.user + `&phoneNumber=` + filter.phoneNumber + `&type=` + filter.type + `&page=` + filter.page ,
+      url: `/admin/bill?startTimeString=`+ filter.startTimeString + `&endTimeString=`+ filter.endTimeString +`&status=` + filter.status + `&endDeliveryDateString=` + filter.endDeliveryDateString + `&startDeliveryDateString=` + filter.startDeliveryDateString + `&key=` + filter.key + `&employees=` + filter.employees + `&user=` + filter.user + `&phoneNumber=` + filter.phoneNumber + `&type=` + filter.type + `&page=` + filter.page ,
+    });
+  };
+
+  static fetchAllBillAtCounter = (value) => {
+    return request({
+      method: "GET",
+      url: `/admin/bill/details-invoices-counter?key=`+ value ,
     });
   };
 
@@ -43,6 +50,14 @@ export class BillApi {
       });
     };
 
+    static updateBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/update-offline/`+ id,
+        data: data,
+      });
+    };
+
     static changeCancelStatusBill = (id, data) => {
       return request({
         method: "PUT",
@@ -66,10 +81,46 @@ export class BillApi {
       });
     };
 
-  //   static getOne = (id) => {
-  //     return request({
-  //       method: "GET",
-  //       url: `/admin/category/${id}`,
-  //     });
-  //   };
+    static getDetaiProductInBill = (id) => {
+      return request({
+        method: "GET",
+        url: `/admin/bill-detail/detail/` +id
+      });
+    };
+
+    static addProductInBill = (data) => {
+      return request({
+        method: "POST",
+        url: `/admin/bill-detail/add-product` ,
+        data: data
+      });
+    };
+
+    static removeProductInBill = (id, size) => {
+      return request({
+        method: "DELETE",
+        url: `/admin/bill-detail/remove/${id}/${size}` ,
+      });
+    };
+
+    static updateProductInBill = (id, data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill-detail/${id}` ,
+        data: data
+      });
+    };
+    static refundProduct = ( data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill-detail/refund` ,
+        data: data
+      });
+    };
+    // static getOne = (id) => {
+    //   return request({
+    //     method: "GET",
+    //     url: `/admin/category/${id}`,
+    //   });
+    // };
 }

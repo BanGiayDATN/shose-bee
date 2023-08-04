@@ -5,29 +5,12 @@
 .title_add {
   padding: 15px;
 }
-.filter {
-  margin-top: 15px;
-  background-color: rgb(255, 255, 255);
-  width: 99%;
-  height: auto;
-  border-radius: 5px;
-  padding: 10px;
-}
-.add {
-  background-color: rgb(255, 255, 255);
-  border-radius: 5px;
-}
-
-.content_ac {
-  padding-top: 25px;
-  padding-bottom: 20px;
-  justify-content: center;
-}
 .content-wrapper-ac {
-  padding-bottom: 20px;
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
+  margin-left: 6%;
+  margin-top: 30px;
+}
+.content-wrapper-ac Input {
+  height: 40px;
 }
 .search-bar {
   display: flex;
@@ -64,39 +47,6 @@
   padding-bottom: 40px;
 }
 
-.btn_filter {
-  background-color: rgb(35, 145, 214);
-  color: white;
-  margin-right: 5px;
-}
-
-.btn_filter:hover {
-  background-color: rgb(16, 132, 205);
-  color: white !important;
-  margin-right: 5px;
-}
-
-.btn_clear {
-  background-color: rgb(248, 73, 73);
-  color: white;
-  margin-right: 5px;
-}
-
-.btn_clear:hover {
-  background-color: rgb(243, 37, 37);
-  color: white !important;
-  margin-right: 5px;
-}
-
-.account-table {
-  margin-top: 30px;
-  background-color: rgb(255, 255, 255);
-  width: 99%;
-  height: auto;
-  border-radius: 5px;
-  padding: 10px;
-}
-
 .account-table > div {
   align-items: center;
   margin-bottom: 10px;
@@ -117,4 +67,58 @@
   width: 130px;
   height: 30px;
   pointer-events: none;
+}
+.title_add Input {
+  height: 40px;
+}
+
+.upload {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  border: 2px dashed #ccc;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 20px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top:20px;
+}
+.upload-button {
+  margin-right: 50%;
+  margin-top: 20px;
+}
+
+.form-inputs {
+  width: 50%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.upload-container {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  height: 750px;
+  background-color: white;
+  width: auto;
+}
+
+.input-container {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  height: 750px;
+  background-color: white;
+  width: 650px;
+  /* display: flex; */
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 20px;
 }

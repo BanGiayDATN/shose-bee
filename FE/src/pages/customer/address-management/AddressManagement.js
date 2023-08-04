@@ -11,7 +11,7 @@ import {
   Row,
 } from "antd";
 import "./style-address.css";
-import { AddressApi } from "../../../api/customer/address/address.api";
+
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -34,6 +34,7 @@ import moment from "moment/moment";
 import ModalCreateAddress from "./modal/ModalCreateAddress";
 import ModalUpdateAddress from "./modal/ModalUpdateAddress";
 import ModalDeatailAddress from "./modal/ModalDetailAddress";
+import { AddressApi } from "../../../api/customer/address/address.api";
 
 const { Option } = Select;
 
@@ -45,9 +46,9 @@ const AddressManagement = () => {
   const dispatch = useAppDispatch();
   const [searchAddress, setSearchAddress] = useState({
     keyword: "",
-    city: "",
+    district: "",
     province: "",
-    country: "",
+    ward: "",
   });
 
   const [addressId, setAddressId] = useState("");
@@ -94,8 +95,8 @@ const AddressManagement = () => {
     AddressApi.fetchAll({
       line: value,
       province: searchAddress.province,
-      city: searchAddress.city,
-      country: searchAddress.country,
+      district: searchAddress.district,
+      ward: searchAddress.ward,
     }).then((res) => {
       setListAddress(res.data.data);
       dispatch(SetAddress(res.data.data));
@@ -111,16 +112,16 @@ const AddressManagement = () => {
     AddressApi.fetchAll({
       line: searchAddress.keyword,
       province: valueProvinceS.valueProvince,
-      city: searchAddress.city,
-      country: searchAddress.country,
+      district: searchAddress.district,
+      ward: searchAddress.ward,
     }).then((res) => {
       setListAddress(res.data.data);
       dispatch(SetAddress(res.data.data));
     });
   };
 
-  const handleCityChangeSearch = (value, valueDistrictS) => {
-    handleInputChangeSearch("city", valueDistrictS.valueDistrict);
+  const handledistrictChangeSearch = (value, valueDistrictS) => {
+    handleInputChangeSearch("district", valueDistrictS.valueDistrict);
     handleClearWardSearch(valueDistrictS.valueDistrict);
     AddressApi.fetchAllProvinceWard(value).then((res) => {
       setListWardSearch(res.data.data);
@@ -128,21 +129,21 @@ const AddressManagement = () => {
     AddressApi.fetchAll({
       line: searchAddress.keyword,
       province: searchAddress.province,
-      city: valueDistrictS.valueDistrict,
-      country: searchAddress.country,
+      district: valueDistrictS.valueDistrict,
+      ward: searchAddress.ward,
     }).then((res) => {
       setListAddress(res.data.data);
       dispatch(SetAddress(res.data.data));
     });
   };
 
-  const handleCountryChangeSearch = (value) => {
-    handleInputChangeSearch("country", value);
+  const handlewardChangeSearch = (value) => {
+    handleInputChangeSearch("ward", value);
     AddressApi.fetchAll({
       line: searchAddress.keyword,
       province: searchAddress.province,
-      city: searchAddress.city,
-      country: value,
+      district: searchAddress.district,
+      ward: value,
     }).then((res) => {
       setListAddress(res.data.data);
       dispatch(SetAddress(res.data.data));
@@ -154,8 +155,8 @@ const AddressManagement = () => {
     AddressApi.fetchAll({
       line: searchAddress.keyword,
       province: searchAddress.province,
-      city: searchAddress.city,
-      country: searchAddress.country,
+      district: searchAddress.district,
+      then: searchAddress.then,
     }).then((res) => {
       setListAddress(res.data.data);
       dispatch(SetAddress(res.data.data));
@@ -166,9 +167,9 @@ const AddressManagement = () => {
   const handleClear = () => {
     setSearchAddress({
       keyword: "",
-      city: "",
+      district: "",
       province: "",
-      country: "",
+      ward: "",
     });
     loadData();
   };
@@ -176,8 +177,8 @@ const AddressManagement = () => {
   const handleClearDistrictWardSearch = (valueProvinceS) => {
     setSearchAddress({
       province: valueProvinceS,
-      city: "",
-      country: "",
+      district: "",
+      ward: "",
     });
     setListDistrictsSearch(null);
     setListWardSearch(null);
@@ -186,8 +187,8 @@ const AddressManagement = () => {
   const handleClearWardSearch = (valueDistrictS) => {
     setSearchAddress({
       province: searchAddress.province,
-      city: valueDistrictS,
-      country: "",
+      district: valueDistrictS,
+      ward: "",
     });
     setListWardSearch(null);
   };
@@ -195,7 +196,6 @@ const AddressManagement = () => {
   const loadData = () => {
     AddressApi.fetchAll().then(
       (res) => {
-        console.log(res.data.data);
         setListAddress(res.data.data);
         dispatch(SetAddress(res.data.data));
       },
@@ -210,7 +210,6 @@ const AddressManagement = () => {
     AddressApi.fetchAllProvince().then(
       (res) => {
         setListProvinceSearch(res.data.data);
-        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -238,21 +237,35 @@ const AddressManagement = () => {
     },
     {
       title: "Xã/Phường",
-      dataIndex: "country",
-      key: "country",
-      sorter: (a, b) => a.country.localeCompare(b.country),
+      dataIndex: "ward",
+      key: "ward",
+      sorter: (a, b) => a.ward.localeCompare(b.ward),
     },
     {
       title: "Quận/Huyện",
-      dataIndex: "city",
-      key: "city",
-      sorter: (a, b) => a.city.localeCompare(b.city),
+      dataIndex: "district",
+      key: "district",
+      sorter: (a, b) => a.district.localeCompare(b.district),
     },
     {
       title: "Tỉnh/Thành phố",
       dataIndex: "province",
       key: "province",
       sorter: (a, b) => a.province.localeCompare(b.province),
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
+          </button>
+        );
+      },
     },
     {
       title: "Hành động",
@@ -314,19 +327,14 @@ const AddressManagement = () => {
                 >
                   Tìm kiếm
                 </Button>
-                <Popconfirm
-                  title="Làm mới bộ lọc"
-                  description="Bạn có chắc chắn muốn làm mới bộ lọc không ?"
-                  onConfirm={() => {
-                    handleClear();
-                  }}
-                  okText="Có"
-                  cancelText="Không"
+                <Button
+                  className="btn_clear"
+                  key="submit"
+                  type="primary"
+                  onClick={handleClear}
                 >
-                  <Button className="btn_clear" key="submit" type="primary">
-                    Làm mới bộ lọc
-                  </Button>
-                </Popconfirm>
+                  Làm mới bộ lọc
+                </Button>
                 ,
               </Row>
             </div>
@@ -338,7 +346,7 @@ const AddressManagement = () => {
               <div>
                 Tỉnh/Thành phố :{" "}
                 <Select
-                  style={{ width: "60%", marginLeft: "" }}
+                  style={{ width: "90%", marginLeft: "" }}
                   name="province"
                   value={searchAddress.province}
                   onChange={handleProvinceChangeSearch}
@@ -362,10 +370,10 @@ const AddressManagement = () => {
               <div>
                 Quận/Huyện :{" "}
                 <Select
-                  style={{ width: "70%", marginLeft: "5px" }}
-                  name="city"
-                  value={searchAddress.city}
-                  onChange={handleCityChangeSearch}
+                  style={{ width: "90%", marginLeft: "5" }}
+                  name="district"
+                  value={searchAddress.district}
+                  onChange={handledistrictChangeSearch}
                 >
                   <Option value="">--Chọn Quận/Huyện--</Option>
                   {listDistrictsSearch?.map((item) => {
@@ -386,10 +394,10 @@ const AddressManagement = () => {
               <div>
                 Xã/Phường :{" "}
                 <Select
-                  style={{ width: "70%", marginLeft: "5px" }}
-                  name="country"
-                  value={searchAddress.country}
-                  onChange={handleCountryChangeSearch}
+                  style={{ width: "90%", marginLeft: "" }}
+                  name="ward"
+                  value={searchAddress.ward}
+                  onChange={handlewardChangeSearch}
                 >
                   <Option value="">--Chọn Xã/Phường--</Option>
                   {listWardSearch?.map((item) => {
@@ -433,7 +441,7 @@ const AddressManagement = () => {
             dataSource={listAddress}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 6 }}
+            pagination={{ pageSize: 4 }}
             className="address-table"
           />
         </div>

@@ -4,6 +4,8 @@ import com.example.shose.server.infrastructure.common.PageableRequest;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 /**
  * @author Nguyễn Vinh
  */
@@ -11,7 +13,11 @@ import lombok.Setter;
 @Getter
 public class FindProductRequest extends PageableRequest {
 
-    private String code;
+    private String keyword;
 
-    private String name;
+    private String status;
+
+    private int minQuantity;
+
+    private  int maxQuantity;
 }

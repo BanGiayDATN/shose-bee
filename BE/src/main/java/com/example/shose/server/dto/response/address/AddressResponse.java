@@ -1,4 +1,4 @@
-package com.example.shose.server.dto.response;
+package com.example.shose.server.dto.response.address;
 
 import com.example.shose.server.entity.Address;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,22 +17,22 @@ public interface AddressResponse {
     @Value("#{target.line}")
     String getLine();
 
-    @Value("#{target.city}")
-    String getCity();
+    @Value("#{target.district}")
+    String getDistrict();
 
     @Value("#{target.province}")
     String getProvince();
 
-    @Value("#{target.country}")
-    String getCountry();
+    @Value("#{target.ward}")
+    String getWard();
+
+    @Value("#{target.status}")
+    String getStatus();
 
     @Value("#{target.createdDate}")
     Long getCreatedDate();
 
     @Value("#{target.lastModifiedDate}")
     Long getLastModifiedDate();
-
-    @Value("#{target.idUser}")
-    String getIdUser();
 
 }
