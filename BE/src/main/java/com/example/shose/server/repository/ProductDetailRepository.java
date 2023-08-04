@@ -43,7 +43,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN material m ON detail.id_material = m.id
                 JOIN category c ON detail.id_category = c.id
                 JOIN brand b ON detail.id_brand = b.id
-                LEFT JOIN promotion pr ON pr.id = detail.id_promotion
+                LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+                LEFT JOIN promotion pr on pr.id = ppd.id_promotion
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
@@ -65,29 +66,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     List<ProductDetailReponse> getAll(@Param("req") FindProductDetailRequest req);
 
     @Query(value = """
-<<<<<<< HEAD
-                         SELECT 
-                                           detail.id AS id,
-                                           i.name AS image,
-                                           p.code AS codeProduct,
-                                           p.name AS nameProduct,
-                                           detail.price AS price,
-                                           detail.created_date AS created_date,
-                                           detail.gender AS gender,
-                                           detail.status AS status,
-                                           SUM(pr.value) AS valuePromotion
-                                    FROM product_detail detail
-                                    LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-                                    LEFT JOIN promotion pr on pr.id = ppd.id_promotion
-                                    JOIN product p on detail.id_product = p.id
-                                    JOIN image i on detail.id = i.id_product_detail
-                                    where p.id = :id 
-                                    group by detail.id
-                        """,nativeQuery = true)
-    List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
-
-//    JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-=======
              SELECT 
                    detail.id AS id,
                    i.name AS image,
@@ -129,7 +107,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                           LEFT JOIN image i on detail.id = i.id_product_detail
                          LEFT JOIN sole s ON s.id = detail.id_sole
                          LEFT JOIN material m ON detail.id_material = m.id
-                         LEFT JOIN promotion pr ON pr.id = detail.id_promotion
+                         LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+                         LEFT JOIN promotion pr on pr.id = ppd.id_promotion
                          LEFT JOIN category c ON detail.id_category = c.id
                          LEFT JOIN brand b ON detail.id_brand = b.id
                          LEFT JOIN color col ON detail.id_color = col.id
@@ -164,7 +143,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN material m ON detail.id_material = m.id
                 JOIN category c ON detail.id_category = c.id
                 JOIN brand b ON detail.id_brand = b.id
-                LEFT JOIN promotion pr ON pr.id = detail.id_promotion
+                LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+                LEFT JOIN promotion pr on pr.id = ppd.id_promotion
                 JOIN size s2 on detail.id_size = s2.id
                 LEFT JOIN size si ON detail.id_size = si.id
                 JOIN color c2 on detail.id_color = c2.id
@@ -183,6 +163,4 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 ORDER BY detail.last_modified_date DESC 
             """, nativeQuery = true)
     List<ProductDetailReponse> getAllProductDetail(@Param("req") FindProductDetailRequest req);
-
->>>>>>> develop
 }

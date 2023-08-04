@@ -32,7 +32,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import {
   GetPromotion,
   SetPromotion,
@@ -139,7 +139,7 @@ function CreateBill() {
         console.log(err);
       }
     );
-    PromotionApi.fetchAll().then(
+    VoucherApi.fetchAll().then(
       (res) => {
         const data = [];
         res.data.data.map((item) => {
@@ -461,7 +461,7 @@ function CreateBill() {
       name: keyVoucher,
       quantity: keyVoucher,
     };
-    PromotionApi.fetchAll(fillter).then(
+    VoucherApi.fetchAll(fillter).then(
       (res) => {
         const data = [];
         res.data.data.map((item) => {
@@ -922,7 +922,7 @@ function CreateBill() {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        <Row style={{ width: "100%", minHeight: "300px" }}>
+        <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
               style={{
@@ -943,7 +943,7 @@ function CreateBill() {
                   Sản phẩm
                 </span>
               </Col>
-              <Col span={5} align={"center"}>
+              <Col span={3} align={"center"}>
                 <span
                   style={{
                     fontSize: "16px",
@@ -954,7 +954,7 @@ function CreateBill() {
                   Số lượng
                 </span>
               </Col>
-              <Col span={4} align={"center"}>
+              <Col span={6} align={"center"}>
                 <span
                   style={{
                     fontSize: "16px",
@@ -989,7 +989,7 @@ function CreateBill() {
               </Row>
               <Row justify={"center"} style={{ width: "100%" }}>
                 <Col span={12} align="center" >
-                 <span style={{marginLeft: "70px"}}> Không có sản phẩm nào trong giỏ</span>
+                 <span style={{marginLeft: "70px", marginBottom: "30px"}}> Không có sản phẩm nào trong giỏ</span>
                 </Col>
               </Row>
             </Row>
@@ -1006,7 +1006,7 @@ function CreateBill() {
                       width: "170px",
                       borderRadius: "10%",
                       height: "140px",
-                      marginLeft: "5px",
+                      marginLeft: "10px",
                     }}
                   />
                 </Col>
@@ -1058,7 +1058,7 @@ function CreateBill() {
                   </Row>
                 </Col>
                 <Col
-                  span={5}
+                  span={4}
                   align={"center"}
                   style={{ display: "flex", alignItems: "center" }}
                 >
@@ -1071,9 +1071,7 @@ function CreateBill() {
                   <InputNumber
                     min={1}
                     max={item.maxQuantity}
-                    style={{margin: "0 10px"}}
-
-
+                    style={{margin: "0 5px"}}
                     value={item.quantity}
                     onChange={(value) => handleQuantityChange(value, item)}
                   />
@@ -1085,9 +1083,9 @@ function CreateBill() {
                   </Button>
                 </Col>
                 <Col
-                  span={4}
+                  span={5}
                   align={"center"}
-                  style={{ display: "flex", alignItems: "center" }}
+                  style={{ display: "grid", alignItems: "center" }}
                 >
                   <span
                     style={{
@@ -1611,7 +1609,12 @@ function CreateBill() {
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Giảm giá: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} VND{" "}
+                {voucher.discountPrice >= 1000
+                  ? voucher.discountPrice.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : voucher.discountPrice + " đ"}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "29px" }}>

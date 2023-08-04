@@ -32,14 +32,11 @@ import {
   CreatePromotion,
   UpdatePromotion,
 } from "../../../app/reducer/Promotion.reducer";
-import {
-  CreateProduct,
-  SetProduct,
-  GetProduct,
-} from "../../../app/reducer/Product.reducer";
+
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { GetProductDetail, SetProductDetail } from "../../../app/reducer/ProductDetail.reducer";
 
 function UpdatePromotionManagement() {
   const dispatch = useAppDispatch();
@@ -53,15 +50,14 @@ function UpdatePromotionManagement() {
   const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
 
-  const datas = useAppSelector(GetProduct);
+  const datas = useAppSelector(GetProductDetail);
   useEffect(() => {
     if (datas != null) {
-      SetProduct(datas);
+      SetProductDetail(datas);
     }
   }, [datas]);
 
   const id = localStorage.getItem("id");
-
   useEffect(() => {
     console.log(id);
     if (id !== null) {
@@ -127,7 +123,7 @@ function UpdatePromotionManagement() {
     ProductApi.getProductUse().then(
       (res) => {
         setList(res.data.data);
-        dispatch(SetProduct(res.data.data));
+        dispatch(SetProductDetail(res.data.data));
       },
       (err) => {
         console.log(err);

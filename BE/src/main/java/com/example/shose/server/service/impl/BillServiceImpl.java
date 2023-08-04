@@ -133,9 +133,9 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill save(String id, CreateBillOfflineRequest request) {
         Optional<Account> account = accountRepository.findById(id);
-        if (!account.isPresent()) {
-            throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
-        }
+//        if (!account.isPresent()) {
+//            throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
+//        }
         Bill bill = Bill.builder()
                 .employees(account.get())
                 .statusBill(StatusBill.TAO_HOA_DON)
