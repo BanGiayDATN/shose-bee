@@ -414,7 +414,7 @@ function ModalAddProductDetail({
   };
   // end xử lý modal
   return (
-    <div>
+    <div className="modelProduct" style={{maxHeight: "500px", overflowY: "auto"}}>
       <div className="content">
         <div className="content-wrapper">
           <div style={{ width: "100%" }}>
@@ -455,7 +455,7 @@ function ModalAddProductDetail({
           </div>
         </div>
       </div>
-      <div className="box_btn_filter">
+      <div className="box_btn_filter" style={{paddingBottom: "8px"}}>
         <Row align="middle">
           <Col span={3} style={{ textAlign: "right", paddingRight: 10 }}>
             <label>Chất Liệu :</label>
@@ -557,7 +557,7 @@ function ModalAddProductDetail({
           </Col>
         </Row>
       </div>
-      <div className="box_btn_filter">
+      <div className="box_btn_filter" style={{paddingBottom: "8px"}} >
         <Row align="middle">
           <Col span={4} style={{ textAlign: "right", paddingRight: 10 }}>
             <label>Thể Loại :</label>
@@ -611,13 +611,14 @@ function ModalAddProductDetail({
         </Row>
       </div>
 
-      <div style={{ marginTop: "25px" }}>
+      <div style={{ marginTop: "0px" }}>
         <Table
           dataSource={listProduct}
           rowKey="id"
           columns={columns}
           pagination={{ pageSize: 5 }}
           className="category-table"
+          style={{margin: "10px 0 0 0"}}
         />
       </div>
       <Modal
@@ -626,6 +627,10 @@ function ModalAddProductDetail({
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        okText="Đặt hàng"
+        closeButton={true}
+        closeIcon={null}
+        cancelButton={true}
       >
         <ModalDetailProduct
           id={product.id}

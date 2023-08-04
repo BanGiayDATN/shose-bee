@@ -179,14 +179,14 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
               </Col>
             </Row>
           </Row>
-          <Row style={{ marginTop: "15px", width: "100%" }}>
+          <Row style={{ marginTop: "15px", width: "100%", marginBottom: "15px" }}>
             {productDetail.promotion != null ? (
               <Row>
                 <Row style={{ marginTop: "15px", width: "100%" }}>
                   <span
                     style={{
-                      fontWeight: "600",
-                      fontSize: "18px",
+                      fontWeight: "bold",
+                      fontSize: "24px",
                       color: "red",
                     }}
                   >
@@ -208,7 +208,7 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
                         " đ"}{" "}
                   </span>
                 </Row>
-                <Row style={{ marginTop: "15px", width: "100%" }}>
+                <Row style={{ marginTop: "15px", width: "100%", marginBottom: "15px" }}>
                   <span
                     style={{
                       fontWeight: "400",
@@ -228,11 +228,11 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
                 </Row>
               </Row>
             ) : (
-              <Row style={{ marginTop: "15px", width: "100%" }}>
+              <Row style={{ marginTop: "15px", width: "100%", marginBottom: "15px" }}>
                 <span
                   style={{
-                    fontWeight: "600",
-                    fontSize: "18px",
+                    fontWeight: "bold",
+                    fontSize: "24px",
                     color: "red",
                   }}
                 >
