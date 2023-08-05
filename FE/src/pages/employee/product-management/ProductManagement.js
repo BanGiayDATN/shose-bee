@@ -23,8 +23,6 @@ const ProductManagement = () => {
   const dispatch = useAppDispatch();
   const [modaleDetail, setModalDetail] = useState(false);
 
-
-
   const handleSubmitSearch = (event) => {
     event.preventDefault();
     console.log(selectedValues);

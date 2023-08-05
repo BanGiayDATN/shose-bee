@@ -6,10 +6,12 @@ import {
   Col,
   Form,
   Input,
+  InputNumber,
   Modal,
   Popconfirm,
   Row,
   Select,
+  Space,
   Table,
   Upload,
 } from "antd";
@@ -21,11 +23,10 @@ import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../api/employee/color/Color.api";
-import tinycolor from "tinycolor2";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
-import { GetSize, SetSize } from "../../../app/reducer/Size.reducer";
+import { GetSize } from "../../../app/reducer/Size.reducer";
 import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
 import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
 import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
@@ -39,12 +40,12 @@ import {
 } from "../../../app/reducer/Category.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
-import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
-import NumberFormat from "react-number-format";
 import { toast } from "react-toastify";
 import AddColorModal from "./modal/ModalAddColor";
+import convert from "color-convert";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -154,7 +155,6 @@ const CreateProductManagment = () => {
           ...prevList,
           {
             nameSize: selectedSizeData.size,
-            status: "DANG_SU_DUNG",
           },
         ]);
       }
@@ -162,17 +162,27 @@ const CreateProductManagment = () => {
   };
 
   const [listColorAdd, setListColorAdd] = useState([]);
-  const handleSaveDataColor = (color) => {
-    console.log(color);
-    color.forEach((color) => {
-      // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
-      const existingSize = listColorAdd.find((item) => item.color === color);
 
+  const getColorName = (colorCode) => {
+    const hexCode = colorCode.replace("#", "").toUpperCase();
+    const rgb = convert.hex.rgb(hexCode);
+    const colorName = convert.rgb.keyword(rgb);
+
+    if (colorName === null) {
+      return "Unknown"; // Trường hợp không tìm thấy tên màu
+    } else {
+      return colorName; // Trả về tên màu
+    }
+  };
+
+  const handleSaveDataColor = (color) => {
+    color.forEach((color) => {
+      const existingSize = listColorAdd.find((item) => item.color === color);
       if (existingSize) {
-        // Nếu kích thước đã tồn tại, hiển thị cảnh báo
-        toast.warning(`Kích cỡ ${color} đã tồn tại trong danh sách!`);
+        toast.warning(
+          `Màu đã ${getColorName(color)} đã tồn tại trong danh sách!`
+        );
       } else {
-        // Nếu kích thước chưa tồn tại, thêm vào listSizeAdd
         setListColorAdd((prevList) => [
           ...prevList,
           {
@@ -199,50 +209,50 @@ const CreateProductManagment = () => {
   };
 
   // ảnh
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState([]);
-  const handleCancelImage = () => setPreviewOpen(false);
+  // const getBase64 = (file) =>
+  //   new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => resolve(reader.result);
+  //     reader.onerror = (error) => reject(error);
+  //   });
+  // const [previewOpen, setPreviewOpen] = useState(false);
+  // const [previewImage, setPreviewImage] = useState("");
+  // const [previewTitle, setPreviewTitle] = useState("");
+  // const [fileList, setFileList] = useState([]);
+  // const handleCancelImage = () => setPreviewOpen(false);
 
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    const fileExists = fileList.find((f) => f.uid === file.uid);
+  // const handlePreview = async (file) => {
+  //   if (!file.url && !file.preview) {
+  //     file.preview = await getBase64(file.originFileObj);
+  //   }
+  //   const fileExists = fileList.find((f) => f.uid === file.uid);
 
-    // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
-    if (!fileExists) {
-      const newFile = { ...file, isStarred: false };
-      setFileList([...fileList, newFile]);
-    }
+  //   // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
+  //   if (!fileExists) {
+  //     const newFile = { ...file, isStarred: false };
+  //     setFileList([...fileList, newFile]);
+  //   }
 
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-    );
-  };
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
+  //   setPreviewImage(file.url || file.preview);
+  //   setPreviewOpen(true);
+  //   setPreviewTitle(
+  //     file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+  //   );
+  // };
+  // const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  // const uploadButton = (
+  //   <div>
+  //     <PlusOutlined />
+  //     <div
+  //       style={{
+  //         marginTop: 8,
+  //       }}
+  //     >
+  //       Upload
+  //     </div>
+  //   </div>
+  // );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
@@ -267,124 +277,103 @@ const CreateProductManagment = () => {
         });
       })
       .then((values) => {
-        console.log(values);
-        console.log(listSizeAdd);
+        console.log(tableData);
+        if (!listSizeAdd || listSizeAdd.length === 0) {
+          toast.error("Bạn cần thêm kích thước cho sản phẩm");
+          return;
+        }
+        if (!listColorAdd || listColorAdd.length === 0) {
+          toast.error("Bạn cần thêm màu sắc sản phẩm");
+          return;
+        }
+        // if (!fileList || fileList.length === 0) {
+        //   toast.error("Bạn cần thêm ảnh cho sản phẩm");
+        //   return;
+        // }
+        // check ảnh được chọn là mặc định chưa
+        // const isAnyStarred = Object.values(starredFiles).some(
+        //   (file) => file.isStarred
+        // );
+        // if (!isAnyStarred) {
+        //   toast.error("Bạn cần chọn ảnh để làm mặc định");
+        //   return;
+        // }
+
+        const formData = new FormData();
+        // fileList.forEach((file) => {
+        //   formData.append(`multipartFiles`, file.originFileObj);
+        //   // Check if the file is starred and set the status accordingly
+        //   const isStarred = starredFiles[file.uid]?.isStarred || false;
+        //   formData.append(`status`, isStarred ? "true" : "false");
+        //   console.log(file);
+        // });
+        formData.append("data", JSON.stringify(tableData));
+        // axios
+        //   .post("http://localhost:8080/admin/product-detail", formData)
+        //   .then((response) => {
+        //     console.log(response.data);
+        //     setIsSubmitting(true);
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //   });
       })
       .catch(() => {
         // Xử lý khi người dùng từ chối xác nhận
       });
-    // console.log(productDetail);
-    // if (Object.entries(productDetail).length != 0) {
-    //   Modal.confirm({
-    //     title: "Xác nhận",
-    //     content: "Bạn có đồng ý thêm sản phẩm không?",
-    //     okText: "Đồng ý",
-    //     cancelText: "Hủy",
-    //     onOk: () => {
-    //       if (!listSizeAdd || listSizeAdd.length === 0) {
-    //         toast.error("Bạn cần thêm kích thước và số lượng sản phẩm");
-    //         return;
-    //       }
-    //       if (!fileList || fileList.length === 0) {
-    //         toast.error("Bạn cần thêm ảnh cho sản phẩm");
-    //         return;
-    //       }
-    //       // check ảnh được chọn là mặc định chưa
-    //       const isAnyStarred = Object.values(starredFiles).some(
-    //         (file) => file.isStarred
-    //       );
-    //       if (!isAnyStarred) {
-    //         toast.error("Bạn cần chọn ảnh để làm mặc định");
-    //         return;
-    //       }
-    //       const formData = new FormData();
-    //       fileList.forEach((file) => {
-    //         formData.append(`multipartFiles`, file.originFileObj);
-    //         // Check if the file is starred and set the status accordingly
-    //         const isStarred = starredFiles[file.uid]?.isStarred || false;
-    //         formData.append(`status`, isStarred ? "true" : "false");
-    //         console.log(file);
-    //       });
-    //       console.log(productDetail);
-    //       const requestData = {
-    //         description: productDetail.description,
-    //         gender: productDetail.gender,
-    //         price: productDetail.price,
-    //         status: productDetail.status,
-    //         categoryId: productDetail.categoryId,
-    //         productId: productDetail.productId,
-    //         materialId: productDetail.materialId,
-    //         soleId: productDetail.soleId,
-    //         brandId: productDetail.brandId,
-    //       };
-    //       formData.append("listSize", JSON.stringify(listSizeAdd));
-    //       formData.append("data", JSON.stringify(requestData));
-    //       formData.append("listColor", JSON.stringify(selectedColors));
-    //       axios
-    //         .post("http://localhost:8080/admin/product-detail", formData)
-    //         .then((response) => {
-    //           console.log(response.data);
-    //           setIsSubmitting(true);
-    //         })
-    //         .catch((error) => {
-    //           console.error(error);
-    //         });
-    //     },
-    //   });
-    // }
   };
 
-  const [starredFiles, setStarredFiles] = useState({});
+  // const [starredFiles, setStarredFiles] = useState({});
 
-  useEffect(() => {
-    const initialStarredState = fileList.reduce((acc, file) => {
-      acc[file.uid] = { ...file, isStarred: false };
-      return acc;
-    }, {});
-    setStarredFiles(initialStarredState);
-  }, [fileList]);
+  // useEffect(() => {
+  //   const initialStarredState = fileList.reduce((acc, file) => {
+  //     acc[file.uid] = { ...file, isStarred: false };
+  //     return acc;
+  //   }, {});
+  //   setStarredFiles(initialStarredState);
+  // }, [fileList]);
 
-  const renderUploadButton = (file) => {
-    const isStarred = starredFiles[file.uid]?.isStarred || false;
+  // const renderUploadButton = (file) => {
+  //   const isStarred = starredFiles[file.uid]?.isStarred || false;
 
-    return (
-      <div className="custom-button">
-        <Button onClick={() => handleCustomButtonClick(file)}>
-          {isStarred ? (
-            <StarFilled style={{ fontSize: 24, color: "gold" }} />
-          ) : (
-            <StarOutlined style={{ fontSize: 24 }} />
-          )}
-        </Button>
-      </div>
-    );
-  };
+  //   return (
+  //     <div className="custom-button">
+  //       <Button onClick={() => handleCustomButtonClick(file)}>
+  //         {isStarred ? (
+  //           <StarFilled style={{ fontSize: 24, color: "gold" }} />
+  //         ) : (
+  //           <StarOutlined style={{ fontSize: 24 }} />
+  //         )}
+  //       </Button>
+  //     </div>
+  //   );
+  // };
 
-  const handleCustomButtonClick = (file) => {
-    setStarredFiles((prevStarredFiles) => {
-      return {
-        ...prevStarredFiles,
-        [file.uid]: {
-          ...prevStarredFiles[file.uid],
-          isStarred: !prevStarredFiles[file.uid]?.isStarred,
-        },
-      };
-    });
-  };
+  // const handleCustomButtonClick = (file) => {
+  //   setStarredFiles((prevStarredFiles) => {
+  //     return {
+  //       ...prevStarredFiles,
+  //       [file.uid]: {
+  //         ...prevStarredFiles[file.uid],
+  //         isStarred: !prevStarredFiles[file.uid]?.isStarred,
+  //       },
+  //     };
+  //   });
+  // };
 
-  const customItemRender = (originNode, file) => {
-    const isUploadedFile = fileList.some((item) => item.uid === file.uid);
-    if (isUploadedFile) {
-      return (
-        <div className="uploaded-file-container">
-          {originNode}
-          {renderUploadButton(file)}
-        </div>
-      );
-    }
+  // const customItemRender = (originNode, file) => {
+  //   const isUploadedFile = fileList.some((item) => item.uid === file.uid);
+  //   if (isUploadedFile) {
+  //     return (
+  //       <div className="uploaded-file-container">
+  //         {originNode}
+  //         {renderUploadButton(file)}
+  //       </div>
+  //     );
+  //   }
 
-    return originNode;
-  };
+  //   return originNode;
+  // };
 
   useEffect(() => {
     getList();
@@ -405,79 +394,199 @@ const CreateProductManagment = () => {
     }
   }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
 
-  // const [selectedColors, setSelectedColors] = useState([]);
-  // const handleChangeColor = (selectedColors) => {
-  //   setSelectedColors(selectedColors);
-  // };
-
-  // const getColoredOption = (color) => {
-  //   return (
-  //     <div style={{ display: "flex", alignItems: "center" }}>
-  //       <div
-  //         style={{
-  //           width: "50px",
-  //           height: "25px",
-  //           borderRadius: "10%",
-  //           backgroundColor: color,
-  //           marginRight: "8px",
-  //         }}
-  //       />
-  //     </div>
-  //   );
-  // };
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
 
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+      width: "5%",
+      sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      sorter: (a, b) => a.age - b.age,
+      title: "Tên Sản Phẩm",
+      dataIndex: "productId",
+      key: "productId",
+      width: "35%",
+      render: (productId, record) =>
+        `${productId} [ ${record.size} - ${getColorName(record.color)} ]`,
     },
     {
-      title: "Address",
-      dataIndex: "address",
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      width: "12%",
+      render: (_, record) => (
+        <InputNumber
+          min={1}
+          value={record.quantity}
+          onChange={(value) => handleQuantityChange(value, record.key)}
+        />
+      ),
+    },
+    {
+      title: "Giá Bán",
+      dataIndex: "price",
+      key: "price",
+      width: "15%",
+      render: (_, record) => (
+        <Input
+          value={formatCurrency(record.price)}
+          onChange={(e) =>
+            handlePriceChange(e.target.value.replace(/\D/g, ""), record.key)
+          }
+        />
+      ),
+    },
+    {
+      title: "Upload Ảnh",
+      dataIndex: "color",
+      key: "color",
+      render: (color, record, index) => {
+        // Kiểm tra nếu đối tượng trước cùng màu
+        if (index > 0 && record.color === tableData[index - 1].color) {
+          return null; // Không hiển thị gì cả
+        }
+
+        // Lọc các dòng có cùng màu sắc
+        const rowsWithSameColor = tableData.filter(
+          (item) => item.color === record.color
+        );
+        // Hiển thị Upload Ảnh chỉ khi có 1 dòng hoặc là dòng đầu của cùng màu
+        if (
+          rowsWithSameColor.length === 1 ||
+          rowsWithSameColor[0].key === record.key
+        ) {
+          return (
+            <>
+              <Upload
+                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                listType="picture-card"
+                fileList={fileData[record.color] || []} // Sử dụng fileList tương ứng với màu sắc
+                onPreview={handlePreview}
+                onChange={(info) => handleUploadImages(info, record)}
+              >
+                {fileData[record.color]?.length >= 6 ? null : uploadButton}
+              </Upload>
+              <Modal
+                open={previewOpen}
+                title={previewTitle}
+                footer={null}
+                onCancel={handleCancelImage}
+              >
+                <img
+                  alt="example"
+                  style={{
+                    width: "100%",
+                  }}
+                  src={previewImage}
+                />
+              </Modal>
+            </>
+          );
+        }
+
+        return null;
+      },
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sydney No. 1 Lake Park",
-    },
-    {
-      key: "4",
-      name: "Jim Red",
-      age: 32,
-      address: "London No. 2 Lake Park",
-    },
-  ];
-  const onChange = (pagination, filters, sorter, extra) => {
-    console.log("params", pagination, filters, sorter, extra);
+  // cập nhập số lượng
+  const handleQuantityChange = (value, key) => {
+    setTableData((prevTableData) =>
+      prevTableData.map((item) =>
+        item.key === key ? { ...item, quantity: value } : item
+      )
+    );
+  };
+  // cập nhập giá tiền
+  const handlePriceChange = (value, key) => {
+    setTableData((prevTableData) =>
+      prevTableData.map((item) =>
+        item.key === key ? { ...item, price: value } : item
+      )
+    );
+  };
+
+  // format tiền
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+
+  // ảnh theo màu
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [fileList, setFileList] = useState([]);
+
+  const handleCancelImage = () => setPreviewOpen(false);
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+  const handleChangeImage = ({ fileList: newFileList }) =>
+    setFileList(newFileList);
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
+  const [fileData, setFileData] = useState({});
+  const handleUploadImages = (info, record) => {
+    const newFileData = { ...fileData };
+    newFileData[record.color] = info.fileList; // Lưu fileList theo màu sắc
+    setFileData(newFileData);
   };
 
   // gen dữ liệu
+  const [tableData, setTableData] = useState([]);
   const dataDetail = () => {
     const formData = form.getFieldsValue();
-    console.log(formData);
-    console.log(listColorAdd);
-    console.log(listSizeAdd);
+    const newRecords = [];
+    let stt = 1;
+    listColorAdd.forEach((colorItem) => {
+      listSizeAdd.forEach((sizeItem) => {
+        const newRecord = {
+          key: `${colorItem.color}-${sizeItem.nameSize}`,
+          ...formData, // Copy existing formData properties
+          color: colorItem.color, // Add color property
+          size: sizeItem.nameSize, // Add size property
+          quantity: 1,
+          price: "1000000",
+          stt: stt++,
+        };
+        newRecords.push(newRecord);
+      });
+    });
+    setTableData(newRecords);
   };
 
   useEffect(() => {
@@ -902,54 +1011,6 @@ const CreateProductManagment = () => {
           }}
         >
           <span
-            style={{ fontSize: "20px", fontWeight: "bold", marginTop: "10px" }}
-          >
-            Ảnh
-          </span>
-        </div>
-
-        <div style={{ marginTop: "25px" }}>
-          <Upload
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            listType="picture-card"
-            fileList={fileList}
-            onChange={handleChange}
-            onPreview={handlePreview}
-            itemRender={(originNode, file, currIndex) =>
-              customItemRender(originNode, file, currIndex)
-            }
-          >
-            {/* Render uploadButton if fileList length is less than 10 */}
-            {fileList.length >= 10 ? null : uploadButton}
-          </Upload>
-          <Modal
-            open={previewOpen}
-            title={previewTitle}
-            footer={null}
-            onCancel={handleCancelImage}
-          >
-            <img
-              alt="example"
-              style={{
-                width: "100%",
-              }}
-              src={previewImage}
-            />
-          </Modal>
-        </div>
-        {/* Display the loading spinner while submitting */}
-      </div>
-
-      <div className="filter">
-        <div
-          className="title_product"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span
             style={{
               fontSize: "20px",
               fontWeight: "bold",
@@ -960,7 +1021,13 @@ const CreateProductManagment = () => {
             Chi tiết sản phẩm
           </span>
         </div>
-        <Table columns={columns} dataSource={data} onChange={onChange} />
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={tableData}
+          pagination={{ pageSize: 5 }}
+          rowClassName={getRowClassName}
+        />
       </div>
     </>
   );

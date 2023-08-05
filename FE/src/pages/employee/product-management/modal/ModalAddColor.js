@@ -11,6 +11,7 @@ import {
   SetColor,
 } from "../../../../app/reducer/Color.reducer";
 import { toast } from "react-toastify";
+import convert from "color-convert";
 
 const AddColorModal = ({ visible, onCancel, onSaveData }) => {
   const [form] = Form.useForm();
@@ -32,9 +33,16 @@ const AddColorModal = ({ visible, onCancel, onSaveData }) => {
 
   const [listColor, setListColor] = useState([]);
 
-  const getColorName = (color) => {
-    const colorObj = tinycolor(color);
-    return colorObj.toName() || colorObj.toHexString();
+  const getColorName = (colorCode) => {
+    const hexCode = colorCode.replace("#", "").toUpperCase();
+    const rgb = convert.hex.rgb(hexCode);
+    const colorName = convert.rgb.keyword(rgb);
+
+    if (colorName === null) {
+      return "Unknown"; // Trường hợp không tìm thấy tên màu
+    } else {
+      return colorName; // Trả về tên màu
+    }
   };
 
   const getList = () => {
@@ -135,7 +143,7 @@ const AddColorModal = ({ visible, onCancel, onSaveData }) => {
             <Col key={color} span={6}>
               <Button
                 block
-                title={color.code}
+                title={color.name}
                 style={{ backgroundColor: color.code }}
                 className={selected.includes(color.code) ? "selected" : ""}
                 onClick={() => toggleSelection(color.code)}
