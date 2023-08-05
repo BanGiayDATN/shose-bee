@@ -24,8 +24,6 @@ public abstract class BaseEmployeeRequest {
 
     private Status status;
 
-    private String password;
-
     private Integer points;
 
     private String id;

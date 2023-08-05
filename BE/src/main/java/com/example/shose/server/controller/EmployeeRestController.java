@@ -70,6 +70,7 @@ public class EmployeeRestController {
         addressRequest.setProvince(jsonObject.get("province").getAsString());
         addressRequest.setDistrict(jsonObject.get("district").getAsString());
         addressRequest.setWard(jsonObject.get("ward").getAsString());
+        addressRequest.setWardCode(jsonObject.get("wardCode").getAsString());
         addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
         addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
         return new ResponseObject(userService.create(employeeRequest,addressRequest,file));
@@ -100,13 +101,13 @@ public class EmployeeRestController {
         addressRequest.setProvince(jsonObject.get("province").getAsString());
         addressRequest.setDistrict(jsonObject.get("district").getAsString());
         addressRequest.setWard(jsonObject.get("ward").getAsString());
+        addressRequest.setWardCode(jsonObject.get("wardCode").getAsString());
         addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
         addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
         addressRequest.setUserId(id);
 
         return new ResponseObject(userService.update(employeeRequest,addressRequest,file));
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseObject delete(@PathVariable("id") String id) {

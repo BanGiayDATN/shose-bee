@@ -15,14 +15,14 @@ import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
 import { AccountApi } from "../../../../api/employee/account/account.api";
 import { CreateAccount } from "../../../../app/reducer/Account.reducer";
-import "../style-account.css";
+import "../style-staff.css";
 import moment from "moment";
-
 import { AddressApi } from "../../../../api/customer/address/address.api";
 import { useNavigate } from "react-router";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, CameraOutlined } from "@ant-design/icons";
 
-// import { QrReader } from "react-qr-reader";
+import { QrReader } from "react-qr-reader";
+import { isInteger } from "lodash";
 
 const { Option } = Select;
 
@@ -33,7 +33,10 @@ const ModalCreateAccount = () => {
   const [listWard, setListWard] = useState([]);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
+  const [qrScannerVisible, setQrScannerVisible] = useState(false);
+  const showQrScanner = () => {
+    setQrScannerVisible(true);
+  };
   // ảnh
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -84,6 +87,48 @@ const ModalCreateAccount = () => {
     </div>
   );
 
+  const [qrData, setQrData] = useState("");
+
+  const handleScan = (qrData) => {
+    if (qrData) {
+      console.log("QR Data:", qrData);
+
+      // Tách thông tin từ dữ liệu QR theo dấu "|"
+      const qrDataArray = qrData.text.split("|");
+
+      const fullName = qrDataArray[2];
+
+      const dateOfBirth = moment(qrDataArray[3], "DDMMYYYY").format(
+        "YYYY-MM-DD"
+      );
+
+      const gender = qrDataArray[4];
+
+      const fullAddress = qrDataArray[5];
+      // Phân tách địa chỉ
+      const addressParts = fullAddress.split(", ");
+      const line = addressParts[0] || "";
+      const ward = addressParts[1] || "";
+      const district = addressParts[2] || "";
+      const province = addressParts[3] || "";
+      if (fullName && dateOfBirth && gender && fullAddress) {
+        form.setFieldsValue({
+          fullName: fullName,
+          dateOfBirth: dateOfBirth,
+          gender: gender === "Nữ" ? "false" : "true",
+          line: line,
+          ward: ward,
+          district: district,
+          province: province,
+        });
+      } else {
+        console.error("Error");
+      }
+    }
+  };
+  const handleError = (error) => {
+    console.error("QR Scan Error:", error);
+  };
   const loadDataProvince = () => {
     AddressApi.fetchAllProvince().then(
       (res) => {
@@ -96,6 +141,7 @@ const ModalCreateAccount = () => {
   };
 
   const handleProvinceChange = (value, valueProvince) => {
+    form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
         setListDistricts(res.data.data);
@@ -106,18 +152,17 @@ const ModalCreateAccount = () => {
   const handleDistrictChange = (value, valueDistrict) => {
     form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      console.log(res.data.data);
       setListWard(res.data.data);
     });
+  };
+
+  const handleWardChange = (value, valueWard) => {
+    form.setFieldsValue({ wardCode: valueWard.valueWard });
   };
   useEffect(() => {
     loadDataProvince();
   }, []);
-
-  // const [qrData, setQrData] = useState("");
-
-  // const handleError = (error) => {
-  //   console.error("QR Scan Error:", error);
-  // };
 
   const handleOk = () => {
     form
@@ -143,10 +188,11 @@ const ModalCreateAccount = () => {
         if (uploadedFile == null) {
           toast.error("Bạn cần thêm ảnh đai diện ");
         } else {
-          console.log(updatedValues);
           const formData = new FormData();
           formData.append(`multipartFile`, uploadedFile.originFileObj);
           formData.append(`request`, JSON.stringify(updatedValues));
+          console.log(values);
+          console.log(formData);
           AccountApi.create(formData)
             .then((res) => {
               dispatch(CreateAccount(res.data.data));
@@ -264,7 +310,6 @@ const ModalCreateAccount = () => {
               alignItems: "center",
               justifyContent: "center",
               marginTop: "15px",
-              marginBottom: "30px",
               fontSize: "20px",
             }}
           >
@@ -272,6 +317,29 @@ const ModalCreateAccount = () => {
           </h1>
           <Form form={form} layout="vertical">
             <div className="title_add">
+              <Row style={{ marginLeft: "58%", width: "300px" }}>
+                <Col span={24}>
+                  <div>
+                    {qrScannerVisible && (
+                      <div>
+                        <QrReader
+                          delay={300}
+                          onError={handleError}
+                          onResult={handleScan}
+                        />
+                        <p> {qrData}</p>
+                      </div>
+                    )}
+                    <Button
+                      icon={<CameraOutlined />}
+                      onClick={showQrScanner}
+                      style={{ marginLeft: "190px" }}
+                    >
+                      Quét QR
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
               <Row gutter={[24, 8]}>
                 <Col span={10} style={{ marginLeft: "6%" }}>
                   <Form.Item
@@ -335,11 +403,15 @@ const ModalCreateAccount = () => {
                       { required: true, message: "Vui lòng chọn Xã/Phường" },
                     ]}
                   >
-                    <Select defaultValue="">
+                    <Select defaultValue="" onChange={handleWardChange}>
                       <Option value="">--Chọn Xã/Phường--</Option>
                       {listWard?.map((item) => {
                         return (
-                          <Option key={item.WardCode} value={item.WardName}>
+                          <Option
+                            key={item.WardCode}
+                            value={item.WardName}
+                            valueWard={item.WardCode}
+                          >
                             {item.WardName}
                           </Option>
                         );
@@ -364,16 +436,6 @@ const ModalCreateAccount = () => {
 
                 <Col span={10} style={{ marginLeft: "40px" }}>
                   <Form.Item
-                    label="Ngày sinh"
-                    name="dateOfBirth"
-                    rules={[
-                      { required: true, message: "Vui lòng chọn ngày sinh" },
-                      { validator: validateAge },
-                    ]}
-                  >
-                    <Input className="input-item" type="date" />
-                  </Form.Item>
-                  <Form.Item
                     label="Số điện thoại"
                     name="phoneNumber"
                     rules={[
@@ -390,7 +452,16 @@ const ModalCreateAccount = () => {
                   >
                     <Input className="input-item" placeholder="Số điện thoại" />
                   </Form.Item>
-
+                  <Form.Item
+                    label="Ngày sinh"
+                    name="dateOfBirth"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn ngày sinh" },
+                      { validator: validateAge },
+                    ]}
+                  >
+                    <Input className="input-item" type="date" />
+                  </Form.Item>
                   <Form.Item
                     label="Quận/Huyện"
                     name="district"
@@ -444,15 +515,15 @@ const ModalCreateAccount = () => {
                       <Radio value="false">Nữ</Radio>
                     </Radio.Group>
                   </Form.Item>
-                  {/* <div>
-                    <QrReader
-                      delay={300}
-                      onError={handleError}
-                      onResult={onResult}
-                      style={{ width: "100%" }}
-                    />
-                    <p>{qrData}</p>
-                  </div> */}
+                  <Form.Item name="toDistrictId" hidden>
+                    <Input disabled />
+                  </Form.Item>
+                  <Form.Item name="provinceId" hidden>
+                    <Input disabled />
+                  </Form.Item>
+                  <Form.Item name="wardCode" hidden>
+                    <Input disabled />
+                  </Form.Item>
                 </Col>
               </Row>
             </div>

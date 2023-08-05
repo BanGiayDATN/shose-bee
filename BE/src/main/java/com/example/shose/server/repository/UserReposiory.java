@@ -25,7 +25,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.full_name AS fullName,
                 u.date_of_birth AS dateOfBirth,
                 u.avata AS avata,
-                 u.points AS points,
+                u.points AS points,
                 u.email AS email,
                 u.phone_number AS phoneNumber,
                 u.updated_by AS updatedBy,
@@ -33,10 +33,10 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.status AS status,
                 u.created_date AS createdDate,
                 u.last_modified_date AS lastModifiedDate,
-                 a.password AS passWord
+                a.password AS passWord
             FROM user u
               JOIN account a ON u.id = a.id_user
-            WHERE a.roles=2
+            WHERE a.roles = 2        
              AND  
               ( :#{#req.fullName} IS NULL 
                     OR :#{#req.fullName} LIKE '' 
@@ -53,7 +53,6 @@ public interface UserReposiory extends JpaRepository<User, String> {
                   ( :#{#req.status} IS NULL 
                     OR :#{#req.status} LIKE '' 
                     OR u.status LIKE :#{#req.status} )
-            GROUP BY u.id
             ORDER BY u.last_modified_date DESC  
             """, nativeQuery = true)
     List<EmployeeResponse> getAll(@Param("req") FindEmployeeRequest req);
@@ -108,7 +107,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.date_of_birth AS dateOfBirth,
                 u.avata AS avata,
                 u.email AS email,
-                  u.points AS points,
+                u.points AS points,
                 u.phone_number AS phoneNumber,
                 u.updated_by AS updatedBy,
                 u.created_by AS createdBy,
@@ -121,29 +120,28 @@ public interface UserReposiory extends JpaRepository<User, String> {
             WHERE u.id = :id
             """, nativeQuery = true)
     Optional<EmployeeResponse> getOneWithPassword(@Param("id") String id);
-
     @Query(value = """
-    SELECT
-        ROW_NUMBER() OVER (ORDER BY u.last_modified_date DESC) AS stt,
-        u.id AS id,
-        u.gender AS gender,
-        u.full_name AS fullName,
-        u.date_of_birth AS dateOfBirth,
-        u.avata AS avata,
-        u.email AS email,
-        u.points AS points,
-        u.phone_number AS phoneNumber,
-        u.updated_by AS updatedBy,
-        u.created_by AS createdBy,
-        u.status AS status,
-        u.created_date AS createdDate,
-        u.last_modified_date AS lastModifiedDate
-    FROM user u
-    WHERE  (:#{#req.startTime} = 0 OR u.date_of_birth >= :#{#req.startTime})
-    AND    (:#{#req.endTime} = 0 OR u.date_of_birth <= :#{#req.endTime})
-    AND    (YEAR(CURRENT_DATE()) - YEAR(u.date_of_birth) >= :#{#req.minAge})
-    AND    (YEAR(CURRENT_DATE()) - YEAR(u.date_of_birth) <= :#{#req.maxAge})
-""", nativeQuery = true)
+                SELECT
+                    ROW_NUMBER() OVER (ORDER BY u.last_modified_date DESC) AS stt,
+                    u.id AS id,
+                    u.gender AS gender,
+                    u.full_name AS fullName,
+                    u.date_of_birth AS dateOfBirth,
+                    u.avata AS avata,
+                    u.email AS email,
+                    u.points AS points,
+                    u.phone_number AS phoneNumber,
+                    u.updated_by AS updatedBy,
+                    u.created_by AS createdBy,
+                    u.status AS status,
+                    u.created_date AS createdDate,
+                    u.last_modified_date AS lastModifiedDate
+                FROM user u
+                WHERE  (:#{#req.startTime} = 0 OR u.date_of_birth >= :#{#req.startTime})
+                AND    (:#{#req.endTime} = 0 OR u.date_of_birth <= :#{#req.endTime})
+                AND    (YEAR(CURRENT_DATE()) - YEAR(u.date_of_birth) >= :#{#req.minAge})
+                AND    (YEAR(CURRENT_DATE()) - YEAR(u.date_of_birth) <= :#{#req.maxAge})
+            """, nativeQuery = true)
     List<EmployeeResponse> findByDate(@Param("req") FindEmployeeRequest req);
 
 

@@ -18,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { AccountApi } from "../../../../api/employee/account/account.api";
 import { UpdateAccount } from "../../../../app/reducer/Account.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-account.css";
+import "../style-staff.css";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 const { Option } = Select;
@@ -219,7 +219,6 @@ const ModalDetailAccount = ({ visible }) => {
             >
               Ảnh đại diện
             </h1>
-            {/* ... */}
             <div>
               <Upload
                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -251,7 +250,6 @@ const ModalDetailAccount = ({ visible }) => {
                 />
               </Modal>
             </div>
-            {/* ... */}
           </div>
         </Col>
 
@@ -345,21 +343,10 @@ const ModalDetailAccount = ({ visible }) => {
                   <Form.Item name="toDistrictId" hidden>
                     <Input disabled />
                   </Form.Item>
-                  {/* <div>
-                  <QrReader
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: "100%" }}
-                  />
-                  <p>Scanned Data: {qrData}</p>
-                </div> */}
                 </Col>
               </Row>
             </div>
           </Form>
-          {/* </div> */}
-
           <div
             style={{
               display: "flex",

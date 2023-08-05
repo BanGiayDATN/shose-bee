@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { AccountApi } from "../../../../api/employee/account/account.api";
 import { UpdateAccount } from "../../../../app/reducer/Account.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-account.css";
+import "../style-staff.css";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 import axios from "axios";
@@ -111,17 +111,8 @@ const ModalUpdateAccount = ({ visible }) => {
       setListWard(res.data.data);
     });
   };
-
-  const getOneAddress = () => {
-    if (id != null && id !== "") {
-      AddressApi.getOne(id).then((res) => {
-        setAccount(res.data.data);
-        form.setFieldsValue({
-          ...res.data.data,
-          dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
-        });
-      });
-    }
+  const handleWardChange = (value, valueWard) => {
+    form.setFieldsValue({ wardCode: valueWard.valueWard });
   };
   const getOne = () => {
     if (id != null && id !== "") {
@@ -138,6 +129,7 @@ const ModalUpdateAccount = ({ visible }) => {
             line: resAddress.data.data.line,
             toDistrictId: resAddress.data.data.toDistrictId,
             provinceId: resAddress.data.data.provinceId,
+            wardCode: resAddress.data.data.wardCode,
           });
           AddressApi.fetchAllProvinceWard(
             resAddress.data.data.toDistrictId
@@ -429,11 +421,14 @@ const ModalUpdateAccount = ({ visible }) => {
                       { required: true, message: "Vui lòng chọn Xã/Phường" },
                     ]}
                   >
-                    <Select>
-                      {/* <Option value="">--Chọn Xã/Phường--</Option> */}
+                    <Select onChange={handleWardChange}>
                       {listWard?.map((item) => {
                         return (
-                          <Option key={item.WardCode} value={item.WardName}>
+                          <Option
+                            key={item.WardCode}
+                            value={item.WardName}
+                            valueWard={item.WardCode}
+                          >
                             {item.WardName}
                           </Option>
                         );
@@ -560,15 +555,9 @@ const ModalUpdateAccount = ({ visible }) => {
                   <Form.Item name="provinceId" hidden>
                     <Input disabled />
                   </Form.Item>
-                  {/* <div>
-                  <QrReader
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: "100%" }}
-                  />
-                  <p>Scanned Data: {qrData}</p>
-                </div> */}
+                  <Form.Item name="wardCode" hidden>
+                    <Input disabled />
+                  </Form.Item>
                 </Col>
               </Row>
             </div>

@@ -99,6 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         address.setLine(addressRequest.getLine());
         address.setProvince(addressRequest.getProvince());
         address.setDistrict(addressRequest.getDistrict());
+        address.setWardCode(addressRequest.getWardCode());
         address.setUser(addressUser); // add địa chỉ vào database
         addressRepository.save(address);
 
@@ -143,6 +144,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         address.setProvince(addressRequest.getProvince());
         address.setStatus(Status.DANG_SU_DUNG);
         address.setDistrict(addressRequest.getDistrict());
+        address.setWardCode(addressRequest.getWardCode());
         address.setUser(user);
         addressRepository.save(address);
 
