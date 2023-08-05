@@ -370,7 +370,7 @@ function CreateBill() {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
     var addressuser = "";
-    if (checkNotEmptyAddress()) {
+    if (!checkNotEmptyAddress()) {
       addressuser =
         address.detail +
         ", " +
@@ -382,7 +382,6 @@ function CreateBill() {
     }
     var idAccount = "";
     if (user != null) {
-      console.log(user);
       idAccount = user.idAccount;
     }
     var data = {
@@ -398,9 +397,8 @@ function CreateBill() {
       vouchers: newVoucher,
       idUser: idAccount,
     };
-    console.log(data);
     if (isOpenDelivery) {
-      if (checkNotEmptyAddress() && checkNotEmptyBill()) {
+      if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {
           Modal.confirm({
             title: "Xác nhận",
@@ -418,7 +416,7 @@ function CreateBill() {
           toast("vui lòng chọn sản phẩm");
         }
       } else {
-        toast("Vui lòng Nhập địa chỉ");
+        toast("Vui lòng nhập thông tin giao hàng");
       }
     } else {
       if (totalBill > 0) {
@@ -1336,6 +1334,7 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập địa chỉ"
                           style={{ width: "90%", height: "39px" }}
+                          value={address.detail}
                           onChange={(e) =>
                             onChangeAddress("detail", e.target.value)
                           }
