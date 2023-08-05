@@ -986,8 +986,11 @@ function CreateBill() {
                 </Col>
               </Row>
               <Row justify={"center"} style={{ width: "100%" }}>
-                <Col span={12} align="center" >
-                 <span style={{marginLeft: "70px", marginBottom: "30px"}}> Không có sản phẩm nào trong giỏ</span>
+                <Col span={12} align="center">
+                  <span style={{ marginLeft: "70px", marginBottom: "30px" }}>
+                    {" "}
+                    Không có sản phẩm nào trong giỏ
+                  </span>
                 </Col>
               </Row>
             </Row>
@@ -1069,7 +1072,7 @@ function CreateBill() {
                   <InputNumber
                     min={1}
                     max={item.maxQuantity}
-                    style={{margin: "0 5px"}}
+                    style={{ margin: "0 5px" }}
                     value={item.quantity}
                     onChange={(value) => handleQuantityChange(value, item)}
                   />
@@ -1618,7 +1621,13 @@ function CreateBill() {
             </Row>
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={12}>
-                <span style={{ margin: "2px", fontWeight: "bold",  fontSize: "18px", }}>
+                <span
+                  style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}
+                >
                   Tổng tiền:
                 </span>{" "}
               </Col>

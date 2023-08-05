@@ -128,14 +128,10 @@
       align-items: center;
       margin-bottom: 10px;
   }
-  .ant-upload-list-item-container{
+  /* .ant-upload-list-item-container{
     width: 290px !important;
     height: 290px !important;
-  }
-  .ant-upload.ant-upload-select{
-    width: 290px !important;
-    height: 290px !important;
-  }
+  } */
   .ant-select-selector{
     height: 40px !important;
   }
