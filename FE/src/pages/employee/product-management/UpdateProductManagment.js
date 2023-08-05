@@ -23,7 +23,7 @@ import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../api/employee/color/Color.api";
-import "./style-detail.css";
+import "./style-product.css";
 import { PlusOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { IamgeApi } from "../../../api/employee/image/Image.api";
 import { ProductApi } from "../../../api/employee/product/product.api";
