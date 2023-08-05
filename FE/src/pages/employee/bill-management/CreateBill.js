@@ -573,7 +573,7 @@ function CreateBill() {
       afterPrice: price - record.value,
       discountPrice: record.value,
     });
-    setCodeVoucher(record.code);
+    setCodeVoucher(record.code + " - " + record.name  );
     setIsModalVoucherOpen(false);
   };
 
@@ -1550,7 +1550,7 @@ function CreateBill() {
                     type="checkbox"
                     id="checkbox"
                     defaultChecked={isOpenDelivery}
-                    onChange={(e) => setIsOpenDelivery(e.target.checked)}
+                    onChange={(e) => setIsOpenDelivery(!isOpenDelivery)}
                   />
                   <div class="slider round"></div>
                 </label>
