@@ -279,9 +279,13 @@ function ModalAddProductDetail({
       dataIndex: "min",
       key: "min",
       sorter: (a, b) => a.price - b.price,
-      render: (text, record) => (
-        formatCurrency(record.min) + " ~ " + formatCurrency(record.max)
-      ),
+      render: (text, record) => {
+        if(record.min === record.max){
+          return (formatCurrency(record.min))
+        }else{
+          return (formatCurrency(record.min) + " ~ " + formatCurrency(record.max))
+        }
+    },
     },
     {
       title: "Số Lượng Tồn ",
