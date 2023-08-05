@@ -4,6 +4,7 @@ import com.example.shose.server.dto.response.billhistory.BillHistoryResponse;
 import com.example.shose.server.entity.BillHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,5 +24,11 @@ public interface BillHistoryRepository extends JpaRepository<BillHistory, String
             ORDER BY bihi.created_date ASC
             """, nativeQuery = true)
     List<BillHistoryResponse> findAllByIdBill(String idBill);
+
+    @Query(value = """
+             DELETE FROM  bill_history
+                   WHERE id_bill = :id
+            """, nativeQuery = true)
+    boolean deleteAllByIdBill(@Param("id") String idBill);
 
 }

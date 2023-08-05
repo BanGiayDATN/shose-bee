@@ -4,7 +4,9 @@ package com.example.shose.server.repository;
  */
 
 import com.example.shose.server.dto.request.promotion.FindPromotionRequest;
+import com.example.shose.server.dto.response.promotion.PromotionByIdRespone;
 import com.example.shose.server.dto.response.promotion.PromotionRespone;
+import com.example.shose.server.dto.response.promotion.PromotionByProDuctDetail;
 import com.example.shose.server.entity.Promotion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -58,8 +60,47 @@ public interface PromotionRepository extends JpaRepository<Promotion,String> {
             """,
             nativeQuery = true )
     List<PromotionRespone> getAllPromotion(@Param("req") FindPromotionRequest req);
-    @Query("SELECT po FROM Promotion po WHERE po.code like %:code%")
-    Promotion getByCode(@Param("code") String code);
+    @Query(value = """
+               SELECT               
+                    po.id as id,
+                    po.code as code,
+                    po.name as name,
+                    po.value as value,
+                    po.start_date as startDate,
+                    po.end_date as endDate,
+                    po.status as status,
+                    (select GROUP_CONCAT(DISTINCT pd.id ) from product_detail pd join promotion_product_detail ppd on pd.id = ppd.id_product_detail
+                     where ppd.status ='DANG_SU_DUNG'and ppd.id_promotion = po.id) as productDetail,
+                     GROUP_CONCAT(DISTINCT pd.id ) as productDetailUpdate,
+                    GROUP_CONCAT(DISTINCT p.id) as product,
+                    GROUP_CONCAT(DISTINCT ppd.id) AS promotionProductDetail
+                
+            FROM promotion po 
+              LEFT JOIN promotion_product_detail ppd on po.id = ppd.id_promotion
+              LEFT JOIN product_detail pd on pd.id = ppd.id_product_detail
+               LEFT JOIN product p on p.id = pd.id_product
+               where po.id = :id
+               group by po.id
+               """,nativeQuery = true )
+    PromotionByIdRespone getByIdPromotion(@Param("id") String id);
+    @Query(value = """
+                 select
+                  i.name AS image,
+                  p.code AS code,
+                  p.name AS name,
+                  pr.name AS namePromotion,
+                  pr.value AS valuePromotion,
+                  ppd.status AS statusPromotion
+                  from product_detail pd 
+                 JOIN image i on i.id_product_detail = pd.id
+                  JOIN product p on p.id = pd.id_product
+                 JOIN promotion_product_detail ppd on ppd.id_product_detail = pd.id
+                 JOIN promotion pr on pr.id = ppd.id_promotion
+                 
+                 where pd.id =:id
+            """,nativeQuery = true)
+    List<PromotionByProDuctDetail> getByIdProductDetail(@Param("id")String id);
+
     @Query("SELECT po FROM Promotion po WHERE po.endDate < :currentDate")
     List<Promotion> findExpiredPromotions(@Param("currentDate") Long currentDate);
     @Query("SELECT po FROM Promotion po WHERE po.startDate = :currentDate")

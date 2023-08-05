@@ -116,11 +116,15 @@ const ModalCreateCustomer = () => {
   };
 
   const handleDistrictChange = (value, valueDistrict) => {
-    console.log(valueDistrict.valueDistrict);
     form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      console.log(res.data.data);
       setListWard(res.data.data);
     });
+  };
+
+  const handleWardChange = (value, valueWard) => {
+    form.setFieldsValue({ wardCode: valueWard.valueWard });
   };
   useEffect(() => {
     loadDataProvince();
@@ -349,11 +353,15 @@ const ModalCreateCustomer = () => {
                       { required: true, message: "Vui lòng chọn Xã/Phường" },
                     ]}
                   >
-                    <Select defaultValue="">
+                    <Select defaultValue="" onChange={handleWardChange}>
                       <Option value="">--Chọn Xã/Phường--</Option>
                       {listWard?.map((item) => {
                         return (
-                          <Option key={item.WardCode} value={item.WardName}>
+                          <Option
+                            key={item.WardCode}
+                            value={item.WardName}
+                            valueWard={item.WardCode}
+                          >
                             {item.WardName}
                           </Option>
                         );
@@ -462,6 +470,9 @@ const ModalCreateCustomer = () => {
                   <Input disabled />
                 </Form.Item>
                 <Form.Item name="provinceId" hidden>
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item name="wardCode" hidden>
                   <Input disabled />
                 </Form.Item>
                 {/* <div>

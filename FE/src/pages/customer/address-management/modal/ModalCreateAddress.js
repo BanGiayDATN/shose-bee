@@ -79,6 +79,10 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
     });
   };
 
+  const handleWardChange = (value, valueWard) => {
+    form.setFieldsValue({ wardCode: valueWard.valueWard });
+  };
+
   useEffect(() => {
     loadDataProvince();
   }, []);
@@ -102,7 +106,7 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          userId: "f01cb41d-cf72-46b0-8bb4-290e28863062",
+          userId: "2dd6dc5e-ad8d-473b-a2aa-23f3477a6394",
         }}
       >
         <Form.Item
@@ -152,11 +156,15 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
           name="ward"
           rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
         >
-          <Select defaultValue="">
+          <Select defaultValue="" onChange={handleWardChange}>
             <Option value="">--Chọn Xã/Phường--</Option>
             {listWard?.map((item) => {
               return (
-                <Option key={item.WardCode} value={item.WardName}>
+                <Option
+                  key={item.WardCode}
+                  value={item.WardName}
+                  valueWard={item.WardCode}
+                >
                   {item.WardName}
                 </Option>
               );
@@ -186,6 +194,9 @@ const ModalCreateAddress = ({ visible, onCancel }) => {
           <Input disabled />
         </Form.Item>
         <Form.Item style={{ marginTop: "40px" }} name="provinceId" hidden>
+          <Input disabled />
+        </Form.Item>
+        <Form.Item style={{ marginTop: "40px" }} name="wardCode" hidden>
           <Input disabled />
         </Form.Item>
       </Form>

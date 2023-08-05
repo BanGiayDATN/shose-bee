@@ -6,6 +6,8 @@ package com.example.shose.server.service;
 import com.example.shose.server.dto.request.promotion.CreatePromotionRequest;
 import com.example.shose.server.dto.request.promotion.FindPromotionRequest;
 import com.example.shose.server.dto.request.promotion.UpdatePromotionRequest;
+import com.example.shose.server.dto.response.promotion.PromotionByIdRespone;
+import com.example.shose.server.dto.response.promotion.PromotionByProDuctDetail;
 import com.example.shose.server.dto.response.promotion.PromotionRespone;
 import com.example.shose.server.entity.Promotion;
 
@@ -19,4 +21,6 @@ public interface PromotionService {
     Promotion getById(String id);
     List<Promotion> expiredVoucher();
     List<Promotion> startVoucher();
+    PromotionByIdRespone getByIdPromotion(String id);
+    List<PromotionByProDuctDetail> getByIdProductDetail(String id);
 }

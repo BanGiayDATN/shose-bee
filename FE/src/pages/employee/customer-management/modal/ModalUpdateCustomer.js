@@ -111,6 +111,9 @@ const ModalUpdateCustomer = ({ visible }) => {
       setListWard(res.data.data);
     });
   };
+  const handleWardChange = (value, valueWard) => {
+    form.setFieldsValue({ wardCode: valueWard.valueWard });
+  };
 
   const getOneAddress = () => {
     if (id != null && id !== "") {
@@ -138,6 +141,7 @@ const ModalUpdateCustomer = ({ visible }) => {
             line: resAddress.data.data.line,
             toDistrictId: resAddress.data.data.toDistrictId,
             provinceId: resAddress.data.data.provinceId,
+            wardCode: resAddress.data.data.wardCode,
           });
           AddressApi.fetchAllProvinceWard(
             resAddress.data.data.toDistrictId
@@ -435,11 +439,15 @@ const ModalUpdateCustomer = ({ visible }) => {
                       { required: true, message: "Vui lòng chọn Xã/Phường" },
                     ]}
                   >
-                    <Select>
+                    <Select onChange={handleWardChange}>
                       {/* <Option value="">--Chọn Xã/Phường--</Option> */}
                       {listWard?.map((item) => {
                         return (
-                          <Option key={item.WardCode} value={item.WardName}>
+                          <Option
+                            key={item.WardCode}
+                            value={item.WardName}
+                            valueWard={item.WardCode}
+                          >
                             {item.WardName}
                           </Option>
                         );
@@ -554,6 +562,9 @@ const ModalUpdateCustomer = ({ visible }) => {
                   <Input disabled />
                 </Form.Item>
                 <Form.Item name="provinceId" hidden>
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item name="wardCode" hidden>
                   <Input disabled />
                 </Form.Item>
                 {/* <div>

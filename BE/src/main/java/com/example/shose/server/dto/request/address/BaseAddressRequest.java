@@ -26,6 +26,8 @@ public abstract class BaseAddressRequest {
 
     private Integer toDistrictId;
 
+    private String wardCode;
+
     private Status status;
 
     private String userId;

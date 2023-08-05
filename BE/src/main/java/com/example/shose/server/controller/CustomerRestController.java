@@ -72,6 +72,7 @@ public class CustomerRestController {
         addressRequest.setWard(jsonObject.get("ward").getAsString());
         addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
         addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
+        addressRequest.setWardCode(jsonObject.get("wardCode").getAsString());
 
         return new ResponseObject(customerService.create(customerRequest,addressRequest,file));
     }
@@ -104,6 +105,8 @@ public class CustomerRestController {
         addressRequest.setWard(jsonObject.get("ward").getAsString());
         addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
         addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
+        addressRequest.setWardCode(jsonObject.get("wardCode").getAsString());
+
         addressRequest.setUserId(id);
 
         return new ResponseObject(customerService.update(customerRequest,addressRequest,file));

@@ -73,9 +73,6 @@ public class ProductDetail extends PrimaryEntity {
     @JoinColumn(name = "id_sole",referencedColumnName = "id")
     private Sole sole;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_promotion",referencedColumnName = "id")
-    private Promotion promotion;
 
 
 }

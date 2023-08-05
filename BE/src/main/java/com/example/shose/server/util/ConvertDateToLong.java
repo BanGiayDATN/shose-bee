@@ -44,7 +44,7 @@ public class ConvertDateToLong {
         long now = 0;
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            now = df.parse(df.format(new Date())).getTime() / 1000;
+            now = df.parse(df.format(new Date())).getTime()  ;
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

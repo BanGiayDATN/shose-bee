@@ -47,7 +47,7 @@ public class VoucherServiceImpl implements VoucherService {
                 .quantity(request.getQuantity())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
-                .status(request.getStatus()).build();
+                .status(Status.DANG_SU_DUNG).build();
         return voucherRepository.save(voucher);
     }
 

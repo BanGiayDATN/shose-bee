@@ -1,4 +1,4 @@
-package com.example.shose.server.dto.response;
+package com.example.shose.server.dto.response.address;
 
 import com.example.shose.server.entity.Address;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +34,5 @@ public interface AddressResponse {
 
     @Value("#{target.lastModifiedDate}")
     Long getLastModifiedDate();
-
-    @Value("#{target.idUser}")
-    String getIdUser();
 
 }

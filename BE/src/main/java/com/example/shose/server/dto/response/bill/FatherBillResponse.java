@@ -40,7 +40,7 @@ public class FatherBillResponse {
         this.createdDate = billResponse.getCreatedDate();
         this.userName = billResponse.getUserName();
         this.nameEmployees = billResponse.getNameEmployees();
-        this.type = billResponse.getType();
+//        this.type = billResponse.getType();
         this.statusBill = billResponse.getStatusBill();
         this.totalMoney = billResponse.getTotalMoney();
         this.itemDiscount = billResponse.getItemDiscount();

@@ -3,7 +3,7 @@ export class AddressApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/customer/address?id_user=f01cb41d-cf72-46b0-8bb4-290e28863062`,
+      url: `/customer/address?id_user=2dd6dc5e-ad8d-473b-a2aa-23f3477a6394`,
       params: filter,
     });
   };
@@ -26,7 +26,7 @@ export class AddressApi {
   static getAddressByUserIdAndStatus = (id) => {
     return request({
       method: "GET",
-      url: `/customer/address/address-user/${id}`,
+      url: `/customer/address/address-user-status/${id}`,
     });
   };
 
@@ -104,6 +104,12 @@ export class AddressApi {
         to_ward_code: to_ward_code,
         service_id: 53320,
       },
+    });
+  };
+  static fetchAllAddressByUser = (idUser) => {
+    return request({
+      method: "GET",
+      url: `/customer/address/address-user/${idUser}`,
     });
   };
 }
