@@ -158,14 +158,9 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
-            Optional<Size> size = sizeRepository.findByName(billDetailRequest.getSize());
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-            if (!size.isPresent()) {
-                throw new RestApiException(Message.NOT_EXISTS);
-            }
-
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity( productDetail.get().getQuantity() - billDetailRequest.getQuantity());
