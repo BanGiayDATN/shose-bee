@@ -37,6 +37,8 @@ public class Voucher extends PrimaryEntity {
 
     private Integer quantity;
 
+    private String urlImage;
+
     @Column(name = "start_date")
     private Long startDate;
 
