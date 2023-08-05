@@ -9,6 +9,7 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
+import UpdatePromotionManagement from "./pages/employee/promotion-management/UpdatePromotionManagement"
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
@@ -18,6 +19,7 @@ import SoleManagement from "./pages/employee/sole-management/SoleManagement";
 import AccountManagement from "./pages/employee/account-management/AccountManagement";
 import CreateProductManagment from "./pages/employee/product-management/CreateProductManagment";
 import PromotionManagement from "./pages/employee/promotion-management/PromotionManagement";
+import VoucherManagement from"./pages/employee/voucher-management/VoucherManagement";
 import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
@@ -308,6 +310,26 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <CreatePromotionManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+           <Route
+            path="/update-promotion-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <UpdatePromotionManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+           <Route
+            path="/voucher-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <VoucherManagement />
                 </DashBoardEmployee>
               </AuthGuard>
             }

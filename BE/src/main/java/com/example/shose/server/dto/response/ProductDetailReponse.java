@@ -43,8 +43,18 @@ public interface ProductDetailReponse {
     @Value("#{target.color}")
     String getColor();
 
+    @Value("#{target.nameSize}")
+    String getNameSize();
+
+    @Value("#{target.nameCategory}")
+    String getNameCategory();
+
+    @Value("#{target.nameBrand}")
+    String getNameBrand();
+
     @Value("#{target.size}")
     String getSize();
 
-
+    @Value("#{target.promotion}")
+    String getPromotion();
 }

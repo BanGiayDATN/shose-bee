@@ -48,9 +48,9 @@ public class BillRestController {
         return  new ResponseObject(billService.getAllUserInBill());
     }
 
-    @PostMapping("/offline")
-    public ResponseObject saveOffline(@RequestBody  CreateBillOfflineRequest request){
-        return  new ResponseObject(billService.saveOffline(userId, request));
+    @PostMapping("")
+    public ResponseObject save(@RequestBody  CreateBillOfflineRequest request){
+        return  new ResponseObject(billService.save(userId, request));
     }
 
     @PutMapping("/change-status/{id}")

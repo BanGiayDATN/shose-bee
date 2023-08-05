@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./style-promotion.css";
 import {
   Form,
@@ -44,6 +44,7 @@ const PromotionManagement = () => {
   const [showData, setShowData] = useState(true);
   const [id, setId] = useState("");
   const [formErrors, setFormErrors] = useState({});
+  const receiveFormData = useRef({});
   const data = useAppSelector(GetPromotion);
 
   useEffect(() => {
@@ -56,10 +57,12 @@ const PromotionManagement = () => {
     loadData();
   }, [showData, formDataSearch]);
 
-  const closeModal =()=>{
-    setModal(false)
-    setShowDetail(false)
-  }
+ 
+
+  const closeModal = () => {
+    setModal(false);
+    setShowDetail(false);
+  };
 
   const resetFormSearch = () => {
     setFormDataSearch({});
@@ -100,64 +103,22 @@ const PromotionManagement = () => {
       }
     );
   };
-  const handleSubmit = (id) => {
-    console.log(formData);
-    const isFormValid =
-      formData.name &&
-      formData.value &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.status &&
-      formData.startDate < formData.endDate;
-
-    if (!isFormValid) {
-      const errors = {
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-        status: !formData.status ? "Vui lòng chọn trạng thái" : "",
-      };
-
-      return;
-    }
-      PromotionApi.update(id, convertToLong()).then((res) => {
-        dispatch(UpdatePromotion(res.data.data));
-        setShowData(false);
-
-        toast.success("Cập nhập thành công!", {
-          autoClose: 5000,
-        });
-      });
-      setModal(false)
-    setShowData(true);
-    setFormData({});
-
-    console.log(showData);
-  };
-
-  const detailVoucher = (id) => {
-    setId(id)
+  const detailPromotion = (id) => {
     PromotionApi.getOne(id).then(
       (res) => {
-        const voucherData = res.data.data;
+        const  getDetailPromotion = res.data.data
         setFormData({
-          code: voucherData.code,
-          name: voucherData.name,
-          value: voucherData.value,
-          startDate: dayjs(voucherData.startDate),
-          endDate: dayjs(voucherData.endDate),
-          status: voucherData.status,
-          createdDate: dayjs(voucherData.createdDate),
-        });
+          name: getDetailPromotion.name,
+          code:getDetailPromotion.code,
+          value: getDetailPromotion.value,
+          startDate: dayjs(getDetailPromotion.startDate),
+          endDate: dayjs(getDetailPromotion.endDate),
+          status: getDetailPromotion.status,
+          createdDate: dayjs(getDetailPromotion.createdDate),
+        })
       },
       (err) => console.log(err)
     );
-    
   };
 
   const handleInputChangeSearch = (name, value) => {
@@ -167,15 +128,14 @@ const PromotionManagement = () => {
     setFormData({ ...formData, [name]: value });
     setFormErrors({ ...formErrors, [name]: "" });
   };
-  const openUpdate = (id)=>{
-    setModal(true)
-    detailVoucher(id)
-  }
-  const openDetail = (id)=>{
-    setModal(true)
-    detailVoucher(id)
-    setShowDetail(true)
-  }
+  const openUpdate = (id) => {
+    localStorage.setItem("id", id);
+  };
+  const openDetail = (id) => {
+    setModal(true);
+    detailPromotion(id);
+    setShowDetail(true);
+  };
 
   const columns = [
     {
@@ -202,6 +162,7 @@ const PromotionManagement = () => {
       dataIndex: "value",
       key: "value",
       sorter: (a, b) => a.value - b.value,
+      render: (value) => `${value}%`,
     },
     {
       title: "Ngày bắt đầu",
@@ -252,19 +213,21 @@ const PromotionManagement = () => {
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          <Button
-            type="primary"
-            title="Chỉnh sửa thể loại"
-            style={{ backgroundColor: "green", borderColor: "green" }}
-            onClick={() => openUpdate(record.id)}
-          >
-            <FontAwesomeIcon icon={faEdit} />
-          </Button>
+          <Link to="/update-promotion-management">
+            <Button
+              type="primary"
+              title="Chỉnh sửa thể loại"
+              style={{ backgroundColor: "green", borderColor: "green" }}
+              onClick={() => openUpdate(record.id)}
+            >
+              <FontAwesomeIcon icon={faEdit} />
+            </Button>
+          </Link>
         </div>
       ),
     },
   ];
- 
+
   const { Option } = Select;
   const fields = [
     {
@@ -288,6 +251,7 @@ const PromotionManagement = () => {
       label: "Giá trị giảm",
       text: "giá trị giảm",
       class: "input-form",
+      formatter: (value) => `${value}%`,
     },
     {
       name: "startDate",
@@ -345,6 +309,7 @@ const PromotionManagement = () => {
       label: "Giá trị giảm",
       class: "input-search",
       placeholder: "Tìm kiếm",
+      formatter: (value) => `${value}%`,
     },
     {
       name: "status",
@@ -371,7 +336,6 @@ const PromotionManagement = () => {
       class: "input-search",
       placeholder: "Tìm kiếm",
     },
-  
   ];
   return (
     <div className="promotion">
@@ -401,6 +365,7 @@ const PromotionManagement = () => {
                         handleInputChangeSearch(field.name, value)
                       }
                       min="1"
+                      formatter={field.formatter}
                     />
                   )}
                   {field.type === "date" && (
@@ -412,7 +377,7 @@ const PromotionManagement = () => {
                       onChange={(value) => {
                         handleInputChangeSearch(field.name, value);
                       }}
-                      format="DD-MM-YYYY" 
+                      format="DD-MM-YYYY"
                     />
                   )}
 
@@ -490,11 +455,9 @@ const PromotionManagement = () => {
       </div>
 
       {/* modal */}
-       <Modal
+      <Modal
         title={
-          showDetail === true
-            ? "Chi tiết khuyễn mại"
-            :  " Cập nhập khuyến mại" 
+          showDetail === true ? "Chi tiết khuyễn mại" : " Cập nhập khuyến mại"
         }
         visible={modal}
         onCancel={closeModal}
@@ -528,7 +491,6 @@ const PromotionManagement = () => {
                   style={{
                     display: field.hidden && !showDetail ? "none" : "block",
                   }}
-                
                 >
                   {field.type === "number" && (
                     <InputNumber
@@ -536,14 +498,13 @@ const PromotionManagement = () => {
                       readOnly={showDetail}
                       name={field.name}
                       placeholder={field.label}
-                      value={formData[field.name] || ""}
+                      value={`${formData[field.name]}%` || ""}
                       onChange={(value) => {
                         if (!showDetail) {
                           handleInputChange(field.name, value);
                         }
                       }}
                       min="1"
-                     
                     />
                   )}
                   {field.type === "date" &&
@@ -557,7 +518,7 @@ const PromotionManagement = () => {
                       />
                     ) : (
                       <DatePicker
-                        showTime 
+                        showTime
                         className={field.class}
                         readOnly={showDetail}
                         name={field.name}
@@ -567,39 +528,42 @@ const PromotionManagement = () => {
                           handleInputChange(field.name, value);
                         }}
                       />
-                     
                     ))}
-                     {field.type === "select" &&
+                  {field.type === "select" &&
                     (showDetail ? (
                       <Input
                         className={field.class}
                         readOnly={true}
                         name={field.name}
                         placeholder={field.label}
-                        value={formData[field.name] === "DANG_SU_DUNG" ? "Đang sử dụng": "Không sử dụng"}
+                        value={
+                          formData[field.name] === "DANG_SU_DUNG"
+                            ? "Đang sử dụng"
+                            : "Không sử dụng"
+                        }
                       />
                     ) : (
                       <Select
-                      className={field.class}
-                      readOnly={showDetail}
-                      name={field.name}
-                      placeholder={field.label}
-                      value={formData[field.name] || ""}
-                      onChange={(value) => {
-                        if (!showDetail) {
-                          handleInputChange(field.name, value);
-                        }
-                      }}
-                    >
-                      <Option value="">Chọn trạng thái</Option>
-                      {field.options.map((option, optionIndex) => (
-                        <Option key={optionIndex} value={option.value}>
-                          {option.label}
-                        </Option>
-                      ))}
-                    </Select>
+                        className={field.class}
+                        readOnly={showDetail}
+                        name={field.name}
+                        placeholder={field.label}
+                        value={formData[field.name] || ""}
+                        onChange={(value) => {
+                          if (!showDetail) {
+                            handleInputChange(field.name, value);
+                          }
+                        }}
+                      >
+                        <Option value="">Chọn trạng thái</Option>
+                        {field.options.map((option, optionIndex) => (
+                          <Option key={optionIndex} value={option.value}>
+                            {option.label}
+                          </Option>
+                        ))}
+                      </Select>
                     ))}
-                 
+
                   {field.type !== "date" &&
                     field.type !== "select" &&
                     field.type !== "number" && (
@@ -623,30 +587,9 @@ const PromotionManagement = () => {
 
           <Form.Item label=" ">
             <Button onClick={closeModal}>Hủy</Button>
-            {showDetail === false ? (
-              <Popconfirm
-                title="Thông báo"
-                description={"Bạn có chắc chắn muốn cập nhập không ?"}
-                onConfirm={() => {
-                  handleSubmit(id);
-                }}
-                okText="Có"
-                cancelText="Không"
-              >
-                <Button
-                  className="button-submit"
-                  key="submit"
-                  title= "Cập nhập"
-                >
-                 Cập nhập
-                </Button>
-              </Popconfirm>
-            ) : (
-              ""
-            )}
           </Form.Item>
         </Form>
-      </Modal> 
+      </Modal>
     </div>
   );
 };

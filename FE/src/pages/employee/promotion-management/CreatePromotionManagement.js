@@ -11,7 +11,7 @@ import {
   Popconfirm,
   Button,
   Table,
-  Switch,
+  Modal
 } from "antd";
 import {
   faEdit,
@@ -42,7 +42,8 @@ function CreateVoucherManagement() {
   const [detailProduct, setDetailProduct] = useState(false);
   const [list, setList] = useState([]);
   const [listProductDetail, setListProductDetail] = useState([]);
-  const [listProduct, setListProduct] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
   const datas = useAppSelector(GetProductDetail);
 
@@ -53,11 +54,6 @@ function CreateVoucherManagement() {
   }, [datas]);
 
   useEffect(() => {
-    if (!detailProduct) {
-      setListProductDetail([]);
-      onSelectChange("");
-    }
-    onSelectChange("");
     console.log(detailProduct);
   }, [detailProduct]);
 
@@ -82,6 +78,7 @@ function CreateVoucherManagement() {
       setListProductDetail(updatedListProductDetail);
     } else {
     }
+    setListProductDetail(updatedListProductDetail);
 
     console.log(selectedRowKeys);
   }, [selectedRowKeys]);
@@ -109,6 +106,7 @@ function CreateVoucherManagement() {
           ...prevListProductDetail,
           ...res.data.data,
         ]);
+        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -116,17 +114,9 @@ function CreateVoucherManagement() {
     );
   };
 
-  const onChange = (checked) => {
-    setDetailProduct(checked);
-  };
-
   const onSelectChange = (newSelectedRowKeys) => {
-    if (!detailProduct) {
-      console.log("diem");
-      setSelectedRowKeys(newSelectedRowKeys);
-    } else {
-      setSelectedRowKeys(newSelectedRowKeys);
-    }
+    setDetailProduct(true);
+    setSelectedRowKeys(newSelectedRowKeys);
   };
 
   const rowSelection = {
@@ -168,6 +158,7 @@ function CreateVoucherManagement() {
       formData.value &&
       formData.startDate &&
       formData.endDate &&
+      // formData.idProductDetails &&
       formData.startDate < formData.endDate;
 
     if (!isFormValid) {
@@ -175,6 +166,9 @@ function CreateVoucherManagement() {
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
         value: !formData.value ? "Vui lòng nhập giá giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+        // idProductDetails:!formData.idProductDetails ? toast.success("Bạn chưa chọn chi tiết sản phẩm!", {
+        //   autoClose: 5000,
+        // }):"",
         endDate: !formData.endDate
           ? "Vui lòng chọn ngày kết thúc"
           : formData.startDate >= formData.endDate
@@ -197,6 +191,7 @@ function CreateVoucherManagement() {
     onSelectChange("");
     onSelectChangeDetail("");
 
+
     // for (const key of selectedRowKeysDetail) {
     //   getProdutDetailByproduct(key);
     // }
@@ -215,6 +210,8 @@ function CreateVoucherManagement() {
       label: "Giá trị giảm",
       text: "giá trị giảm",
       class: "input-form",
+      formatter: (value) => `${value}%`,
+      // parser: (value) => value.replace("%", ""),
     },
     {
       name: "startDate",
@@ -336,13 +333,75 @@ function CreateVoucherManagement() {
     },
     {
       title: "Tình trạng",
-      dataIndex: "idPromotion",
-      key: "idPromotion",
+      dataIndex: "valuePromotion",
+      key: "valuePromotion",
+      render: (text, record) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            type="primary"
+            title="Chi tiết thể loại"
+            style={{ backgroundColor: "#FF9900" }}
+            // onClick={() => openModal(record.id)}
+          >
+            <FontAwesomeIcon icon={faEye} />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+  const columnsPromotion = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+      sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Ảnh sản phẩm",
+      dataIndex: "image",
+      key: "image",
+      render: (text) => (
+        <img
+          src={text}
+          alt="Ảnh sản phẩm"
+          style={{ width: "70px", borderRadius: "5px" }}
+        />
+      ),
+    },
+    {
+      title: "Mã sản phẩm",
+      dataIndex: "code",
+      key: "code",
+      sorter: (a, b) => a.code.localeCompare(b.code),
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "name",
+      key: "name",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Tên khuyễn mại",
+      dataIndex: "namePromotion",
+      key: "namePromotion",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Giá trị khuyến mại",
+      dataIndex: "valuePromotion",
+      key: "valuePromotion",
+      sorter: (a, b) => a.name - b.name,
+    },
+    {
+      title: "Áp dụng khuyến mại",
+      dataIndex: "statusPromotion",
+      key: "statusPromotion",
       render: (text) => {
+
         const genderClass = text ? "trangthai-sd" : "trangthai-ksd";
         return (
           <button className={`gender ${genderClass}`}>
-            {text ? "Có khuyến mại " : "Không khuyến mại"}
+            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
           </button>
         );
       },
@@ -354,6 +413,10 @@ function CreateVoucherManagement() {
   }));
 
   const updatedListDetail = listProductDetail.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
+  const updatedListPromotion = listPromotion.map((item, index) => ({
     ...item,
     stt: index + 1,
   }));
@@ -388,6 +451,9 @@ function CreateVoucherManagement() {
                           handleInputChange(field.name, value);
                         }}
                         min="1"
+                        max="100"
+                        formatter={field.formatter}
+                        // parser={field.parser}
                       />
                     )}
                     {field.type === "date" && (
@@ -461,10 +527,9 @@ function CreateVoucherManagement() {
             </Form.Item>
           </Form>
         </Col>
-        <Col lg={{ span: 0, offset: 0 }}></Col>
-        <Col className="get-product" lg={{ span: 17, offset: 0 }}>
+
+        <Col className="get-product" lg={{ span: 16, offset: 0 }}>
           <Col>
-            <Switch onChange={onChange} /> Thêm cho từng sản phẩm
             <br></br>
             <br></br>
             <Table
@@ -473,10 +538,21 @@ function CreateVoucherManagement() {
               rowSelection={rowSelection}
               dataSource={updatedList}
               pagination={{ pageSize: 5 }}
+              onRow={(record) => ({
+                onClick: () => {
+                  const newSelectedRowKeys = [...selectedRowKeys];
+                  if (newSelectedRowKeys.includes(record.id)) {
+                    const index = newSelectedRowKeys.indexOf(record.id);
+                    newSelectedRowKeys.splice(index, 1);
+                  } else {
+                    newSelectedRowKeys.push(record.id);
+                  }
+                  setSelectedRowKeys(newSelectedRowKeys);
+                },
+              })}
             />
           </Col>
           <Col>
-            {/* {selectedRowKeys.length > 0 && detailProduct && ( */}
             <div>
               <h1>Chi tiết sản phẩm</h1>
               <br></br>
@@ -488,10 +564,31 @@ function CreateVoucherManagement() {
                 pagination={{ pageSize: 5 }}
               />
             </div>
-            {/* )} */}
           </Col>
         </Col>
       </Row>
+
+      {modal && (
+        <Modal
+          title="Chi tiết sản phẩm - khuyễn mại"
+          visible={modal}
+          // onCancel={closeModal}
+          openModal={false}
+          okButtonProps={{ style: { display: "none" } }}
+          width={1000}
+        
+        >
+         <div>
+         <Table
+            rowKey="code"
+            columns={columnsPromotion}
+            dataSource={updatedListPromotion}
+            pagination={{ pageSize: 5 }}
+            style={{margin:"50px"}}
+          />
+         </div>
+        </Modal>
+      )}
     </div>
   );
 }

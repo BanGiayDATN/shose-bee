@@ -19,14 +19,17 @@ function HeaderMenu() {
     {
       className: "title-menu",
       title: "SẢN PHẨM",
+      option: [
+        { title: "Giày nam", className: "title-option" },
+        { title: "Giày nữ", className: "title-option" },
+      ],
     },
     {
       className: "title-menu",
-      title: "ABOUT US",
+      title: "VỀ CHÚNG TÔI",
       option: [
         { title: "Blog styte", className: "title-option" },
-        { title: "About us", className: "title-option" },
-        { title: "Contact", className: "title-option" },
+        { title: "Liên hệ", className: "title-option" },
       ],
     },
     {
@@ -47,7 +50,6 @@ function HeaderMenu() {
                     setModal(true);
                     console.log(modal);
                   } else {
-                     
                           setModal(true);
                           //  window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn trang lên đầu
                     console.log(modal);
@@ -71,8 +73,8 @@ function HeaderMenu() {
               <div
                 key={index}
                 className={field.className}
-                onMouseEnter={field.title === "ABOUT US" ? handleMenuHover : null}
-                onMouseLeave={field.title === "ABOUT US" ? handleMenuLeave : null}
+                onMouseEnter={field.title === "VỀ CHÚNG TÔI" || "SẢN PHẨM" ? handleMenuHover : null}
+                onMouseLeave={field.title === "VỀ CHÚNG TÔI" || "SẢN PHẨM" ? handleMenuLeave : null}
               >
                 {field.option ? (
                   field.title
@@ -81,7 +83,6 @@ function HeaderMenu() {
                     {field.title}
                   </Link>
                 )}
-
                 {field.option && isOptionVisible && (
                   <Menu className="option-container">
                     {field.option.map((option, optionIndex) => (

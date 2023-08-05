@@ -28,7 +28,7 @@ public interface BillService {
 
     Bill  saveOnline(CreateBillRequest request);
 
-    Bill  saveOffline(String idEmployee, CreateBillOfflineRequest request);
+    Bill  save(String id,  CreateBillOfflineRequest request);
 
     Bill updateBillOffline(String id, UpdateBillRequest bill);
 

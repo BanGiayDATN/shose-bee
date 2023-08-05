@@ -4,13 +4,14 @@ package com.example.shose.server.dto.response.promotion;
  */
 
 import com.example.shose.server.dto.response.base.BaseResponse;
+import com.example.shose.server.entity.Promotion;
 import com.example.shose.server.entity.Voucher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
 import java.math.BigDecimal;
 
-@Projection(types = Voucher.class)
+@Projection(types = Promotion.class)
 public interface PromotionRespone extends BaseResponse {
     @Value("#{target.stt}")
     Integer getSTT();

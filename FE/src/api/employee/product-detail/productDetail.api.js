@@ -36,6 +36,14 @@ export class ProducDetailtApi {
     });
   };
 
+  static getAllProductDetail = (filter) => {
+    return request({
+      method: "GET",
+      url: `/admin/product-detail/all-product-detail`,
+      params: filter,
+    });
+  };
+
   static update = (id, data) => {
     return request({
       method: "PUT",

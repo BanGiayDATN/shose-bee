@@ -12,23 +12,20 @@ const colorSlice = createSlice({
     CreateColor: (state, action) => {
       const data = action.payload;
       const newColor = {
-        stt: state.length + 1,
         id: data.id,
+        code: data.code,
         name: data.name,
         status: data.status,
         createdDate: data.createdDate,
-        lastModifiedDate: data.startTime,
+        lastModifiedDate: data.lastModifiedDate,
       };
       state.unshift(newColor);
-      state.forEach((item, index) => {
-        item.stt = index + 1;
-      });
     },
     UpdateColor: (state, action) => {
       const updatedColor = action.payload; // backend
       const index = state.findIndex((period) => period.id === updatedColor.id);
-      console.log(index);
       if (index !== -1) {
+        state[index].code = updatedColor.code;
         state[index].name = updatedColor.name;
         state[index].status = updatedColor.status;
         state[index].createdDate = updatedColor.createdDate;

@@ -34,6 +34,9 @@
   margin-top: 20px;
   text-align: center;
 }
+.get-product{
+  margin-left: 30px;
+}
   .button-submit{
     margin-left: 20px;
     background-color:  #4987f3;
@@ -91,4 +94,8 @@
   border: 1px solid #f4efef;
   padding:50px;
   background-color: #fcfbfb;
+}
+.modal-detail{
+  width:1000px;
+  height:500px
 }

@@ -23,6 +23,12 @@ export class PromotionApi {
           url: `/admin/promotion/${id}`,
         });
       };
+      static getByProductDetail = (id) => {
+        return request({
+          method: "GET",
+          url: `/admin/promotion/byProductDetail/${id}`,
+        });
+      };
     
       static update = (id,data) => {
         return request({

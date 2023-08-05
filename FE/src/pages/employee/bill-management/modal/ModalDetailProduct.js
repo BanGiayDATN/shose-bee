@@ -3,11 +3,15 @@ import React, { useEffect, useState } from "react";
 import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import './detail-product.css' 
 
-function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
+function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelectSize }) {
   const [listSize, setListSize] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedColor, setSelectedColor] = useState();
+  const [listColor, setListColor] = useState([]);
   const [productDetail, setProductDetail] = useState({});
+  const [listProductDetail, setListProductDetail] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [max, setMax] = useState(0);
 
@@ -24,15 +28,23 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
         ? prevSelected.filter((selected) => selected !== size)
         : [...prevSelected, size]
     );
+    setProductDetail(size)
     ChangedSelectSize(e, size);
     if (max < size.quantity) {
       setMax(size.quantity);
     }
   };
 
+  const toggleColorlection = (e, item) => {
+    const listSize = [...new Set(listProductDetail.filter((x) => x.color === item))];
+    setListSize(listSize)
+    setSelectedSizes([])
+    setSelectedColor(item)
+    clearSelectSize()
+  };
+
   // const getSizeProductDetail = () => {
   //   SizeProductDetailApi.fetchAll(id).then((res) => {
-  //     console.log(res.data.data);
   //     const dataWithSTT = res.data.data.map((item, index) => ({
   //       ...item,
   //       stt: index + 1,
@@ -41,11 +53,15 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
   //   });
   // };
 
-  const getProductDetail = () => {
-    console.log(id);
-    ProducDetailtApi.getByIdProductDetail(id).then((res) => {
-      console.log(res.data.data);
-      setProductDetail(res.data.data);
+  const getProductDetail = async() => {
+    await ProducDetailtApi.getByIdProductDetail(id).then((res) => {
+      var products = res.data.data
+      const nameColorArray = [...new Set(products.map((item) => item.color))];
+      const listSize = [...new Set(products.filter((item) => item.color === products[0].color))];
+      setListSize(listSize)
+      setListColor(nameColorArray)
+      setListProductDetail(products)
+      setProductDetail(products[0]);
     });
   };
 
@@ -57,8 +73,6 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
   }, [id]);
 
   const handleIncrease = () => {
-    console.log(max);
-    console.log(max > quantity);
     if (max > quantity) {
       setQuantity((prevQuantity) => prevQuantity + 1);
       ChangeQuantity(quantity);
@@ -89,7 +103,7 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
               alt="Ảnh sản phẩm"
               style={{ width: "100%", borderRadius: "10%", height: "100%" }}
             />
-            {productDetail.value !== null && (
+            {productDetail.promotion !== null && (
               <div
                 style={{
                   position: "absolute",
@@ -165,14 +179,14 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
               </Col>
             </Row>
           </Row>
-          <Row style={{ marginTop: "15px", width: "100%" }}>
+          <Row style={{ marginTop: "15px", width: "100%", marginBottom: "15px" }}>
             {productDetail.promotion != null ? (
               <Row>
                 <Row style={{ marginTop: "15px", width: "100%" }}>
                   <span
                     style={{
-                      fontWeight: "600",
-                      fontSize: "18px",
+                      fontWeight: "bold",
+                      fontSize: "24px",
                       color: "red",
                     }}
                   >
@@ -194,7 +208,7 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
                         " đ"}{" "}
                   </span>
                 </Row>
-                <Row style={{ marginTop: "15px", width: "100%" }}>
+                <Row style={{ marginTop: "15px", width: "100%", marginBottom: "15px" }}>
                   <span
                     style={{
                       fontWeight: "400",
@@ -214,11 +228,11 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
                 </Row>
               </Row>
             ) : (
-              <Row style={{ marginTop: "15px", width: "100%" }}>
+              <Row style={{ marginTop: "15px", width: "100%", marginBottom: "15px" }}>
                 <span
                   style={{
-                    fontWeight: "600",
-                    fontSize: "18px",
+                    fontWeight: "bold",
+                    fontSize: "24px",
                     color: "red",
                   }}
                 >
@@ -233,14 +247,46 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
               </Row>
             )}
           </Row>
-          <Row
+          <Row style={{ marginTop: "15px", width: "100%" }}>
+            <Col span={4}>
+              Màu sắc
+            </Col>
+            <Col span={20}>
+            <Row
             gutter={[16, 16]}
-            style={{ marginTop: "15px", width: "100%" }}
+            style={{ width: "100%" }}
+            justify={"start"}
+          >
+            {/* Hiển thị các nút button cho các kích thước */}
+            {listColor.map((item, index) => (
+              <Col key={"Cl"+ item} span={6}>
+                <Button
+                  // block
+                  className={selectedColor === item ? "selected" : ""}
+                  onClick={(e) => toggleColorlection(e, item)}
+                  style={{backgroundColor: item}}
+                  color={item}
+                >
+                  {item}
+                </Button>
+              </Col>
+            ))}
+          </Row>
+            </Col>
+          </Row>
+          <Row style={{ marginTop: "15px", width: "100%" }}>
+            <Col span={4}>
+              Kích cỡ
+            </Col>
+            <Col span={20}>
+            <Row
+            gutter={[16, 16]}
+            style={{  width: "100%" }}
             justify={"center"}
           >
             {/* Hiển thị các nút button cho các kích thước */}
             {listSize.map((size) => (
-              <Col key={size.id} span={6}>
+              <Col key={selectedColor + size.id} span={6}>
                 <Button
                   block
                   className={selectedSizes.includes(size) ? "selected" : ""}
@@ -251,6 +297,8 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
               </Col>
             ))}
           </Row>
+            </Col>
+          </Row>
           <Row style={{ marginTop: "15px", width: "100%" }} justify={"center"}>
             <Button onClick={handleDecrease} style={{ margin: "0 4px 0 10px" }}>
               -
@@ -259,7 +307,12 @@ function ModalDetailProduct({ id, ChangedSelectSize, ChangeQuantity }) {
               min={1}
               max={max}
               value={quantity}
-              onChange={(value) => changeInputNumber(value)}
+              onChange={(value) => {
+                if(value < max || value != undefined || value > 0){
+                  changeInputNumber(value)
+                }
+                
+              }}
             />
             <Button onClick={handleIncrease} style={{ margin: "0 4px 0 4px" }}>
               +
