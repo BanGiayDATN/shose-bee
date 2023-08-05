@@ -53,4 +53,7 @@ public interface EmployeeResponse {
 
     @Value("#{target.gender}")
     Boolean getGender();
+
+    @Value("#{target.idAccount}")
+    String getIdAccount();
 }

@@ -44,8 +44,8 @@ public class BillDetailRestController {
         return  new ResponseObject(billDetailService.create(request));
     }
 
-    @DeleteMapping("/remove/{id}/{size}")
-    public ResponseObject removeProductInBill(@PathVariable("id") String id, @PathVariable("size") Integer size){
-        return  new ResponseObject(billDetailService.delete(id, size));
+    @DeleteMapping("/remove/{id}/{productDetail}")
+    public ResponseObject removeProductInBill(@PathVariable("id") String id, @PathVariable("productDetail") String productDetail){
+        return  new ResponseObject(billDetailService.delete(id, productDetail));
     }
 }

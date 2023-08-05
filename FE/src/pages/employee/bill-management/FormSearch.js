@@ -337,11 +337,11 @@ function FormSearch({
                   onChange={(value) => {handleSelectChange(value, "type")}}
                   defaultValue={-1}
                 >
-                  <Option value={-1} disabled>
+                  <Option value={''} disabled>
                     Loại  đơn
                   </Option>
-                  <Option value={1}>Tại quầy</Option>
-                  <Option value={0}>Online</Option>
+                  <Option value={'OFFLINE'}>Tại quầy</Option>
+                  <Option value={'ONLINE'}>Online</Option>
                 </Select>
               </Col>
             </Row>

@@ -22,5 +22,5 @@ public interface BillDetailService {
 
     String update(String id, CreateBillDetailRequest request);
 
-    boolean delete(String id, Integer sizeName);
+    boolean delete(String id, String productDetail);
 }

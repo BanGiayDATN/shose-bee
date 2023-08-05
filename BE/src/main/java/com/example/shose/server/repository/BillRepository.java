@@ -42,7 +42,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                      OR bi.user_name LIKE %:#{#request.key}% 
                      OR usem.full_name LIKE %:#{#request.key}% 
                      OR bi.phone_number LIKE %:#{#request.key}% )
-            AND ( :#{#request.type} = -1
+            AND ( :#{#request.type} IS NULL
+                     OR :#{#request.type} LIKE ''
                      OR bi.type = :#{#request.type})
             ORDER BY bi.created_date DESC
                         
@@ -68,7 +69,6 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             """, nativeQuery = true)
     List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
 
-
     @Query(value = """
             SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
                          LEFT JOIN account ac ON ac.id = bi.id_account
@@ -77,4 +77,12 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          ORDER BY bi.created_date
             """, nativeQuery = true)
     List<UserBillResponse> getAllUserInBill();
+
+    @Query(value = """
+            SELECT bi.id FROM bill bi
+            LEFT JOIN bill_detail bide ON bide.id_bill = bi.id
+            GROUP BY bi.id
+            HAVING COUNT(bide.id) = 0
+            """, nativeQuery = true)
+    List<String> getAllBillTrash();
 }

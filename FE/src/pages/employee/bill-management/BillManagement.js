@@ -37,12 +37,12 @@ function BillManagement() {
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
-    BillApi.fetchDataUsers().then((res) => {
-      dispatch(getUsers(res.data.data));
-    });
-    AccountApi.fetchDataSimpleEntityEmployees().then((res) => {
-      dispatch(getEmployees(res.data.data));
-    });
+    // BillApi.fetchDataUsers().then((res) => {
+    //   dispatch(getUsers(res.data.data));
+    // });
+    // AccountApi.fetchDataSimpleEntityEmployees().then((res) => {
+    //   dispatch(getEmployees(res.data.data));
+    // });
   }, []);
 
   const onChangeFillter = (value, fileName) => {
@@ -96,7 +96,7 @@ function BillManagement() {
       employees: "",
       user: "",
       phoneNumber: "",
-      type: -1,
+      type: '',
       page: 0,
     });
     setStatus([]);
@@ -116,7 +116,7 @@ function BillManagement() {
     employees: "",
     user: "",
     phoneNumber: "",
-    type: -1,
+    type: '',
     page: 0,
   });
 
@@ -150,7 +150,7 @@ function BillManagement() {
       dataIndex: "type",
       key: "type",
       render: (type) => {
-        return <p>{type === 0 ? "OnLine" : "Tại quầy"}</p>;
+        return <p>{type === 'ONLINE' ? "OnLine" : "Tại quầy"}</p>;
       },
     },
     {

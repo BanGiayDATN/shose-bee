@@ -9,12 +9,8 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
-<<<<<<< HEAD
-import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement"
 import UpdatePromotionManagement from "./pages/employee/promotion-management/UpdatePromotionManagement"
-=======
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
->>>>>>> develop
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";

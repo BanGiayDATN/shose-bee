@@ -28,17 +28,7 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
-<<<<<<< HEAD
-import {
-  CreateProduct,
-  SetProduct,
-  GetProduct,
-} from "../../../app/reducer/Product.reducer";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { ProductApi } from "../../../api/employee/product/product.api";
-=======
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
->>>>>>> develop
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 import { GetProductDetail, SetProductDetail } from "../../../app/reducer/ProductDetail.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
@@ -81,17 +71,12 @@ function CreateVoucherManagement() {
   }, [selectedRowKeysDetail]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    for (const key of selectedRowKeys) {
-      getProdutDetailByproduct(key);
-=======
     if (detailProduct) {
       for (const key of selectedRowKeys) {
         getProdutDetailByproduct(key);
       }
       setListProductDetail(updatedListProductDetail);
     } else {
->>>>>>> develop
     }
     setListProductDetail(updatedListProductDetail);
 
@@ -205,31 +190,11 @@ function CreateVoucherManagement() {
     setListProductDetail([]);
     onSelectChange("");
     onSelectChangeDetail("");
-<<<<<<< HEAD
-    setSelectedRowKeysDetail("");
-   
-  };
-  const closeModal = () => {
-    setModal(false);
-     setListPromotion([]);
-  };
-  const openModal = (id) => {
-    PromotionApi.getByProductDetail(id).then(
-      (res) => {
-        setListPromotion(res.data.data);
-        console.log(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-    setModal(true);
-=======
+
 
     // for (const key of selectedRowKeysDetail) {
     //   getProdutDetailByproduct(key);
     // }
->>>>>>> develop
   };
   const fields = [
     {
@@ -376,7 +341,7 @@ function CreateVoucherManagement() {
             type="primary"
             title="Chi tiết thể loại"
             style={{ backgroundColor: "#FF9900" }}
-            onClick={() => openModal(record.id)}
+            // onClick={() => openModal(record.id)}
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
@@ -432,12 +397,8 @@ function CreateVoucherManagement() {
       dataIndex: "statusPromotion",
       key: "statusPromotion",
       render: (text) => {
-<<<<<<< HEAD
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
-=======
+
         const genderClass = text ? "trangthai-sd" : "trangthai-ksd";
->>>>>>> develop
         return (
           <button className={`gender ${genderClass}`}>
             {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
@@ -445,10 +406,6 @@ function CreateVoucherManagement() {
         );
       },
     },
-<<<<<<< HEAD
-  
-=======
->>>>>>> develop
   ];
   const updatedList = list.map((item, index) => ({
     ...item,
@@ -615,7 +572,8 @@ function CreateVoucherManagement() {
         <Modal
           title="Chi tiết sản phẩm - khuyễn mại"
           visible={modal}
-          onCancel={closeModal}
+          // onCancel={closeModal}
+          openModal={false}
           okButtonProps={{ style: { display: "none" } }}
           width={1000}
         

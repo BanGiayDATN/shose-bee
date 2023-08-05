@@ -14,8 +14,8 @@
   
   .content {
     display: flex;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     justify-content: center;
   }
   
@@ -35,7 +35,7 @@
   
   .box_btn_filter {
     text-align: center;
-    padding-bottom: 40px;
+    padding-bottom: 10px;
   }
   
   .btn_filter {
@@ -186,6 +186,24 @@
   border-radius: 15px;
 }
 
+.selected{
+  border: 2px solid #00ffd4;
+  color: white;
+}
 
 
+::-webkit-scrollbar {
+  width: 4px;
+  border: 2px solid #d5d5d5;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: #eeeeee;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: #b0b0b0;
+}
   
