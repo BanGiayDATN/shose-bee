@@ -40,6 +40,7 @@ import {
 } from "../../../../app/reducer/Bill.reducer";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import { size } from "lodash";
+import { ProductApi } from "../../../../api/employee/product/product.api";
 
 function ModalAddProductDetail({
   handleCancelProduct,
@@ -75,7 +76,7 @@ function ModalAddProductDetail({
 
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    ProducDetailtApi.fetchAll({
+    ProductApi.fetchAllCustomProduct({
       product: search,
     }).then((res) => {
       var data =  res.data.data.filter(
@@ -89,7 +90,8 @@ function ModalAddProductDetail({
   // Xử lý làm mới bộ lọc
   const handleClear = () => {
     setSearch("");
-    ProducDetailtApi.fetchAll({
+    
+    ProductApi.fetchAllCustomProduct({
       product: "",
     }).then((res) => {
       var data =  res.data.data.filter(
@@ -160,7 +162,8 @@ function ModalAddProductDetail({
   };
 
   const loadData = () => {
-    ProducDetailtApi.getAllProductDetail(selectedValues).then(
+    
+    ProductApi.fetchAllCustomProduct(selectedValues).then(
       (res) => {
         var data =  res.data.data.filter(
           (product) => product.quantity > 0
@@ -273,10 +276,12 @@ function ModalAddProductDetail({
     },
     {
       title: "Giá ",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "min",
+      key: "min",
       sorter: (a, b) => a.price - b.price,
-      render: (text) => formatCurrency(text),
+      render: (text, record) => (
+        formatCurrency(record.min) + " ~ " + formatCurrency(record.max)
+      ),
     },
     {
       title: "Số Lượng Tồn ",
@@ -284,24 +289,6 @@ function ModalAddProductDetail({
       key: "quantity",
       sorter: (a, b) => a.quantity - b.quantity,
       align: "center",
-    },
-    {
-      title: "Giới Tính",
-      dataIndex: "gender",
-      key: "gender",
-      render: (gender) => (
-        <Button
-          className={
-            gender === "NAM"
-              ? "primary-btn"
-              : gender === "NU"
-              ? "danger-btn"
-              : "default-btn"
-          }
-        >
-          {gender === "NAM" ? "Nam" : gender === "NU" ? "Nữ" : "Nam và Nữ"}
-        </Button>
-      ),
     },
     {
       title: "Hành động",
