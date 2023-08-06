@@ -298,6 +298,15 @@ function DetailBill() {
 
   const onChangeAddress = (fileName, value) => {
     setAddress({ ...address, [fileName]: value });
+    var addressuser =
+        address.detail +
+        ", " +
+        address.wards +
+        ", " +
+        address.district +
+        ", " +
+        address.city;
+        setBillRequest({ ...billRequest, address: addressuser });
   };
 
   const [isModaBillOpen, setIsModalBillOpen] = useState(false);
@@ -316,7 +325,19 @@ function DetailBill() {
     );
   };
   const handleOkBill = () => {
-    if (checkNotEmptyBill() && checkNotEmptyAddress()) {
+    var addressuser = "";
+    if (!checkNotEmptyAddress()) {
+      addressuser =
+        address.detail +
+        ", " +
+        address.wards +
+        ", " +
+        address.district +
+        ", " +
+        address.city;
+    }
+    setBillRequest({ ...billRequest, address: addressuser });
+    if (!checkNotEmptyBill() ) {
       setIsModalBillOpen(false);
       Modal.confirm({
         title: "Xác nhận",
@@ -324,15 +345,7 @@ function DetailBill() {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          var value =
-            address.detail +
-            ", " +
-            address.wards +
-            ", " +
-            address.district +
-            ", " +
-            address.city;
-          setBillRequest({ ...billRequest, [address]: value });
+          console.log(billRequest);
           await BillApi.updateBill(id, billRequest).then((res) => {
             dispatch(getBill(res.data.data));
             var index = listStatus.findIndex(

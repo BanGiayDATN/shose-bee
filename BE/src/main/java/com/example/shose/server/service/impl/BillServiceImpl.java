@@ -133,12 +133,10 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill save(String id, CreateBillOfflineRequest request) {
         Optional<Account> account = accountRepository.findById(id);
-//        if (!account.isPresent()) {
-//            throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
+//        if (account.get().getRoles() == Roles.USER) {
 //        }
         Bill bill = Bill.builder()
                 .employees(account.get())
-                .statusBill(StatusBill.TAO_HOA_DON)
                 .typeBill(TypeBill.valueOf(request.getTypeBill()))
                 .code("HD" + RandomStringUtils.randomNumeric(6))
                 .note(request.getNote())
@@ -154,8 +152,18 @@ public class BillServiceImpl implements BillService {
                 bill.setAccount(user.get());
             }
         }
-        billRepository.save(bill);
-        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+        if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE){
+            bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+            billRepository.save(bill);
+            billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+
+        }else{
+            bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
+            billRepository.save(bill);
+            billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+        }
+
+
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
             if (!productDetail.isPresent()) {
