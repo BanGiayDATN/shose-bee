@@ -156,7 +156,11 @@ public class BillServiceImpl implements BillService {
             bill.setStatusBill(StatusBill.DA_THANH_TOAN);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-
+            PaymentsMethod paymentsMethod = formUtils.convertToObject(PaymentsMethod.class, request);
+            paymentsMethod.setBill(bill);
+            paymentsMethod.setDescription(request.getNote());
+            paymentsMethod.setEmployees(account.get());
+             paymentsMethodRepository.save(paymentsMethod);
         }else{
             bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
             billRepository.save(bill);

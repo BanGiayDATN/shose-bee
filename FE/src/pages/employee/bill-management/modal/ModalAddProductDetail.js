@@ -51,6 +51,7 @@ function ModalAddProductDetail({
   const [listProduct, setListProduct] = useState([]);
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState("");
+  const[state, setState] = useState(true)
 
   // format tiền
   const formatCurrency = (value) => {
@@ -319,9 +320,9 @@ function ModalAddProductDetail({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
     setSizes([]);
-    // setProductSelect(record);
-    setIsModalOpen(true);
     setProduct(record);
+    setState(true)
+    setIsModalOpen(true);
   };
   const clearSelectSize = () => {
     setSizes([]);
@@ -382,11 +383,14 @@ function ModalAddProductDetail({
         });
       }
     }
-
+    setQuantity(1)
+    setState(false)
     // handleCancelProduct();
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    setQuantity(1)
+    setState(false)
   };
   // end modal detail product size
   const [sizes, setSizes] = useState([]);
@@ -628,6 +632,8 @@ function ModalAddProductDetail({
           ChangedSelectSize={ChangedSelectSize}
           ChangeQuantity={ChangeQuantity}
           clearSelectSize={clearSelectSize}
+          quantity={quantity}
+          setQuantity={setQuantity}
         />
       </Modal>
     </div>
