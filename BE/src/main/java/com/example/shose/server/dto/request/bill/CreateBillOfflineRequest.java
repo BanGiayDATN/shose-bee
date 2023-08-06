@@ -42,8 +42,6 @@ public class CreateBillOfflineRequest {
 
     private StatusMethod method;
 
-    private StatusPayMents status;
-
     private List<CreateBillDetailRequest> billDetailRequests;
 
     private List<CreateVoucherDetailRequest> vouchers;

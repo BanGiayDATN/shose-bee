@@ -17,10 +17,7 @@ import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
-import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.Roles;
-import com.example.shose.server.infrastructure.constant.StatusBill;
-import com.example.shose.server.infrastructure.constant.TypeBill;
+import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -156,15 +153,28 @@ public class BillServiceImpl implements BillService {
             bill.setStatusBill(StatusBill.DA_THANH_TOAN);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-            PaymentsMethod paymentsMethod = formUtils.convertToObject(PaymentsMethod.class, request);
-            paymentsMethod.setBill(bill);
-            paymentsMethod.setDescription(request.getNote());
-            paymentsMethod.setEmployees(account.get());
-             paymentsMethodRepository.save(paymentsMethod);
+            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                    .method(request.getMethod())
+                    .status(StatusPayMents.THANH_TOAN)
+                    .employees(account.get())
+                    .totalMoney(new BigDecimal(request.getTotalMoney()))
+                    .description(request.getNote())
+                    .bill(bill)
+                    .build();
+            paymentsMethodRepository.save(paymentsMethod);
         }else{
             bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                    .method(request.getMethod())
+                    .status(StatusPayMents.THANH_TOAN)
+                    .employees(account.get())
+                    .totalMoney(new BigDecimal(0))
+                    .description(request.getNote())
+                    .bill(bill)
+                    .build();
+            paymentsMethodRepository.save(paymentsMethod);
         }
 
 
