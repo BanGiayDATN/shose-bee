@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input, Button, Select, Table, Slider, Row, Col } from "antd";
 import "react-toastify/dist/ReactToastify.css";
-import "./style-account.css";
+import "./style-customer.css";
 import { CustomerApi } from "../../../api/employee/account/customer.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { Link } from "react-router-dom";
