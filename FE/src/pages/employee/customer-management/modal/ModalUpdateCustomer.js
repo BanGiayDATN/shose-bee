@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { CustomerApi } from "../../../../api/employee/account/customer.api";
 import { UpdateCustomer } from "../../../../app/reducer/Customer.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-customer.css";
+import "../style-account.css";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 import axios from "axios";

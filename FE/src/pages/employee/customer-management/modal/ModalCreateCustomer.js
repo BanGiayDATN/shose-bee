@@ -15,7 +15,7 @@ import { useAppDispatch } from "../../../../app/hook";
 import { toast } from "react-toastify";
 import { CustomerApi } from "../../../../api/employee/account/customer.api";
 import { CreateCustomer } from "../../../../app/reducer/Customer.reducer";
-import "../style-customer.css";
+import "../style-account.css";
 import moment from "moment";
 
 import { AddressApi } from "../../../../api/customer/address/address.api";
@@ -237,7 +237,7 @@ const ModalCreateCustomer = () => {
               Ảnh đại diện
             </h1>
             {/* ... */}
-            <div>
+            <div >
               <Upload
                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                 listType="picture-circle"
@@ -262,7 +262,6 @@ const ModalCreateCustomer = () => {
                   alt="example"
                   style={{
                     width: "100%",
-                    marginLeft: "30px",
                   }}
                   src={previewImage}
                 />

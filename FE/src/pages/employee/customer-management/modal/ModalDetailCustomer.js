@@ -18,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { CustomerApi } from "../../../../api/employee/account/customer.api";
 import { UpdateCustomer } from "../../../../app/reducer/Customer.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-customer.css";
+import "../style-account.css";
 import { faKaaba } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PlusOutlined } from "@ant-design/icons";
