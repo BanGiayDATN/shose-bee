@@ -194,7 +194,7 @@ const PromotionManagement = () => {
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Còn hạn " : "Hết hạn"}
           </button>
         );
       },

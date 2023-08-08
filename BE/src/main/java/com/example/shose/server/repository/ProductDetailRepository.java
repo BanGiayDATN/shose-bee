@@ -2,6 +2,7 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.ProductDetail;
@@ -58,7 +59,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     List<ProductDetailReponse> getAll(@Param("req") FindProductDetailRequest req);
 
     @Query(value = """
-<<<<<<< HEAD
+
                          SELECT 
                                            detail.id AS id,
                                            i.name AS image,
@@ -80,27 +81,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
 
 //    JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-=======
-             SELECT 
-                   detail.id AS id,
-                   i.name AS image,
-                   p.code AS codeProduct,
-                   p.name AS nameProduct,
-                   detail.price AS price,
-                   detail.created_date AS created_date,
-                   detail.gender AS gender,
-                   detail.status AS status,
-                   detail.id_promotion AS idPromotion
-            FROM product_detail detail
-            JOIN product p on detail.id_product = p.id
-            JOIN image i on detail.id = i.id_product_detail
-            where p.id = :id
-            """,nativeQuery = true)
-    List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
+
+
 
 
     @Query(value = """
-             SELECT\s
+             SELECT
                                             detail.id AS id,
                                             i.name AS image,
                                             p.code AS codeProduct,
@@ -128,5 +114,24 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """,nativeQuery = true)
     ProductDetailResponse findByIdProductDetail(@Param("id") String id);
 
->>>>>>> develop
+    @Query(value = """
+            SELECT
+             pd.id as idChiTietSanPham,
+             i.name as image,
+             p.name as nameProduct,
+             pd.price as price,
+             po.value as valuePromotion
+             
+             from product_detail pd
+             JOIN image i on i.id_product_detail = pd.id
+             LEFT JOIN promotion_product_detail ppd on pd.id = ppd.id_product_detail
+             LEFT JOIN promotion po on po.id = ppd.id_promotion
+             JOIN product p on pd.id_product = p.id
+            JOIN category ca on ca.id = pd.id_category
+            where ca.id = :id
+
+            """,nativeQuery = true)
+    List<GetProductDetailByCategory> getProductDetailByCategory(@Param("id") String id);
+
+
 }

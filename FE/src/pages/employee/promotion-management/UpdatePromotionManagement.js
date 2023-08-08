@@ -29,14 +29,9 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import {
-  CreatePromotion,
-  UpdatePromotion,
+    UpdatePromotion,
 } from "../../../app/reducer/Promotion.reducer";
-import {
-  CreateProduct,
-  SetProduct,
-  GetProduct,
-} from "../../../app/reducer/Product.reducer";
+
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
@@ -53,12 +48,12 @@ function UpdatePromotionManagement() {
   const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
 
-  const datas = useAppSelector(GetProduct);
-  useEffect(() => {
-    if (datas != null) {
-      SetProduct(datas);
-    }
-  }, [datas]);
+  // const datas = useAppSelector(GetProduct);
+  // useEffect(() => {
+  //   if (datas != null) {
+  //     SetProduct(datas);
+  //   }
+  // }, [datas]);
 
   const id = localStorage.getItem("id");
 
@@ -127,7 +122,7 @@ function UpdatePromotionManagement() {
     ProductApi.getProductUse().then(
       (res) => {
         setList(res.data.data);
-        dispatch(SetProduct(res.data.data));
+       
       },
       (err) => {
         console.log(err);
@@ -499,7 +494,7 @@ function UpdatePromotionManagement() {
                         min="1"
                         max="100"
                         formatter={field.formatter}
-                        // parser={field.parser}
+                     
                       />
                     )}
                     {field.type === "date" && (

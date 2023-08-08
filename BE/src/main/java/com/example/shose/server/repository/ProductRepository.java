@@ -58,4 +58,5 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         SELECT p.name FROM product p WHERE ( :name IS NULL   OR :name LIKE '' OR p.name LIKE %:name% )
  """,nativeQuery = true)
     List<String> findAllByName(@Param("name")String name);
+
 }

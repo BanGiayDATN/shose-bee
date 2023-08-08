@@ -139,13 +139,10 @@ public class DBGenerator implements CommandLineRunner {
     @Autowired
     private UserReposiory userReposiory;
 
-<<<<<<< HEAD
-    @Autowired
-    private SizeProductDetailRepository sizeProductDetailRepository;
+
     @Autowired
     private PromotionProductDetailRepository promotionProductDetailRepository;
-=======
->>>>>>> develop
+
 
     @Override
     public void run(String... args) throws Exception {
