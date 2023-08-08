@@ -1752,7 +1752,7 @@ function CreateBill() {
                 </label>
               </Col>
             </Row> */}
-            <Row justify="space-between" style={{ marginTop: "29px" }}>
+            {/* <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
                 {products.reduce((accumulator, currentValue) => {
@@ -1776,8 +1776,8 @@ function CreateBill() {
                         accumulator + currentValue.price * currentValue.quantity
                       );
                     }, 0) + " đ"}
-              </Col>
-            </Row>
+              </Col> */}
+            {/* </Row> */}
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
