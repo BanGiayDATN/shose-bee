@@ -7,6 +7,7 @@ import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
+import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
@@ -87,5 +88,15 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     @Override
     public BigDecimal sumTotalMoneyByIdBill(String idBill) {
         return paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
+    }
+
+    @Override
+    public boolean updatepayMent(List<String> ids) {
+        ids.forEach(id -> {
+            Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(id);
+            paymentsMethod.get().setStatus(StatusPayMents.THANH_TOAN);
+            paymentsMethodRepository.save(paymentsMethod.get());
+        });
+        return true;
     }
 }
