@@ -313,6 +313,29 @@ function CreateBill() {
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
     });
+    AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
+      setAddress({
+        city: res.data.data.province,
+        district: res.data.data.district,
+        wards: res.data.data.ward,
+        detail: res.data.data.line,
+      });
+      console.log(address);
+      form.setFieldsValue({
+        phoneNumber: res.data.data.user.phoneNumber,
+        name: res.data.data.user.fullName,
+        city: res.data.data.province,
+        district: res.data.data.district,
+        wards: res.data.data.ward,
+        detail: res.data.data.line,
+      });
+      addressFull(
+        res.data.data.provinceId,
+        res.data.data.toDistrictId,
+        res.data.data.wardCode
+      );
+    });
+
     setBillRequest({
       ...billRequest,
       phoneNumber: record.phoneNumber,
@@ -369,17 +392,17 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    var addressuser = "";
-    if (checkNotEmptyAddress()) {
-      addressuser =
-        address.detail +
-        ", " +
-        address.wards +
-        ", " +
-        address.district +
-        ", " +
-        address.city;
-    }
+    // var addressuser = "";
+    // if (checkNotEmptyAddress()) {
+    var addressuser =
+      address.detail +
+      ", " +
+      address.wards +
+      ", " +
+      address.district +
+      ", " +
+      address.city;
+    // }
     var idAccount = "";
     if (user != null) {
       console.log(user);
@@ -399,6 +422,9 @@ function CreateBill() {
       idUser: idAccount,
     };
     console.log(data);
+    console.log(address);
+    console.log(addressuser);
+
     if (isOpenDelivery) {
       if (checkNotEmptyAddress() && checkNotEmptyBill()) {
         if (totalBill > 0) {
@@ -817,11 +843,10 @@ function CreateBill() {
       dataIndex: "status",
       key: "status",
       render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        const genderClass = text === "DANG_SU_DUNG" ? "trangthai-sd" : "";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Mặc định " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Mặc định " : ""}
           </button>
         );
       },
@@ -867,7 +892,13 @@ function CreateBill() {
   const selectedAddress = (record) => {
     setIsModalAddressOpen(false);
     setListInfoUser(record);
-    console.log(record);
+    setAddress({
+      city: record.province,
+      district: record.district,
+      wards: record.ward,
+      detail: record.line,
+    });
+    console.log(address);
     form.setFieldsValue({
       phoneNumber: record.phonenumber,
       name: record.fullname,
@@ -876,24 +907,22 @@ function CreateBill() {
       wards: record.ward,
       detail: record.line,
     });
-    AddressApi.fetchAllMoneyShip(record.toDistrictId, record.wardCode).then(
-      (res) => {
-        setShipFee(res.data.data.total);
-      }
-    );
-    AddressApi.fetchAllDayShip(record.toDistrictId, record.wardCode).then(
-      (res) => {
-        const leadtimeInSeconds = res.data.data.leadtime;
-        const formattedDate = moment
-          .unix(leadtimeInSeconds)
-          .format("DD/MM/YYYY");
-        setDayShip(formattedDate);
-      }
-    );
-    AddressApi.fetchAllProvinceDistricts(record.provinceId).then((res) => {
+    addressFull(record.provinceId, record.toDistrictId, record.wardCode);
+  };
+
+  const addressFull = (provinceId, toDistrictId, wardCode) => {
+    AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
+      setShipFee(res.data.data.total);
+    });
+    AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
+      const leadtimeInSeconds = res.data.data.leadtime;
+      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+      setDayShip(formattedDate);
+    });
+    AddressApi.fetchAllProvinceDistricts(provinceId).then((res) => {
       setListDistricts(res.data.data);
     });
-    AddressApi.fetchAllProvinceWard(record.toDistrictId).then((res) => {
+    AddressApi.fetchAllProvinceWard(toDistrictId).then((res) => {
       setListWard(res.data.data);
     });
   };

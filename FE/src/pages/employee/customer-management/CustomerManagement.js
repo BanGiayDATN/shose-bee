@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider, Row, Col } from "antd";
+import { Input, Button, Select, Table, Slider, Row, Col, Modal } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-customer.css";
 import { CustomerApi } from "../../../api/employee/account/customer.api";
+import { AddressApi } from "../../../api/customer/address/address.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { Link } from "react-router-dom";
 import {
@@ -17,8 +18,11 @@ import {
   faKaaba,
   faListAlt,
   faPlus,
+  faMap,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
+import ModalCreateAddress from "./modal/ModalCreateAddress";
+import ModalUpdateAddress from "./modal/ModalUpdateAddress";
 const { Option } = Select;
 
 const CustomerManagement = () => {
@@ -180,11 +184,24 @@ const CustomerManagement = () => {
   const [idUpdate, setIdUpdate] = useState("");
   const [idDetail, setIdDetail] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleAddAddress, setModalVisibleAddAddress] = useState(false);
+  const [modalVisibleUpdateAddress, setModalVisibleUpdateAddress] =
+    useState(false);
   const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
+  const [addressId, setAddressId] = useState("");
+  const [customerId, setCustomerId] = useState("");
+
+  const handleViewUpdate = (id) => {
+    setAddressId(id);
+    setModalVisibleUpdateAddress(true);
+    setIsModalAddressOpen(false);
+  };
 
   const handleCancel = () => {
     setModalVisible(false);
+    setModalVisibleAddAddress(false);
+    setModalVisibleUpdateAddress(false);
     setModalVisibleUpdate(false);
     setModalVisibleDetail(false);
   };
@@ -295,10 +312,105 @@ const CustomerManagement = () => {
               <FontAwesomeIcon icon={faEdit} />
             </Button>
           </Link>
+
+          <Button
+            type="primary"
+            title="Địa chỉ khách hàng"
+            style={{ backgroundColor: "black", borderColor: "black" }}
+            onClick={() => selectedAccount(record)}
+          >
+            <FontAwesomeIcon icon={faMap} />
+          </Button>
         </div>
       ),
     },
   ];
+  const columnsAddress = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+      sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Họ tên",
+      dataIndex: "fullname",
+      key: "fullname",
+      sorter: (a, b) => a.fullname.localeCompare(b.fullname),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phonenumber",
+      key: "phonenumber",
+      sorter: (a, b) => a.phonenumber.localeCompare(b.phonenumber),
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",
+      key: "address",
+      sorter: (a, b) => a.address.localeCompare(b.address),
+    },
+
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass = text === "DANG_SU_DUNG" ? "trangthai-sd" : "";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Mặc định " : ""}
+          </button>
+        );
+      },
+    },
+    {
+      title: "Hành động",
+      dataIndex: "hanhDong",
+      key: "hanhDong",
+      render: (text, record) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            type="dashed"
+            title="Chọn"
+            style={{
+              color: "#02bdf0",
+              border: "1px solid #02bdf0",
+              fontWeight: "500",
+            }}
+            onClick={() => handleViewUpdate(record.id)}
+          >
+            Cập nhật
+          </Button>
+        </div>
+      ),
+    },
+  ];
+  const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
+
+  const showModalAddress = (e) => {
+    setIsModalAddressOpen(true);
+  };
+  const handleOkAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const handleCancelAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const handleOpenAddAdress = () => {
+    setIsModalAddressOpen(false);
+    setModalVisibleAddAddress(true);
+  };
+  const [listAddress, setListAddress] = useState([]);
+
+  const selectedAccount = (record) => {
+    console.log(record);
+    setIsModalAddressOpen(true);
+    setCustomerId(record.id);
+    AddressApi.fetchAllAddressByUser(record.id).then((res) => {
+      setListAddress(res.data.data);
+    });
+  };
 
   return (
     <>
@@ -430,6 +542,51 @@ const CustomerManagement = () => {
           />
         </div>
       </div>
+
+      <ModalCreateAddress
+        visible={modalVisibleAddAddress}
+        onCancel={handleCancel}
+        id={customerId}
+      />
+      <ModalUpdateAddress
+        visible={modalVisibleUpdateAddress}
+        onCancel={handleCancel}
+        id={addressId}
+      />
+      {/* begin modal Address */}
+      <Modal
+        title="Địa chỉ"
+        open={isModalAddressOpen}
+        onOk={handleOkAddress}
+        className="account"
+        onCancel={handleCancelAddress}
+      >
+        <Row style={{ width: "100%" }}>
+          <Col span={20}></Col>
+          <Col span={1}></Col>
+          <Col span={3}>
+            {" "}
+            <Button
+              className="btn_filter"
+              type="submit"
+              onClick={() => handleOpenAddAdress()}
+            >
+              Thêm địa chỉ
+            </Button>
+          </Col>
+        </Row>
+        <Row style={{ width: "100%", marginTop: "20px" }}>
+          <Table
+            style={{ width: "100%" }}
+            dataSource={listAddress}
+            rowKey="id"
+            columns={columnsAddress}
+            pagination={{ pageSize: 3 }}
+            className="customer-table"
+          />
+        </Row>
+      </Modal>
+      {/* end  modal Address */}
     </>
   );
 };
