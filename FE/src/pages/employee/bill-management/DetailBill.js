@@ -62,6 +62,7 @@ function DetailBill() {
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
+  const [payMentNo, setPayMentNo] = useState(false);
   const { Option } = Select;
 
   useEffect(() => {
@@ -87,9 +88,11 @@ function DetailBill() {
       console.log(res.data.data);
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
+      setPayMentNo(res.data.data.some(item => item.status === 'TRA_SAU'))
       dispatch(getPaymentsMethod(res.data.data));
     });
     loadDataProvince();
+    
   }, []);
 
   //load data tỉnh
@@ -199,6 +202,36 @@ function DetailBill() {
 
   // begin modal thanh toán
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
+  const XacNhanThanhToan = async(e) => {
+    var data = paymentsMethod.map(item => item.id);
+    await PaymentsMethodApi.updateStatus(data).then((res) => {
+      console.log(res.data.data);
+    });
+    await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+      console.log(res.data.data);
+      dispatch(getProductInBillDetail(res.data.data));
+    });
+    await BillApi.fetchDetailBill(id).then((res) => {
+      console.log(res.data.data);
+      dispatch(getBill(res.data.data));
+      var index = listStatus.findIndex(
+        (item) => item.status == res.data.data.statusBill
+      );
+      if (res.data.data.statusBill == "TRA_HANG") {
+        index = 6;
+      }
+      if (res.data.data.statusBill == "DA_HUY") {
+        index = 7;
+      }
+      dispatch(addStatusPresent(index));
+      console.log(index);
+    });
+    await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+      dispatch(getBillHistory(res.data.data));
+      console.log(res.data.data);
+    });
+    toast("Thanh toán thành công");
+  };
   const showModalPayMent = (e) => {
     setIsModalPayMentOpen(true);
   };
@@ -1367,14 +1400,24 @@ function DetailBill() {
             </h2>
           </Col>
           <Col span={4}>
-            <Button
+            {/* <Button
               type="dashed"
               align={"end"}
               style={{ margin: "" }}
               onClick={(e) => showModalPayMent(e)}
             >
               Xác nhận thanh toán
-            </Button>
+            </Button> */}
+            {
+              payMentNo ? (<Button
+                type="dashed"
+                align={"end"}
+                style={{ margin: "" }}
+                onClick={(e) => XacNhanThanhToan(e)}
+              >
+                Xác nhận thanh toán
+              </Button> ) : (<div></div>)
+            }
           </Col>
         </Row>
         <Row style={{ width: "100%" }}>
