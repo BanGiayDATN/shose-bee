@@ -392,19 +392,7 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-<<<<<<< HEAD
-    // var addressuser = "";
-    // if (checkNotEmptyAddress()) {
-    var addressuser =
-      address.detail +
-      ", " +
-      address.wards +
-      ", " +
-      address.district +
-      ", " +
-      address.city;
-    // }
-=======
+
     var addressuser = "";
     if (!checkNotEmptyAddress()) {
       addressuser =
@@ -416,7 +404,6 @@ function CreateBill() {
         ", " +
         address.city;
     }
->>>>>>> develop
     var idAccount = "";
     if (user != null) {
       idAccount = user.idAccount;
@@ -434,13 +421,7 @@ function CreateBill() {
       vouchers: newVoucher,
       idUser: idAccount,
     };
-<<<<<<< HEAD
-    console.log(data);
-    console.log(address);
-    console.log(addressuser);
 
-=======
->>>>>>> develop
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {
@@ -617,7 +598,7 @@ function CreateBill() {
       afterPrice: price - record.value,
       discountPrice: record.value,
     });
-    setCodeVoucher(record.code + " - " + record.name  );
+    setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
 

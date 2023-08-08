@@ -76,6 +76,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.status AS status,
                 u.created_date AS createdDate,
                 u.last_modified_date AS lastModifiedDate,
+                  u.citizen_identity AS citizenIdentity,
                  a.password AS passWord,
                  a.id AS idAccount
             FROM user u
