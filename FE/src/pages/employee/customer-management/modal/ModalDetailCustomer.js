@@ -18,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { CustomerApi } from "../../../../api/employee/account/customer.api";
 import { UpdateCustomer } from "../../../../app/reducer/Customer.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-account.css";
+import "../style-customer.css";
 import { faKaaba } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PlusOutlined } from "@ant-design/icons";
@@ -353,15 +353,16 @@ const ModalDetailCustomer = ({ visible }) => {
                     readOnly
                   />
                 </Form.Item>
-                <Form.Item label="Giới tính" name="gender">
+                <Form.Item
+                  label="Giới tính"
+                  name="gender"
+                  initialValue={customer.gender === true ? "Nam" : "Nữ"}
+                >
                   <Radio.Group>
-                    <Radio value="true" checked>
-                      Nam
-                    </Radio>
-                    <Radio value="false">Nữ</Radio>
+                    <Radio value={true}>Nam</Radio>
+                    <Radio value={false}>Nữ</Radio>
                   </Radio.Group>
                 </Form.Item>
-
                 <Form.Item name="toDistrictId" hidden>
                   <Input disabled />
                 </Form.Item>

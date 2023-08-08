@@ -5,15 +5,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import './detail-product.css' 
 
-function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelectSize }) {
+function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelectSize, quantity, setQuantity }) {
   const [listSize, setListSize] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColor, setSelectedColor] = useState();
   const [listColor, setListColor] = useState([]);
   const [productDetail, setProductDetail] = useState({});
   const [listProductDetail, setListProductDetail] = useState([]);
-  const [quantity, setQuantity] = useState(1);
   const [max, setMax] = useState(0);
+ 
 
   const getPromotionStyle = (promotion) => {
     return promotion >= 50 ? { color: "white" } : { color: "#000000" };
@@ -68,28 +68,28 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
   useEffect(() => {
     // getSizeProductDetail();
     getProductDetail();
-    setQuantity(1);
+    // setQuantity(1);
     setSelectedSizes([]);
-  }, [id]);
+  }, [id, quantity]);
 
   const handleIncrease = () => {
     if (max > quantity) {
       setQuantity((prevQuantity) => prevQuantity + 1);
-      ChangeQuantity(quantity);
+      // ChangeQuantity(quantity);
     }
   };
 
   const handleDecrease = () => {
     if (quantity > 1) {
       setQuantity((prevQuantity) => prevQuantity - 1);
-      ChangeQuantity(quantity);
+      // ChangeQuantity(quantity);
     }
   };
 
   const changeInputNumber = (v) => {
     if (max > quantity) {
       setQuantity(v);
-      ChangeQuantity(v);
+      // ChangeQuantity(v);
     }
   };
 

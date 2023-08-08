@@ -76,13 +76,17 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                                            detail.price AS price,
                                            detail.created_date AS created_date,
                                            detail.gender AS gender,
-                                           detail.status AS status
+                                           detail.status AS status,
+                                           co.code AS codeColor,
+                                           s.name AS nameSize
                                          
                                     FROM product_detail detail
                                     LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
                                     LEFT JOIN promotion pr on pr.id = ppd.id_promotion
                                     JOIN product p on detail.id_product = p.id
                                     JOIN image i on detail.id = i.id_product_detail
+                                    JOIN color co on co.id = detail.id_color
+                                     JOIN size s on s.id = detail.id_size
                                     where p.id = :id 
                                     group by detail.id
                         """,nativeQuery = true)
@@ -120,6 +124,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                          LEFT JOIN color col ON detail.id_color = col.id
                          LEFT JOIN size si ON detail.id_size = si.id
                         where p.id = :id
+                        GROUP BY detail.id
                         ORDER BY detail.last_modified_date DESC 
             """,nativeQuery = true)
     List<ProductDetailReponse> findAllByIdProduct(@Param("id") String id);

@@ -31,5 +31,9 @@ public interface GetProductDetailByProduct {
 
     @Value("#{target.status}")
     String getStatus();
+    @Value("#{target.codeColor}")
+    String getCodeColor();
+    @Value("#{target.nameSize}")
+    String getNameSize();
 
 }

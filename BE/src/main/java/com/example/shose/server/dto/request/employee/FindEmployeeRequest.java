@@ -25,4 +25,6 @@ public class FindEmployeeRequest extends PageableRequest {
     private Integer minAge;
 
     private Integer maxAge;
+
+
 }

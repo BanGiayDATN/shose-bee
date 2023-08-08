@@ -105,9 +105,11 @@ public class ProductDetailRestController {
         return new ResponseObject(productDetailService.findAllByIdProduct(id));
     }
 
+
 //    @GetMapping("/all-product-detail")
 //    public ResponseObject getAllProductDetail(FindProductDetailRequest req){
 //        return  new ResponseObject(productDetailService.getAllProductDetail(req));
 //    }
+
 
 }

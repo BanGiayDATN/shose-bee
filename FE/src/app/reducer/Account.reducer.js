@@ -21,6 +21,7 @@ const accountSlice = createSlice({
         avata: data.avata,
         gender: data.gender,
         status: data.status,
+        citizenIdentity: data.citizenIdentity,
       };
       state.unshift(newaccount);
     },
@@ -39,6 +40,7 @@ const accountSlice = createSlice({
         state[index].avata = updatedAccount.avata;
         state[index].status = updatedAccount.status;
         state[index].gender = updatedAccount.gender;
+        state[index].citizenIdentity = updatedAccount.citizenIdentity;
       }
     },
   },

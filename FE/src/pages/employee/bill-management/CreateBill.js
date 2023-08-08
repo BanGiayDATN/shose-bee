@@ -313,6 +313,29 @@ function CreateBill() {
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
     });
+    AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
+      setAddress({
+        city: res.data.data.province,
+        district: res.data.data.district,
+        wards: res.data.data.ward,
+        detail: res.data.data.line,
+      });
+      console.log(address);
+      form.setFieldsValue({
+        phoneNumber: res.data.data.user.phoneNumber,
+        name: res.data.data.user.fullName,
+        city: res.data.data.province,
+        district: res.data.data.district,
+        wards: res.data.data.ward,
+        detail: res.data.data.line,
+      });
+      addressFull(
+        res.data.data.provinceId,
+        res.data.data.toDistrictId,
+        res.data.data.wardCode
+      );
+    });
+
     setBillRequest({
       ...billRequest,
       phoneNumber: record.phoneNumber,
@@ -369,8 +392,9 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
+
     var addressuser = "";
-    if (checkNotEmptyAddress()) {
+    if (!checkNotEmptyAddress()) {
       addressuser =
         address.detail +
         ", " +
@@ -382,7 +406,6 @@ function CreateBill() {
     }
     var idAccount = "";
     if (user != null) {
-      console.log(user);
       idAccount = user.idAccount;
     }
     var data = {
@@ -398,9 +421,9 @@ function CreateBill() {
       vouchers: newVoucher,
       idUser: idAccount,
     };
-    console.log(data);
+
     if (isOpenDelivery) {
-      if (checkNotEmptyAddress() && checkNotEmptyBill()) {
+      if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {
           Modal.confirm({
             title: "Xác nhận",
@@ -418,7 +441,7 @@ function CreateBill() {
           toast("vui lòng chọn sản phẩm");
         }
       } else {
-        toast("Vui lòng Nhập địa chỉ");
+        toast("Vui lòng nhập thông tin giao hàng");
       }
     } else {
       if (totalBill > 0) {
@@ -575,7 +598,7 @@ function CreateBill() {
       afterPrice: price - record.value,
       discountPrice: record.value,
     });
-    setCodeVoucher(record.code);
+    setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
 
@@ -817,11 +840,10 @@ function CreateBill() {
       dataIndex: "status",
       key: "status",
       render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        const genderClass = text === "DANG_SU_DUNG" ? "trangthai-sd" : "";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Mặc định " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Mặc định " : ""}
           </button>
         );
       },
@@ -867,7 +889,13 @@ function CreateBill() {
   const selectedAddress = (record) => {
     setIsModalAddressOpen(false);
     setListInfoUser(record);
-    console.log(record);
+    setAddress({
+      city: record.province,
+      district: record.district,
+      wards: record.ward,
+      detail: record.line,
+    });
+    console.log(address);
     form.setFieldsValue({
       phoneNumber: record.phonenumber,
       name: record.fullname,
@@ -876,24 +904,22 @@ function CreateBill() {
       wards: record.ward,
       detail: record.line,
     });
-    AddressApi.fetchAllMoneyShip(record.toDistrictId, record.wardCode).then(
-      (res) => {
-        setShipFee(res.data.data.total);
-      }
-    );
-    AddressApi.fetchAllDayShip(record.toDistrictId, record.wardCode).then(
-      (res) => {
-        const leadtimeInSeconds = res.data.data.leadtime;
-        const formattedDate = moment
-          .unix(leadtimeInSeconds)
-          .format("DD/MM/YYYY");
-        setDayShip(formattedDate);
-      }
-    );
-    AddressApi.fetchAllProvinceDistricts(record.provinceId).then((res) => {
+    addressFull(record.provinceId, record.toDistrictId, record.wardCode);
+  };
+
+  const addressFull = (provinceId, toDistrictId, wardCode) => {
+    AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
+      setShipFee(res.data.data.total);
+    });
+    AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
+      const leadtimeInSeconds = res.data.data.leadtime;
+      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+      setDayShip(formattedDate);
+    });
+    AddressApi.fetchAllProvinceDistricts(provinceId).then((res) => {
       setListDistricts(res.data.data);
     });
-    AddressApi.fetchAllProvinceWard(record.toDistrictId).then((res) => {
+    AddressApi.fetchAllProvinceWard(toDistrictId).then((res) => {
       setListWard(res.data.data);
     });
   };
@@ -1339,6 +1365,7 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập địa chỉ"
                           style={{ width: "90%", height: "39px" }}
+                          value={address.detail}
                           onChange={(e) =>
                             onChangeAddress("detail", e.target.value)
                           }
@@ -1551,7 +1578,7 @@ function CreateBill() {
                     type="checkbox"
                     id="checkbox"
                     defaultChecked={isOpenDelivery}
-                    onChange={(e) => setIsOpenDelivery(e.target.checked)}
+                    onChange={(e) => setIsOpenDelivery(!isOpenDelivery)}
                   />
                   <div class="slider round"></div>
                 </label>

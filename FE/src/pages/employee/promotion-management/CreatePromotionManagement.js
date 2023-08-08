@@ -297,12 +297,6 @@ function CreateVoucherManagement() {
       ),
     },
     {
-      title: "Mã sản phẩm",
-      dataIndex: "codeProduct",
-      key: "codeProduct",
-      sorter: (a, b) => a.code.localeCompare(b.code),
-    },
-    {
       title: "Tên sản phẩm",
       dataIndex: "nameProduct",
       key: "nameProduct",
@@ -315,11 +309,26 @@ function CreateVoucherManagement() {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Giá sản phẩm",
-      dataIndex: "price",
-      key: "price",
-      sorter: (a, b) => a.name - b.name,
+      title: "Kích thước",
+      dataIndex: "nameSize",
+      key: "nameSize",
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
+    {
+      title: "Màu",
+      dataIndex: "codeColor",
+      key: "codeColor",
+      render: (text,record) => {
+        return(
+          <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            style={{ backgroundColor: record.codeColor }}
+        />
+        </div>
+        )
+        }
+    },
+
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -430,9 +439,6 @@ function CreateVoucherManagement() {
     <div>
       <Row>
         <Col className="add-promotion" lg={{ span: 7, offset: 0 }}>
-          <Link to="/promotion-management">
-            <LeftOutlined /> Quay lại
-          </Link>
           <div className="title-add-promotion">
             <h1>Thêm khuyến mại</h1>
           </div>
