@@ -392,6 +392,17 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
+    // var addressuser = "";
+    // if (checkNotEmptyAddress()) {
+    var addressuser =
+      address.detail +
+      ", " +
+      address.wards +
+      ", " +
+      address.district +
+      ", " +
+      address.city;
+    // }
 
     var addressuser = "";
     if (!checkNotEmptyAddress()) {
@@ -1716,7 +1727,7 @@ function CreateBill() {
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
         closeIcon={null}
-        width={1000}
+        width={1200}
         footer={null}
       >
         <ModalAddProductDetail

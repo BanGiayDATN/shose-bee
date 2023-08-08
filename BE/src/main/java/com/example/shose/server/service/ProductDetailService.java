@@ -1,6 +1,7 @@
 package com.example.shose.server.service;
 
 import com.example.shose.server.dto.ProductDetailDTO;
+import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
@@ -23,11 +24,8 @@ public interface ProductDetailService {
 
     List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest);
 
-    ProductDetailDTO create(final CreateProductDetailRequest req,
-                            List<MultipartFile> multipartFiles,
-                            List<CreateSizeData> listSize,
-                            List<Boolean> listStatusImage,
-                            List<String> listColor) throws IOException, ExecutionException, InterruptedException;
+    ProductDetailDTO create(List<CreateProductDetailRequest> listData,
+                            List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException;
 
     ProductDetailDTO update(final UpdateProductDetailRequest req,
                             List<MultipartFile> multipartFiles,

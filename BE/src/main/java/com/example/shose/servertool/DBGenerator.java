@@ -317,7 +317,7 @@ public class DBGenerator implements CommandLineRunner {
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail12 = ProductDetail.builder().size(size).color(color7).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .sole(sole1).category(category).material(material).brand(brand).product(product3)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
@@ -468,10 +468,13 @@ public class DBGenerator implements CommandLineRunner {
                 .productDetail(productDetail2).status(Status.DANG_SU_DUNG).build();
         PromotionProductDetail promotionProductDetail3 = PromotionProductDetail.builder().promotion(promotion1)
                 .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
+        PromotionProductDetail promotionProductDetail4 = PromotionProductDetail.builder().promotion(promotion2)
+                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
 
         promotionProductDetailRepository.save(promotionProductDetail1);
         promotionProductDetailRepository.save(promotionProductDetail2);
         promotionProductDetailRepository.save(promotionProductDetail3);
+        promotionProductDetailRepository.save(promotionProductDetail4);
 
 
         AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
