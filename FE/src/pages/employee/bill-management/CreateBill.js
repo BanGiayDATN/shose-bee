@@ -146,8 +146,6 @@ function CreateBill() {
           ...customer,
           stt: index + 1,
         }));
-        console.log("hdkjsahdkjas");
-        console.log(accounts);
         setListaccount(res.data.data);
         setInitialCustomerList(accounts);
         dispatch(SetCustomer(res.data.data));
@@ -381,30 +379,13 @@ function CreateBill() {
     }
   }, [data]);
  
-  // useEffect(() => {
-  //   var total = dataPayment.reduce((accumulator, currentValue) => {
-  //     return accumulator + currentValue.totalMoney;
-  //   }, 0);
-  //   var list = [];
-  //   if (total == 0) {
-  //     var data = {
-  //       actionDescription: "",
-  //       method: "TIEN_MAT",
-  //       totalMoney: ( products.reduce((accumulator, currentValue) => {
-  //         return accumulator + currentValue.price * currentValue.quantity;
-  //       }, 0) +
-  //       shipFee -
-  //       voucher.discountPrice),
-  //       status: "THANH_TOAN",
-  //     };
-  //     list.push(data);
-  //     setDataPayMent(list);
-  //   }
-  // }, [listProduct]);
   const [totalMoneyPayMent, setTotalMoneyPayment] = useState(0);
   const [traSau, setTraSau] = useState(false);
 
   const traTienSau = (e) => {
+    setTraSau(!traSau)
+    var check = !traSau
+   if(check){
     var total = products.reduce((accumulator, currentValue) => {
       return (
         accumulator + currentValue.price * currentValue.quantity
@@ -412,9 +393,6 @@ function CreateBill() {
     }, 0) +
       shipFee -
       voucher.discountPrice
-
-      console.log(123);
-    setTraSau(true)
     var list = [{
       actionDescription: "",
         method: "TIEN_MAT",
@@ -422,6 +400,9 @@ function CreateBill() {
         status: "THANH_TOAN",
     }]
     setDataPayMent(list)
+   }else{
+    setDataPayMent([])
+   }
 
   }
   const addPayMent = (e, method) => {
@@ -484,6 +465,14 @@ function CreateBill() {
   ];
   const showModalPayMent = (e) => {
     setIsModalPayMentOpen(true);
+    var total = products.reduce((accumulator, currentValue) => {
+      return (
+        accumulator + currentValue.price * currentValue.quantity
+      );
+    }, 0) +
+      shipFee -
+      voucher.discountPrice
+    setTotalMoneyPayment(total)
   };
   const handleOkPayMent = () => {
     setIsModalPayMentOpen(false);
@@ -526,8 +515,12 @@ function CreateBill() {
       idAccount = user.idAccount;
     }
     var typeBill = "OFFLINE";
-    if (isOpenDelivery == true) {
+    if (isOpenDelivery) {
       typeBill = "ONLINE";
+    }
+    var statusPayMents = "THANH_TOAN"
+    if(traSau){
+      statusPayMents = "TRA_SAU"
     }
     var data = {
       phoneNumber: billRequest.phoneNumber,
@@ -536,7 +529,7 @@ function CreateBill() {
       itemDiscount: voucher.discountPrice,
       totalMoney: totalBill,
       note: billRequest.note,
-      statusPayMents: "THANH_TOAN",
+      statusPayMents: statusPayMents,
       typeBill: typeBill,
       moneyShip: shipFee,
       billDetailRequests: newProduct,
@@ -1724,60 +1717,19 @@ function CreateBill() {
                   }, 0) + " đ"}
               </Col>
             </Row>
+            {isOpenDelivery ? (<Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
+              <Col span={5} style={{display: "flex", alignItems: 'center'}}> Trả sau: </Col>
+              <Col span={12} className="debit" style={{display: "flex", alignItems: 'center'}}>
+              <input type="checkbox" id="switch2" defaultChecked={traSau}  onClick={(e) => traTienSau(e)}/><label for="switch2" className="labelSwitch">Toggle</label>
+              </Col>
+            </Row>): (<Row></Row>)}
             <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-              <Col span={5}> Giao hàng: </Col>
-              <Col span={12}>
-                <label class="switch" for="checkbox">
-                  <input
-                    type="checkbox"
-                    id="checkbox"
-                    defaultChecked={isOpenDelivery}
-                    onChange={(e) => setIsOpenDelivery(!isOpenDelivery)}
-                  />
-                  <div class="slider round"></div>
-                </label>
+              <Col span={5} style={{display: "flex", alignItems: 'center'}}> Giao hàng: </Col>
+              <Col span={12} className="delivery"  style={{display: "flex", alignItems: 'center'}}>
+                <input type="checkbox" id="switch" defaultChecked={isOpenDelivery} onChange={(e) => setIsOpenDelivery(!isOpenDelivery)} /><label for="switch" className="labelSwitch">Toggle</label>
               </Col>
             </Row>
-            {/* <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-              <Col span={5}> Trả sau: </Col>
-              <Col span={12}>
-                <label class="switch" for="checkbox">
-                  <input
-                    type="checkbox"
-                    id="checkbox"
-                    defaultChecked={traSau}
-                    onChange={(e) => traTienSau(e)}
-                  />
-                  <div class="slider round"></div>
-                </label>
-              </Col>
-            </Row> */}
-            {/* <Row justify="space-between" style={{ marginTop: "29px" }}>
-              <Col span={5}>Tiền hàng: </Col>
-              <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {products.reduce((accumulator, currentValue) => {
-                  return (
-                    accumulator + currentValue.price * currentValue.quantity
-                  );
-                }, 0) >= 1000
-                  ? products
-                      .reduce((accumulator, currentValue) => {
-                        return (
-                          accumulator +
-                          currentValue.price * currentValue.quantity
-                        );
-                      }, 0)
-                      .toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                  : products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) + " đ"}
-              </Col> */}
-            {/* </Row> */}
+            
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
@@ -2125,6 +2077,7 @@ function CreateBill() {
                     width: "98%",
                     alignItems: "center",
                   }}
+                  disabled={item.value != "TIEN_MAT" && traSau}
                 >
                   {item.label}
                 </Button>

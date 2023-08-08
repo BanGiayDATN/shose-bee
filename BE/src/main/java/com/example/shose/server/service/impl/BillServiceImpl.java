@@ -150,7 +150,7 @@ public class BillServiceImpl implements BillService {
             }
         }
         if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE){
-            bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+            bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
 //            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
@@ -276,12 +276,23 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
+
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
         billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
+
+        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+            BillHistory billHistoryPayMent = new BillHistory();
+            billHistoryPayMent.setBill(bill.get());
+            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+            billHistoryPayMent.setActionDescription(request.getActionDescription());
+            billHistoryPayMent.setEmployees(account.get());
+            billHistoryRepository.save(billHistoryPayMent);
+        }
         return billRepository.save(bill.get());
     }
 
