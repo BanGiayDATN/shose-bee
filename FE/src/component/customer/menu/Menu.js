@@ -1,15 +1,15 @@
 import { useState } from "react";
 import "./style-menu.css";
-import logo from "./../../../assets/images/logo.png";
+import logo from "./../../../assets/images/logo_client.png";
 import { Link } from "react-router-dom";
-import { Select, Space, Input, Button,Menu } from "antd";
-import { SearchOutlined, LoginOutlined } from "@ant-design/icons";
-import { useEffect } from "react";
+import { Select, Input, Button, Menu,Badge } from "antd";
+import { SearchOutlined, LoginOutlined ,ShoppingCartOutlined} from "@ant-design/icons";
 
 const { Option } = Select;
 function HeaderMenu() {
   const [isOptionVisible, setOptionVisible] = useState(false);
   const [modal, setModal] = useState(false);
+  const [activeField, setActiveField] = useState("");
 
   const fields = [
     {
@@ -32,40 +32,44 @@ function HeaderMenu() {
         { title: "Liên hệ", className: "title-option" },
       ],
     },
-    {
-      className: "title-menu",
-      title: "SALE OFF",
-    },
+    // {
+    //   className: "title-menu",
+    //   title: "SALE OFF",
+    // },
   ];
 
-  const handleMenuHover = () => {
+  const handleMenuHover = (title) => {
     setOptionVisible(true);
+    setActiveField(title);
   };
 
   const handleMenuLeave = () => {
     setOptionVisible(false);
+    setActiveField("");
   };
   const onSearch = () => {
     if (window.scrollY === 0) {
-                    setModal(true);
-                    console.log(modal);
-                  } else {
-                          setModal(true);
-                          //  window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn trang lên đầu
-                    console.log(modal);
-                  }
+      setModal(true);
+      console.log(modal);
+    } else {
+      setModal(true);
+      //  window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn trang lên đầu
+      console.log(modal);
+    }
   };
 
   const offSearch = () => {
     setModal(false);
-   
   };
 
   return (
     <div>
       <div className="menu">
         <div className="logo-menu">
-          <img className="logo-img" src={logo} alt="..." />
+          <Link to="/home">
+            {" "}
+            <img className="logo-img" src={logo} alt="..." />
+          </Link>
         </div>
         <div className="space-menu">
           {fields.map((field, index) => {
@@ -73,8 +77,8 @@ function HeaderMenu() {
               <div
                 key={index}
                 className={field.className}
-                onMouseEnter={field.title === "VỀ CHÚNG TÔI" || "SẢN PHẨM" ? handleMenuHover : null}
-                onMouseLeave={field.title === "VỀ CHÚNG TÔI" || "SẢN PHẨM" ? handleMenuLeave : null}
+                onMouseEnter={() => handleMenuHover(field.title)}
+                onMouseLeave={handleMenuLeave}
               >
                 {field.option ? (
                   field.title
@@ -83,22 +87,39 @@ function HeaderMenu() {
                     {field.title}
                   </Link>
                 )}
-                {field.option && isOptionVisible && (
-                  <Menu className="option-container">
-                    {field.option.map((option, optionIndex) => (
-                     <div key={optionIndex} className={option.className}>
-                     {option.title}
-                   </div>
-                    ))}
-                  </Menu>
-                )}
+                {field.option &&
+                  isOptionVisible &&
+                  activeField === field.title && (
+                    <Menu className="option-container">
+                      {field.option.map((option, optionIndex) => (
+                        <Link to="/diem">
+                          <div key={optionIndex} className={option.className}>
+                            {option.title}
+                          </div>
+                        </Link>
+                      ))}
+                    </Menu>
+                  )}
               </div>
             );
           })}
         </div>
-        <div className="search-menu">
-          <SearchOutlined onClick={() => onSearch()} />
+       <div className="left-menu">
+       <div className="search-menu">
+          <SearchOutlined style={{ fontSize: '20px' }} onClick={() => onSearch() } />  
         </div>
+       |
+    
+       <div > 
+       <Link >
+       <Badge size="small" count={5}  style={{ backgroundColor:"#ff4400", fontSize: '10px' }}>
+       <ShoppingCartOutlined className="cart-menu" style={{ fontSize: '20px' }}/>
+    </Badge>
+      
+        </Link>
+        </div>
+      
+       </div>
       </div>
 
       <div>
@@ -108,7 +129,7 @@ function HeaderMenu() {
               <div className="text-search">Tìm kiếm sản phẩm</div>
 
               <div className="exit-search">
-                <LoginOutlined onClick={offSearch} />
+                <LoginOutlined  style={{ color:"#ff4400" }} onClick={offSearch} />
               </div>
             </div>
 

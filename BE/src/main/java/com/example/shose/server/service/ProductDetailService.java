@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import org.springframework.data.repository.query.Param;
@@ -40,8 +41,10 @@ public interface ProductDetailService {
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 
+//    ProductDetailResponse findByIdProductDetail(String id);
+    List<GetProductDetailByCategory>  GetProductDetailByCategory(String id);
     List<ProductDetailReponse> findAllByIdProduct(String id);
 
-    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
+//    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
 
 }

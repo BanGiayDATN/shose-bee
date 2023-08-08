@@ -9,7 +9,7 @@ import {
 import { Layout, Menu, Button, theme, Dropdown, Badge } from "antd";
 import "./style-dashboard-employee.css";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/images/logo.png";
+import Logo from "../../assets/images/logo_admin.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBagShopping,

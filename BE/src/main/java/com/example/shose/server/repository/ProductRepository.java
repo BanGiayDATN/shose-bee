@@ -59,6 +59,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
  """,nativeQuery = true)
     List<String> findAllByName(@Param("name")String name);
 
+
     @Query(value = """
                 SELECT
                                    ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
@@ -106,4 +107,5 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                  
             """, nativeQuery = true)
     List<CustomProductRespone> getAllProduct(@Param("req") FindProductDetailRequest req);
+
 }

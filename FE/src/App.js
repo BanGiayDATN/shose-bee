@@ -1,4 +1,5 @@
 import "./App.css";
+import {useState,useEffect} from "react"
 import { AppConfig } from "./AppConfig";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/403";
@@ -9,8 +10,8 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
-import UpdatePromotionManagement from "./pages/employee/promotion-management/UpdatePromotionManagement"
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
+import UpdatePromotionManagement from "./pages/employee/promotion-management/UpdatePromotionManagement";
 import Dashboard from "./pages/employee/dashboard/DashBoard";
 import CategoryManagement from "./pages/employee/category-management/CategoryManagement";
 import BrandManagement from "./pages/employee/brand-management/BrandManagement";
@@ -36,9 +37,22 @@ import DetailProductManagment from "./pages/employee/product-management/DetailPr
 import UpdateProductManagment from "./pages/employee/product-management/UpdateProductManagment";
 import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
+import loading from "./../src/assets/images/s_discount_icon.png"
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(false); // Giả sử trang đã tải xong sau khi component hiển thị
+  }, []);
   return (
     <div className="App">
+        {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-logo">
+            <img src={loading} alt="Logo" />
+          </div>
+        </div>
+      )}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -309,7 +323,7 @@ function App() {
             element={
               <AuthGuard>
                 <DashBoardEmployee>
-                  <CreatePromotionManagement />
+                  <CreatePromotionManagement/>
                 </DashBoardEmployee>
               </AuthGuard>
             }
