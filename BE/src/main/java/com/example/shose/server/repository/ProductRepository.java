@@ -30,10 +30,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             FROM product p
             JOIN product_detail pd ON p.id = pd.id_product
             WHERE (
-                          :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''\s
-                          OR p.code LIKE %:#{#req.keyword}% 
-                          OR p.name LIKE %:#{#req.keyword}%
-                      )
+                  :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''
+                  OR p.code LIKE %:#{#req.keyword}% 
+                  OR p.name LIKE %:#{#req.keyword}%
+              )
             AND  ( :#{#req.status} IS NULL   OR :#{#req.status} LIKE '' OR p.status LIKE :#{#req.status} )
             AND  ( :#{#req.minQuantity} IS NULL OR pd.quantity >= :#{#req.minQuantity} ) 
             AND  ( :#{#req.maxQuantity} IS NULL OR pd.quantity <= :#{#req.maxQuantity} )

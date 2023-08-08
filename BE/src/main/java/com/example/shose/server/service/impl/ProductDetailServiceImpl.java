@@ -1,6 +1,7 @@
 package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.ProductDetailDTO;
+import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
@@ -8,9 +9,15 @@ import com.example.shose.server.dto.request.productdetail.UpdateProductDetailReq
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
+import com.example.shose.server.entity.Brand;
+import com.example.shose.server.entity.Category;
+import com.example.shose.server.entity.Color;
 import com.example.shose.server.entity.Image;
+import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Sole;
+import com.example.shose.server.infrastructure.cloudinary.CloudinaryResult;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -35,8 +42,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -88,51 +99,77 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     @Transactional
-    public ProductDetailDTO create(CreateProductDetailRequest req,
-                                   List<MultipartFile> multipartFiles,
-                                   List<CreateSizeData> listSize,
-                                   List<Boolean> listStatusImage,
-                                   List<String> listColor) throws IOException, ExecutionException, InterruptedException {
-        Product product = productRepository.getOneByName(req.getProductId());
+    public ProductDetailDTO create(List<CreateProductDetailRequest> listData,
+                                   List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException {
+
+        CompletableFuture<List<CloudinaryResult>> uploadFuture = imageToCloudinary.uploadImagesAsync(listFileImage);
+        List<CloudinaryResult> listUrl = uploadFuture.get();
+        listUrl.stream().forEach(a-> System.out.println(a));
+
+        CreateProductDetailRequest request = listData.get(0);
+        Product product = productRepository.getOneByName(request.getProductId());
         if (product == null) {
             product = new Product();
             product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
-            product.setName(req.getProductId());
+            product.setName(request.getProductId());
             product.setStatus(Status.DANG_SU_DUNG);
             productRepository.save(product);
         }
+        Brand brand = brandRepository.getById(request.getBrandId());
+        Material material = materialRepository.getById(request.getMaterialId());
+        Sole sole = soleRepository.getById(request.getSoleId());
+        Category category = categoryRepository.getById(request.getCategoryId());
+        List<ProductDetail> listDetail =  new ArrayList<>();
+        for ( CreateProductDetailRequest req: listData) {
+            ProductDetail add = new ProductDetail();
+            add.setProduct(product);
+            add.setGender(getGenderProductDetail(req.getGender()));
+            add.setSize(sizeRepository.getOneByName(req.getSize()));
+            add.setQuantity(req.getQuantity());
+            add.setStatus(Status.DANG_SU_DUNG);
+            add.setPrice(new BigDecimal(req.getPrice()));
+            add.setColor(colorRepository.getOneByCode(req.getColor()));
+            add.setDescription(req.getDescription());
+            add.setSole(sole);
+            add.setMaterial(material);
+            add.setCategory(category);
+            add.setBrand(brand);
+            listDetail.add(add);
+        }
+        productDetailRepository.saveAll(listDetail);
 
-        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
-        ProductDetail add = new ProductDetail();
-        add.setBrand(brandRepository.getById(req.getBrandId()));
-        add.setCategory(categoryRepository.getById(req.getCategoryId()));
-        add.setMaterial(materialRepository.getById(req.getMaterialId()));
-        add.setSole(soleRepository.getById(req.getSoleId()));
-        add.setProduct(product);
-        add.setDescription(req.getDescription());
-        add.setGender(getGenderProductDetail(req.getGender()));
-        add.setPrice(new BigDecimal(req.getPrice()));
-        add.setStatus(getStatus(req.getStatus()));
-        productDetailRepository.save(add);
-
-        // Process images for each size
-        List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
-                .parallel()
-                .mapToObj(i -> {
-                    Image image = new Image();
-                    String imageUrl = imageUrls.get(i);
-                    boolean isStarred = listStatusImage.get(i);
-                    image.setName(imageUrl);
-                    image.setStatus(isStarred);
-                    image.setProductDetail(add);
-                    return image;
-                })
+        // lấy danh sách chứa tất cả màu từ listUrl
+        List<String> existingColors = listUrl.stream()
+                .map(CloudinaryResult::getColor)
                 .collect(Collectors.toList());
-        imageRepository.saveAll(imagesToAdd);
 
-        ProductDetailDTO detailDTO = new ProductDetailDTO(add);
-        return detailDTO;
+        List<Image> images = new ArrayList<>();
+        for (CloudinaryResult result : listUrl) {
+            String color = result.getColor();
+            if (existingColors.contains(color)) { // kiểm tra màu
+                List<ProductDetail> matchingDetails = listDetail.stream()
+                        .filter(detail -> detail.getColor().getCode().equals(color))
+                        .collect(Collectors.toList());
+                //  nếu có màu tương ứng sẽ thêm theo Image tưng ứng
+                if (!matchingDetails.isEmpty()) {
+                    for (int i = 0; i < matchingDetails.size(); i++) {
+                        ProductDetail matchingDetail = matchingDetails.get(i);
+                        Image image = new Image();
+                        image.setName(result.getUrl());
+                        image.setProductDetail(matchingDetail);
+                        image.setStatus(true);
+                        images.add(image);
+                    }
+                }
+            }
+        }
+        images.stream().forEach(a-> System.out.println(a));
+        System.out.println(images.size());
+        imageRepository.saveAll(images);
+
+        return null;
     }
+
 
     @Override
     public ProductDetailDTO update(UpdateProductDetailRequest req,
@@ -169,20 +206,20 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         imageRepository.deleteAll(existingImagesDetail);
 
         // Process images for each size
-        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
-        List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
-                .parallel()
-                .mapToObj(i -> {
-                    Image image = new Image();
-                    String imageUrl = imageUrls.get(i);
-                    boolean isStarred = listStatusImage.get(i);
-                    image.setName(imageUrl);
-                    image.setStatus(isStarred);
-                    image.setProductDetail(update);
-                    return image;
-                })
-                .collect(Collectors.toList());
-        imageRepository.saveAll(imagesToAdd);
+//        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
+//        List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
+//                .parallel()
+//                .mapToObj(i -> {
+//                    Image image = new Image();
+//                    String imageUrl = imageUrls.get(i);
+//                    boolean isStarred = listStatusImage.get(i);
+//                    image.setName(imageUrl);
+//                    image.setStatus(isStarred);
+//                    image.setProductDetail(update);
+//                    return image;
+//                })
+//                .collect(Collectors.toList());
+//        imageRepository.saveAll(imagesToAdd);
 
         ProductDetailDTO detailDTO = new ProductDetailDTO(update);
         return detailDTO;

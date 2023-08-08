@@ -312,12 +312,12 @@ public class DBGenerator implements CommandLineRunner {
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail11 = ProductDetail.builder().size(size).color(color1).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .sole(sole1).category(category).material(material).brand(brand).product(product2)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
         ProductDetail productDetail12 = ProductDetail.builder().size(size).color(color7).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .sole(sole1).category(category).material(material).brand(brand).product(product3)
                 .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();

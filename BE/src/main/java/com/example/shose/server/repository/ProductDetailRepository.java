@@ -38,7 +38,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    c2.code AS color
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
-                JOIN image i ON detail.id = i.id_product_detail
+                JOIN (
+                    SELECT id_product_detail, MAX(id) AS max_image_id
+                    FROM image
+                    GROUP BY id_product_detail
+                ) max_images ON detail.id = max_images.id_product_detail
+                LEFT JOIN image i ON max_images.max_image_id = i.id
                 JOIN sole s ON s.id = detail.id_sole
                 JOIN material m ON detail.id_material = m.id
                 JOIN category c ON detail.id_category = c.id
@@ -48,8 +53,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
-                WHERE i.status = true
-                 AND p.id = :#{#req.idProduct}
+                WHERE i.status = true  
+                AND p.id = :#{#req.idProduct}
                 AND  ( :#{#req.size} = 0 OR s2.name = :#{#req.size} OR :#{#req.size} = '' )
                 AND  ( :#{#req.color} IS NULL OR c2.code LIKE %:#{#req.color}% OR :#{#req.color} LIKE '' )
                 AND  ( :#{#req.brand} IS NULL OR b.name LIKE %:#{#req.brand}% OR :#{#req.brand} LIKE '' )
