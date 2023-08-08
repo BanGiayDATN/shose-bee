@@ -385,12 +385,14 @@ function ModalAddProductDetail({
     }
     setQuantity(1)
     setState(false)
+    setSizes([])
     // handleCancelProduct();
   };
   const handleCancel = () => {
     setIsModalOpen(false);
     setQuantity(1)
     setState(false)
+    setSizes([])
   };
   // end modal detail product size
   const [sizes, setSizes] = useState([]);
@@ -634,6 +636,9 @@ function ModalAddProductDetail({
           clearSelectSize={clearSelectSize}
           quantity={quantity}
           setQuantity={setQuantity}
+          selectedSizes={sizes}
+          setSelectedSizes={setSizes}
+          state={state}
         />
       </Modal>
     </div>

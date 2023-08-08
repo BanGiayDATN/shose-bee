@@ -14,7 +14,7 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import "./create-bill.css";
-import { BsTrash } from "react-icons/bs";
+import { BsFillTrash3Fill, BsTrash } from "react-icons/bs";
 import "./style-bill.css";
 import { useSelector } from "react-redux";
 import { BillApi } from "../../../api/employee/bill/bill.api";
@@ -44,6 +44,8 @@ import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
 import { set } from "lodash";
 import { Center } from "@chakra-ui/react";
+import NumberFormat from "react-number-format";
+import { MdOutlinePayment } from "react-icons/md";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -60,6 +62,21 @@ function CreateBill() {
     billDetailRequests: [],
     vouchers: [],
   });
+
+  var optionsPayMent = [
+    {
+      value: "TIEN_MAT",
+      label: "Tiền mặt",
+    },
+    {
+      value: "CHUYEN_KHOAN",
+      label: "Chuyển khoản",
+    },
+    {
+      value: "THE",
+      label: "Thẻ",
+    },
+  ];
 
   const [address, setAddress] = useState({
     city: "",
@@ -355,6 +372,106 @@ function CreateBill() {
     );
   };
 
+  // begin modal thanh toán
+  const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
+  const [dataPayment, setDataPayMent] = useState([]);
+  useEffect(() => {
+    if (data != null) {
+      setListaccount(data);
+    }
+  }, [data]);
+ 
+  // useEffect(() => {
+  //   var total = dataPayment.reduce((accumulator, currentValue) => {
+  //     return accumulator + currentValue.totalMoney;
+  //   }, 0);
+  //   var list = [];
+  //   if (total == 0) {
+  //     var data = {
+  //       actionDescription: "",
+  //       method: "TIEN_MAT",
+  //       totalMoney: ( products.reduce((accumulator, currentValue) => {
+  //         return accumulator + currentValue.price * currentValue.quantity;
+  //       }, 0) +
+  //       shipFee -
+  //       voucher.discountPrice),
+  //       status: "THANH_TOAN",
+  //     };
+  //     list.push(data);
+  //     setDataPayMent(list);
+  //   }
+  // }, [listProduct]);
+  const [totalMoneyPayMent, setTotalMoneyPayment] = useState(0);
+  const addPayMent = (e, method) => {
+    if (totalMoneyPayMent >= 1000) {
+      var data = {
+        actionDescription: "",
+        method: method,
+        totalMoney: totalMoneyPayMent,
+        status: "THANH_TOAN",
+      };
+      setDataPayMent([...dataPayment, data]);
+      setTotalMoneyPayment(0)
+    }
+  };
+  console.log(dataPayment);
+  const deletePayMent = (e, index) => {
+    const newDataPayment = [...dataPayment];
+    newDataPayment.splice(index, 1);
+    setDataPayMent(newDataPayment);
+  };
+  const columnsPayments = [
+    {
+      title: <div className="title-product">Số tiền</div>,
+      dataIndex: "totalMoney",
+      key: "totalMoney",
+      render: (totalMoney) => (
+        <span>
+          {totalMoney >= 1000
+            ? totalMoney.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+            : totalMoney + " đ"}
+        </span>
+      ),
+    },
+    {
+      title: <div className="title-product">Phương thức</div>,
+      dataIndex: "method",
+      key: "method",
+      render: (method) => (
+        <span className={method}>
+          {method == "TIEN_MAT"
+            ? "Tiền mặt"
+            : method == "CHUYEN_KHOAN"
+            ? "Chuyển khoản"
+            : "Thẻ"}
+        </span>
+      ),
+    },
+    {
+      title: <div className="title-product">Hành động</div>,
+      dataIndex: "method",
+      key: "method",
+      render: (method, record, index) => (
+        <Button title="Xóa" onClick={(e) => deletePayMent(e,index)}>
+          <BsFillTrash3Fill />
+        </Button>
+      ),
+    },
+  ];
+  const showModalPayMent = (e) => {
+    setIsModalPayMentOpen(true);
+  };
+  const handleOkPayMent = () => {
+    setIsModalPayMentOpen(false);
+  };
+  const handleCancelPayMent = () => {
+    setIsModalPayMentOpen(false);
+  };
+  // enad modal thanh toán
+
   const orderBill = (e) => {
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
@@ -370,7 +487,7 @@ function CreateBill() {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
     var addressuser = "";
-    if (!checkNotEmptyAddress()) {
+    if (!checkNotEmptyAddress() && isOpenDelivery) {
       addressuser =
         address.detail +
         ", " +
@@ -384,6 +501,10 @@ function CreateBill() {
     if (user != null) {
       idAccount = user.idAccount;
     }
+    var typeBill = "OFFLINE";
+    if (isOpenDelivery == true) {
+      typeBill = "ONLINE";
+    }
     var data = {
       phoneNumber: billRequest.phoneNumber,
       address: addressuser,
@@ -391,9 +512,11 @@ function CreateBill() {
       itemDiscount: voucher.discountPrice,
       totalMoney: totalBill,
       note: billRequest.note,
-      typeBill: "OFFLINE",
+      StatusPayMents: "THANH_TOAN",
+      typeBill: typeBill,
       moneyShip: shipFee,
       billDetailRequests: newProduct,
+      paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
       idUser: idAccount,
     };
@@ -573,7 +696,7 @@ function CreateBill() {
       afterPrice: price - record.value,
       discountPrice: record.value,
     });
-    setCodeVoucher(record.code + " - " + record.name  );
+    setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
 
@@ -599,6 +722,7 @@ function CreateBill() {
         : item
     );
     setProducts(updatedListSole);
+    
   };
 
   const handleQuantityChange = (value, record) => {
@@ -1556,19 +1680,28 @@ function CreateBill() {
                 </label>
               </Col>
             </Row>
-            <Row style={{ margin: "10px 0 " }}>
-              <Col span={16}>
-                <Input
-                  style={{ width: "100%", backgroundColor: "white" }}
-                  disabled
-                  value={codeVoucher}
-                />
-              </Col>
-              <Col span={1}></Col>
-              <Col span={3}>
-                <Button type="dashed" onClick={(e) => showModalVoucher(e)}>
-                  Chọn mã
+            <Row style={{ margin: "10px 0 ", width: "100%" }}>
+              <Col span={7}>Khách thanh toán</Col>
+              <Col span={2}>
+                <Button onClick={showModalPayMent}>
+                  <MdOutlinePayment></MdOutlinePayment>
                 </Button>
+              </Col>
+              <Col span={14} align={"end"} style={{ marginRight: "10px" }}>
+                {dataPayment.reduce((accumulator, currentValue) => {
+                  return accumulator + currentValue.totalMoney;
+                }, 0) >= 1000
+                ? dataPayment
+                    .reduce((accumulator, currentValue) => {
+                      return accumulator + currentValue.totalMoney;
+                    }, 0)
+                    .toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                : dataPayment.reduce((accumulator, currentValue) => {
+                  return accumulator + currentValue.totalMoney;
+                  }, 0) + " đ"}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "29px" }}>
@@ -1598,16 +1731,47 @@ function CreateBill() {
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "29px" }}>
-              <Col span={8}>Phí vận chuyển: </Col>
+              <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {shipFee >= 1000
-                  ? shipFee.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                  : shipFee + " đ"}
+                {products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) >= 1000
+                  ? products
+                      .reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0)
+                      .toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                  : products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) + " đ"}
               </Col>
             </Row>
+            {isOpenDelivery == true ? (
+              <Row justify="space-between" style={{ marginTop: "29px" }}>
+                <Col span={8}>Phí vận chuyển: </Col>
+                <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
+                  {shipFee >= 1000
+                    ? shipFee.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    : shipFee + " đ"}
+                </Col>
+              </Row>
+            ) : (
+              <Row></Row>
+            )}
+
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Giảm giá: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
@@ -1646,7 +1810,8 @@ function CreateBill() {
                     accumulator + currentValue.price * currentValue.quantity
                   );
                 }, 0) +
-                  shipFee >=
+                  shipFee -
+                  voucher.discountPrice >=
                 1000
                   ? (
                       products.reduce((accumulator, currentValue) => {
@@ -1654,7 +1819,9 @@ function CreateBill() {
                           accumulator +
                           currentValue.price * currentValue.quantity
                         );
-                      }, 0) + shipFee
+                      }, 0) +
+                      shipFee -
+                      voucher.discountPrice
                     ).toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND",
@@ -1664,7 +1831,8 @@ function CreateBill() {
                         accumulator + currentValue.price * currentValue.quantity
                       );
                     }, 0) +
-                    shipFee +
+                    shipFee -
+                    voucher.discountPrice +
                     " đ"}
               </Col>
             </Row>
@@ -1674,7 +1842,9 @@ function CreateBill() {
                 style={{ backgroundColor: "black", fontWeight: "500" }}
                 onClick={(e) => orderBill(e)}
               >
-                Xác nhận đặt hàng
+                {isOpenDelivery == true
+                  ? " Xác nhận đặt hàng "
+                  : " Xác nhận thanh toán "}
               </Button>
             </Row>
           </Col>
@@ -1848,6 +2018,137 @@ function CreateBill() {
         </Row>
       </Modal>
       {/* end  modal Address */}
+
+      {/* begin modal payment  */}
+      <Modal
+        title="Thanh toán"
+        open={isModalPayMentOpen}
+        onOk={handleOkPayMent}
+        onCancel={handleCancelPayMent}
+      >
+        <Form>
+          <Row style={{ width: "100%", marginTop: "10px" }}>
+            <Col span={24} style={{ marginTop: "10px" }}>
+              <Row style={{ width: "100%" }}>
+                <Col span={4} style={{ fontWeight: "bold" }}>
+                  Số tiền{" "}
+                </Col>
+                <Col span={19}>
+                  {" "}
+                  <Form.Item
+                    label=""
+                    name="price"
+                    style={{ marginBottom: "20px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số tiền",
+                      },
+                    ]}
+                  >
+                    <NumberFormat
+                      thousandSeparator={true}
+                      suffix=" VND"
+                      placeholder="Vui lòng nhập số tiền"
+                      style={{
+                        width: "100%",
+                        position: "relative",
+                        height: "37px",
+                      }}
+                      customInput={Input}
+                      value={totalMoneyPayMent}
+                      onChange={(e) => {
+                        setTotalMoneyPayment( parseFloat(e.target.value.replace(/[^0-9.-]+/g, "")))
+                      }}
+                    />
+                  </Form.Item>{" "}
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row style={{ width: "100%" }}>
+            {optionsPayMent.map((item) => (
+              <Col span={8} style={{ marginTop: "10px" }}>
+                <Button
+                  onClick={(e) => addPayMent(e, item.value)}
+                  style={{
+                    margin: "0 5px",
+                    borderRadius: "25px",
+                    width: "98%",
+                    alignItems: "center",
+                  }}
+                >
+                  {item.label}
+                </Button>
+              </Col>
+            ))}
+          </Row>
+          <Row style={{ width: "100%", margin: "10px 0 " }}>
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
+              Khách cần trả
+            </Col>
+            <Col
+              span={16}
+              align={"end"}
+              style={{ fontSize: "18px", fontWeight: "bold", color: "#00d6f4" }}
+            >
+              {products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
+              }, 0) +
+                shipFee -
+                voucher.discountPrice >=
+              1000
+                ? (
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
+                    shipFee -
+                    voucher.discountPrice
+                  ).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })
+                : products.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0) +
+                  shipFee -
+                  voucher.discountPrice +
+                  " đ"}
+            </Col>
+          </Row>
+          <Row style={{ width: "100%", marginTop: "10px" }}>
+            <Table
+              style={{ width: "100%" }}
+              dataSource={dataPayment}
+              columns={columnsPayments}
+              pagination={{ pageSize: 3 }}
+              className="customer-table"
+            />
+          </Row>
+          <Row style={{ width: "100%", margin: "10px 0 " }}>
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
+              Khách thanh toán
+            </Col>
+            <Col
+              span={16}
+              align={"end"}
+              style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
+            >
+              {dataPayment.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.totalMoney;
+              }, 0).toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+      {/* end modal payment  */}
 
       <ToastContainer
         position="top-right"

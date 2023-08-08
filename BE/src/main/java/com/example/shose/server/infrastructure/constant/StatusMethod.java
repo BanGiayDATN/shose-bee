@@ -7,5 +7,5 @@ public enum StatusMethod {
 
     TIEN_MAT,
     CHUYEN_KHOAN,
-    TIEN_MAT_VA_CHUYEN_KHOAN
+    THE
 }

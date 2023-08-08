@@ -165,7 +165,7 @@ function BillManagement() {
             style={{ border: "none", borderRadius: "22px" }}
           >
             {text === "TAO_HOA_DON"
-              ? "Tạo Hóa đơn"
+              ? "Hóa đơn chờ"
               : text === "CHO_XAC_NHAN"
               ? "Chờ xác nhận"
               : text === "VAN_CHUYEN"

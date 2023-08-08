@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import './detail-product.css' 
 
-function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelectSize, quantity, setQuantity }) {
+function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelectSize, quantity, setQuantity, state, selectedSizes, setSelectedSizes }) {
   const [listSize, setListSize] = useState([]);
-  const [selectedSizes, setSelectedSizes] = useState([]);
+  // const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColor, setSelectedColor] = useState();
   const [listColor, setListColor] = useState([]);
   const [productDetail, setProductDetail] = useState({});
@@ -29,7 +29,7 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
         : [...prevSelected, size]
     );
     setProductDetail(size)
-    ChangedSelectSize(e, size);
+    // ChangedSelectSize(e, size);
     if (max < size.quantity) {
       setMax(size.quantity);
     }
@@ -66,11 +66,10 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
   };
 
   useEffect(() => {
-    // getSizeProductDetail();
-    getProductDetail();
-    // setQuantity(1);
     setSelectedSizes([]);
-  }, [id, quantity]);
+    getProductDetail();
+    setQuantity(1);
+    }, [id, state]);
 
   const handleIncrease = () => {
     if (max > quantity) {

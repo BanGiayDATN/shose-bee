@@ -1,6 +1,7 @@
 package com.example.shose.server.dto.request.bill;
 
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
+import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
 import com.example.shose.server.dto.request.voucherdetail.CreateVoucherDetailRequest;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
@@ -38,11 +39,13 @@ public class CreateBillOfflineRequest {
 
     private String typeBill;
 
+    private String StatusPayMents;
+
     private String moneyShip;
 
-    private StatusMethod method;
-
     private List<CreateBillDetailRequest> billDetailRequests;
+
+    private List<CreatePaymentsMethodRequest> paymentsMethodRequests;
 
     private List<CreateVoucherDetailRequest> vouchers;
 
