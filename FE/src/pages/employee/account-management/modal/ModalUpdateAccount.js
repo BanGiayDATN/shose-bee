@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { AccountApi } from "../../../../api/employee/account/account.api";
 import { UpdateAccount } from "../../../../app/reducer/Account.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-account.css";
+import "../style-staff.css";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 import axios from "axios";
@@ -111,17 +111,8 @@ const ModalUpdateAccount = ({ visible }) => {
       setListWard(res.data.data);
     });
   };
-
-  const getOneAddress = () => {
-    if (id != null && id !== "") {
-      AddressApi.getOne(id).then((res) => {
-        setAccount(res.data.data);
-        form.setFieldsValue({
-          ...res.data.data,
-          dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
-        });
-      });
-    }
+  const handleWardChange = (value, valueWard) => {
+    form.setFieldsValue({ wardCode: valueWard.valueWard });
   };
   const getOne = () => {
     if (id != null && id !== "") {
@@ -138,6 +129,7 @@ const ModalUpdateAccount = ({ visible }) => {
             line: resAddress.data.data.line,
             toDistrictId: resAddress.data.data.toDistrictId,
             provinceId: resAddress.data.data.provinceId,
+            wardCode: resAddress.data.data.wardCode,
           });
           AddressApi.fetchAllProvinceWard(
             resAddress.data.data.toDistrictId
@@ -382,6 +374,19 @@ const ModalUpdateAccount = ({ visible }) => {
                     <Input className="input-item" placeholder="Tên nhân viên" />
                   </Form.Item>
                   <Form.Item
+                    label="Căn cước công dân"
+                    name="citizenIdentity"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số CCCD",
+                      },
+                      { max: 12, message: "Số CCCD tối đa 12 ký tự" },
+                    ]}
+                  >
+                    <Input className="input-item" placeholder="CCCD" />
+                  </Form.Item>
+                  <Form.Item
                     label="Email"
                     name="email"
                     rules={[
@@ -407,7 +412,6 @@ const ModalUpdateAccount = ({ visible }) => {
                     ]}
                   >
                     <Select onChange={handleProvinceChange}>
-                      {/* <Option value="">--Chọn Tỉnh/Thành phố--</Option> */}
                       {listProvince?.map((item) => {
                         return (
                           <Option
@@ -429,11 +433,14 @@ const ModalUpdateAccount = ({ visible }) => {
                       { required: true, message: "Vui lòng chọn Xã/Phường" },
                     ]}
                   >
-                    <Select>
-                      {/* <Option value="">--Chọn Xã/Phường--</Option> */}
+                    <Select onChange={handleWardChange}>
                       {listWard?.map((item) => {
                         return (
-                          <Option key={item.WardCode} value={item.WardName}>
+                          <Option
+                            key={item.WardCode}
+                            value={item.WardName}
+                            valueWard={item.WardCode}
+                          >
                             {item.WardName}
                           </Option>
                         );
@@ -443,7 +450,6 @@ const ModalUpdateAccount = ({ visible }) => {
                   <Form.Item
                     label="Trạng thái"
                     name="status"
-                    // initialValue="DANG_SU_DUNG"
                     rules={[
                       { required: true, message: "Vui lòng chọn trạng thái" },
                     ]}
@@ -494,6 +500,19 @@ const ModalUpdateAccount = ({ visible }) => {
                     <Input className="input-item" type="date" />
                   </Form.Item>
                   <Form.Item
+                    label="Giới tính"
+                    name="gender"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn giới tinh" },
+                    ]}
+                    initialValue={account.gender === true ? "Nam" : "Nữ"}
+                  >
+                    <Radio.Group>
+                      <Radio value={true}>Nam</Radio>
+                      <Radio value={false}>Nữ</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item
                     label="Quận/Huyện"
                     name="district"
                     rules={[
@@ -541,34 +560,16 @@ const ModalUpdateAccount = ({ visible }) => {
                 >
                   <Input type="password" placeholder="Mật khẩu" />
                 </Form.Item> */}
-                  <Form.Item
-                    label="Giới tính"
-                    name="gender"
-                    rules={[
-                      { required: true, message: "Vui lòng chọn giới tinh" },
-                    ]}
-                    initialValue={account.gender === true ? "Nam" : "Nữ"}
-                  >
-                    <Radio.Group>
-                      <Radio value={true}>Nam</Radio>
-                      <Radio value={false}>Nữ</Radio>
-                    </Radio.Group>
-                  </Form.Item>
+
                   <Form.Item name="toDistrictId" hidden>
                     <Input disabled />
                   </Form.Item>
                   <Form.Item name="provinceId" hidden>
                     <Input disabled />
                   </Form.Item>
-                  {/* <div>
-                  <QrReader
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: "100%" }}
-                  />
-                  <p>Scanned Data: {qrData}</p>
-                </div> */}
+                  <Form.Item name="wardCode" hidden>
+                    <Input disabled />
+                  </Form.Item>
                 </Col>
               </Row>
             </div>

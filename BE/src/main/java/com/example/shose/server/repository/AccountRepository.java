@@ -28,13 +28,4 @@ public interface AccountRepository extends JpaRepository<Account, String> {
             """, nativeQuery = true)
     List<SimpleEmployeeResponse> getAllSimpleEntityEmployess();
 
-    @Modifying
-    @Query("UPDATE Account a SET a.password = :password WHERE a.user.id = :id")
-    void updatePasswordByUserId(@Param("id") String id, @Param("password") String password);
-
-    @Modifying
-    @Query("UPDATE Account a SET a.email = :email WHERE a.user.id = :id")
-    void updateEmailByUserId(@Param("id") String id, @Param("email") String email);
-
-
 }
