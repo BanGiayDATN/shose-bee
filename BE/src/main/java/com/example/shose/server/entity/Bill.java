@@ -64,6 +64,7 @@ public class Bill extends PrimaryEntity {
     private Long completionDate;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private TypeBill typeBill;
 
     @Column(name = "note")

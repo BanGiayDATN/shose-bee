@@ -69,7 +69,7 @@ export class BillApi {
     static createBillWait = (data) => {
       return request({
         method: "POST",
-        url: `/admin/bill/offline`,
+        url: `/admin/bill`,
         data: data
       });
     };

@@ -32,7 +32,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import {
   GetPromotion,
   SetPromotion,
@@ -43,6 +43,7 @@ import "react-toastify/dist/ReactToastify.css";
 import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
 import { set } from "lodash";
+import { Center } from "@chakra-ui/react";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -81,7 +82,6 @@ function CreateBill() {
 
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
-    console.log(billRequest);
   };
   // const dispatch = useAppDispatch();
   const [isOpenDelivery, setIsOpenDelivery] = useState(false);
@@ -119,6 +119,7 @@ function CreateBill() {
   useEffect(() => {
     loadData();
     loadDataProvince();
+    dispatch(addUserBillWait(null));
   }, []);
 
   const loadData = () => {
@@ -128,6 +129,8 @@ function CreateBill() {
           ...customer,
           stt: index + 1,
         }));
+        console.log("hdkjsahdkjas");
+        console.log(accounts);
         setListaccount(res.data.data);
         setInitialCustomerList(accounts);
         dispatch(SetCustomer(res.data.data));
@@ -136,7 +139,7 @@ function CreateBill() {
         console.log(err);
       }
     );
-    PromotionApi.fetchAll().then(
+    VoucherApi.fetchAll().then(
       (res) => {
         const data = [];
         res.data.data.map((item) => {
@@ -252,7 +255,7 @@ function CreateBill() {
         <img
           src={avata}
           alt="Hình ảnh"
-          style={{ width: "150px", height: "110px", borderRadius: "20px" }}
+          style={{ width: "60px", height: "60px", borderRadius: "50%" }}
         />
       ),
     },
@@ -316,7 +319,6 @@ function CreateBill() {
       userName: record.fullName,
       idUser: record.id,
     });
-    console.log(billRequest);
     dispatch(addUserBillWait(record));
     setIsModalAccountOpen(false);
   };
@@ -367,6 +369,36 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
+    var addressuser = "";
+    if (checkNotEmptyAddress()) {
+      addressuser =
+        address.detail +
+        ", " +
+        address.wards +
+        ", " +
+        address.district +
+        ", " +
+        address.city;
+    }
+    var idAccount = "";
+    if (user != null) {
+      console.log(user);
+      idAccount = user.idAccount;
+    }
+    var data = {
+      phoneNumber: billRequest.phoneNumber,
+      address: addressuser,
+      userName: billRequest.userName,
+      itemDiscount: voucher.discountPrice,
+      totalMoney: totalBill,
+      note: billRequest.note,
+      typeBill: "OFFLINE",
+      moneyShip: shipFee,
+      billDetailRequests: newProduct,
+      vouchers: newVoucher,
+      idUser: idAccount,
+    };
+    console.log(data);
     if (isOpenDelivery) {
       if (checkNotEmptyAddress() && checkNotEmptyBill()) {
         if (totalBill > 0) {
@@ -376,25 +408,6 @@ function CreateBill() {
             okText: "Đồng ý",
             cancelText: "Hủy",
             onOk: async () => {
-              var addressuser =
-                address.detail +
-                ", " +
-                address.wards +
-                ", " +
-                address.district +
-                ", " +
-                address.city;
-              var data = {
-                phoneNumber: billRequest.phoneNumber,
-                address: addressuser,
-                userName: billRequest.userName,
-                itemDiscount: voucher.discountPrice,
-                totalMoney: totalBill,
-                note: billRequest.note,
-                moneyShip: shipFee,
-                billDetailRequests: newProduct,
-                vouchers: newVoucher,
-              };
               await BillApi.createBillWait(data).then((res) => {
                 navigate("/bill-management/detail-bill/" + res.data.data.id);
               });
@@ -415,25 +428,6 @@ function CreateBill() {
           okText: "Đồng ý",
           cancelText: "Hủy",
           onOk: async () => {
-            var addressuser =
-              address.detail +
-              ", " +
-              address.wards +
-              ", " +
-              address.district +
-              ", " +
-              address.city;
-            var data = {
-              phoneNumber: billRequest.phoneNumber,
-              address: addressuser,
-              userName: billRequest.userName,
-              itemDiscount: voucher.discountPrice,
-              totalMoney: totalBill,
-              note: billRequest.note,
-              moneyShip: shipFee,
-              billDetailRequests: newProduct,
-              vouchers: newVoucher,
-            };
             await BillApi.createBillWait(data).then((res) => {
               navigate("/bill-management/detail-bill/" + res.data.data.id);
             });
@@ -445,8 +439,6 @@ function CreateBill() {
       }
     }
   };
-
-  useEffect(() => {}, []);
 
   //  begin voucher
 
@@ -469,7 +461,7 @@ function CreateBill() {
       name: keyVoucher,
       quantity: keyVoucher,
     };
-    PromotionApi.fetchAll(fillter).then(
+    VoucherApi.fetchAll(fillter).then(
       (res) => {
         const data = [];
         res.data.data.map((item) => {
@@ -930,53 +922,82 @@ function CreateBill() {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        <Row style={{ width: "100%" }}>
-          {" "}
-          {/* <Table
-            dataSource={listProduct}
-            columns={columns}
-            rowKey="id"
-            style={{ width: "100%" }}
-            pagination={false} // Disable default pagination
-            className="product-table"
-          /> */}
-          <Row
-            style={{
-              marginBottom: "20px",
-              width: "100%",
-              borderBottom: "2px solid #ccc",
-              padding: "5px",
-            }}
-          >
-            <Col span={13} align={"center"}>
-              <span
-                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >
-                Sản phẩm
-              </span>
-            </Col>
-            <Col span={5} align={"center"}>
-              <span
-                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >
-                Số lượng
-              </span>
-            </Col>
-            <Col span={4} align={"center"}>
-              <span
-                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >
-                Tổng tiền
-              </span>
-            </Col>
-            <Col span={2} align={"center"}>
-              <span
-                style={{ fontSize: "16px", fontWeight: "400", padding: "3px" }}
-              >
-                Thao tác
-              </span>
-            </Col>
-          </Row>
+        <Row style={{ width: "100%", minHeight: "211px" }}>
+          {products.length != 0 ? (
+            <Row
+              style={{
+                marginBottom: "20px",
+                width: "100%",
+                borderBottom: "2px solid #ccc",
+                padding: "5px",
+              }}
+            >
+              <Col span={13} align={"center"}>
+                <span
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "3px",
+                  }}
+                >
+                  Sản phẩm
+                </span>
+              </Col>
+              <Col span={3} align={"center"}>
+                <span
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "3px",
+                  }}
+                >
+                  Số lượng
+                </span>
+              </Col>
+              <Col span={6} align={"center"}>
+                <span
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "3px",
+                  }}
+                >
+                  Tổng tiền
+                </span>
+              </Col>
+              <Col span={2} align={"center"}>
+                <span
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "3px",
+                  }}
+                >
+                  Thao tác
+                </span>
+              </Col>
+            </Row>
+          ) : (
+            <Row style={{ width: "100%" }}>
+              <Row justify={"center"} style={{ width: "100%" }}>
+                <Col span={9} align="center">
+                  <img
+                    src="https://taphoa.cz/static/media/cart-empty-img.8b677cb3.png"
+                    style={{ marginTop: "20px" }}
+                  ></img>
+                </Col>
+              </Row>
+              <Row justify={"center"} style={{ width: "100%" }}>
+                <Col span={12} align="center">
+                  <span style={{ marginLeft: "70px", marginBottom: "30px" }}>
+                    {" "}
+                    Không có sản phẩm nào trong giỏ
+                  </span>
+                </Col>
+              </Row>
+            </Row>
+          )}
+
           {products.map((item) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
@@ -988,7 +1009,7 @@ function CreateBill() {
                       width: "170px",
                       borderRadius: "10%",
                       height: "140px",
-                      marginLeft: "5px",
+                      marginLeft: "10px",
                     }}
                   />
                 </Col>
@@ -1040,7 +1061,7 @@ function CreateBill() {
                   </Row>
                 </Col>
                 <Col
-                  span={5}
+                  span={4}
                   align={"center"}
                   style={{ display: "flex", alignItems: "center" }}
                 >
@@ -1053,6 +1074,7 @@ function CreateBill() {
                   <InputNumber
                     min={1}
                     max={item.maxQuantity}
+                    style={{ margin: "0 5px" }}
                     value={item.quantity}
                     onChange={(value) => handleQuantityChange(value, item)}
                   />
@@ -1064,9 +1086,9 @@ function CreateBill() {
                   </Button>
                 </Col>
                 <Col
-                  span={4}
+                  span={5}
                   align={"center"}
-                  style={{ display: "flex", alignItems: "center" }}
+                  style={{ display: "grid", alignItems: "center" }}
                 >
                   <span
                     style={{
@@ -1100,41 +1122,45 @@ function CreateBill() {
             );
           })}
         </Row>
-        <Row
-          justify="end"
-          style={{
-            marginBottom: "10px",
-            width: "100%",
-            borderTop: "2px solid #ccc",
-            padding: "10px 0 0 0",
-            marginTop: "20px",
-          }}
-        >
-          <Col span={3}>Tổng tiền: </Col>
-          <Col
-            span={4}
-            style={{ fontWeight: "500", fontSize: "16px", color: "red" }}
+        {products.length != 0 ? (
+          <Row
+            justify="end"
+            style={{
+              marginBottom: "10px",
+              width: "100%",
+              borderTop: "2px solid #ccc",
+              padding: "10px 0 0 0",
+              marginTop: "20px",
+            }}
           >
-            {products.reduce((accumulator, currentValue) => {
-              return accumulator + currentValue.price * currentValue.quantity;
-            }, 0) >= 1000
-              ? products
-                  .reduce((accumulator, currentValue) => {
+            <Col span={3}>Tổng tiền: </Col>
+            <Col
+              span={4}
+              style={{ fontWeight: "500", fontSize: "16px", color: "red" }}
+            >
+              {products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
+              }, 0) >= 1000
+                ? products
+                    .reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0)
+                    .toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                : products.reduce((accumulator, currentValue) => {
                     return (
                       accumulator + currentValue.price * currentValue.quantity
                     );
-                  }, 0)
-                  .toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
-              : products.reduce((accumulator, currentValue) => {
-                  return (
-                    accumulator + currentValue.price * currentValue.quantity
-                  );
-                }, 0) + " đ"}
-          </Col>
-        </Row>
+                  }, 0) + " đ"}
+            </Col>
+          </Row>
+        ) : (
+          <Row></Row>
+        )}
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
         <Row
@@ -1546,7 +1572,7 @@ function CreateBill() {
                 </Button>
               </Col>
             </Row>
-            <Row justify="space-between" style={{ marginTop: "20px" }}>
+            <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
                 {products.reduce((accumulator, currentValue) => {
@@ -1572,7 +1598,7 @@ function CreateBill() {
                     }, 0) + " đ"}
               </Col>
             </Row>
-            <Row justify="space-between" style={{ marginTop: "20px" }}>
+            <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={8}>Phí vận chuyển: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
                 {shipFee >= 1000
@@ -1583,15 +1609,26 @@ function CreateBill() {
                   : shipFee + " đ"}
               </Col>
             </Row>
-            <Row justify="space-between" style={{ marginTop: "20px" }}>
+            <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Giảm giá: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {} VND{" "}
+                {voucher.discountPrice >= 1000
+                  ? voucher.discountPrice.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : voucher.discountPrice + " đ"}
               </Col>
             </Row>
-            <Row justify="space-between" style={{ marginTop: "20px" }}>
+            <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={12}>
-                <span style={{ margin: "2px", fontWeight: "700px" }}>
+                <span
+                  style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}
+                >
                   Tổng tiền:
                 </span>{" "}
               </Col>
@@ -1599,7 +1636,7 @@ function CreateBill() {
                 span={10}
                 style={{
                   color: "red",
-                  fontSize: "18px",
+                  fontSize: "15px",
                   fontWeight: "bold",
                   marginRight: "10px",
                 }}
@@ -1632,7 +1669,7 @@ function CreateBill() {
                     " đ"}
               </Col>
             </Row>
-            <Row style={{ margin: "40px 20px 30px 0" }} justify="end">
+            <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
               <Button
                 type="primary"
                 style={{ backgroundColor: "black", fontWeight: "500" }}
@@ -1651,7 +1688,9 @@ function CreateBill() {
         open={isModalProductOpen}
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
+        closeIcon={null}
         width={1000}
+        footer={null}
       >
         <ModalAddProductDetail
           handleCancelProduct={handleCancelProduct}
@@ -1668,6 +1707,7 @@ function CreateBill() {
         open={isModalAccountOpen}
         onOk={handleOkAccount}
         className="account"
+        footer={null}
         onCancel={handleCancelAccount}
       >
         <Row style={{ width: "100%" }}>
@@ -1716,6 +1756,7 @@ function CreateBill() {
         width={1000}
         open={isModalVoucherOpen}
         onOk={handleOkVoucher}
+        footer={null}
         onCancel={handleCancelVoucher}
       >
         <Row style={{ width: "100%" }}>

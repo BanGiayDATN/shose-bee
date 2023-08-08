@@ -435,8 +435,9 @@ const PromotionManagement = () => {
       </h3>
       <hr></hr>
       <div className="manager-promotion">
+
         <Link to="/create-promotion-management">
-          <Button title="Thêm phiếu giảm giá" className="button-add">
+          <Button title="Thêm khuyến mại" className="button-add">
             + Thêm
           </Button>
         </Link>

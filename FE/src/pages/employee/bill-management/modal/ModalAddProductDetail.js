@@ -39,6 +39,7 @@ import {
   addProductInBillDetail,
 } from "../../../../app/reducer/Bill.reducer";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
+import { size } from "lodash";
 
 function ModalAddProductDetail({
   handleCancelProduct,
@@ -77,12 +78,9 @@ function ModalAddProductDetail({
     ProducDetailtApi.fetchAll({
       product: search,
     }).then((res) => {
-      var data = [];
-      res.data.data.map((item) => {
-        if (item.status == "DANG_SU_DUNG") {
-          data.push(item);
-        }
-      });
+      var data =  res.data.data.filter(
+        (product) => product.quantity > 0
+      );
       setListProduct(data);
       // dispatch(SetPr(data));
     });
@@ -94,12 +92,9 @@ function ModalAddProductDetail({
     ProducDetailtApi.fetchAll({
       product: "",
     }).then((res) => {
-      var data = [];
-      res.data.data.map((item) => {
-        if (item.status == "DANG_SU_DUNG") {
-          data.push(item);
-        }
-      });
+      var data =  res.data.data.filter(
+        (product) => product.quantity > 0
+      );
       setListProduct(data);
       // dispatch(SetProduct(data));
     });
@@ -136,11 +131,11 @@ function ModalAddProductDetail({
     brand: "",
     material: "",
     product: "",
-    sizeProduct: null,
+    size: null,
     sole: "",
     category: "",
     gender: "",
-    status: "",
+    status: "DANG_SU_DUNG",
     minPrice: 0,
     maxPrice: 50000000000,
   });
@@ -151,6 +146,8 @@ function ModalAddProductDetail({
       [fieldName]: value,
     }));
   };
+
+ 
 
   const handleChangeValuePrice = (value) => {
     const [minPrice, maxPrice] = value;
@@ -163,21 +160,17 @@ function ModalAddProductDetail({
   };
 
   const loadData = () => {
-    ProducDetailtApi.fetchAll(selectedValues).then(
+    ProducDetailtApi.getAllProductDetail(selectedValues).then(
       (res) => {
-        var data = [];
-        res.data.data.map((item) => {
-          if (item.status == "DANG_SU_DUNG") {
-            data.push(item);
-          }
-        });
+        var data =  res.data.data.filter(
+          (product) => product.quantity > 0
+        );
 
         setListProduct(data);
         // dispatch(SetProduct(data));
         setIsSubmitted(false);
       },
       (err) => {
-        console.log(err);
       }
     );
   };
@@ -287,9 +280,9 @@ function ModalAddProductDetail({
     },
     {
       title: "Số Lượng Tồn ",
-      dataIndex: "totalQuantity",
-      key: "totalQuantity",
-      sorter: (a, b) => a.totalQuantity - b.totalQuantity,
+      dataIndex: "quantity",
+      key: "quantity",
+      sorter: (a, b) => a.quantity - b.quantity,
       align: "center",
     },
     {
@@ -335,25 +328,27 @@ function ModalAddProductDetail({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
     setSizes([]);
-    setProductSelect(record);
+    // setProductSelect(record);
     setIsModalOpen(true);
     setProduct(record);
+  };
+  const clearSelectSize = () => {
+    setSizes([]);
   };
   const handleOk = () => {
     if (sizes.length > 0 && quantity >= 1) {
       setIsModalOpen(false);
       if (typeAddProductBill === "CREATE_BILL") {
         var list = products;
-        console.log(sizes);
         sizes.map((item) => {
           var index = list.findIndex((x) => x.idSizeProduct === item.id);
           var data = {
-            image: productSelect.image,
-            productName: productSelect.nameProduct,
+            image: item.image,
+            productName: item.nameProduct,
             nameSize: item.nameSize,
-            idProduct: productSelect.id,
+            idProduct: item.id,
             quantity: quantity,
-            price: productSelect.price,
+            price: item.price,
             idSizeProduct: item.id,
             maxQuantity: item.quantity,
           };
@@ -370,24 +365,23 @@ function ModalAddProductDetail({
         sizes.map((item) => {
           var data = {
             idBill: typeAddProductBill,
-            idProduct: productSelect.id,
+            idProduct: item.id,
             size: item.nameSize,
             quantity: quantity,
-            price: productSelect.price,
+            price: item.price,
           };
           BillApi.addProductInBill(data).then((res) => {
-            const price = productSelect.price;
-            if (productSelect.promotion != null) {
+            const price = item.price;
+            if (item.promotion != null) {
               price =
-                (productSelect.price * (100 - productSelect.promotion)) / 100;
+                (item.price * (100 - item.promotion)) / 100;
             }
-            console.log(res.data.data);
             var product = {
               id: res.data.data,
-              image: productSelect.image,
-              productName: productSelect.nameProduct,
+              image: item.image,
+              productName: item.nameProduct,
               nameSize: item.nameSize,
-              idProduct: productSelect.id,
+              idProduct: item.id,
               quantity: quantity,
               price: price,
               idSizeProduct: item.id,
@@ -405,7 +399,7 @@ function ModalAddProductDetail({
   };
   // end modal detail product size
   const [sizes, setSizes] = useState([]);
-  const [productSelect, setProductSelect] = useState({});
+  // const [productSelect, setProductSelect] = useState({});
   const [quantity, setQuantity] = useState(1);
   const ChangedSelectSize = (e, size) => {
     setSizes((prevSelected) =>
@@ -414,12 +408,13 @@ function ModalAddProductDetail({
         : [...prevSelected, size]
     );
   };
+
   const ChangeQuantity = (value) => {
     setQuantity(value);
   };
   // end xử lý modal
   return (
-    <div>
+    <div className="modelProduct" style={{maxHeight: "500px", overflowY: "auto"}}>
       <div className="content">
         <div className="content-wrapper">
           <div style={{ width: "100%" }}>
@@ -460,7 +455,7 @@ function ModalAddProductDetail({
           </div>
         </div>
       </div>
-      <div className="box_btn_filter">
+      <div className="box_btn_filter" style={{paddingBottom: "8px"}}>
         <Row align="middle">
           <Col span={3} style={{ textAlign: "right", paddingRight: 10 }}>
             <label>Chất Liệu :</label>
@@ -562,7 +557,7 @@ function ModalAddProductDetail({
           </Col>
         </Row>
       </div>
-      <div className="box_btn_filter">
+      <div className="box_btn_filter" style={{paddingBottom: "8px"}} >
         <Row align="middle">
           <Col span={4} style={{ textAlign: "right", paddingRight: 10 }}>
             <label>Thể Loại :</label>
@@ -616,13 +611,14 @@ function ModalAddProductDetail({
         </Row>
       </div>
 
-      <div style={{ marginTop: "25px" }}>
+      <div style={{ marginTop: "0px" }}>
         <Table
           dataSource={listProduct}
           rowKey="id"
           columns={columns}
           pagination={{ pageSize: 5 }}
           className="category-table"
+          style={{margin: "10px 0 0 0"}}
         />
       </div>
       <Modal
@@ -631,11 +627,16 @@ function ModalAddProductDetail({
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        okText="Đặt hàng"
+        closeButton={true}
+        closeIcon={null}
+        cancelButton={true}
       >
         <ModalDetailProduct
           id={product.id}
           ChangedSelectSize={ChangedSelectSize}
           ChangeQuantity={ChangeQuantity}
+          clearSelectSize={clearSelectSize}
         />
       </Modal>
     </div>

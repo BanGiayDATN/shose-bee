@@ -2,6 +2,7 @@ package com.example.shose.server.dto.request.productdetail;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 @Setter
 @Getter
+@ToString
 public abstract class BaseProductDetailRequest {
 
     private String description;
@@ -25,12 +27,16 @@ public abstract class BaseProductDetailRequest {
 
     private String productId;
 
-    private String colorId;
+    private String color;
+
+    private int size;
 
     private String materialId;
 
     private String soleId;
 
     private String brandId;
+
+    private int quantity;
 
 }

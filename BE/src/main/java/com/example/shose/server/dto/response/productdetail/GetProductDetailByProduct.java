@@ -6,7 +6,6 @@ package com.example.shose.server.dto.response.productdetail;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public interface GetProductDetailByProduct {
     @Value("#{target.id}")
@@ -32,8 +31,5 @@ public interface GetProductDetailByProduct {
 
     @Value("#{target.status}")
     String getStatus();
-    @Value("#{target.valuePromotion}")
-    String getValuePromotion();
-
 
 }

@@ -41,7 +41,10 @@ public interface ProductDetailService {
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 
-    ProductDetailResponse findByIdProductDetail(String id);
+//    ProductDetailResponse findByIdProductDetail(String id);
     List<GetProductDetailByCategory>  GetProductDetailByCategory(String id);
+    List<ProductDetailReponse> findAllByIdProduct(String id);
+
+//    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
 
 }

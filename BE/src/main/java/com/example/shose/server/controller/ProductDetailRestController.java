@@ -56,22 +56,19 @@ public class ProductDetailRestController {
     @PostMapping("")
     public ResponseObject add(@RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
                               @RequestParam("data") String requestData,
-                              @RequestParam("status") List<Boolean> listStatusImage,
-                              @RequestParam("listColor") String litsColor,
-                              @RequestParam("listSize") String dataSize) throws IOException, ExecutionException, InterruptedException {
+                              @RequestParam("status") List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException {
 
         Gson gson = new Gson();
-        CreateProductDetailRequest request = gson.fromJson(requestData, CreateProductDetailRequest.class);
 
-        List<String> listCodeColor = gson.fromJson(litsColor, List.class);
-
-        JsonArray jsonListSize = JsonParser.parseString(dataSize).getAsJsonArray();
-        List<CreateSizeData> listSize = new ArrayList<>();
-        for (JsonElement sizeDataElement : jsonListSize) {
-            CreateSizeData sizeData = gson.fromJson(sizeDataElement, CreateSizeData.class);
-            listSize.add(sizeData);
+        JsonArray jsonData = JsonParser.parseString(requestData).getAsJsonArray();
+        List<CreateProductDetailRequest> listData =  new ArrayList<>();
+        for (JsonElement data : jsonData) {
+            CreateProductDetailRequest detail = gson.fromJson(data, CreateProductDetailRequest.class);
+            listData.add(detail);
         }
-        return new ResponseObject(productDetailService.create(request, multipartFiles, listSize, listStatusImage, listCodeColor));
+        listData.stream().forEach(a-> System.out.println(a));
+//        return new ResponseObject(productDetailService.create(request, multipartFiles, listSize, listStatusImage, listCodeColor));
+    return null;
     }
 
 
@@ -105,7 +102,12 @@ public class ProductDetailRestController {
 
     @GetMapping("/custom-product/{id}")
     public ResponseObject findByIdProductDetail(@PathVariable("id") String id){
-        return new ResponseObject(productDetailService.findByIdProductDetail(id));
+        return new ResponseObject(productDetailService.findAllByIdProduct(id));
     }
+
+//    @GetMapping("/all-product-detail")
+//    public ResponseObject getAllProductDetail(FindProductDetailRequest req){
+//        return  new ResponseObject(productDetailService.getAllProductDetail(req));
+//    }
 
 }

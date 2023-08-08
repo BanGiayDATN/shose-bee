@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 
 const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
   const [selectedSizes, setSelectedSizes] = useState([]);
-  const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
   const [listSize, setListSize] = useState([]);
   const [isAddSizeModalVisible, setAddSizeModalVisible] = useState(false);
@@ -60,7 +59,6 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
 
       onSaveData(selectedSizeData);
       setSelectedSizes([]);
-      setQuantity(1);
       onCancel();
     }
   };

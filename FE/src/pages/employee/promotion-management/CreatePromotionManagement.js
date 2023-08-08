@@ -28,10 +28,8 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
-
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
 import { ProductApi } from "../../../api/employee/product/product.api";
-
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 import {
   GetProductDetail,
@@ -76,12 +74,12 @@ function CreateVoucherManagement() {
   }, [selectedRowKeysDetail]);
 
   useEffect(() => {
-    if (detailProduct) {
+    
       for (const key of selectedRowKeys) {
         getProdutDetailByproduct(key);
       }
       setListProductDetail(updatedListProductDetail);
-    }
+    
 
     console.log(selectedRowKeys);
   }, [selectedRowKeys]);
@@ -117,7 +115,7 @@ function CreateVoucherManagement() {
   };
 
   const onSelectChange = (newSelectedRowKeys) => {
-    setDetailProduct(true);
+    // setDetailProduct(true);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -405,6 +403,7 @@ function CreateVoucherManagement() {
         const genderClass =
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
 
+
         return (
           <button className={`gender ${genderClass}`}>
             {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
@@ -470,7 +469,6 @@ function CreateVoucherManagement() {
                         min="1"
                         max="100"
                         formatter={field.formatter}
-                        // parser={field.parser}
                       />
                     )}
                     {field.type === "date" && (
@@ -590,6 +588,7 @@ function CreateVoucherManagement() {
           title="Chi tiết sản phẩm - khuyễn mại"
           visible={modal}
           onCancel={closeModal}
+          openModal={false}
           okButtonProps={{ style: { display: "none" } }}
           width={1000}
         >

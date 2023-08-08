@@ -33,7 +33,8 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.status AS status,
                 u.created_date AS createdDate,
                 u.last_modified_date AS lastModifiedDate,
-                 a.password AS passWord
+                 a.password AS passWord,
+                 a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
             WHERE a.roles=2
@@ -74,7 +75,8 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.status AS status,
                 u.created_date AS createdDate,
                 u.last_modified_date AS lastModifiedDate,
-                 a.password AS passWord
+                 a.password AS passWord,
+                 a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
             WHERE a.roles=1
@@ -115,7 +117,8 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.status AS status,
                 u.created_date AS createdDate,
                 u.last_modified_date AS lastModifiedDate,
-                a.password AS password
+                a.password AS password,
+                a.id AS idAccount
             FROM user u
             JOIN account a ON u.id = a.id_user
             WHERE u.id = :id
@@ -137,7 +140,8 @@ public interface UserReposiory extends JpaRepository<User, String> {
         u.created_by AS createdBy,
         u.status AS status,
         u.created_date AS createdDate,
-        u.last_modified_date AS lastModifiedDate
+        u.last_modified_date AS lastModifiedDate,
+        a.id AS idAccount
     FROM user u
     WHERE  (:#{#req.startTime} = 0 OR u.date_of_birth >= :#{#req.startTime})
     AND    (:#{#req.endTime} = 0 OR u.date_of_birth <= :#{#req.endTime})

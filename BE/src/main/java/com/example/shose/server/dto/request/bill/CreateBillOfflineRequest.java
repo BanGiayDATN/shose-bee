@@ -32,7 +32,11 @@ public class CreateBillOfflineRequest {
 
     private String totalMoney;
 
+    private String transport;
+
     private String note;
+
+    private String typeBill;
 
     private String moneyShip;
 
