@@ -63,7 +63,7 @@ public class EmployeeRestController {
         employeeRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
         employeeRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
         employeeRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
-
+        employeeRequest.setCitizenIdentity(jsonObject.get("citizenIdentity").getAsString());
         // add địa chỉ
         CreateAddressRequest addressRequest = new CreateAddressRequest();
         addressRequest.setLine(jsonObject.get("line").getAsString());
@@ -94,7 +94,7 @@ public class EmployeeRestController {
         employeeRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
         employeeRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
         employeeRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
-
+        employeeRequest.setCitizenIdentity(jsonObject.get("citizenIdentity").getAsString());
         // update địa chỉ
         UpdateAddressRequest addressRequest = new UpdateAddressRequest();
         addressRequest.setLine(jsonObject.get("line").getAsString());

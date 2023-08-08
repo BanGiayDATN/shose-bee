@@ -374,6 +374,19 @@ const ModalUpdateAccount = ({ visible }) => {
                     <Input className="input-item" placeholder="Tên nhân viên" />
                   </Form.Item>
                   <Form.Item
+                    label="Căn cước công dân"
+                    name="citizenIdentity"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số CCCD",
+                      },
+                      { max: 12, message: "Số CCCD tối đa 12 ký tự" },
+                    ]}
+                  >
+                    <Input className="input-item" placeholder="CCCD" />
+                  </Form.Item>
+                  <Form.Item
                     label="Email"
                     name="email"
                     rules={[
@@ -399,7 +412,6 @@ const ModalUpdateAccount = ({ visible }) => {
                     ]}
                   >
                     <Select onChange={handleProvinceChange}>
-                      {/* <Option value="">--Chọn Tỉnh/Thành phố--</Option> */}
                       {listProvince?.map((item) => {
                         return (
                           <Option
@@ -438,7 +450,6 @@ const ModalUpdateAccount = ({ visible }) => {
                   <Form.Item
                     label="Trạng thái"
                     name="status"
-                    // initialValue="DANG_SU_DUNG"
                     rules={[
                       { required: true, message: "Vui lòng chọn trạng thái" },
                     ]}
@@ -489,6 +500,19 @@ const ModalUpdateAccount = ({ visible }) => {
                     <Input className="input-item" type="date" />
                   </Form.Item>
                   <Form.Item
+                    label="Giới tính"
+                    name="gender"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn giới tinh" },
+                    ]}
+                    initialValue={account.gender === true ? "Nam" : "Nữ"}
+                  >
+                    <Radio.Group>
+                      <Radio value={true}>Nam</Radio>
+                      <Radio value={false}>Nữ</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item
                     label="Quận/Huyện"
                     name="district"
                     rules={[
@@ -536,19 +560,7 @@ const ModalUpdateAccount = ({ visible }) => {
                 >
                   <Input type="password" placeholder="Mật khẩu" />
                 </Form.Item> */}
-                  <Form.Item
-                    label="Giới tính"
-                    name="gender"
-                    rules={[
-                      { required: true, message: "Vui lòng chọn giới tinh" },
-                    ]}
-                    initialValue={account.gender === true ? "Nam" : "Nữ"}
-                  >
-                    <Radio.Group>
-                      <Radio value={true}>Nam</Radio>
-                      <Radio value={false}>Nữ</Radio>
-                    </Radio.Group>
-                  </Form.Item>
+
                   <Form.Item name="toDistrictId" hidden>
                     <Input disabled />
                   </Form.Item>

@@ -277,6 +277,17 @@ const ModalDetailAccount = ({ visible }) => {
                       readOnly
                     />
                   </Form.Item>
+                  <Form.Item
+                    label="Căn cước công dân"
+                    name="citizenIdentity"
+                    readOnly
+                  >
+                    <Input
+                      className="input-item"
+                      placeholder="Căn cước công dân"
+                      readOnly
+                    />
+                  </Form.Item>
                   <Form.Item label="Email" name="email">
                     <Input
                       className="input-item"
@@ -291,6 +302,7 @@ const ModalDetailAccount = ({ visible }) => {
                   <Form.Item label="Xã/Phường" name="ward">
                     <Input className="input-item" readOnly />
                   </Form.Item>
+
                   <Form.Item label="Trạng thái" name="status">
                     <Select>
                       <Option value="DANG_SU_DUNG">
@@ -303,15 +315,12 @@ const ModalDetailAccount = ({ visible }) => {
                       </Option>
                     </Select>
                   </Form.Item>
-                  <Form.Item label="Giới tính">
-                    <Radio.Group value={account.gender}>
-                      <Radio value={true}>Nam</Radio>
-                      <Radio value={false}>Nữ</Radio>
-                    </Radio.Group>
-                  </Form.Item>
                 </Col>
 
                 <Col span={10} style={{ marginLeft: "40px" }}>
+                  <Form.Item label="Ngày sinh" name="dateOfBirth">
+                    <Input className="input-item" type="date" readOnly />
+                  </Form.Item>
                   <Form.Item label="Số điện thoại" name="phoneNumber">
                     <Input
                       className="input-item"
@@ -319,8 +328,11 @@ const ModalDetailAccount = ({ visible }) => {
                       readOnly
                     />
                   </Form.Item>
-                  <Form.Item label="Ngày sinh" name="dateOfBirth">
-                    <Input className="input-item" type="date" readOnly />
+                  <Form.Item label="Giới tính">
+                    <Radio.Group value={account.gender}>
+                      <Radio value={true}>Nam</Radio>
+                      <Radio value={false}>Nữ</Radio>
+                    </Radio.Group>
                   </Form.Item>
                   <Form.Item label="Quận/Huyện" name="district">
                     <Input className="input-item" readOnly />

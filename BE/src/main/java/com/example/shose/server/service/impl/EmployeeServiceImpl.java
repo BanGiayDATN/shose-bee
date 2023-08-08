@@ -77,6 +77,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .status(req.getStatus())
                 .dateOfBirth(req.getDateOfBirth())
                 .gender(req.getGender())
+                .citizenIdentity(req.getCitizenIdentity())
                 .avata(urlImage) // đường dẫn ảnh từ url
                 .build();
         userReposiory.save(user); // add user vào database
@@ -124,6 +125,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setEmail(req.getEmail());
         user.setGender(req.getGender());
         user.setStatus(req.getStatus());
+        user.setCitizenIdentity(req.getCitizenIdentity());
         user.setAvata(urlImage);
 //         if (req.getPassword() != null) {
 //            accountRepository.updatePasswordByUserId(user.getId(), req.getPassword());

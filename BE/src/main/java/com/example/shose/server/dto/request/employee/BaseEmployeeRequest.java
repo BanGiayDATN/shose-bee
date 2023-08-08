@@ -27,4 +27,6 @@ public abstract class BaseEmployeeRequest {
     private Integer points;
 
     private String id;
+
+    private String citizenIdentity;
 }

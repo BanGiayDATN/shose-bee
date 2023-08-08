@@ -220,10 +220,10 @@ const AccountManagement = () => {
     },
 
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      sorter: (a, b) => a.email.localeCompare(b.email),
+      title: "CCCD",
+      dataIndex: "citizenIdentity",
+      key: "citizenIdentity",
+      sorter: (a, b) => a.citizenIdentity.localeCompare(b.citizenIdentity),
     },
     {
       title: "Số điện thoại",

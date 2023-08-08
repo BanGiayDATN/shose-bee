@@ -56,4 +56,7 @@ public interface EmployeeResponse {
 
     @Value("#{target.idAccount}")
     String getIdAccount();
+
+    @Value("#{target.citizenIdentity}")
+    String getCitizenIdentity();
 }
