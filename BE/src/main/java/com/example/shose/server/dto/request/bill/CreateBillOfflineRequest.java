@@ -39,7 +39,7 @@ public class CreateBillOfflineRequest {
 
     private String typeBill;
 
-    private String StatusPayMents;
+    private String statusPayMents;
 
     private String moneyShip;
 

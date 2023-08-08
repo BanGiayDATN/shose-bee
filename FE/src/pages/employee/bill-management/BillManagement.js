@@ -155,33 +155,6 @@ function BillManagement() {
       },
     },
     {
-      title: "Trạng Thái",
-      dataIndex: "statusBill",
-      key: "statusBill",
-      render: (text) => {
-        return (
-          <button
-            className={`trangThai ${" status_" + text} `}
-            style={{ border: "none", borderRadius: "22px" }}
-          >
-            {text === "TAO_HOA_DON"
-              ? "Hóa đơn chờ"
-              : text === "CHO_XAC_NHAN"
-              ? "Chờ xác nhận"
-              : text === "VAN_CHUYEN"
-              ? "Đang vận chuyển"
-              : text === "DA_THANH_TOAN"
-              ? "Đã thanh toán"
-              : text === "TRA_HANG"
-              ? "Trả hàng"
-              : text === "KHONG_TRA_HANG"
-              ? "Thành công"
-              : "Đã hủy"}
-          </button>
-        );
-      },
-    },
-    {
       title: <div className="title-product">Ngày tạo</div>,
       dataIndex: "createdDate",
       key: "createdDate",
@@ -220,6 +193,33 @@ function BillManagement() {
             : totalMoney + " đ"}
         </span>
       ),
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "statusBill",
+      key: "statusBill",
+      render: (text) => {
+        return (
+          <button
+            className={`trangThai ${" status_" + text} `}
+            style={{ border: "none", borderRadius: "22px" }}
+          >
+            {text === "TAO_HOA_DON"
+              ? "Hóa đơn chờ"
+              : text === "CHO_XAC_NHAN"
+              ? "Chờ xác nhận"
+              : text === "VAN_CHUYEN"
+              ? "Đang vận chuyển"
+              : text === "DA_THANH_TOAN"
+              ? "Đã thanh toán"
+              : text === "TRA_HANG"
+              ? "Trả hàng"
+              : text === "KHONG_TRA_HANG"
+              ? "Thành công"
+              : "Đã hủy"}
+          </button>
+        );
+      },
     },
     {
       title: <div className="title-product">Thao Tác</div>,
