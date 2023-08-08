@@ -28,12 +28,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    detail.created_date AS created_date,
                    detail.gender AS gender,
                    detail.status AS status,
-                    si.name AS nameSize,
-                    c.name AS nameCategory,
-                    b.name AS nameBrand,
+                   si.name AS nameSize,
+                   c.name AS nameCategory,
+                   b.name AS nameBrand,
                    detail.quantity AS quantity,
-                    pr.value AS promotion,
-                    detail.quantity,
+                   AVG(pr.value) AS promotion,
+                   detail.quantity,
                    s2.name AS size,
                    c2.code AS color
                 FROM product_detail detail
@@ -66,6 +66,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 AND  ( :#{#req.gender} IS NULL OR :#{#req.gender} LIKE '' OR detail.gender LIKE :#{#req.gender} )
                 AND  ( :#{#req.minPrice} IS NULL OR detail.price >= :#{#req.minPrice} ) 
                 AND  ( :#{#req.maxPrice} IS NULL OR detail.price <= :#{#req.maxPrice} )
+                GROUP BY detail.id, i.name, p.name, s2.name, c2.name, detail.price, detail.created_date, detail.gender, detail.status, si.name, c.name, b.name, detail.quantity, s2.name, c2.code
                 ORDER BY detail.last_modified_date DESC 
             """, nativeQuery = true)
     List<ProductDetailReponse> getAll(@Param("req") FindProductDetailRequest req);
@@ -91,36 +92,36 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
 
     @Query(value = """
              SELECT  ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
-                                            detail.id AS id,
-                                            i.name AS image,
-                                            p.code AS codeProduct,
-                                            p.name AS nameProduct,
-                                             pr.value AS promotion,
-                                            s.name AS nameSole,
-                                            m.name AS nameMaterial,
-                                            c.name AS nameCategory,
-                                            b.name AS nameBrand,
-                                            detail.quantity,
-                                            detail.price AS price,
-                                            detail.created_date AS created_date,
-                                            detail.gender AS gender,
-                                            detail.status AS status,
-                                            si.name AS nameSize,
-                                            col.code AS color
-                          FROM product_detail detail
-                          LEFT JOIN product p on detail.id_product = p.id
-                          LEFT JOIN image i on detail.id = i.id_product_detail
-                         LEFT JOIN sole s ON s.id = detail.id_sole
-                         LEFT JOIN material m ON detail.id_material = m.id
-                         LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-                         LEFT JOIN promotion pr on pr.id = ppd.id_promotion
-                         LEFT JOIN category c ON detail.id_category = c.id
-                         LEFT JOIN brand b ON detail.id_brand = b.id
-                         LEFT JOIN color col ON detail.id_color = col.id
-                         LEFT JOIN size si ON detail.id_size = si.id
-                        where p.id = :id
-                        GROUP BY detail.id
-                        ORDER BY detail.last_modified_date DESC 
+                    detail.id AS id,
+                    i.name AS image,
+                    p.code AS codeProduct,
+                    p.name AS nameProduct,
+                     pr.value AS promotion,
+                    s.name AS nameSole,
+                    m.name AS nameMaterial,
+                    c.name AS nameCategory,
+                    b.name AS nameBrand,
+                    detail.quantity,
+                    detail.price AS price,
+                    detail.created_date AS created_date,
+                    detail.gender AS gender,
+                    detail.status AS status,
+                    si.name AS nameSize,
+                    col.code AS color
+             FROM product_detail detail
+             LEFT JOIN product p on detail.id_product = p.id
+             LEFT JOIN image i on detail.id = i.id_product_detail
+             LEFT JOIN sole s ON s.id = detail.id_sole
+             LEFT JOIN material m ON detail.id_material = m.id
+             LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+             LEFT JOIN promotion pr on pr.id = ppd.id_promotion
+             LEFT JOIN category c ON detail.id_category = c.id
+             LEFT JOIN brand b ON detail.id_brand = b.id
+             LEFT JOIN color col ON detail.id_color = col.id
+             LEFT JOIN size si ON detail.id_size = si.id
+            where p.id = :id
+            GROUP BY detail.id
+            ORDER BY detail.last_modified_date DESC 
             """,nativeQuery = true)
     List<ProductDetailReponse> findAllByIdProduct(@Param("id") String id);
 

@@ -392,7 +392,6 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-<<<<<<< HEAD
     // var addressuser = "";
     // if (checkNotEmptyAddress()) {
     var addressuser =
@@ -404,7 +403,6 @@ function CreateBill() {
       ", " +
       address.city;
     // }
-=======
     var addressuser = "";
     if (!checkNotEmptyAddress()) {
       addressuser =
@@ -416,7 +414,6 @@ function CreateBill() {
         ", " +
         address.city;
     }
->>>>>>> develop
     var idAccount = "";
     if (user != null) {
       idAccount = user.idAccount;
@@ -434,13 +431,10 @@ function CreateBill() {
       vouchers: newVoucher,
       idUser: idAccount,
     };
-<<<<<<< HEAD
     console.log(data);
     console.log(address);
     console.log(addressuser);
 
-=======
->>>>>>> develop
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {
@@ -1735,7 +1729,7 @@ function CreateBill() {
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
         closeIcon={null}
-        width={1000}
+        width={1200}
         footer={null}
       >
         <ModalAddProductDetail

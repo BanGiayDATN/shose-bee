@@ -468,10 +468,13 @@ public class DBGenerator implements CommandLineRunner {
                 .productDetail(productDetail2).status(Status.DANG_SU_DUNG).build();
         PromotionProductDetail promotionProductDetail3 = PromotionProductDetail.builder().promotion(promotion1)
                 .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
+        PromotionProductDetail promotionProductDetail4 = PromotionProductDetail.builder().promotion(promotion2)
+                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
 
         promotionProductDetailRepository.save(promotionProductDetail1);
         promotionProductDetailRepository.save(promotionProductDetail2);
         promotionProductDetailRepository.save(promotionProductDetail3);
+        promotionProductDetailRepository.save(promotionProductDetail4);
 
 
         AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
