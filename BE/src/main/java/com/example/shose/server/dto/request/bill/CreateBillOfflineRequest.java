@@ -3,6 +3,8 @@ package com.example.shose.server.dto.request.bill;
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.voucherdetail.CreateVoucherDetailRequest;
 import com.example.shose.server.infrastructure.constant.StatusBill;
+import com.example.shose.server.infrastructure.constant.StatusMethod;
+import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -32,13 +34,13 @@ public class CreateBillOfflineRequest {
 
     private String totalMoney;
 
-    private String transport;
-
     private String note;
 
     private String typeBill;
 
     private String moneyShip;
+
+    private StatusMethod method;
 
     private List<CreateBillDetailRequest> billDetailRequests;
 

@@ -3,6 +3,7 @@ package com.example.shose.server.controller;
 import com.example.shose.server.dto.request.product.CreateProductRequest;
 import com.example.shose.server.dto.request.product.FindProductRequest;
 import com.example.shose.server.dto.request.product.UpdateProductRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.service.ProductService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +65,10 @@ public class ProductRestController {
     @GetMapping("/use")
     public ResponseObject getProductUse(){
         return  new ResponseObject(productService.getProductUse());
+    }
+
+    @GetMapping("/all-product")
+    public ResponseObject getAllProductDetail(FindProductDetailRequest req){
+        return  new ResponseObject(productService.getAllProduct(req));
     }
 }

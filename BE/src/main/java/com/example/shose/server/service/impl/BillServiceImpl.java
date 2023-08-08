@@ -17,10 +17,7 @@ import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
-import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.Roles;
-import com.example.shose.server.infrastructure.constant.StatusBill;
-import com.example.shose.server.infrastructure.constant.TypeBill;
+import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -133,12 +130,10 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill save(String id, CreateBillOfflineRequest request) {
         Optional<Account> account = accountRepository.findById(id);
-//        if (!account.isPresent()) {
-//            throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
+//        if (account.get().getRoles() == Roles.USER) {
 //        }
         Bill bill = Bill.builder()
                 .employees(account.get())
-                .statusBill(StatusBill.TAO_HOA_DON)
                 .typeBill(TypeBill.valueOf(request.getTypeBill()))
                 .code("HD" + RandomStringUtils.randomNumeric(6))
                 .note(request.getNote())
@@ -154,18 +149,40 @@ public class BillServiceImpl implements BillService {
                 bill.setAccount(user.get());
             }
         }
-        billRepository.save(bill);
-        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+        if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE){
+            bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+            billRepository.save(bill);
+            billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                    .method(request.getMethod())
+                    .status(StatusPayMents.THANH_TOAN)
+                    .employees(account.get())
+                    .totalMoney(new BigDecimal(request.getTotalMoney()))
+                    .description(request.getNote())
+                    .bill(bill)
+                    .build();
+            paymentsMethodRepository.save(paymentsMethod);
+        }else{
+            bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
+            billRepository.save(bill);
+            billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                    .method(request.getMethod())
+                    .status(StatusPayMents.THANH_TOAN)
+                    .employees(account.get())
+                    .totalMoney(new BigDecimal(0))
+                    .description(request.getNote())
+                    .bill(bill)
+                    .build();
+            paymentsMethodRepository.save(paymentsMethod);
+        }
+
+
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
-            Optional<Size> size = sizeRepository.findByName(billDetailRequest.getSize());
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-            if (!size.isPresent()) {
-                throw new RestApiException(Message.NOT_EXISTS);
-            }
-
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity( productDetail.get().getQuantity() - billDetailRequest.getQuantity());
