@@ -434,7 +434,6 @@ function CreateBill() {
       };
       setDataPayMent([...dataPayment, data]);
     }
-    setTotalMoneyPayment("")
     console.log(totalMoneyPayMent);
   };
   const deletePayMent = (e, index) => {
