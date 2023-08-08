@@ -194,7 +194,7 @@ const PromotionManagement = () => {
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Còn hạn " : "Hết hạn"}
           </button>
         );
       },
@@ -435,8 +435,9 @@ const PromotionManagement = () => {
       </h3>
       <hr></hr>
       <div className="manager-promotion">
+
         <Link to="/create-promotion-management">
-          <Button title="Thêm phiếu giảm giá" className="button-add">
+          <Button title="Thêm khuyến mại" className="button-add">
             + Thêm
           </Button>
         </Link>

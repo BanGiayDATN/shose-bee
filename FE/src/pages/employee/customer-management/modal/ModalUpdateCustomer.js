@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { CustomerApi } from "../../../../api/employee/account/customer.api";
 import { UpdateCustomer } from "../../../../app/reducer/Customer.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-account.css";
+import "../style-customer.css";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 import axios from "axios";
@@ -552,10 +552,11 @@ const ModalUpdateCustomer = ({ visible }) => {
                   rules={[
                     { required: true, message: "Vui lòng chọn giới tinh" },
                   ]}
+                  initialValue={customer.gender === true ? "Nam" : "Nữ"}
                 >
                   <Radio.Group>
-                    <Radio value="true">Nam</Radio>
-                    <Radio value="false">Nữ</Radio>
+                    <Radio value={true}>Nam</Radio>
+                    <Radio value={false}>Nữ</Radio>
                   </Radio.Group>
                 </Form.Item>
                 <Form.Item name="toDistrictId" hidden>

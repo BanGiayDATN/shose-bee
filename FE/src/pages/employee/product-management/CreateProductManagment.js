@@ -16,7 +16,11 @@ import {
   Upload,
 } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleMinus,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
@@ -40,7 +44,7 @@ import {
 } from "../../../app/reducer/Category.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
-import { PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
 import { toast } from "react-toastify";
@@ -77,11 +81,9 @@ const CreateProductManagment = () => {
     setModalAddSize(false);
   };
 
-  const [productDetail, setProductDetail] = useState({});
   const [listMaterial, setListMaterial] = useState([]);
   const [listCategory, setListCategory] = useState([]);
   const [listBrand, setListBrand] = useState([]);
-  const [listColor, setListColor] = useState([]);
   const [listProduct, setListProduct] = useState([]);
   const [listSole, setListSole] = useState([]);
 
@@ -112,9 +114,6 @@ const CreateProductManagment = () => {
     }).then((res) => {
       setListBrand(res.data.data);
       dispatch(SetBrand(res.data.data));
-    });
-    ColorApi.getAllCode().then((res) => {
-      setListColor(res.data.data);
     });
   };
 
@@ -194,65 +193,37 @@ const CreateProductManagment = () => {
     setModalAddColor(false);
   };
 
-  const handleDeleteSize = (index) => {
-    const updatedList = [...listSizeAdd];
-    updatedList.splice(index, 1);
-    setListSizeAdd(updatedList);
-    toast.success("Đã xóa kích cỡ thành công");
+  const handleDeleteSize = (index, nameSize) => {
+    Modal.confirm({
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn kích cỡ " + nameSize + " này?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        const updatedList = [...listSizeAdd];
+        updatedList.splice(index, 1);
+        setListSizeAdd(updatedList);
+        toast.success("Đã xóa kích cỡ thành công");
+      },
+    });
   };
 
-  const handleDeleteColor = (index) => {
-    const updatedList = [...listColorAdd];
-    updatedList.splice(index, 1);
-    setListColorAdd(updatedList);
-    toast.success("Đã xóa kích cỡ thành công");
+  const handleDeleteColor = (index, color) => {
+    Modal.confirm({
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn màu " + color + " này?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        const updatedList = [...listColorAdd];
+        updatedList.splice(index, 1);
+        setListColorAdd(updatedList);
+        toast.success("Đã xóa màu thành công");
+      },
+    });
   };
-
-  // ảnh
-  // const getBase64 = (file) =>
-  //   new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => resolve(reader.result);
-  //     reader.onerror = (error) => reject(error);
-  //   });
-  // const [previewOpen, setPreviewOpen] = useState(false);
-  // const [previewImage, setPreviewImage] = useState("");
-  // const [previewTitle, setPreviewTitle] = useState("");
-  // const [fileList, setFileList] = useState([]);
-  // const handleCancelImage = () => setPreviewOpen(false);
-
-  // const handlePreview = async (file) => {
-  //   if (!file.url && !file.preview) {
-  //     file.preview = await getBase64(file.originFileObj);
-  //   }
-  //   const fileExists = fileList.find((f) => f.uid === file.uid);
-
-  //   // If the file doesn't exist, add it to the fileList with isStarred property initialized to false
-  //   if (!fileExists) {
-  //     const newFile = { ...file, isStarred: false };
-  //     setFileList([...fileList, newFile]);
-  //   }
-
-  //   setPreviewImage(file.url || file.preview);
-  //   setPreviewOpen(true);
-  //   setPreviewTitle(
-  //     file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-  //   );
-  // };
-  // const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-  // const uploadButton = (
-  //   <div>
-  //     <PlusOutlined />
-  //     <div
-  //       style={{
-  //         marginTop: 8,
-  //       }}
-  //     >
-  //       Upload
-  //     </div>
-  //   </div>
-  // );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
@@ -278,6 +249,8 @@ const CreateProductManagment = () => {
       })
       .then((values) => {
         console.log(tableData);
+        console.log(listColorAndFileData);
+
         if (!listSizeAdd || listSizeAdd.length === 0) {
           toast.error("Bạn cần thêm kích thước cho sản phẩm");
           return;
@@ -286,94 +259,43 @@ const CreateProductManagment = () => {
           toast.error("Bạn cần thêm màu sắc sản phẩm");
           return;
         }
-        // if (!fileList || fileList.length === 0) {
-        //   toast.error("Bạn cần thêm ảnh cho sản phẩm");
-        //   return;
-        // }
-        // check ảnh được chọn là mặc định chưa
-        // const isAnyStarred = Object.values(starredFiles).some(
-        //   (file) => file.isStarred
-        // );
-        // if (!isAnyStarred) {
-        //   toast.error("Bạn cần chọn ảnh để làm mặc định");
-        //   return;
-        // }
+        // Kiểm tra tính hợp lệ của việc tải lên ảnh
+        const hasMissingUploads = tableData.some((record) => {
+          const colorFileData =
+            listColorAndFileData.find((item) => item.color === record.color)
+              ?.fileData || [];
+          return colorFileData.length === 0;
+        });
+        if (hasMissingUploads) {
+          toast.error("Bạn cần thêm ảnh cho tất cả các màu sắc");
+          setUploadValid(false);
+          return;
+        }
 
         const formData = new FormData();
-        // fileList.forEach((file) => {
-        //   formData.append(`multipartFiles`, file.originFileObj);
-        //   // Check if the file is starred and set the status accordingly
-        //   const isStarred = starredFiles[file.uid]?.isStarred || false;
-        //   formData.append(`status`, isStarred ? "true" : "false");
-        //   console.log(file);
-        // });
+
+        listColorAndFileData.forEach((item) => {
+          const color = item.color;
+          const fileData = item.fileData;
+          fileData.forEach((file, index) => {
+            formData.append(`${color}-${index}`, file.originFileObj);
+          });
+        });
         formData.append("data", JSON.stringify(tableData));
-        // axios
-        //   .post("http://localhost:8080/admin/product-detail", formData)
-        //   .then((response) => {
-        //     console.log(response.data);
-        //     setIsSubmitting(true);
-        //   })
-        //   .catch((error) => {
-        //     console.error(error);
-        //   });
+        axios
+          .post("http://localhost:8080/admin/product-detail", formData)
+          .then((response) => {
+            console.log(response.data);
+            setIsSubmitting(true);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       })
       .catch(() => {
         // Xử lý khi người dùng từ chối xác nhận
       });
   };
-
-  // const [starredFiles, setStarredFiles] = useState({});
-
-  // useEffect(() => {
-  //   const initialStarredState = fileList.reduce((acc, file) => {
-  //     acc[file.uid] = { ...file, isStarred: false };
-  //     return acc;
-  //   }, {});
-  //   setStarredFiles(initialStarredState);
-  // }, [fileList]);
-
-  // const renderUploadButton = (file) => {
-  //   const isStarred = starredFiles[file.uid]?.isStarred || false;
-
-  //   return (
-  //     <div className="custom-button">
-  //       <Button onClick={() => handleCustomButtonClick(file)}>
-  //         {isStarred ? (
-  //           <StarFilled style={{ fontSize: 24, color: "gold" }} />
-  //         ) : (
-  //           <StarOutlined style={{ fontSize: 24 }} />
-  //         )}
-  //       </Button>
-  //     </div>
-  //   );
-  // };
-
-  // const handleCustomButtonClick = (file) => {
-  //   setStarredFiles((prevStarredFiles) => {
-  //     return {
-  //       ...prevStarredFiles,
-  //       [file.uid]: {
-  //         ...prevStarredFiles[file.uid],
-  //         isStarred: !prevStarredFiles[file.uid]?.isStarred,
-  //       },
-  //     };
-  //   });
-  // };
-
-  // const customItemRender = (originNode, file) => {
-  //   const isUploadedFile = fileList.some((item) => item.uid === file.uid);
-  //   if (isUploadedFile) {
-  //     return (
-  //       <div className="uploaded-file-container">
-  //         {originNode}
-  //         {renderUploadButton(file)}
-  //       </div>
-  //     );
-  //   }
-
-  //   return originNode;
-  // };
 
   useEffect(() => {
     getList();
@@ -394,10 +316,6 @@ const CreateProductManagment = () => {
     }
   }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
 
-  const getRowClassName = (record, index) => {
-    return index % 2 === 0 ? "even-row" : "odd-row";
-  };
-
   const columns = [
     {
       title: "STT",
@@ -410,7 +328,7 @@ const CreateProductManagment = () => {
       title: "Tên Sản Phẩm",
       dataIndex: "productId",
       key: "productId",
-      width: "35%",
+      width: "25%",
       render: (productId, record) =>
         `${productId} [ ${record.size} - ${getColorName(record.color)} ]`,
     },
@@ -418,7 +336,7 @@ const CreateProductManagment = () => {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
-      width: "12%",
+      width: "10%",
       render: (_, record) => (
         <InputNumber
           min={1}
@@ -442,34 +360,72 @@ const CreateProductManagment = () => {
       ),
     },
     {
+      title: "Hành động",
+      dataIndex: "action",
+      key: "action",
+      width: "5%",
+      render: (text, record) => (
+        <Space size="middle">
+          <Button
+            title="Xóa chi tiết"
+            onClick={() => handleDelete(record)} // Gọi hàm xóa ở đây
+            type="danger"
+          >
+            <FontAwesomeIcon
+              icon={faTrash}
+              style={{ fontSize: "20px", color: "red" }}
+            />
+          </Button>
+        </Space>
+      ),
+    },
+    {
       title: "Upload Ảnh",
       dataIndex: "color",
       key: "color",
       render: (color, record, index) => {
+        // Lọc các dòng có cùng màu sắc
+        const rowsWithSameColor = tableData.filter(
+          (item) => item.color === record.color
+        );
+
         // Kiểm tra nếu đối tượng trước cùng màu
         if (index > 0 && record.color === tableData[index - 1].color) {
           return null; // Không hiển thị gì cả
         }
 
-        // Lọc các dòng có cùng màu sắc
-        const rowsWithSameColor = tableData.filter(
-          (item) => item.color === record.color
-        );
         // Hiển thị Upload Ảnh chỉ khi có 1 dòng hoặc là dòng đầu của cùng màu
         if (
           rowsWithSameColor.length === 1 ||
           rowsWithSameColor[0].key === record.key
         ) {
-          return (
+          const colorFileData =
+            listColorAndFileData.find((item) => item.color === record.color)
+              ?.fileData || [];
+          const uploadColumn = (
             <>
               <Upload
                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                 listType="picture-card"
-                fileList={fileData[record.color] || []} // Sử dụng fileList tương ứng với màu sắc
+                fileList={colorFileData}
                 onPreview={handlePreview}
                 onChange={(info) => handleUploadImages(info, record)}
+                beforeUpload={(file) => {
+                  // Kiểm tra xem tệp có phải là hình ảnh hay không
+                  const isImage = file.type.startsWith("image/");
+                  if (!isImage) {
+                    toast.error("Chỉ cho phép tải lên các tệp hình ảnh!");
+                  }
+                  return isImage ? true : Upload.LIST_IGNORE;
+                }}
+                multiple
               >
-                {fileData[record.color]?.length >= 6 ? null : uploadButton}
+                {colorFileData.length >= 6 ? null : (
+                  <>
+                    {uploadButton}
+                    {!isUploadValid}
+                  </>
+                )}
               </Upload>
               <Modal
                 open={previewOpen}
@@ -487,6 +443,24 @@ const CreateProductManagment = () => {
               </Modal>
             </>
           );
+
+          // Sử dụng rowSpan để gộp hàng dựa trên màu sắc
+          return {
+            children: (
+              <td
+                style={{
+                  // border: "1px solid blue", // Màu viền
+                  borderRadius: "15px", //
+                }}
+                rowSpan={rowsWithSameColor.length}
+              >
+                {uploadColumn}
+              </td>
+            ),
+            props: {
+              rowSpan: rowsWithSameColor.length,
+            },
+          };
         }
 
         return null;
@@ -520,6 +494,23 @@ const CreateProductManagment = () => {
     });
     return formatter.format(value);
   };
+  // remove
+  const handleDelete = (recordToDelete) => {
+    Modal.confirm({
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn xóa  này?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        // Lọc ra các dòng không phải dòng cần xóa
+        const updatedTableData = tableData.filter(
+          (item) => item.key !== recordToDelete.key
+        );
+        setTableData(updatedTableData);
+      },
+    });
+  };
 
   // ảnh theo màu
   const getBase64 = (file) =>
@@ -532,7 +523,6 @@ const CreateProductManagment = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState([]);
 
   const handleCancelImage = () => setPreviewOpen(false);
   const handlePreview = async (file) => {
@@ -545,8 +535,7 @@ const CreateProductManagment = () => {
       file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
     );
   };
-  const handleChangeImage = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
+
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -559,14 +548,36 @@ const CreateProductManagment = () => {
       </div>
     </div>
   );
-  const [fileData, setFileData] = useState({});
+
+  const [listColorAndFileData, setListColorAndFileData] = useState([]);
+  const [isUploadValid, setUploadValid] = useState(true);
+
   const handleUploadImages = (info, record) => {
-    const newFileData = { ...fileData };
-    newFileData[record.color] = info.fileList; // Lưu fileList theo màu sắc
-    setFileData(newFileData);
+    const newFileData = [...listColorAndFileData];
+
+    const existingColorData = newFileData.find(
+      (item) => item.color === record.color
+    );
+    if (existingColorData) {
+      existingColorData.fileData = info.fileList;
+    } else {
+      newFileData.push({
+        color: record.color,
+        fileData: info.fileList,
+      });
+    }
+
+    setListColorAndFileData(newFileData);
   };
 
   // gen dữ liệu
+  const [isProductNameValid, setProductNameValid] = useState(false);
+  const handleProductNameChange = (value) => {
+    setProductNameValid(value.trim() !== "");
+  };
+
+  // phân trang theo màu
+
   const [tableData, setTableData] = useState([]);
   const dataDetail = () => {
     const formData = form.getFieldsValue();
@@ -641,6 +652,7 @@ const CreateProductManagment = () => {
                   <Input
                     className="form-input"
                     style={{ fontWeight: "bold" }}
+                    onChange={(e) => handleProductNameChange(e.target.value)}
                   />
                 </AutoComplete>
               </Form.Item>
@@ -905,33 +917,35 @@ const CreateProductManagment = () => {
             <Col span={16}>
               <div style={{ display: "flex", flexWrap: "wrap" }}>
                 {listSizeAdd.map((item, index) => (
-                  <Popconfirm
-                    key={index}
-                    title="Bạn có chắc muốn xóa kích cỡ này?"
-                    onConfirm={() => handleDeleteSize(index)}
-                    okText="Đồng ý"
-                    cancelText="Hủy"
+                  <Button
+                    className="custom-button-size"
+                    onClick={() => handleDeleteSize(index, item.nameSize)}
                   >
-                    <Button className="custom-button-size">
-                      <span
-                        style={{ fontWeight: "bold" }}
-                      >{`${item.nameSize}`}</span>
-                      <FontAwesomeIcon
-                        icon={faCircleMinus}
-                        className="custom-icon"
-                      />
-                    </Button>
-                  </Popconfirm>
+                    <span
+                      style={{ fontWeight: "bold" }}
+                    >{`${item.nameSize}`}</span>
+                    <FontAwesomeIcon
+                      icon={faCircleMinus}
+                      className="custom-icon"
+                    />
+                  </Button>
                 ))}
                 <Col span={5}>
                   <Button
-                    style={{ height: "40px", marginLeft: "40px" }}
+                    style={{ height: "40px", marginLeft: "20%" }}
                     type="primary"
                     onClick={() => {
-                      setModalAddSize(true);
+                      if (isProductNameValid) {
+                        setModalAddSize(true);
+                      } else {
+                        toast.error(
+                          "Vui lòng nhập thông tin sản phẩm trước khi thêm kích cỡ!"
+                        );
+                      }
                     }}
+                    title="Thêm kích cỡ"
                   >
-                    Thêm kích cỡ
+                    <FontAwesomeIcon icon={faPlus} />
                   </Button>
                   <ModalAddSizeProduct
                     visible={modalAddSize}
@@ -954,23 +968,19 @@ const CreateProductManagment = () => {
             <Col span={16}>
               <div style={{ display: "flex", flexWrap: "wrap" }}>
                 {listColorAdd.map((item, index) => (
-                  <Popconfirm
-                    key={index}
-                    title="Bạn có chắc muốn xóa kích cỡ này?"
-                    onConfirm={() => handleDeleteColor(index)}
-                    okText="Đồng ý"
-                    cancelText="Hủy"
+                  <Button
+                    onClick={() =>
+                      handleDeleteColor(index, getColorName(item.color))
+                    }
+                    className="custom-button-color"
+                    style={{ backgroundColor: item.color }}
+                    title={getColorName(item.color)}
                   >
-                    <Button
-                      className="custom-button-color"
-                      style={{ backgroundColor: item.color }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faCircleMinus}
-                        className="custom-icon"
-                      />
-                    </Button>
-                  </Popconfirm>
+                    <FontAwesomeIcon
+                      icon={faCircleMinus}
+                      className="custom-icon"
+                    />
+                  </Button>
                 ))}
                 <Col
                   span={5}
@@ -981,13 +991,20 @@ const CreateProductManagment = () => {
                   }}
                 >
                   <Button
-                    style={{ height: "40px", width: "75%" }}
+                    style={{ height: "40px", marginRight: "50%" }}
                     type="primary"
                     onClick={() => {
-                      setModalAddColor(true);
+                      if (isProductNameValid) {
+                        setModalAddColor(true);
+                      } else {
+                        toast.error(
+                          "Vui lòng nhập thông tin sản phẩm trước khi thêm kích cỡ!"
+                        );
+                      }
                     }}
+                    title="Thêm màu sắc"
                   >
-                    Thêm màu sắc
+                    <FontAwesomeIcon icon={faPlus} />
                   </Button>
                   <AddColorModal
                     visible={modalAddColor}
@@ -1026,7 +1043,6 @@ const CreateProductManagment = () => {
           columns={columns}
           dataSource={tableData}
           pagination={{ pageSize: 5 }}
-          rowClassName={getRowClassName}
         />
       </div>
     </>

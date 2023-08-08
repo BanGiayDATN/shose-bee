@@ -115,15 +115,8 @@ const ProductManagement = () => {
     loadData();
   }, [selectedValues]);
 
-  const getPromotionStyle = (promotion) => {
-    return promotion >= 50 ? { color: "white" } : { color: "#000000" };
-  };
-  const getPromotionColor = (promotion) => {
-    return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
-  };
-
   const getRowClassName = (record, index) => {
-    return index % 2 === 0 ? "even-row" : "odd-row"; // Áp dụng lớp 'even-row' cho hàng chẵn và 'odd-row' cho hàng lẻ
+    return index % 2 === 0 ? "even-row" : "odd-row";
   };
 
   const columns = [
@@ -174,7 +167,7 @@ const ProductManagement = () => {
         <div style={{ display: "flex", gap: "10px" }}>
           <Button
             type="primary"
-            title="Chi tiết thể loại"
+            title="Chi tiết sản phẩm"
             style={{ backgroundColor: "#FF9900" }}
             onClick={() => handleViewDetail(record.id)}
           >
@@ -182,7 +175,7 @@ const ProductManagement = () => {
           </Button>
           <Button
             type="primary"
-            title="Chỉnh sửa thể loại"
+            title="Chỉnh sửa sản phẩm"
             style={{ backgroundColor: "#0099FF", borderColor: "#0099FF" }}
             onClick={() => handleUpdate(record.id)}
           >
@@ -260,7 +253,7 @@ const ProductManagement = () => {
             </div>
             <div className="content-right">
               <Col span={7} style={{ textAlign: "right", paddingRight: 30 }}>
-                <label>Khoảng giá :</label>
+                <label>Số lượng tồn :</label>
               </Col>
               <Col span={9}>
                 <Slider
@@ -311,6 +304,7 @@ const ProductManagement = () => {
                 type="primary"
                 icon={<FontAwesomeIcon icon={faPlus} />}
                 style={{ height: 40 }}
+                title="Tạo sản phẩm chi tiết"
               >
                 Tạo sản phẩm
               </Button>

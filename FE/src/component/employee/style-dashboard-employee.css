@@ -15,9 +15,10 @@
     justify-content: center;
     align-items: center;
     width: 92%; /* Ví dụ: chiều rộng 100% của phần tử cha */
-    height: 200px; /* Ví dụ: chiều cao 200px */
-    margin-bottom: 18px;
-    margin-top: 5px;
+    /* height: 200px;  */
+    height: 80px;
+    margin-bottom: 50px;
+    margin-top: 50px;
 
     transition: all 0.2s; /* Add a transition effect for smooth resizing */
 }

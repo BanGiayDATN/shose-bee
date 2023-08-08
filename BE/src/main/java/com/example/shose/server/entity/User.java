@@ -49,6 +49,9 @@ public class User extends PrimaryEntity {
     @Column(name = "points")
     private Integer points;
 
+    @Column(name = "citizen_identity ")
+    private String citizenIdentity;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 }

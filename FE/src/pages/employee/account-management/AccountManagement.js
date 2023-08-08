@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input, Button, Select, Table, Slider, Image, Row, Col } from "antd";
 import "react-toastify/dist/ReactToastify.css";
-import "./style-account.css";
+import "./style-staff.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetAccount, SetAccount } from "../../../app/reducer/Account.reducer";
@@ -24,9 +24,6 @@ const { Option } = Select;
 
 const AccountManagement = () => {
   const [listAddress, setListAddress] = useState([]);
-  const [listProvinceSearch, setListProvinceSearch] = useState([]);
-  const [listDistrictsSearch, setListDistrictsSearch] = useState([]);
-  const [listWardSearch, setListWardSearch] = useState([]);
   const [initialAccountList, setInitialAccountList] = useState([]);
   const [listaccount, setListaccount] = useState([]);
   const [initialStartDate, setInitialStartDate] = useState(null);
@@ -39,8 +36,6 @@ const AccountManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [addressId, setAddressId] = useState("");
-  const [addressIdDeatail, setAddressIdDetail] = useState("");
 
   // Lấy mảng redux ra
   const data = useAppSelector(GetAccount, GetAddress);
@@ -83,16 +78,6 @@ const AccountManagement = () => {
     });
   }, [searchAccount.status]);
 
-  const loadDataProvince = () => {
-    AddressApi.fetchAllProvince().then(
-      (res) => {
-        setListProvinceSearch(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-  };
   const handleSubmitSearch = (event) => {
     event.preventDefault();
     const { keyword, status } = searchAccount;
@@ -173,16 +158,15 @@ const AccountManagement = () => {
     );
     setAgeRange([0, 100]);
   };
-
   const loadData = () => {
     AccountApi.fetchAll().then(
       (res) => {
         const accounts = res.data.data.map((account, index) => ({
           ...account,
           stt: index + 1,
-          province: listProvinceSearch[index]?.name,
         }));
         setListaccount(res.data.data);
+        // setListAddress(res.data.data);
         setInitialAccountList(accounts);
         setInitialStartDate(null);
         setInitialEndDate(null);
@@ -234,18 +218,29 @@ const AccountManagement = () => {
       key: "fullName",
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
+
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      sorter: (a, b) => a.email.localeCompare(b.email),
+      title: "CCCD",
+      dataIndex: "citizenIdentity",
+      key: "citizenIdentity",
+      sorter: (a, b) => a.citizenIdentity.localeCompare(b.citizenIdentity),
     },
     {
-      title: "SDT",
+      title: "Số điện thoại",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
       sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
     },
+    // {
+    //   title: "Địa chỉ",
+    //   dataIndex: "address",
+    //   key: "address",
+    //   render: (text, record) => (
+    //     <p>
+    //       {record.line}, {record.district}, {record.province}, {record.ward}
+    //     </p>
+    //   ),
+    // },
     {
       title: "Ngày sinh",
       dataIndex: "dateOfBirth",
@@ -325,7 +320,7 @@ const AccountManagement = () => {
                     marginLeft: "19px",
                     marginBottom: "20px",
                   }}
-                  placeholder="Tìm kiếm tên / sđt / email... "
+                  placeholder="Tìm kiếm tên / email / sđt... "
                   type="text"
                   name="keyword"
                   value={searchAccount.keyword}

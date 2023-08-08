@@ -328,6 +328,28 @@ function CreateBill() {
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
     });
+    AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
+      setAddress({
+        city: res.data.data.province,
+        district: res.data.data.district,
+        wards: res.data.data.ward,
+        detail: res.data.data.line,
+      });
+      form.setFieldsValue({
+        phoneNumber: res.data.data.user.phoneNumber,
+        name: res.data.data.user.fullName,
+        city: res.data.data.province,
+        district: res.data.data.district,
+        wards: res.data.data.ward,
+        detail: res.data.data.line,
+      });
+      addressFull(
+        res.data.data.provinceId,
+        res.data.data.toDistrictId,
+        res.data.data.wardCode
+      );
+    });
+
     setBillRequest({
       ...billRequest,
       phoneNumber: record.phoneNumber,
@@ -378,7 +400,7 @@ function CreateBill() {
       setListaccount(data);
     }
   }, [data]);
- 
+
   const [totalMoneyPayMent, setTotalMoneyPayment] = useState(0);
   const [traSau, setTraSau] = useState(false);
 
@@ -538,6 +560,7 @@ function CreateBill() {
       idUser: idAccount,
     };
     console.log(data);
+
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {
@@ -581,7 +604,7 @@ function CreateBill() {
         }else{
           toast("vui lòng thanh toán hóa đơn");
         }
-       
+
       } else {
         toast("vui lòng chọn sản phẩm");
       }
@@ -749,7 +772,7 @@ function CreateBill() {
         : item
     );
     setProducts(updatedListSole);
-    
+
   };
 
   const handleQuantityChange = (value, record) => {
@@ -966,11 +989,10 @@ function CreateBill() {
       dataIndex: "status",
       key: "status",
       render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        const genderClass = text === "DANG_SU_DUNG" ? "trangthai-sd" : "";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Mặc định " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Mặc định " : ""}
           </button>
         );
       },
@@ -1016,7 +1038,13 @@ function CreateBill() {
   const selectedAddress = (record) => {
     setIsModalAddressOpen(false);
     setListInfoUser(record);
-    console.log(record);
+    setAddress({
+      city: record.province,
+      district: record.district,
+      wards: record.ward,
+      detail: record.line,
+    });
+    console.log(address);
     form.setFieldsValue({
       phoneNumber: record.phonenumber,
       name: record.fullname,
@@ -1025,24 +1053,22 @@ function CreateBill() {
       wards: record.ward,
       detail: record.line,
     });
-    AddressApi.fetchAllMoneyShip(record.toDistrictId, record.wardCode).then(
-      (res) => {
-        setShipFee(res.data.data.total);
-      }
-    );
-    AddressApi.fetchAllDayShip(record.toDistrictId, record.wardCode).then(
-      (res) => {
-        const leadtimeInSeconds = res.data.data.leadtime;
-        const formattedDate = moment
-          .unix(leadtimeInSeconds)
-          .format("DD/MM/YYYY");
-        setDayShip(formattedDate);
-      }
-    );
-    AddressApi.fetchAllProvinceDistricts(record.provinceId).then((res) => {
+    addressFull(record.provinceId, record.toDistrictId, record.wardCode);
+  };
+
+  const addressFull = (provinceId, toDistrictId, wardCode) => {
+    AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
+      setShipFee(res.data.data.total);
+    });
+    AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
+      const leadtimeInSeconds = res.data.data.leadtime;
+      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+      setDayShip(formattedDate);
+    });
+    AddressApi.fetchAllProvinceDistricts(provinceId).then((res) => {
       setListDistricts(res.data.data);
     });
-    AddressApi.fetchAllProvinceWard(record.toDistrictId).then((res) => {
+    AddressApi.fetchAllProvinceWard(toDistrictId).then((res) => {
       setListWard(res.data.data);
     });
   };
@@ -1729,7 +1755,7 @@ function CreateBill() {
                 <input type="checkbox" id="switch" defaultChecked={isOpenDelivery} onChange={(e) => setIsOpenDelivery(!isOpenDelivery)} /><label for="switch" className="labelSwitch">Toggle</label>
               </Col>
             </Row>
-            
+
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
@@ -1858,7 +1884,7 @@ function CreateBill() {
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
         closeIcon={null}
-        width={1000}
+        width={1200}
         footer={null}
       >
         <ModalAddProductDetail
@@ -2149,7 +2175,7 @@ function CreateBill() {
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
-             
+
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
               }, 0) < products.reduce((accumulator, currentValue) => {
@@ -2181,7 +2207,7 @@ function CreateBill() {
                     );
                   }, 0) +
                     shipFee -
-                    voucher.discountPrice - 
+                    voucher.discountPrice -
                   dataPayment.reduce((accumulator, currentValue) => {
                     return accumulator + currentValue.totalMoney;
                   }, 0)).toLocaleString("vi-VN", {
@@ -2201,7 +2227,7 @@ function CreateBill() {
                       style: "currency",
                       currency: "VND",
                     })
-                  
+
                 )
               }
             </Col>

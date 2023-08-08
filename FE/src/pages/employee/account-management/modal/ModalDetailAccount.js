@@ -18,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { AccountApi } from "../../../../api/employee/account/account.api";
 import { UpdateAccount } from "../../../../app/reducer/Account.reducer";
 import { useParams, useNavigate } from "react-router-dom";
-import "../style-account.css";
+import "../style-staff.css";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 const { Option } = Select;
@@ -219,7 +219,6 @@ const ModalDetailAccount = ({ visible }) => {
             >
               Ảnh đại diện
             </h1>
-            {/* ... */}
             <div>
               <Upload
                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -251,7 +250,6 @@ const ModalDetailAccount = ({ visible }) => {
                 />
               </Modal>
             </div>
-            {/* ... */}
           </div>
         </Col>
 
@@ -279,6 +277,17 @@ const ModalDetailAccount = ({ visible }) => {
                       readOnly
                     />
                   </Form.Item>
+                  <Form.Item
+                    label="Căn cước công dân"
+                    name="citizenIdentity"
+                    readOnly
+                  >
+                    <Input
+                      className="input-item"
+                      placeholder="Căn cước công dân"
+                      readOnly
+                    />
+                  </Form.Item>
                   <Form.Item label="Email" name="email">
                     <Input
                       className="input-item"
@@ -293,6 +302,7 @@ const ModalDetailAccount = ({ visible }) => {
                   <Form.Item label="Xã/Phường" name="ward">
                     <Input className="input-item" readOnly />
                   </Form.Item>
+
                   <Form.Item label="Trạng thái" name="status">
                     <Select>
                       <Option value="DANG_SU_DUNG">
@@ -305,15 +315,12 @@ const ModalDetailAccount = ({ visible }) => {
                       </Option>
                     </Select>
                   </Form.Item>
-                  <Form.Item label="Giới tính">
-                    <Radio.Group value={account.gender}>
-                      <Radio value={true}>Nam</Radio>
-                      <Radio value={false}>Nữ</Radio>
-                    </Radio.Group>
-                  </Form.Item>
                 </Col>
 
                 <Col span={10} style={{ marginLeft: "40px" }}>
+                  <Form.Item label="Ngày sinh" name="dateOfBirth">
+                    <Input className="input-item" type="date" readOnly />
+                  </Form.Item>
                   <Form.Item label="Số điện thoại" name="phoneNumber">
                     <Input
                       className="input-item"
@@ -321,8 +328,11 @@ const ModalDetailAccount = ({ visible }) => {
                       readOnly
                     />
                   </Form.Item>
-                  <Form.Item label="Ngày sinh" name="dateOfBirth">
-                    <Input className="input-item" type="date" readOnly />
+                  <Form.Item label="Giới tính">
+                    <Radio.Group value={account.gender}>
+                      <Radio value={true}>Nam</Radio>
+                      <Radio value={false}>Nữ</Radio>
+                    </Radio.Group>
                   </Form.Item>
                   <Form.Item label="Quận/Huyện" name="district">
                     <Input className="input-item" readOnly />
@@ -345,21 +355,10 @@ const ModalDetailAccount = ({ visible }) => {
                   <Form.Item name="toDistrictId" hidden>
                     <Input disabled />
                   </Form.Item>
-                  {/* <div>
-                  <QrReader
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: "100%" }}
-                  />
-                  <p>Scanned Data: {qrData}</p>
-                </div> */}
                 </Col>
               </Row>
             </div>
           </Form>
-          {/* </div> */}
-
           <div
             style={{
               display: "flex",
