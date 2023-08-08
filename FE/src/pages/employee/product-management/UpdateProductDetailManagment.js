@@ -1,10 +1,10 @@
 import {
+  faBookmark,
   faEdit,
   faEye,
   faFilter,
   faKaaba,
   faListAlt,
-  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -150,7 +150,7 @@ const UpdateProductDetailManagment = () => {
             alt="Ảnh sản phẩm"
             style={{ width: "170px", borderRadius: "10%", height: "140px" }}
           />
-          {/* {record.promotion !== null && (
+          {record.promotion !== null && (
             <div
               style={{
                 position: "absolute",
@@ -195,7 +195,7 @@ const UpdateProductDetailManagment = () => {
                 Giảm
               </span>
             </div>
-          )} */}
+          )}
         </div>
       ),
     },

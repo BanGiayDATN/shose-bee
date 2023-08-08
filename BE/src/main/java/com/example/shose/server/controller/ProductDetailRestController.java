@@ -1,5 +1,6 @@
 package com.example.shose.server.controller;
 
+import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
@@ -18,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -54,9 +58,8 @@ public class ProductDetailRestController {
 //    }
 
     @PostMapping("")
-    public ResponseObject add(@RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
-                              @RequestParam("data") String requestData,
-                              @RequestParam("status") List<Boolean> listStatusImage) throws IOException, ExecutionException, InterruptedException {
+    public ResponseObject add(@RequestParam Map<String, MultipartFile> fileMap,
+                              @RequestParam("data") String requestData) throws IOException, ExecutionException, InterruptedException {
 
         Gson gson = new Gson();
 
@@ -66,9 +69,18 @@ public class ProductDetailRestController {
             CreateProductDetailRequest detail = gson.fromJson(data, CreateProductDetailRequest.class);
             listData.add(detail);
         }
+
+        List<ImageColorFilerequestDTO> dtoList = new ArrayList<>();
+        for (String color : fileMap.keySet()) {
+            ImageColorFilerequestDTO dto = new ImageColorFilerequestDTO();
+            MultipartFile file = fileMap.get(color);
+            dto.setColor(color.substring(0, color.indexOf('-')));
+            dto.setFiles(file);
+            dtoList.add(dto);
+        }
+        dtoList.stream().forEach(a-> System.out.println(a));
         listData.stream().forEach(a-> System.out.println(a));
-//        return new ResponseObject(productDetailService.create(request, multipartFiles, listSize, listStatusImage, listCodeColor));
-    return null;
+        return new ResponseObject(productDetailService.create(listData,dtoList));
     }
 
 

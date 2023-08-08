@@ -6,8 +6,6 @@ import {
   Col,
   Select,
   Row,
-  Space,
-  Spin,
   Slider,
   Modal,
 } from "antd";
@@ -17,12 +15,6 @@ import { useAppDispatch, useAppSelector } from "../../../../app/hook";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookmark,
-  faEdit,
-  faEye,
-  faFilter,
-  faKaaba,
-  faListAlt,
-  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { Option } from "antd/es/mentions";
 import { MaterialApi } from "../../../../api/employee/material/Material.api";
@@ -169,7 +161,7 @@ function ModalAddProductDetail({
         var data =  res.data.data.filter(
           (product) => product.quantity > 0
         );
-
+          console.log(data);
         setListProduct(data);
         // dispatch(SetProduct(data));
         setIsSubmitted(false);
@@ -276,24 +268,25 @@ function ModalAddProductDetail({
       sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
     },
     {
-      title: "Giá ",
-      dataIndex: "min",
-      key: "min",
-      sorter: (a, b) => a.price - b.price,
-      render: (text, record) => {
-        if(record.min === record.max){
-          return (formatCurrency(record.min))
-        }else{
-          return (formatCurrency(record.min) + " ~ " + formatCurrency(record.max))
-        }
-    },
-    },
-    {
       title: "Số Lượng Tồn ",
       dataIndex: "quantity",
       key: "quantity",
       sorter: (a, b) => a.quantity - b.quantity,
       align: "center",
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Không kinh doanh"}
+          </button>
+        );
+      },
     },
     {
       title: "Hành động",
@@ -618,7 +611,7 @@ function ModalAddProductDetail({
       </div>
       <Modal
         title=""
-        width={800}
+        width={900}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
