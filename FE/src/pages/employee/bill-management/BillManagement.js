@@ -1,4 +1,5 @@
 import {
+  faEye,
   faFilter,
   faKaaba,
   faListAlt,
@@ -225,8 +226,8 @@ function BillManagement() {
       dataIndex: "id",
       key: "actions",
       render: (id) => (
-        <Button>
-          <Link to={`/bill-management/detail-bill/${id}`}>Chi tiết</Link>
+        <Button style={{ backgroundColor: "#FF9900" }} title="Chi tiết hóa đơn">
+          <Link to={`/bill-management/detail-bill/${id}`}><FontAwesomeIcon icon={faEye} /></Link>
         </Button>
       ),
     },

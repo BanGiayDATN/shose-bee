@@ -3,6 +3,9 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.request.product.CreateProductRequest;
 import com.example.shose.server.dto.request.product.FindProductRequest;
 import com.example.shose.server.dto.request.product.UpdateProductRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
+import com.example.shose.server.dto.response.CustomProductRespone;
+import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -87,5 +90,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getProductUse() {
         return productRepository.getProductUse();
+    }
+
+    @Override
+    public List<CustomProductRespone> getAllProduct(FindProductDetailRequest req) {
+        return productRepository.getAllProduct(req);
     }
 }

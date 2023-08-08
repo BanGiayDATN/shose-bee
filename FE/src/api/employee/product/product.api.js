@@ -8,6 +8,14 @@ export class ProductApi {
     });
   };
 
+  static fetchAllCustomProduct = (filter) => {
+    return request({
+      method: "GET",
+      url: `/admin/product/all-product`,
+      params: filter,
+    });
+  };
+
   static fetchAllByName = (filter) => {
     return request({
       method: "GET",

@@ -392,6 +392,7 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
+<<<<<<< HEAD
     // var addressuser = "";
     // if (checkNotEmptyAddress()) {
     var addressuser =
@@ -403,9 +404,21 @@ function CreateBill() {
       ", " +
       address.city;
     // }
+=======
+    var addressuser = "";
+    if (!checkNotEmptyAddress()) {
+      addressuser =
+        address.detail +
+        ", " +
+        address.wards +
+        ", " +
+        address.district +
+        ", " +
+        address.city;
+    }
+>>>>>>> develop
     var idAccount = "";
     if (user != null) {
-      console.log(user);
       idAccount = user.idAccount;
     }
     var data = {
@@ -421,12 +434,15 @@ function CreateBill() {
       vouchers: newVoucher,
       idUser: idAccount,
     };
+<<<<<<< HEAD
     console.log(data);
     console.log(address);
     console.log(addressuser);
 
+=======
+>>>>>>> develop
     if (isOpenDelivery) {
-      if (checkNotEmptyAddress() && checkNotEmptyBill()) {
+      if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {
           Modal.confirm({
             title: "Xác nhận",
@@ -444,7 +460,7 @@ function CreateBill() {
           toast("vui lòng chọn sản phẩm");
         }
       } else {
-        toast("Vui lòng Nhập địa chỉ");
+        toast("Vui lòng nhập thông tin giao hàng");
       }
     } else {
       if (totalBill > 0) {
@@ -601,7 +617,7 @@ function CreateBill() {
       afterPrice: price - record.value,
       discountPrice: record.value,
     });
-    setCodeVoucher(record.code);
+    setCodeVoucher(record.code + " - " + record.name  );
     setIsModalVoucherOpen(false);
   };
 
@@ -1368,6 +1384,7 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập địa chỉ"
                           style={{ width: "90%", height: "39px" }}
+                          value={address.detail}
                           onChange={(e) =>
                             onChangeAddress("detail", e.target.value)
                           }
@@ -1580,7 +1597,7 @@ function CreateBill() {
                     type="checkbox"
                     id="checkbox"
                     defaultChecked={isOpenDelivery}
-                    onChange={(e) => setIsOpenDelivery(e.target.checked)}
+                    onChange={(e) => setIsOpenDelivery(!isOpenDelivery)}
                   />
                   <div class="slider round"></div>
                 </label>
