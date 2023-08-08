@@ -45,17 +45,24 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address create(CreateAddressRequest req) {
-        Address checkStatusAddress = addressRepository.getOneAddressByStatus(req.getStatus(), req.getUserId());
+//        Address checkStatusAddress = addressRepository.getOneAddressByStatus(req.getStatus(), req.getUserId());
+        List<Address> checkStatusAddress = addressRepository.findAllAddressByStatus(req.getStatus(), req.getUserId());
         Optional<User> user = userReposiory.findById(req.getUserId());
+
         if(checkStatusAddress == null){
             Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
                     .ward(req.getWard()).status(req.getStatus()).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId())
                     .wardCode(req.getWardCode()).user(user.get()).build();
             return addressRepository.save(address);
         }
-        else if (checkStatusAddress.getStatus() != Status.KHONG_SU_DUNG) {
-            throw new RestApiException(Message.STATUS_ADDRESS_EXIST);
+        for(Address x:checkStatusAddress){
+            if ( x.getStatus() != Status.KHONG_SU_DUNG){
+                throw new RestApiException(Message.STATUS_ADDRESS_EXIST);
+            }
         }
+//        else if (checkStatusAddress.getStatus() != Status.KHONG_SU_DUNG) {
+//            throw new RestApiException(Message.STATUS_ADDRESS_EXIST);
+//        }
 
 
         Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
@@ -66,10 +73,15 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address update(UpdateAddressRequest req) {
+        List<Address> checkStatusAddress = addressRepository.findAllAddressByStatus(req.getStatus(), req.getUserId());
         Optional<Address> optional = addressRepository.findById(req.getId());
-
         Optional<User> user = userReposiory.findById(req.getUserId());
 
+        for(Address x:checkStatusAddress){
+            if ( x.getStatus() != Status.KHONG_SU_DUNG){
+                throw new RestApiException(Message.STATUS_ADDRESS_EXIST);
+            }
+        }
         Address address = optional.get();
         address.setLine(req.getLine());
         address.setDistrict(req.getDistrict());
@@ -80,6 +92,9 @@ public class AddressServiceImpl implements AddressService {
         address.setProvinceId(req.getProvinceId());
         address.setWardCode(req.getWardCode());
         address.setUser(user.get());
+        if(checkStatusAddress == null){
+            return addressRepository.save(address);
+        }
         return addressRepository.save(address);
     }
 
