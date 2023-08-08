@@ -75,6 +75,9 @@ public interface AddressRepository extends JpaRepository<Address, String> {
     @Query("SELECT a FROM  Address a WHERE (a.status =:status) and (a.user.id =:idUser)")
     Address getOneAddressByStatus(@Param("status") Status status, @Param("idUser") String idUser);
 
+    @Query("SELECT a FROM  Address a WHERE (a.status =:status) and (a.user.id =:idUser)")
+    List<Address> findAllAddressByStatus(@Param("status") Status status, @Param("idUser") String idUser);
+
     @Query(value = """
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY a.last_modified_date DESC ) AS stt,
