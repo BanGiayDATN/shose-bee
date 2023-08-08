@@ -119,6 +119,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                          LEFT JOIN color col ON detail.id_color = col.id
                          LEFT JOIN size si ON detail.id_size = si.id
                         where p.id = :id
+                        GROUP BY detail.id
                         ORDER BY detail.last_modified_date DESC 
             """,nativeQuery = true)
     List<ProductDetailReponse> findAllByIdProduct(@Param("id") String id);
