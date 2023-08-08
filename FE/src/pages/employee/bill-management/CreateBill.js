@@ -403,6 +403,7 @@ function CreateBill() {
       ", " +
       address.city;
     // }
+
     var addressuser = "";
     if (!checkNotEmptyAddress()) {
       addressuser =
@@ -431,9 +432,6 @@ function CreateBill() {
       vouchers: newVoucher,
       idUser: idAccount,
     };
-    console.log(data);
-    console.log(address);
-    console.log(addressuser);
 
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
@@ -611,7 +609,7 @@ function CreateBill() {
       afterPrice: price - record.value,
       discountPrice: record.value,
     });
-    setCodeVoucher(record.code + " - " + record.name  );
+    setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
 

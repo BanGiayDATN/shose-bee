@@ -13,6 +13,7 @@ import java.util.List;
  * @author Nguyễn Vinh
  */
 public interface CategoryService {
+    List<Category> getAll();
 
     List<CategoryResponse> getList (FindCategoryRequest req);
 

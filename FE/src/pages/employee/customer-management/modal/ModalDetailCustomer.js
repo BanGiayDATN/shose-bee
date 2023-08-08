@@ -353,15 +353,16 @@ const ModalDetailCustomer = ({ visible }) => {
                     readOnly
                   />
                 </Form.Item>
-                <Form.Item label="Giới tính" name="gender">
+                <Form.Item
+                  label="Giới tính"
+                  name="gender"
+                  initialValue={customer.gender === true ? "Nam" : "Nữ"}
+                >
                   <Radio.Group>
-                    <Radio value="true" checked>
-                      Nam
-                    </Radio>
-                    <Radio value="false">Nữ</Radio>
+                    <Radio value={true}>Nam</Radio>
+                    <Radio value={false}>Nữ</Radio>
                   </Radio.Group>
                 </Form.Item>
-
                 <Form.Item name="toDistrictId" hidden>
                   <Input disabled />
                 </Form.Item>

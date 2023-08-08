@@ -552,10 +552,11 @@ const ModalUpdateCustomer = ({ visible }) => {
                   rules={[
                     { required: true, message: "Vui lòng chọn giới tinh" },
                   ]}
+                  initialValue={customer.gender === true ? "Nam" : "Nữ"}
                 >
                   <Radio.Group>
-                    <Radio value="true">Nam</Radio>
-                    <Radio value="false">Nữ</Radio>
+                    <Radio value={true}>Nam</Radio>
+                    <Radio value={false}>Nữ</Radio>
                   </Radio.Group>
                 </Form.Item>
                 <Form.Item name="toDistrictId" hidden>

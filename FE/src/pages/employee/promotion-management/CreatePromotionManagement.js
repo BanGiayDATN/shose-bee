@@ -11,7 +11,7 @@ import {
   Popconfirm,
   Button,
   Table,
-  Modal
+  Modal,
 } from "antd";
 import {
   faEdit,
@@ -29,9 +29,12 @@ import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
-import { GetProductDetail, SetProductDetail } from "../../../app/reducer/ProductDetail.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import {
+  GetProductDetail,
+  SetProductDetail,
+} from "../../../app/reducer/ProductDetail.reducer";
 
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
@@ -46,7 +49,7 @@ function CreateVoucherManagement() {
   const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
   const datas = useAppSelector(GetProductDetail);
-
+  const [form] = Form.useForm();
   useEffect(() => {
     if (datas != null) {
       SetProductDetail(datas);
@@ -71,14 +74,12 @@ function CreateVoucherManagement() {
   }, [selectedRowKeysDetail]);
 
   useEffect(() => {
-    if (detailProduct) {
+    
       for (const key of selectedRowKeys) {
         getProdutDetailByproduct(key);
       }
       setListProductDetail(updatedListProductDetail);
-    } else {
-    }
-    setListProductDetail(updatedListProductDetail);
+    
 
     console.log(selectedRowKeys);
   }, [selectedRowKeys]);
@@ -91,7 +92,6 @@ function CreateVoucherManagement() {
     ProductApi.getProductUse().then(
       (res) => {
         setList(res.data.data);
-        // dispatch(SetProductDetail(res.data.data));
       },
       (err) => {
         console.log(err);
@@ -115,7 +115,7 @@ function CreateVoucherManagement() {
   };
 
   const onSelectChange = (newSelectedRowKeys) => {
-    setDetailProduct(true);
+    // setDetailProduct(true);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -151,24 +151,19 @@ function CreateVoucherManagement() {
     return convertedFormData;
   };
   const handleSubmit = () => {
-    console.log(convertToLong());
-    console.log(formData);
     const isFormValid =
       formData.name &&
       formData.value &&
       formData.startDate &&
       formData.endDate &&
-      // formData.idProductDetails &&
       formData.startDate < formData.endDate;
 
     if (!isFormValid) {
       const errors = {
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
+        value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        // idProductDetails:!formData.idProductDetails ? toast.success("Bạn chưa chọn chi tiết sản phẩm!", {
-        //   autoClose: 5000,
-        // }):"",
+      
         endDate: !formData.endDate
           ? "Vui lòng chọn ngày kết thúc"
           : formData.startDate >= formData.endDate
@@ -178,7 +173,13 @@ function CreateVoucherManagement() {
       setFormErrors(errors);
       return;
     }
-
+    console.log(formData.idProductDetails);
+    // if(formData.idProductDetails === undefined){
+    //    toast.success("Bạn chưa chọn chi tiết sản phẩm cho khuyến mại!", {
+    //     autoClose: 5000,
+    //   })
+    //   return;
+    // }
     PromotionApi.create(convertToLong()).then((res) => {
       dispatch(CreatePromotion(res.data.data));
       toast.success("Thêm thành công!", {
@@ -190,11 +191,24 @@ function CreateVoucherManagement() {
     setListProductDetail([]);
     onSelectChange("");
     onSelectChangeDetail("");
+    setSelectedRowKeysDetail("");
+  };
+  const closeModal = () => {
+    setModal(false);
+    setListPromotion([]);
+  };
+  const openModal = (id) => {
+    PromotionApi.getByProductDetail(id).then(
+      (res) => {
+        setListPromotion(res.data.data);
+        console.log(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    setModal(true);
 
-
-    // for (const key of selectedRowKeysDetail) {
-    //   getProdutDetailByproduct(key);
-    // }
   };
   const fields = [
     {
@@ -211,7 +225,6 @@ function CreateVoucherManagement() {
       text: "giá trị giảm",
       class: "input-form",
       formatter: (value) => `${value}%`,
-      // parser: (value) => value.replace("%", ""),
     },
     {
       name: "startDate",
@@ -227,17 +240,7 @@ function CreateVoucherManagement() {
       text: "ngày kết thúc",
       class: "input-form",
     },
-    // {
-    //   name: "status",
-    //   type: "select",
-    //   label: "Trạng thái",
-    //   options: [
-    //     { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-    //     { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
-    //   ],
-    //   text: "trạng thái",
-    //   class: "input-form",
-    // },
+
   ];
 
   const columns = [
@@ -268,7 +271,7 @@ function CreateVoucherManagement() {
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Ngừng kinh doanh"}
           </button>
         );
       },
@@ -294,12 +297,6 @@ function CreateVoucherManagement() {
       ),
     },
     {
-      title: "Mã sản phẩm",
-      dataIndex: "codeProduct",
-      key: "codeProduct",
-      sorter: (a, b) => a.code.localeCompare(b.code),
-    },
-    {
       title: "Tên sản phẩm",
       dataIndex: "nameProduct",
       key: "nameProduct",
@@ -312,11 +309,26 @@ function CreateVoucherManagement() {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Giá sản phẩm",
-      dataIndex: "price",
-      key: "price",
-      sorter: (a, b) => a.name - b.name,
+      title: "Kích thước",
+      dataIndex: "nameSize",
+      key: "nameSize",
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
+    {
+      title: "Màu",
+      dataIndex: "codeColor",
+      key: "codeColor",
+      render: (text,record) => {
+        return(
+          <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            style={{ backgroundColor: record.codeColor }}
+        />
+        </div>
+        )
+        }
+    },
+
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -326,7 +338,7 @@ function CreateVoucherManagement() {
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Ngừng kinh doanh"}
           </button>
         );
       },
@@ -341,7 +353,7 @@ function CreateVoucherManagement() {
             type="primary"
             title="Chi tiết thể loại"
             style={{ backgroundColor: "#FF9900" }}
-            // onClick={() => openModal(record.id)}
+            onClick={() => openModal(record.id)}
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
@@ -397,8 +409,10 @@ function CreateVoucherManagement() {
       dataIndex: "statusPromotion",
       key: "statusPromotion",
       render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
 
-        const genderClass = text ? "trangthai-sd" : "trangthai-ksd";
+
         return (
           <button className={`gender ${genderClass}`}>
             {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
@@ -425,21 +439,29 @@ function CreateVoucherManagement() {
     <div>
       <Row>
         <Col className="add-promotion" lg={{ span: 7, offset: 0 }}>
-          <Link to="/promotion-management">
-            <LeftOutlined /> Quay lại
-          </Link>
           <div className="title-add-promotion">
             <h1>Thêm khuyến mại</h1>
           </div>
 
-          <Form layout="vertical" autoComplete="off">
+          <Form
+            form={form}
+            name="validateOnly"
+            layout="vertical"
+            autoComplete="off"
+          >
             {fields.map((field, index) => {
               return (
-                <div key={index}>
+                <div>
                   <Form.Item
+                    key={index}
                     label={field.label}
                     validateStatus={formErrors[field.name] ? "error" : ""}
                     help={formErrors[field.name] || ""}
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
                   >
                     {field.type === "number" && (
                       <InputNumber
@@ -453,7 +475,6 @@ function CreateVoucherManagement() {
                         min="1"
                         max="100"
                         formatter={field.formatter}
-                        // parser={field.parser}
                       />
                     )}
                     {field.type === "date" && (
@@ -572,21 +593,20 @@ function CreateVoucherManagement() {
         <Modal
           title="Chi tiết sản phẩm - khuyễn mại"
           visible={modal}
-          // onCancel={closeModal}
+          onCancel={closeModal}
           openModal={false}
           okButtonProps={{ style: { display: "none" } }}
           width={1000}
-        
         >
-         <div>
-         <Table
-            rowKey="code"
-            columns={columnsPromotion}
-            dataSource={updatedListPromotion}
-            pagination={{ pageSize: 5 }}
-            style={{margin:"50px"}}
-          />
-         </div>
+          <div>
+            <Table
+              rowKey="code"
+              columns={columnsPromotion}
+              dataSource={updatedListPromotion}
+              pagination={{ pageSize: 5 }}
+              style={{ margin: "50px" }}
+            />
+          </div>
         </Modal>
       )}
     </div>
