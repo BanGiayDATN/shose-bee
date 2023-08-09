@@ -17,6 +17,6 @@ public interface PaymentsMethodService {
 
     BigDecimal sumTotalMoneyByIdBill(String idBill);
 
-    boolean updatepayMent(List<String> ids);
+    boolean updatepayMent(String idBill,String idEmployees,List<String> ids);
 
 }

@@ -91,18 +91,28 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public boolean updatepayMent(List<String> ids) {
+    public boolean updatepayMent(String idBill,String idEmployees, List<String> ids) {
+        Optional<Bill> bill = billRepository.findById(idBill);
+        Optional<Account> account = accountRepository.findById(idEmployees);
+        if (!bill.isPresent()) {
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
         ids.forEach(id -> {
             Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(id);
             paymentsMethod.get().setStatus(StatusPayMents.THANH_TOAN);
             paymentsMethodRepository.save(paymentsMethod.get());
         });
-//        BillHistory billHistoryPayMent = new BillHistory();
-//        billHistoryPayMent.setBill(bill.get());
-//        billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+        bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+        billRepository.save(bill.get());
+        BillHistory billHistoryPayMent = new BillHistory();
+        billHistoryPayMent.setBill(bill.get());
+        billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
 //        billHistoryPayMent.setActionDescription(request.getActionDescription());
-//        billHistoryPayMent.setEmployees(account.get());
-//        billHistoryRepository.save(billHistoryPayMent);
+        billHistoryPayMent.setEmployees(account.get());
+        billHistoryRepository.save(billHistoryPayMent);
         return true;
     }
 }

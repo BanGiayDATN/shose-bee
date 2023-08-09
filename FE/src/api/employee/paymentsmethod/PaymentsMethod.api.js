@@ -15,10 +15,10 @@ export class PaymentsMethodApi {
     });
   };
 
-  static updateStatus = ( data) => {
+  static updateStatus = (id, data) => {
     return request({
       method: "PUT",
-      url: `/admin/payment/update-status`,
+      url: `/admin/payment/update-status/${id}`,
       data: data
     });
   };

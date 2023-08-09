@@ -163,7 +163,7 @@ public class BillServiceImpl implements BillService {
 //                    .build();
 //            paymentsMethodRepository.save(paymentsMethod);
         }else{
-            bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
+            bill.setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
 
@@ -256,7 +256,7 @@ public class BillServiceImpl implements BillService {
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
         bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
-        if (nextIndex > 4) {
+        if (nextIndex > 5) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
 //        if (StatusBill.valueOf(statusBill[nextIndex].name()) ==  StatusBill.DA_THANH_TOAN && ) {

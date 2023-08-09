@@ -5,7 +5,7 @@ import {
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Form, Table, Select, Space, Row, Col } from "antd";
+import { Button, Form, Table, Select, Space, Row, Col, Tabs } from "antd";
 import moment from "moment";
 import React from "react";
 import { useEffect } from "react";
@@ -24,9 +24,11 @@ import { AccountApi } from "../../../api/employee/account/account.api";
 import FormSearch from "./FormSearch";
 import { Link } from "react-router-dom";
 import { AddressApi } from "../../../api/employee/address/address.api";
+import TabBills from "./TabBills";
 
 function BillManagement() {
-  var listCategory = useSelector((state) => state.bill.bills.value);
+  var listBill = useSelector((state) => state.bill.bills.value);
+
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);
@@ -38,12 +40,7 @@ function BillManagement() {
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
-    // BillApi.fetchDataUsers().then((res) => {
-    //   dispatch(getUsers(res.data.data));
-    // });
-    // AccountApi.fetchDataSimpleEntityEmployees().then((res) => {
-    //   dispatch(getEmployees(res.data.data));
-    // });
+
   }, []);
 
   const onChangeFillter = (value, fileName) => {
@@ -97,7 +94,7 @@ function BillManagement() {
       employees: "",
       user: "",
       phoneNumber: "",
-      type: '',
+      type: "",
       page: 0,
     });
     setStatus([]);
@@ -117,7 +114,7 @@ function BillManagement() {
     employees: "",
     user: "",
     phoneNumber: "",
-    type: '',
+    type: "",
     page: 0,
   });
 
@@ -151,7 +148,7 @@ function BillManagement() {
       dataIndex: "type",
       key: "type",
       render: (type) => {
-        return <p>{type === 'ONLINE' ? "OnLine" : "Tại quầy"}</p>;
+        return <p>{type === "ONLINE" ? "OnLine" : "Tại quầy"}</p>;
       },
     },
     {
@@ -227,12 +224,41 @@ function BillManagement() {
       key: "actions",
       render: (id) => (
         <Button style={{ backgroundColor: "#FF9900" }} title="Chi tiết hóa đơn">
-          <Link to={`/bill-management/detail-bill/${id}`}><FontAwesomeIcon icon={faEye} /></Link>
+          <Link to={`/bill-management/detail-bill/${id}`}>
+            <FontAwesomeIcon icon={faEye} />
+          </Link>
         </Button>
       ),
     },
   ];
 
+  const onChange = (key) => {
+    console.log(key);
+  };
+
+
+  const listtab = [
+    "",
+    "CHO_XAC_NHAN", 
+    "CHO_VAN_CHUYEN",
+    "VAN_CHUYEN",
+    "KHONG_TRA_HANG",
+    "DA_HUY"
+  ]
+
+  const convertString = (key) => {
+    return  key === "TAT_CA"
+    ? "Tất cả"
+    : key === "CHO_XAC_NHAN"
+    ? "Chờ xác nhận"
+    : key === "CHO_VAN_CHUYEN"
+    ? "Chờ vận chuyển"
+    : key === "VAN_CHUYEN"
+    ? "Vận chuyển"
+    : key === "KHONG_TRA_HANG"
+    ? "Hoàn thành"
+    : "Hủy"
+  }
   return (
     <div>
       <div className="title_category">
@@ -261,27 +287,6 @@ function BillManagement() {
           </div>
         </div>
         <div className="box_btn_filter">
-          {/* <Row style={{ marginTop: "30px" }}>
-            <Col span={9}></Col>
-
-            <Col span={2}>
-              {" "}
-              <Button
-                className="btn_filter"
-                type="submit"
-                onClick={(e) => handleSubmitSearch(e)}
-              >
-                Tìm kiếm
-              </Button>
-            </Col>
-            <Col span={1}></Col>
-            <Col span={2}>
-              {" "}
-              <Button className="btn_clear" onClick={(e) => clearFillter(e)}>
-                Làm mới bộ lọc
-              </Button>
-            </Col>
-          </Row> */}
         </div>
       </div>
 
@@ -300,12 +305,16 @@ function BillManagement() {
           <div style={{ marginLeft: "auto" }}></div>
         </div>
         <div style={{ marginTop: "25px" }}>
-          <Table
-            dataSource={listCategory}
-            rowKey="id"
-            columns={columns}
-            pagination={{ pageSize: 3 }}
-            className="bill-table"
+          <Tabs
+            onChange={onChange}
+            type="card"
+            items={listtab.map((item) => {
+              return {
+                label: convertString(item),
+                key: item,
+                children: <TabBills statusBill={item} />,
+              };
+            })}
           />
         </div>
       </div>
