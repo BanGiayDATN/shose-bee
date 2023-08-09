@@ -374,7 +374,6 @@ function ModalAddProductDetail({
             idProduct: item.id,
             quantity: quantity,
             price: item.price,
-            idSizeProduct: item.id,
             maxQuantity: item.quantity,
           };
           if (index == -1) {
@@ -408,7 +407,6 @@ function ModalAddProductDetail({
               idProduct: item.id,
               quantity: quantity,
               price: price,
-              idSizeProduct: item.id,
             };
             dispatch(addProductInBillDetail(product));
           });

@@ -43,15 +43,6 @@ function ModalDetailProduct({ id, ChangedSelectSize,  ChangeQuantity, clearSelec
     clearSelectSize()
   };
 
-  // const getSizeProductDetail = () => {
-  //   SizeProductDetailApi.fetchAll(id).then((res) => {
-  //     const dataWithSTT = res.data.data.map((item, index) => ({
-  //       ...item,
-  //       stt: index + 1,
-  //     }));
-  //     setListSize(dataWithSTT);
-  //   });
-  // };
 
   const getProductDetail = async() => {
     await ProducDetailtApi.getByIdProductDetail(id).then((res) => {

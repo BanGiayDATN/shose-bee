@@ -110,3 +110,12 @@
  
     width: 800px !important;
 }
+
+.TRA_SAU{
+  background-color: #FF0000;
+  color: white;
+  width: 180px;
+  border-radius: 15px;
+  height: 2pc;
+  padding:  5px 19px;
+}
