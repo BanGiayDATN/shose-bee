@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 
-function TabBills({ statusBill }) {
+function TabBills({ statusBill, dataFillter }) {
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
   const columns = [
@@ -97,16 +97,16 @@ function TabBills({ statusBill }) {
   ];
 
   const [fillter, setFillter] = useState({
-    startTimeString: "",
-    endTimeString: "",
+    startTimeString: dataFillter.startTimeString,
+    endTimeString: dataFillter.endTimeString,
     status: [statusBill],
-    endDeliveryDateString: "",
-    startDeliveryDateString: "",
-    key: "",
-    employees: "",
-    user: "",
-    phoneNumber: "",
-    type: "",
+    endDeliveryDateString: dataFillter.endDeliveryDateString,
+    startDeliveryDateString: dataFillter.startDeliveryDateString,
+    key: dataFillter.key,
+    employees: dataFillter.employees,
+    user: dataFillter.user,
+    phoneNumber: dataFillter.phoneNumber,
+    type: dataFillter.type,
     page: 0,
   });
 
@@ -115,6 +115,13 @@ function TabBills({ statusBill }) {
       setDataBill(res.data.data);
     });
   }, []);
+
+  useEffect(() => {
+    BillApi.fetchAll(dataFillter).then((res) => {
+      console.log(fillter);
+      setDataBill(res.data.data);
+    });
+  }, [dataFillter]);
 
   return (
     <div style={{ width: "100%", marginTop: "0px" }}>

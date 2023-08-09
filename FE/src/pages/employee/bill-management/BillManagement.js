@@ -312,7 +312,7 @@ function BillManagement() {
               return {
                 label: convertString(item),
                 key: item,
-                children: <TabBills statusBill={item} />,
+                children: <TabBills statusBill={item} dataFillter={fillter}/>,
               };
             })}
           />
