@@ -35,7 +35,7 @@ public interface ProductDetailService {
 
     Boolean delete(String id);
 
-    ProductDetailDTO getOneById(String id);
+    ProductDetailReponse getOneById(String id);
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 

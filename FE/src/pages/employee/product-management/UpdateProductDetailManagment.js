@@ -12,6 +12,7 @@ import {
   Button,
   Col,
   Input,
+  InputNumber,
   Row,
   Select,
   Slider,
@@ -47,7 +48,10 @@ const UpdateProductDetailManagment = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [scannedQRCode, setScannedQRCode] = useState(null);
   const handleQRCodeScanned = (data) => {
-    setScannedQRCode(data);
+    ProducDetailtApi.getOne(data).then((res) => {
+      setScannedQRCode(res.data.data);
+    });
+    setModalVisible(false); // C
     setModalVisible(false); // Close the modal after scanning
   };
 
@@ -109,11 +113,11 @@ const UpdateProductDetailManagment = () => {
       product: search,
     }).then((res) => {
       setListProductDetails(res.data.data);
-      // dispatch(SetProductDetail(res.data.data));
+      // Restore the selected rows using temporarySelectedRowKeys
+      setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
 
-  // Xử lý làm mới bộ lọc
   const handleClear = () => {
     setSearch("");
     ProducDetailtApi.fetchAll({
@@ -121,7 +125,8 @@ const UpdateProductDetailManagment = () => {
       product: "",
     }).then((res) => {
       setListProductDetails(res.data.data);
-      // dispatch(SetProductDetail(res.data.data));
+      // Restore the selected rows using temporarySelectedRowKeys
+      setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
 
@@ -158,7 +163,7 @@ const UpdateProductDetailManagment = () => {
           <img
             src={text}
             alt="Ảnh sản phẩm"
-            style={{ width: "170px", borderRadius: "10%", height: "140px" }}
+            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
           />
           {record.promotion !== null && (
             <div
@@ -175,7 +180,7 @@ const UpdateProductDetailManagment = () => {
                 icon={faBookmark}
                 style={{
                   ...getPromotionColor(record.promotion),
-                  fontSize: "3.5em",
+                  fontSize: "3em",
                 }}
               />
               <span
@@ -216,18 +221,37 @@ const UpdateProductDetailManagment = () => {
       sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
     },
     {
-      title: "Giá Bán",
-      dataIndex: "price",
-      key: "price",
-      sorter: (a, b) => a.price - b.price,
-      render: (text) => formatCurrency(text),
-    },
-    {
-      title: "Số Lượng ",
+      title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
       sorter: (a, b) => a.quantity - b.quantity,
       align: "center",
+      render: (text, record, index) => (
+        <InputNumber
+          min={1}
+          value={record.quantity} // Gắn value theo record của hàng đang xem
+          onChange={(value) => handleQuantityChange(record.id, value)}
+          readOnly={!selectedRowKeys.includes(record.id)}
+        />
+      ),
+    },
+    {
+      title: "Giá Bán",
+      dataIndex: "price",
+      key: "price",
+      sorter: (a, b) => a.price - b.price,
+      render: (text, record, index) => (
+        <InputNumber
+          value={record.price}
+          onChange={(value) => handlePriceChange(record.id, value)}
+          style={{ width: "100%" }}
+          min={0}
+          step={1000}
+          formatter={(value) => `${formatCurrency(value)}`}
+          parser={(value) => value.replace(/\D/g, "")}
+          readOnly={!selectedRowKeys.includes(record.id)}
+        />
+      ),
     },
     {
       title: "Kích Thước",
@@ -287,6 +311,34 @@ const UpdateProductDetailManagment = () => {
   ];
 
   const [listProductDetails, setListProductDetails] = useState([]);
+  const [updatedDetails, setUpdatedDetails] = useState([]);
+  const handleQuantityChange = (id, value) => {
+    const updatedRow = listProductDetails.find((detail) => detail.id === id);
+    if (updatedRow && selectedRowKeys.includes(id)) {
+      // Kiểm tra hàng có trong selectedRowKeys
+      updatedRow.quantity = value;
+      setUpdatedDetails((prevDetails) => [
+        ...prevDetails.filter((detail) => detail.id !== id),
+        updatedRow,
+      ]);
+    }
+  };
+
+  const handlePriceChange = (id, value) => {
+    const updatedRow = listProductDetails.find((detail) => detail.id === id);
+    if (updatedRow && selectedRowKeys.includes(id)) {
+      // Kiểm tra hàng có trong selectedRowKeys
+      updatedRow.price = value;
+      setUpdatedDetails((prevDetails) => [
+        ...prevDetails.filter((detail) => detail.id !== id),
+        updatedRow,
+      ]);
+    }
+  };
+  const handleUpload = () => {
+    console.log(updatedDetails);
+    setSelectedRowKeys([]);
+  };
 
   const loadData = () => {
     ProducDetailtApi.fetchAll(selectedValues).then((res) => {
@@ -306,10 +358,17 @@ const UpdateProductDetailManagment = () => {
   };
 
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const onSelectChange = (newSelectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRowForEdit, setSelectedRowForEdit] = useState([]);
+  const [temporarySelectedRowKeys, setTemporarySelectedRowKeys] = useState([]);
+
+  const onSelectChange = (newSelectedRowKeys, selectedRows) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    setSelectedRows(selectedRows);
+    setSelectedRowForEdit(null); // Reset selected row for editing
+    setTemporarySelectedRowKeys(newSelectedRowKeys); // Lưu trạng thái tạm thời
   };
+
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -416,7 +475,7 @@ const UpdateProductDetailManagment = () => {
               >
                 QR Code sản phẩm
               </Button>
-              {scannedQRCode && <p>Scanned QR Code: {scannedQRCode}</p>}
+              {scannedQRCode && <p>Scanned QR Code: {scannedQRCode.id}</p>}
             </div>
             <ModalQRScanner
               visible={modalVisible}
@@ -612,9 +671,10 @@ const UpdateProductDetailManagment = () => {
           </span>
           <div style={{ marginLeft: "auto" }}>
             <Button
-              type="primary"
+              className="btn_filter"
               icon={<FontAwesomeIcon icon={faEdit} />}
               style={{ height: 40 }}
+              onClick={handleUpload}
             >
               Update sản phẩm
             </Button>

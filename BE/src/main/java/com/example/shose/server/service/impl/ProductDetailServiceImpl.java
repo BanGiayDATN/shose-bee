@@ -244,14 +244,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public ProductDetailDTO getOneById(String id) {
-        Optional<ProductDetail> optional = productDetailRepository.findById(id);
-        if (!optional.isPresent()) {
+    public ProductDetailReponse getOneById(String id) {
+        ProductDetailReponse optional = productDetailRepository.getOneById(id);
+        if (optional == null) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        ProductDetailDTO detailDTO = new ProductDetailDTO(optional.get());
-        System.out.println(detailDTO);
-        return detailDTO;
+        return optional;
     }
 
     @Override
