@@ -39,4 +39,19 @@ export class CustomerApi {
       data: data,
     });
   };
+
+  static quickCreate = (data) => {
+    return request({
+      method: "POST",
+      url: `/admin/customer/quick-create`,
+      data: data,
+    });
+  };
+
+  static getOneByPhoneNumber = (phoneNumber) => {
+    return request({
+      method: "GET",
+      url: `/admin/customer/phone-number/${phoneNumber}`,
+    });
+  };
 }
