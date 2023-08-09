@@ -19,6 +19,7 @@ import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.cloudinary.CloudinaryResult;
+import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -93,6 +94,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Autowired
     private PromotionRepository promotionRepository;
 
+    @Autowired
+    private QRCodeAndCloudinary qrCodeAndCloudinary;
+
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
         return productDetailRepository.getAll(findProductDetailRequest);
@@ -100,12 +104,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     @Transactional
-    public ProductDetailDTO create(List<CreateProductDetailRequest> listData,
+    public List<ProductDetailDTO> create(List<CreateProductDetailRequest> listData,
                                    List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException {
 
         CompletableFuture<List<CloudinaryResult>> uploadFuture = imageToCloudinary.uploadImagesAsync(listFileImage);
         List<CloudinaryResult> listUrl = uploadFuture.get();
-        listUrl.stream().forEach(a-> System.out.println(a));
 
         CreateProductDetailRequest request = listData.get(0);
         Product product = productRepository.getOneByName(request.getProductId());
@@ -139,6 +142,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         }
         productDetailRepository.saveAll(listDetail);
 
+        listDetail.stream().forEach(a-> a.setMaQR(qrCodeAndCloudinary.generateAndUploadQRCode(a.getId())));
+
         // lấy danh sách chứa tất cả màu từ listUrl
         List<String> existingColors = listUrl.stream()
                 .map(CloudinaryResult::getColor)
@@ -167,8 +172,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         images.stream().forEach(a-> System.out.println(a));
         System.out.println(images.size());
         imageRepository.saveAll(images);
-
-        return null;
+        List<ProductDetailDTO> detailDTOS = new ArrayList<>();
+        listDetail.stream().forEach(a->detailDTOS.add(new ProductDetailDTO(a)));
+        return detailDTOS;
     }
 
 

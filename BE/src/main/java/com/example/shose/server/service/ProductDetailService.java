@@ -24,7 +24,7 @@ public interface ProductDetailService {
 
     List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest);
 
-    ProductDetailDTO create(List<CreateProductDetailRequest> listData,
+    List<ProductDetailDTO> create(List<CreateProductDetailRequest> listData,
                             List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException;
 
     ProductDetailDTO update(final UpdateProductDetailRequest req,
@@ -39,8 +39,9 @@ public interface ProductDetailService {
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 
-//    ProductDetailResponse findByIdProductDetail(String id);
-    List<GetProductDetailByCategory>  GetProductDetailByCategory(String id);
+    //    ProductDetailResponse findByIdProductDetail(String id);
+    List<GetProductDetailByCategory> GetProductDetailByCategory(String id);
+
     List<ProductDetailReponse> findAllByIdProduct(String id);
 
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);

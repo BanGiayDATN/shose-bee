@@ -5,6 +5,7 @@ import {
   faFilter,
   faKaaba,
   faListAlt,
+  faQrcode,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -29,6 +30,7 @@ import { ColorApi } from "../../../api/employee/color/Color.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { Option } from "antd/es/mentions";
 import "./style-product.css";
+import ModalQRScanner from "./modal/ModalQRScanner";
 
 const UpdateProductDetailManagment = () => {
   const { id } = useParams();
@@ -40,6 +42,14 @@ const UpdateProductDetailManagment = () => {
   const [listBrand, setListBrand] = useState([]);
   const [listColor, setListColor] = useState([]);
   const [listSole, setListSole] = useState([]);
+
+  // QR code
+  const [modalVisible, setModalVisible] = useState(false);
+  const [scannedQRCode, setScannedQRCode] = useState(null);
+  const handleQRCodeScanned = (data) => {
+    setScannedQRCode(data);
+    setModalVisible(false); // Close the modal after scanning
+  };
 
   const listSize = [];
   for (let size = 35; size <= 45; size++) {
@@ -164,7 +174,7 @@ const UpdateProductDetailManagment = () => {
               <FontAwesomeIcon
                 icon={faBookmark}
                 style={{
-                    ...getPromotionColor(record.promotion),
+                  ...getPromotionColor(record.promotion),
                   fontSize: "3.5em",
                 }}
               />
@@ -176,7 +186,7 @@ const UpdateProductDetailManagment = () => {
                   transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
                   fontSize: "0.8em",
                   fontWeight: "bold",
-                    ...getPromotionStyle(record.promotion),
+                  ...getPromotionStyle(record.promotion),
                 }}
               >
                 {`${record.promotion}%`}
@@ -189,7 +199,7 @@ const UpdateProductDetailManagment = () => {
                   transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
                   fontSize: "0.8em",
                   fontWeight: "bold",
-                    ...getPromotionStyle(record.promotion),
+                  ...getPromotionStyle(record.promotion),
                 }}
               >
                 Giảm
@@ -397,6 +407,22 @@ const UpdateProductDetailManagment = () => {
                 Làm mới
               </Button>
             </div>
+            <div>
+              <Button
+                className="btn_filter"
+                onClick={() => setModalVisible(true)}
+                style={{ height: 40 }}
+                icon={<FontAwesomeIcon icon={faQrcode} />}
+              >
+                QR Code sản phẩm
+              </Button>
+              {scannedQRCode && <p>Scanned QR Code: {scannedQRCode}</p>}
+            </div>
+            <ModalQRScanner
+              visible={modalVisible}
+              onCancel={() => setModalVisible(false)}
+              onQRCodeScanned={handleQRCodeScanned}
+            />
           </div>
         </div>
         <div className="box_btn_filter">
