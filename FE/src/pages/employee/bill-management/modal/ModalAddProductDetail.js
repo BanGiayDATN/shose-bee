@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Input, Button, Table, Col, Select, Row, Slider, Modal } from "antd";
 import "./style-product.css";
 import { useAppDispatch, useAppSelector } from "../../../../app/hook";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { Option } from "antd/es/mentions";
@@ -322,10 +323,39 @@ function ModalAddProductDetail({
   const [product, setProduct] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
-    setSizes([]);
-    setProduct(record);
-    setState(true);
-    setIsModalOpen(true);
+    // setSizes([]);
+    // setProduct(record);
+    // setState(true);
+    // setIsModalOpen(true);
+    var list = products;
+    var index = list.findIndex((x) => x.idProduct === record.id);
+    var data = {
+      image: record.image,
+      productName: record.nameProduct,
+      nameSize: record.nameSize,
+      idProduct: record.id,
+      quantity: 1,
+      price: record.price,
+      idSizeProduct: record.id,
+      maxQuantity: record.quantity,
+    };
+    if (index == -1) {
+      list.push(data);
+    } else {
+      data.quantity = list[index].quantity + quantity;
+      list.splice(index, 1, data);
+    }
+    toast.success('thêm thành công', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+    setProducts(list);
   };
   const clearSelectSize = () => {
     setSizes([]);
@@ -646,6 +676,9 @@ function ModalAddProductDetail({
           state={state}
         />
       </Modal>
+      {/* end modal payment  */}
+
+    
     </div>
   );
 }
