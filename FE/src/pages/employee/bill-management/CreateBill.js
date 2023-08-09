@@ -11,6 +11,7 @@ import {
   Table,
   Tabs,
   Tooltip,
+  Radio,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import "./create-bill.css";
@@ -89,6 +90,7 @@ function CreateBill() {
   });
 
   const [form] = Form.useForm();
+  const [formAddUser] = Form.useForm();
 
   const onChangeAddress = (fileName, value) => {
     setAddress({ ...address, [fileName]: value });
@@ -189,7 +191,6 @@ function CreateBill() {
   };
   //load data quận/huyện khi chọn tỉnh
   const handleProvinceChange = (value, valueProvince) => {
-    // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     setAddress({ ...address, city: valueProvince.value });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
@@ -200,7 +201,6 @@ function CreateBill() {
   //load data xã/phường khi chọn quận/huyện
   const handleDistrictChange = (value, valueDistrict) => {
     setAddress({ ...address, district: valueDistrict.value });
-    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
     });
@@ -208,7 +208,6 @@ function CreateBill() {
 
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
-    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
     setAddress({ ...address, wards: valueWard.value });
     AddressApi.fetchAllMoneyShip(
       valueWard.valueDistrict,
@@ -224,6 +223,31 @@ function CreateBill() {
       const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
       setDayShip(formattedDate);
     });
+  };
+
+  //load data quận/huyện khi chọn tỉnh formAddUser
+  const handleProvinceChangeAddUser = (value, valueProvince) => {
+    formAddUser.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    setAddress({ ...address, city: valueProvince.value });
+    AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
+      (res) => {
+        setListDistricts(res.data.data);
+      }
+    );
+  };
+  //load data xã/phường khi chọn quận/huyện
+  const handleDistrictChangeAddUser = (value, valueDistrict) => {
+    setAddress({ ...address, district: valueDistrict.value });
+    formAddUser.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
+      setListWard(res.data.data);
+    });
+  };
+
+  //load data phí ship và ngày ship
+  const handleWardChangeAddUser = (value, valueWard) => {
+    formAddUser.setFieldsValue({ wardCode: valueWard.valueWard });
+    setAddress({ ...address, wards: valueWard.value });
   };
 
   const handleInputChangeSearch = (name, value) => {
@@ -325,7 +349,6 @@ function CreateBill() {
     },
   ];
   const selectedAccount = (record) => {
-    console.log(record);
     dispatch(addUserBillWait(record));
     setIsModalAccountOpen(true);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
@@ -1082,6 +1105,94 @@ function CreateBill() {
     AddressApi.fetchAllProvinceWard(toDistrictId).then((res) => {
       setListWard(res.data.data);
     });
+  };
+
+  const [isModalAddUserOpen, setIsModalAddUserOpen] = useState(false);
+
+  const showModalAddUser = (e) => {
+    setIsModalAccountOpen(false);
+    setIsModalAddUserOpen(true);
+  };
+  const handleOkAddUser = () => {
+    formAddUser
+      .validateFields()
+      .then((values) => {
+        return new Promise((resolve, reject) => {
+          Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có đồng ý thêm không?",
+            okText: "Đồng ý",
+            cancelText: "Hủy",
+            onOk: () => resolve(values),
+            onCancel: () => reject(),
+          });
+        });
+      })
+      .then((values) => {
+        const formData = new FormData();
+        formData.append(`request`, JSON.stringify(values));
+        CustomerApi.quickCreate(formData)
+          .then((res) => {
+            toast.success("Thêm thành công");
+            setAddress({
+              city: values.province,
+              district: values.district,
+              wards: values.ward,
+              detail: values.line,
+            });
+            form.setFieldsValue({
+              phoneNumber: values.phoneNumber,
+              name: values.fullName,
+              city: values.province,
+              district: values.district,
+              wards: values.ward,
+              detail: values.line,
+            });
+            addressFull(
+              values.provinceId,
+              values.toDistrictId,
+              values.wardCode
+            );
+            setBillRequest({
+              ...billRequest,
+              phoneNumber: values.phoneNumber,
+              userName: values.fullName,
+              idUser: values.id,
+            });
+            dispatch(addUserBillWait(values));
+            loadData();
+            setIsModalAddUserOpen(false);
+            setIsModalAccountOpen(true);
+            formAddUser.resetFields();
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+            console.log("Create failed:", error);
+          });
+        // CustomerApi.getOneByPhoneNumber(values.phoneNumber).then(
+        //   (res) => {
+        //     console.log(res.data.data);
+        //     console.log(res.data);
+        //     setBillRequest({
+        //       ...billRequest,
+        //       phoneNumber: res.data.data.phoneNumber,
+        //       userName: res.data.data.fullName,
+        //       idUser: res.data.data.id,
+        //     });
+        //     dispatch(addUserBillWait(res.data.data));
+        //   },
+        //   (err) => {
+        //     console.log(err);
+        //   }
+        // );
+      })
+      .catch(() => {
+        // Xử lý khi người dùng từ chối xác nhận
+      });
+  };
+  const handleCancelAddUser = () => {
+    setIsModalAddUserOpen(false);
+    formAddUser.resetFields();
   };
 
   return (
@@ -1974,7 +2085,7 @@ function CreateBill() {
         onCancel={handleCancelAccount}
       >
         <Row style={{ width: "100%" }}>
-          <Col span={20}>
+          <Col span={17}>
             <Input
               style={{
                 // width: "250px",
@@ -1989,14 +2100,26 @@ function CreateBill() {
             />
           </Col>
           <Col span={1}></Col>
-          <Col span={3}>
+          <Col span={2}>
             {" "}
             <Button
               className="btn_filter"
+              style={{ marginLeft: "20px" }}
               type="submit"
               onClick={handleSubmitSearch}
             >
               Tìm kiếm
+            </Button>
+          </Col>
+          <Col span={2}>
+            {" "}
+            <Button
+              className="btn_filter"
+              style={{ width: "87px", marginLeft: "30px" }}
+              type="submit"
+              onClick={showModalAddUser}
+            >
+              Thêm
             </Button>
           </Col>
         </Row>
@@ -2112,6 +2235,178 @@ function CreateBill() {
         </Row>
       </Modal>
       {/* end  modal Address */}
+
+      {/* begin modal Address */}
+      <Modal
+        title="Khách hàng"
+        open={isModalAddUserOpen}
+        onOk={handleOkAddUser}
+        className="addUser"
+        onCancel={handleCancelAddUser}
+      >
+        <Form form={formAddUser} layout="vertical">
+          <Row gutter={[24, 8]}>
+            <Col span={10} style={{ marginLeft: "6%" }}>
+              <div className="title_add">
+                <Form.Item
+                  label="Tên khách hàng"
+                  name="fullName"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập tên khách hàng",
+                    },
+                    { max: 30, message: "Tên khách hàng tối đa 30 ký tự" },
+                  ]}
+                >
+                  <Input className="input-item" placeholder="Tên khách hàng" />
+                </Form.Item>
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập email" },
+                    { max: 50, message: "Email tối đa 50 ký tự" },
+                    {
+                      pattern:
+                        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                      message: "Email không đúng định dạng",
+                    },
+                  ]}
+                >
+                  <Input className="input-item" placeholder="Email" />
+                </Form.Item>
+                <Form.Item
+                  label="Số điện thoại"
+                  name="phoneNumber"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập số điện thoại",
+                    },
+                    {
+                      pattern: /^0\d{9}$/,
+                      message:
+                        "Số điện thoại phải bắt đầu từ số 0 và gồm 10 chữ số",
+                    },
+                  ]}
+                >
+                  <Input className="input-item" placeholder="Số điện thoại" />
+                </Form.Item>
+                <Form.Item
+                  label="Giới tính"
+                  name="gender"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn giới tinh" },
+                  ]}
+                  initialValue="true"
+                >
+                  <Radio.Group>
+                    <Radio value="true" checked>
+                      Nam
+                    </Radio>
+                    <Radio value="false">Nữ</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+            </Col>
+
+            <Col span={10} style={{ marginLeft: "40px", marginTop: "16px" }}>
+              <Form.Item
+                label="Tỉnh/Thành phố"
+                name="province"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn Tỉnh/Thành phố",
+                  },
+                ]}
+              >
+                <Select defaultValue="" onChange={handleProvinceChangeAddUser}>
+                  <Option value="">--Chọn Tỉnh/Thành phố--</Option>
+                  {listProvince?.map((item) => {
+                    return (
+                      <Option
+                        key={item.ProvinceID}
+                        value={item.ProvinceName}
+                        valueProvince={item.ProvinceID}
+                      >
+                        {item.ProvinceName}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Quận/Huyện"
+                name="district"
+                rules={[
+                  { required: true, message: "Vui lòng chọn Quận/Huyện" },
+                ]}
+              >
+                <Select defaultValue=" " onChange={handleDistrictChangeAddUser}>
+                  <Option value=" ">--Chọn Quận/Huyện--</Option>
+                  {listDistricts?.map((item) => {
+                    return (
+                      <Option
+                        key={item.DistrictID}
+                        value={item.DistrictName}
+                        valueDistrict={item.DistrictID}
+                      >
+                        {item.DistrictName}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label="Xã/Phường"
+                name="ward"
+                rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
+              >
+                <Select defaultValue="" onChange={handleWardChangeAddUser}>
+                  <Option value="">--Chọn Xã/Phường--</Option>
+                  {listWard?.map((item) => {
+                    return (
+                      <Option
+                        key={item.WardCode}
+                        value={item.WardName}
+                        valueWard={item.WardCode}
+                      >
+                        {item.WardName}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Số nhà/Ngõ/Đường"
+                name="line"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập số nhà/ngõ/đường",
+                  },
+                ]}
+              >
+                <Input className="input-item" placeholder="Số nhà/Ngõ/Đường" />
+              </Form.Item>
+
+              <Form.Item name="toDistrictId" hidden>
+                <Input disabled />
+              </Form.Item>
+              <Form.Item name="provinceId" hidden>
+                <Input disabled />
+              </Form.Item>
+              <Form.Item name="wardCode" hidden>
+                <Input disabled />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
 
       {/* begin modal payment  */}
       <Modal
@@ -2305,6 +2600,9 @@ function CreateBill() {
           </Row>
         </Form>
       </Modal>
+
+      {/* end  modal Address */}
+
       {/* end modal payment  */}
 
       <ToastContainer
