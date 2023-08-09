@@ -126,12 +126,12 @@
 }
 .ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload.ant-upload-select {
   width: 230%;
-  height: 240px;
+  height: 180px;
 } 
 
  .ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item {
-  width: 230%;
-  height: 240px;
+  width: 175%;
+  height: 180px;
   /* display: flex;
   justify-content: center;
   margin: 0 auto; */
