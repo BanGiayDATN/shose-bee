@@ -51,6 +51,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -105,26 +107,20 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     @Transactional
     public List<ProductDetailDTO> create(List<CreateProductDetailRequest> listData,
-                                   List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException {
+                                         List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException {
 
         CompletableFuture<List<CloudinaryResult>> uploadFuture = imageToCloudinary.uploadImagesAsync(listFileImage);
         List<CloudinaryResult> listUrl = uploadFuture.get();
 
         CreateProductDetailRequest request = listData.get(0);
-        Product product = productRepository.getOneByName(request.getProductId());
-        if (product == null) {
-            product = new Product();
-            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
-            product.setName(request.getProductId());
-            product.setStatus(Status.DANG_SU_DUNG);
-            productRepository.save(product);
-        }
+        String productId = request.getProductId();
+
+        Product product = createProductIfNotExist(productId);
         Brand brand = brandRepository.getById(request.getBrandId());
         Material material = materialRepository.getById(request.getMaterialId());
         Sole sole = soleRepository.getById(request.getSoleId());
         Category category = categoryRepository.getById(request.getCategoryId());
-        List<ProductDetail> listDetail =  new ArrayList<>();
-        for ( CreateProductDetailRequest req: listData) {
+        List<ProductDetail> listDetail = listData.parallelStream().map(req -> {
             ProductDetail add = new ProductDetail();
             add.setProduct(product);
             add.setGender(getGenderProductDetail(req.getGender()));
@@ -138,42 +134,35 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             add.setMaterial(material);
             add.setCategory(category);
             add.setBrand(brand);
-            listDetail.add(add);
-        }
+            return add;
+        }).collect(Collectors.toList());
         productDetailRepository.saveAll(listDetail);
 
-        listDetail.stream().forEach(a-> a.setMaQR(qrCodeAndCloudinary.generateAndUploadQRCode(a.getId())));
+
+        listDetail.parallelStream().forEach(a -> a.setMaQR(qrCodeAndCloudinary.generateAndUploadQRCode(a.getId())));
 
         // lấy danh sách chứa tất cả màu từ listUrl
         List<String> existingColors = listUrl.stream()
                 .map(CloudinaryResult::getColor)
                 .collect(Collectors.toList());
 
-        List<Image> images = new ArrayList<>();
-        for (CloudinaryResult result : listUrl) {
-            String color = result.getColor();
-            if (existingColors.contains(color)) { // kiểm tra màu
-                List<ProductDetail> matchingDetails = listDetail.stream()
-                        .filter(detail -> detail.getColor().getCode().equals(color))
-                        .collect(Collectors.toList());
-                //  nếu có màu tương ứng sẽ thêm theo Image tưng ứng
-                if (!matchingDetails.isEmpty()) {
-                    for (int i = 0; i < matchingDetails.size(); i++) {
-                        ProductDetail matchingDetail = matchingDetails.get(i);
+        List<Image> images = listUrl.parallelStream().filter(result -> existingColors.contains(result.getColor()))
+                .flatMap(result -> {
+                    List<ProductDetail> matchingDetails = listDetail.stream()
+                            .filter(detail -> detail.getColor().getCode().equals(result.getColor()))
+                            .collect(Collectors.toList());
+
+                    return matchingDetails.stream().map(matchingDetail -> {
                         Image image = new Image();
                         image.setName(result.getUrl());
                         image.setProductDetail(matchingDetail);
                         image.setStatus(true);
-                        images.add(image);
-                    }
-                }
-            }
-        }
-        images.stream().forEach(a-> System.out.println(a));
-        System.out.println(images.size());
+                        return image;
+                    });
+                }).collect(Collectors.toList());
         imageRepository.saveAll(images);
         List<ProductDetailDTO> detailDTOS = new ArrayList<>();
-        listDetail.stream().forEach(a->detailDTOS.add(new ProductDetailDTO(a)));
+        listDetail.stream().forEach(a -> detailDTOS.add(new ProductDetailDTO(a)));
         return detailDTOS;
     }
 
@@ -271,6 +260,20 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private Status getStatus(String status) {
         return "DANG_SU_DUNG".equals(status) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
     }
+
+    private Product createProductIfNotExist(String productId) {
+        Product product = productRepository.getOneByName(productId);
+        if (product == null) {
+            product = new Product();
+            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
+            product.setName(productId);
+            product.setStatus(Status.DANG_SU_DUNG);
+            productRepository.save(product);
+        }
+        return product;
+    }
+
+
     @Override
     public List<ProductDetailReponse> findAllByIdProduct(String id) {
         return productDetailRepository.findAllByIdProduct(id);
