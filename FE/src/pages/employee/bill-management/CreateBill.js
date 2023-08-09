@@ -47,6 +47,9 @@ import { set } from "lodash";
 import { Center } from "@chakra-ui/react";
 import NumberFormat from "react-number-format";
 import { MdOutlinePayment } from "react-icons/md";
+import ModalQRScanner from "../product-management/modal/ModalQRScanner";
+import { faQrcode } from "@fortawesome/free-solid-svg-icons";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 
 function CreateBill() {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -428,28 +431,28 @@ function CreateBill() {
   const [traSau, setTraSau] = useState(false);
 
   const traTienSau = (e) => {
-    setTraSau(!traSau)
-    var check = !traSau
-   if(check){
-    var total = products.reduce((accumulator, currentValue) => {
-      return (
-        accumulator + currentValue.price * currentValue.quantity
-      );
-    }, 0) +
-      shipFee -
-      voucher.discountPrice
-    var list = [{
-      actionDescription: "",
-        method: "TIEN_MAT",
-        totalMoney: total,
-        status: "THANH_TOAN",
-    }]
-    setDataPayMent(list)
-   }else{
-    setDataPayMent([])
-   }
-
-  }
+    setTraSau(!traSau);
+    var check = !traSau;
+    if (check) {
+      var total =
+        products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0) +
+        shipFee -
+        voucher.discountPrice;
+      var list = [
+        {
+          actionDescription: "",
+          method: "TIEN_MAT",
+          totalMoney: total,
+          status: "THANH_TOAN",
+        },
+      ];
+      setDataPayMent(list);
+    } else {
+      setDataPayMent([]);
+    }
+  };
   const addPayMent = (e, method) => {
     if (totalMoneyPayMent >= 1000) {
       var data = {
@@ -502,7 +505,7 @@ function CreateBill() {
       dataIndex: "method",
       key: "method",
       render: (method, record, index) => (
-        <Button title="Xóa" onClick={(e) => deletePayMent(e,index)}>
+        <Button title="Xóa" onClick={(e) => deletePayMent(e, index)}>
           <BsFillTrash3Fill />
         </Button>
       ),
@@ -510,14 +513,13 @@ function CreateBill() {
   ];
   const showModalPayMent = (e) => {
     setIsModalPayMentOpen(true);
-    var total = products.reduce((accumulator, currentValue) => {
-      return (
-        accumulator + currentValue.price * currentValue.quantity
-      );
-    }, 0) +
+    var total =
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) +
       shipFee -
-      voucher.discountPrice
-    setTotalMoneyPayment(total)
+      voucher.discountPrice;
+    setTotalMoneyPayment(total);
   };
   const handleOkPayMent = () => {
     setIsModalPayMentOpen(false);
@@ -541,8 +543,8 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    var totaPayMent=  dataPayment.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.totalMoney ;
+    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.totalMoney;
     }, 0);
     var addressuser = "";
     if (!checkNotEmptyAddress() && isOpenDelivery) {
@@ -563,9 +565,9 @@ function CreateBill() {
     if (isOpenDelivery) {
       typeBill = "ONLINE";
     }
-    var statusPayMents = "THANH_TOAN"
-    if(traSau){
-      statusPayMents = "TRA_SAU"
+    var statusPayMents = "THANH_TOAN";
+    if (traSau) {
+      statusPayMents = "TRA_SAU";
     }
     var data = {
       phoneNumber: billRequest.phoneNumber,
@@ -587,20 +589,20 @@ function CreateBill() {
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {
-          if(totaPayMent >= totalBill){
-          Modal.confirm({
-            title: "Xác nhận",
-            content: "Bạn có xác nhận đặt hàng không?",
-            okText: "Đồng ý",
-            cancelText: "Hủy",
-            onOk: async () => {
-              await BillApi.createBillWait(data).then((res) => {
-                navigate("/bill-management/detail-bill/" + res.data.data.id);
-              });
-            },
-            onCancel: () => {},
-          });
-          }else{
+          if (totaPayMent >= totalBill) {
+            Modal.confirm({
+              title: "Xác nhận",
+              content: "Bạn có xác nhận đặt hàng không?",
+              okText: "Đồng ý",
+              cancelText: "Hủy",
+              onOk: async () => {
+                await BillApi.createBillWait(data).then((res) => {
+                  navigate("/bill-management/detail-bill/" + res.data.data.id);
+                });
+              },
+              onCancel: () => {},
+            });
+          } else {
             toast("vui lòng thanh toán hóa đơn");
           }
         } else {
@@ -611,7 +613,7 @@ function CreateBill() {
       }
     } else {
       if (totalBill > 0) {
-        if(totaPayMent >= totalBill){
+        if (totaPayMent >= totalBill) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
@@ -624,10 +626,9 @@ function CreateBill() {
             },
             onCancel: () => {},
           });
-        }else{
+        } else {
           toast("vui lòng thanh toán hóa đơn");
         }
-
       } else {
         toast("vui lòng chọn sản phẩm");
       }
@@ -795,7 +796,6 @@ function CreateBill() {
         : item
     );
     setProducts(updatedListSole);
-
   };
 
   const handleQuantityChange = (value, record) => {
@@ -836,6 +836,17 @@ function CreateBill() {
   // dispatch(addProductBillWait(res.data.data));
 
   //  end modal product
+
+  // QR code sản phẩm
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [scannedQRCode, setScannedQRCode] = useState({});
+  const handleQRCodeScanned = (data) => {
+    ProducDetailtApi.getOne(data).then((res) => {
+      setScannedQRCode(res.data.data);
+    });
+    setModalVisible(false); // Close the modal after scanning
+  };
 
   const columns = [
     {
@@ -1187,24 +1198,47 @@ function CreateBill() {
   return (
     <div>
       <Row justify="space-between">
-        <Col span={3}>
+        <Col span={4}>
           <Button
             type="primary"
-            style={{ fontSize: "medium", fontWeight: "500" }}
+            style={{
+              fontSize: "medium",
+              fontWeight: "500",
+              height: "40px",
+              marginLeft: "15%",
+            }}
             onClick={(e) => navigate("/bill-management")}
           >
             Danh sách
           </Button>
+          {scannedQRCode && <p>Scanned QR Code: {scannedQRCode.nameProduct}</p>}
         </Col>
         {/* <Col span={16}></Col> */}
-        <Col span={4}>
-          <Button
-            type="primary"
-            style={{ fontSize: "medium", fontWeight: "500" }}
-            onClick={(e) => showModalProduct(e)}
-          >
-            Thêm sản phẩm
-          </Button>
+        <Col span={8}>
+          <Row>
+            <div style={{ marginRight: "5%" }}>
+              <Button
+                type="primary"
+                onClick={() => setModalVisible(true)}
+                style={{ height: 40, fontSize: "medium", fontWeight: "500" }}
+                icon={<FontAwesomeIcon icon={faQrcode} />}
+              >
+                QR Code sản phẩm
+              </Button>
+            </div>
+            <ModalQRScanner
+              visible={modalVisible}
+              onCancel={() => setModalVisible(false)}
+              onQRCodeScanned={handleQRCodeScanned}
+            />
+            <Button
+              type="primary"
+              style={{ fontSize: "medium", fontWeight: "500", height: "40px" }}
+              onClick={(e) => showModalProduct(e)}
+            >
+              Thêm sản phẩm
+            </Button>
+          </Row>
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
@@ -1275,7 +1309,7 @@ function CreateBill() {
               </Row>
               <Row justify={"center"} style={{ width: "100%" }}>
                 <Col span={12} align="center">
-                  <span style={{ marginLeft: "70px", marginBottom: "30px" }}>
+                  <span style={{ fontSize: "15px" }}>
                     {" "}
                     Không có sản phẩm nào trong giỏ
                   </span>
@@ -1841,29 +1875,63 @@ function CreateBill() {
                 {dataPayment.reduce((accumulator, currentValue) => {
                   return accumulator + currentValue.totalMoney;
                 }, 0) >= 1000
-                ? dataPayment
-                    .reduce((accumulator, currentValue) => {
+                  ? dataPayment
+                      .reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.totalMoney;
+                      }, 0)
+                      .toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                  : dataPayment.reduce((accumulator, currentValue) => {
                       return accumulator + currentValue.totalMoney;
-                    }, 0)
-                    .toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                : dataPayment.reduce((accumulator, currentValue) => {
-                  return accumulator + currentValue.totalMoney;
-                  }, 0) + " đ"}
+                    }, 0) + " đ"}
               </Col>
             </Row>
-            {isOpenDelivery ? (<Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-              <Col span={5} style={{display: "flex", alignItems: 'center'}}> Trả sau: </Col>
-              <Col span={12} className="debit" style={{display: "flex", alignItems: 'center'}}>
-              <input type="checkbox" id="switch2" defaultChecked={traSau}  onClick={(e) => traTienSau(e)}/><label for="switch2" className="labelSwitch">Toggle</label>
-              </Col>
-            </Row>): (<Row></Row>)}
+            {isOpenDelivery ? (
+              <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
+                <Col span={5} style={{ display: "flex", alignItems: "center" }}>
+                  {" "}
+                  Trả sau:{" "}
+                </Col>
+                <Col
+                  span={12}
+                  className="debit"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <input
+                    type="checkbox"
+                    id="switch2"
+                    defaultChecked={traSau}
+                    onClick={(e) => traTienSau(e)}
+                  />
+                  <label for="switch2" className="labelSwitch">
+                    Toggle
+                  </label>
+                </Col>
+              </Row>
+            ) : (
+              <Row></Row>
+            )}
             <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-              <Col span={5} style={{display: "flex", alignItems: 'center'}}> Giao hàng: </Col>
-              <Col span={12} className="delivery"  style={{display: "flex", alignItems: 'center'}}>
-                <input type="checkbox" id="switch" defaultChecked={isOpenDelivery} onChange={(e) => setIsOpenDelivery(!isOpenDelivery)} /><label for="switch" className="labelSwitch">Toggle</label>
+              <Col span={5} style={{ display: "flex", alignItems: "center" }}>
+                {" "}
+                Giao hàng:{" "}
+              </Col>
+              <Col
+                span={12}
+                className="delivery"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <input
+                  type="checkbox"
+                  id="switch"
+                  defaultChecked={isOpenDelivery}
+                  onChange={(e) => setIsOpenDelivery(!isOpenDelivery)}
+                />
+                <label for="switch" className="labelSwitch">
+                  Toggle
+                </label>
               </Col>
             </Row>
 
@@ -2335,11 +2403,10 @@ function CreateBill() {
               <Form.Item name="wardCode" hidden>
                 <Input disabled />
               </Form.Item>
-              </Col>
+            </Col>
           </Row>
         </Form>
       </Modal>
-
 
       {/* begin modal payment  */}
       <Modal
@@ -2380,7 +2447,9 @@ function CreateBill() {
                       customInput={Input}
                       value={totalMoneyPayMent}
                       onChange={(e) => {
-                        setTotalMoneyPayment( parseFloat(e.target.value.replace(/[^0-9.-]+/g, "")))
+                        setTotalMoneyPayment(
+                          parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
+                        );
                       }}
                     />
                   </Form.Item>{" "}
@@ -2461,80 +2530,80 @@ function CreateBill() {
               align={"end"}
               style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
             >
-              {dataPayment.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.totalMoney;
-              }, 0).toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
+              {dataPayment
+                .reduce((accumulator, currentValue) => {
+                  return accumulator + currentValue.totalMoney;
+                }, 0)
+                .toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })}
             </Col>
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
-
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
-              }, 0) < products.reduce((accumulator, currentValue) => {
-                return (
-                  accumulator + currentValue.price * currentValue.quantity
-                );
+              }, 0) <
+              products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
               }, 0) +
                 shipFee -
-                voucher.discountPrice ? "Tiền thiếu" : "Tiền thừa"
-            }
+                voucher.discountPrice
+                ? "Tiền thiếu"
+                : "Tiền thừa"}
             </Col>
             <Col
               span={16}
               align={"end"}
               style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
             >
-              { dataPayment.reduce((accumulator, currentValue) => {
+              {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
-              }, 0) < products.reduce((accumulator, currentValue) => {
-                return (
-                  accumulator + currentValue.price * currentValue.quantity
-                );
+              }, 0) <
+              products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
               }, 0) +
                 shipFee -
-                voucher.discountPrice ? (
-                  (products.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0) +
+                voucher.discountPrice
+                ? (
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
                     shipFee -
                     voucher.discountPrice -
-                  dataPayment.reduce((accumulator, currentValue) => {
-                    return accumulator + currentValue.totalMoney;
-                  }, 0)).toLocaleString("vi-VN", {
+                    dataPayment.reduce((accumulator, currentValue) => {
+                      return accumulator + currentValue.totalMoney;
+                    }, 0)
+                  ).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
                   })
-                ) : (
-                  (dataPayment.reduce((accumulator, currentValue) => {
-                    return accumulator + currentValue.totalMoney;
-                  }, 0)  - products.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0) +
+                : (
+                    dataPayment.reduce((accumulator, currentValue) => {
+                      return accumulator + currentValue.totalMoney;
+                    }, 0) -
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
                     shipFee -
-                    voucher.discountPrice).toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-
-                )
-              }
-               </Col>
+                    voucher.discountPrice
+                  ).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+            </Col>
           </Row>
         </Form>
       </Modal>
-        
+
       {/* end  modal Address */}
 
       {/* end modal payment  */}
-
 
       <ToastContainer
         position="top-right"

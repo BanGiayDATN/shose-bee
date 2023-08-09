@@ -193,14 +193,13 @@ const ModalUpdateAccount = ({ visible }) => {
         if (uploadedFile == null) {
           toast.error("Bạn cần thêm ảnh đai diện ");
         } else {
-          console.log(updatedValues);
           console.log(uploadedFile);
           const formData = new FormData();
 
           const promises = () => {
             return new Promise((resolve, reject) => {
               if (uploadedFile.originFileObj) {
-                formData.append(`multipartFiles`, uploadedFile.originFileObj);
+                formData.append(`multipartFile`, uploadedFile.originFileObj);
                 resolve(); // Resolve the promise immediately if there is originFileObj
               } else if (uploadedFile.url) {
                 axios

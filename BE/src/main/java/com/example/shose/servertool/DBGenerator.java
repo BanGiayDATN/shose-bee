@@ -20,6 +20,7 @@ import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
+import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -143,7 +144,6 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private PromotionProductDetailRepository promotionProductDetailRepository;
-
 
     @Override
     public void run(String... args) throws Exception {

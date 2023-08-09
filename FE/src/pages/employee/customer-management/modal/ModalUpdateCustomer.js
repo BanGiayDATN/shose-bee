@@ -212,7 +212,7 @@ const ModalUpdateCustomer = ({ visible }) => {
           const promises = () => {
             return new Promise((resolve, reject) => {
               if (uploadedFile.originFileObj) {
-                formData.append(`multipartFiles`, uploadedFile.originFileObj);
+                formData.append(`multipartFile`, uploadedFile.originFileObj);
                 resolve(); // Resolve the promise immediately if there is originFileObj
               } else if (uploadedFile.url) {
                 axios
