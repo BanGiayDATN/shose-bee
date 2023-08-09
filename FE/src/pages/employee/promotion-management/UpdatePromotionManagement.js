@@ -29,8 +29,7 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import {
-  CreatePromotion,
-  UpdatePromotion,
+    UpdatePromotion,
 } from "../../../app/reducer/Promotion.reducer";
 
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
@@ -56,6 +55,7 @@ function UpdatePromotionManagement() {
       SetProductDetail(datas);
     }
   }, [datas]);
+
 
   const id = localStorage.getItem("id");
   useEffect(() => {
@@ -124,6 +124,7 @@ function UpdatePromotionManagement() {
       (res) => {
         setList(res.data.data);
         dispatch(SetProductDetail(res.data.data));
+
       },
       (err) => {
         console.log(err);
@@ -337,12 +338,6 @@ function UpdatePromotionManagement() {
       ),
     },
     {
-      title: "Mã sản phẩm",
-      dataIndex: "codeProduct",
-      key: "codeProduct",
-      sorter: (a, b) => a.code.localeCompare(b.code),
-    },
-    {
       title: "Tên sản phẩm",
       dataIndex: "nameProduct",
       key: "nameProduct",
@@ -355,10 +350,24 @@ function UpdatePromotionManagement() {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Giá sản phẩm",
-      dataIndex: "price",
-      key: "price",
-      sorter: (a, b) => a.name - b.name,
+      title: "Kích thước",
+      dataIndex: "nameSize",
+      key: "nameSize",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Màu",
+      dataIndex: "codeColor",
+      key: "codeColor",
+      render: (text,record) => {
+        return(
+          <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            style={{ backgroundColor: record.codeColor }}
+        />
+        </div>
+        )
+      }
     },
     {
       title: "Trạng thái",
@@ -467,9 +476,6 @@ function UpdatePromotionManagement() {
     <div>
       <Row>
         <Col className="add-promotion" lg={{ span: 7, offset: 0 }}>
-          <Link to="/promotion-management">
-            <LeftOutlined /> Quay lại
-          </Link>
           <div className="title-add-promotion">
             <h1>Cập nhập khuyến mại</h1>
           </div>
@@ -495,7 +501,7 @@ function UpdatePromotionManagement() {
                         min="1"
                         max="100"
                         formatter={field.formatter}
-                        // parser={field.parser}
+                     
                       />
                     )}
                     {field.type === "date" && (

@@ -14,7 +14,6 @@ function TimeLine({ listStatus, data, statusPresent }) {
   const showIcon = (statusBill) =>{
     if( statusBill === "TAO_HOA_DON"){
         return AiFillFile
-        
     }
     else if(statusBill === "CHO_XAC_NHAN"){
       return FaFileSignature
@@ -42,7 +41,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
          
           title={
             item.statusBill === "TAO_HOA_DON"
-              ? "Tạo Hóa đơn"
+              ? "Hóa đơn chờ"
               : item.statusBill === "CHO_XAC_NHAN"
               ? "Chờ xác nhận"
               : item.statusBill === "VAN_CHUYEN"

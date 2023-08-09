@@ -22,12 +22,12 @@ function SalesHeader() {
             className: "title-header",
             title: "Đăng nhập"
         },
-        {
-            classIcon: "header-icon",
-            icon: <ShoppingCartOutlined /> ,
-            className: "title-header",
-            title: `Giỏ hàng (${1})`
-        },
+        // {
+        //     classIcon: "header-icon",
+        //     icon: <ShoppingCartOutlined /> ,
+        //     className: "title-header",
+        //     title: `Giỏ hàng (${1})`
+        // },
        
     ]
     return (
@@ -36,8 +36,10 @@ function SalesHeader() {
            {fields.map((field,index) =>{
            return(
             <div key={index}>
+                 <Link to="#" className={field.className}>
              <span className={field.classIcon}>{field.icon}</span>  
-            <Link to="#" className={field.className}> {field.title}</Link>
+            {field.title}
+            </Link>
            </div>
            )
            })}

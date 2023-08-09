@@ -30,6 +30,11 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
+    public List<Category> getAll() {
+        return categoryRepository.findAll();
+    }
+
+    @Override
     public List<CategoryResponse> getList(FindCategoryRequest req) {
         return categoryRepository.getAll(req);
     }

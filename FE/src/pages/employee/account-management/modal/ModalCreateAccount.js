@@ -352,11 +352,7 @@ const ModalCreateAccount = () => {
                     label="Tên nhân viên"
                     name="fullName"
                     rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập tên nhân viên",
-                      },
-                      { max: 30, message: "Tên nhân viên tối đa 30 ký tự" },
+                      { required: true,message: "Vui lòng nhập tên" },
                     ]}
                   >
                     <Input className="input-item" placeholder="Tên nhân viên" />
