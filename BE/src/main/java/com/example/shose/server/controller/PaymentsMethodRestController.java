@@ -39,9 +39,9 @@ public class PaymentsMethodRestController {
         return  new ResponseObject(paymentsMethodService.sumTotalMoneyByIdBill(idBill));
     }
 
-    @PutMapping("/update-status")
-    public ResponseObject sumTotalMoneyByIdBill(@RequestBody() List<String> ids){
-        return  new ResponseObject(paymentsMethodService.updatepayMent(ids));
+    @PutMapping("/update-status/{id}")
+    public ResponseObject sumTotalMoneyByIdBill(@PathVariable("id")  String idBill, @RequestBody() List<String> ids){
+        return  new ResponseObject(paymentsMethodService.updatepayMent(idBill, userId, ids));
     }
 
 }
