@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Modal, Button } from "antd";
 import { QrReader } from "react-qr-reader";
 

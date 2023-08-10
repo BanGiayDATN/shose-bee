@@ -13,12 +13,14 @@ import {
   Col,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
   Slider,
   Space,
   Spin,
   Table,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import { useParams } from "react-router";
@@ -32,6 +34,9 @@ import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import { Option } from "antd/es/mentions";
 import "./style-product.css";
 import ModalQRScanner from "./modal/ModalQRScanner";
+import { toast } from "react-toastify";
+import axios from "axios";
+import ModalUpdateProductDetail from "./modal/ModalUpdateProductDetail";
 
 const UpdateProductDetailManagment = () => {
   const { id } = useParams();
@@ -131,7 +136,6 @@ const UpdateProductDetailManagment = () => {
   };
 
   useEffect(() => {
-    setIsSubmitted(true);
     getList();
     loadData();
   }, [selectedValues]);
@@ -227,12 +231,19 @@ const UpdateProductDetailManagment = () => {
       sorter: (a, b) => a.quantity - b.quantity,
       align: "center",
       render: (text, record, index) => (
-        <InputNumber
-          min={1}
-          value={record.quantity} // Gắn value theo record của hàng đang xem
-          onChange={(value) => handleQuantityChange(record.id, value)}
-          readOnly={!selectedRowKeys.includes(record.id)}
-        />
+        <div>
+          {temporarySelectedRowKeys.includes(record.id) ? (
+            <InputNumber
+              min={1}
+              value={record.quantity} // Gắn value theo record của hàng đang xem
+              onChange={(value) => handleQuantityChange(record.id, value)}
+            />
+          ) : (
+            <Tooltip title="Bạn cần check vào hàng để chỉnh sửa">
+              <span>{record.quantity}</span>
+            </Tooltip>
+          )}
+        </div>
       ),
     },
     {
@@ -241,16 +252,23 @@ const UpdateProductDetailManagment = () => {
       key: "price",
       sorter: (a, b) => a.price - b.price,
       render: (text, record, index) => (
-        <InputNumber
-          value={record.price}
-          onChange={(value) => handlePriceChange(record.id, value)}
-          style={{ width: "100%" }}
-          min={0}
-          step={1000}
-          formatter={(value) => `${formatCurrency(value)}`}
-          parser={(value) => value.replace(/\D/g, "")}
-          readOnly={!selectedRowKeys.includes(record.id)}
-        />
+        <div>
+          {temporarySelectedRowKeys.includes(record.id) ? (
+            <InputNumber
+              value={record.price}
+              onChange={(value) => handlePriceChange(record.id, value)}
+              style={{ width: "100%" }}
+              min={0}
+              step={1000}
+              formatter={(value) => `${formatCurrency(value)}`}
+              parser={(value) => value.replace(/\D/g, "")}
+            />
+          ) : (
+            <Tooltip title="Bạn cần check vào hàng để chỉnh sửa">
+              <span>{formatCurrency(record.price)}</span>
+            </Tooltip>
+          )}
+        </div>
       ),
     },
     {
@@ -296,16 +314,26 @@ const UpdateProductDetailManagment = () => {
       dataIndex: "hanhDong",
       key: "hanhDong",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            type="primary"
-            title="Chi tiết thể loại"
-            style={{ backgroundColor: "#FF9900" }}
-            // onClick={() => handleViewDetail(record.id)}
-          >
-            <FontAwesomeIcon icon={faEye} />
-          </Button>
-        </div>
+        <Tooltip title="Chi tiết sản phẩm">
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Button
+              type="primary"
+              style={{ backgroundColor: "#FF9900" }}
+              onClick={() => handleUpdateClick(record.id)}
+            >
+              <FontAwesomeIcon icon={faEye} />
+            </Button>
+            {selectedDetail && (
+              <ModalUpdateProductDetail
+                visible={modalUpdateVisible}
+                onCancel={handleModalCancel}
+                onUpdate={handleModalUpdate}
+                initialQuantity={selectedDetail.quantity}
+                initialPrice={selectedDetail.price}
+              />
+            )}
+          </div>
+        </Tooltip>
       ),
     },
   ];
@@ -313,37 +341,99 @@ const UpdateProductDetailManagment = () => {
   const [listProductDetails, setListProductDetails] = useState([]);
   const [updatedDetails, setUpdatedDetails] = useState([]);
   const handleQuantityChange = (id, value) => {
-    const updatedRow = listProductDetails.find((detail) => detail.id === id);
-    if (updatedRow && selectedRowKeys.includes(id)) {
-      // Kiểm tra hàng có trong selectedRowKeys
-      updatedRow.quantity = value;
-      setUpdatedDetails((prevDetails) => [
-        ...prevDetails.filter((detail) => detail.id !== id),
-        updatedRow,
-      ]);
+    if (!temporarySelectedRowKeys.includes(id)) {
+      toast.warning("Vui lòng chọn hàng để chỉnh sửa trước.");
+      return;
+    }
+
+    const updatedRow = {
+      ...listProductDetails.find((detail) => detail.id === id),
+      quantity: value,
+    };
+
+    setUpdatedDetails((prevDetails) => [
+      ...prevDetails.filter((detail) => detail.id !== id),
+      updatedRow,
+    ]);
+
+    if (selectedRowKeys.includes(id)) {
+      setListProductDetails((prevDetails) =>
+        prevDetails.map((detail) => (detail.id === id ? updatedRow : detail))
+      );
     }
   };
 
   const handlePriceChange = (id, value) => {
-    const updatedRow = listProductDetails.find((detail) => detail.id === id);
-    if (updatedRow && selectedRowKeys.includes(id)) {
-      // Kiểm tra hàng có trong selectedRowKeys
-      updatedRow.price = value;
-      setUpdatedDetails((prevDetails) => [
-        ...prevDetails.filter((detail) => detail.id !== id),
-        updatedRow,
-      ]);
+    if (!temporarySelectedRowKeys.includes(id)) {
+      toast.warning("Vui lòng chọn hàng để chỉnh sửa trước.");
+      return;
+    }
+
+    const updatedRow = {
+      ...listProductDetails.find((detail) => detail.id === id),
+      price: value,
+    };
+
+    setUpdatedDetails((prevDetails) => [
+      ...prevDetails.filter((detail) => detail.id !== id),
+      updatedRow,
+    ]);
+
+    if (selectedRowKeys.includes(id)) {
+      setListProductDetails((prevDetails) =>
+        prevDetails.map((detail) => (detail.id === id ? updatedRow : detail))
+      );
     }
   };
+
   const handleUpload = () => {
-    console.log(updatedDetails);
-    setSelectedRowKeys([]);
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có đồng ý update sản phẩm không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: () => {
+        console.log(updatedDetails);
+        if (updatedDetails.length == 0) {
+          toast.warning("Bạn chưa có sản phẩm để chỉnh sửa");
+          return;
+        }
+        const extractedDetails = updatedDetails.map(
+          ({ id, quantity, price }) => ({
+            id,
+            quantity,
+            price,
+          })
+        );
+        console.log(extractedDetails);
+        const formData = new FormData();
+        formData.append("data", extractedDetails);
+        axios
+          .put(
+            `http://localhost:8080/admin/product-detail/list-data`,
+            extractedDetails
+          )
+          .then((response) => {
+            console.log(response.data);
+            setSelectedRowKeys([]);
+            setTemporarySelectedRowKeys([]);
+            window.location.href = `/product-detail-management/${id}`;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+    });
   };
 
   const loadData = () => {
     ProducDetailtApi.fetchAll(selectedValues).then((res) => {
-      setListProductDetails(res.data.data);
-      setIsSubmitted(false);
+      const detailsWithInitialValues = res.data.data.map((detail) => ({
+        ...detail,
+        initialQuantity: detail.quantity,
+        initialPrice: detail.price,
+      }));
+      setListProductDetails(detailsWithInitialValues);
     });
   };
 
@@ -365,8 +455,22 @@ const UpdateProductDetailManagment = () => {
   const onSelectChange = (newSelectedRowKeys, selectedRows) => {
     setSelectedRowKeys(newSelectedRowKeys);
     setSelectedRows(selectedRows);
-    setSelectedRowForEdit(null); // Reset selected row for editing
-    setTemporarySelectedRowKeys(newSelectedRowKeys); // Lưu trạng thái tạm thời
+    setSelectedRowForEdit(null);
+
+    const resetDetails = listProductDetails.map((detail) => {
+      if (newSelectedRowKeys.includes(detail.id)) {
+        return detail;
+      } else {
+        return {
+          ...detail,
+          quantity: detail.initialQuantity,
+          price: detail.initialPrice,
+        };
+      }
+    });
+
+    setListProductDetails(resetDetails);
+    setTemporarySelectedRowKeys(newSelectedRowKeys);
   };
 
   const rowSelection = {
@@ -406,33 +510,30 @@ const UpdateProductDetailManagment = () => {
       },
     ],
   };
-  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // detail update product detail
+  const [modalUpdateVisible, setModalUpdateVisible] = useState(false);
+  const [selectedDetail, setSelectedDetail] = useState(null);
+
+  const handleUpdateClick = (detail) => {
+    setSelectedDetail(detail);
+    setModalUpdateVisible(true);
+  };
+
+  const handleModalUpdate = (newQuantity, newPrice) => {
+    // Update your data and state here
+    console.log("Updating detail with new quantity:", newQuantity);
+    console.log("Updating detail with new price:", newPrice);
+  };
+
+  const handleModalCancel = () => {
+    setSelectedDetail(null);
+    setModalVisible(false);
+  };
+
   return (
     <>
       <div className="title_sole">
-        {isSubmitted && (
-          <Space
-            direction="vertical"
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "white",
-              zIndex: 999999999,
-            }}
-          >
-            <Space>
-              <Spin tip="Loading" size="large">
-                <div className="content" />
-              </Spin>
-            </Space>
-          </Space>
-        )}{" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý sản phẩm chi tiết</span>
       </div>
