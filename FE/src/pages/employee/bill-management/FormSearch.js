@@ -185,7 +185,7 @@ function FormSearch({
                 <Select
                   style={{ width: "98%" }}
                   value={fillter.type}
-                  onChange={(value) => {handleSelectChange(value, "type")}}
+                  onChange={(value) => {changFillter(value, "type")}}
                   defaultValue={-1}
                 >
                   <Option value={''} disabled>
