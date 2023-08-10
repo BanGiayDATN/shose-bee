@@ -1,12 +1,7 @@
 package com.example.shose.server.service.impl;
 
 
-import com.example.shose.server.dto.request.bill.BillRequest;
-import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
-import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
-import com.example.shose.server.dto.request.bill.CreateBillRequest;
-import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
-import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.dto.request.bill.*;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
@@ -294,6 +289,40 @@ public class BillServiceImpl implements BillService {
             billHistoryRepository.save(billHistoryPayMent);
         }
         return billRepository.save(bill.get());
+    }
+
+    @Override
+    public boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, String idEmployees) {
+        request.getIds().forEach(id ->{
+            Optional<Bill> bill = billRepository.findById(id);
+            Optional<Account> account = accountRepository.findById(idEmployees);
+            if (!bill.isPresent()) {
+                throw new RestApiException(Message.BILL_NOT_EXIT);
+            }
+            if (!account.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill.get());
+            billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
+//            billHistoryPayMent.setActionDescription(request.getActionDescription());
+            billHistory.setEmployees(account.get());
+            billHistoryRepository.save(billHistory);
+
+            bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
+            if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+                bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+                BillHistory billHistoryPayMent = new BillHistory();
+                billHistoryPayMent.setBill(bill.get());
+                billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+//                billHistoryPayMent.setActionDescription(request.getActionDescription());
+                billHistoryPayMent.setEmployees(account.get());
+                billHistoryRepository.save(billHistoryPayMent);
+            }
+            billRepository.save(bill.get());
+        });
+        return true;
     }
 
     @Override

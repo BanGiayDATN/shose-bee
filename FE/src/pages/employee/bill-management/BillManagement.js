@@ -5,7 +5,7 @@ import {
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Form, Table, Select, Space, Row, Col, Tabs } from "antd";
+import { Button, Form, Table, Select, Space, Row, Col, Tabs, Tooltip } from "antd";
 import moment from "moment";
 import React from "react";
 import { useEffect } from "react";
@@ -223,11 +223,13 @@ function BillManagement() {
       dataIndex: "id",
       key: "actions",
       render: (id) => (
+        <Tooltip placement="top" title={"Chi tiết"}>
         <Button style={{ backgroundColor: "#FF9900" }} title="Chi tiết hóa đơn">
           <Link to={`/bill-management/detail-bill/${id}`}>
             <FontAwesomeIcon icon={faEye} />
           </Link>
         </Button>
+        </Tooltip>
       ),
     },
   ];
@@ -242,12 +244,14 @@ function BillManagement() {
     "CHO_XAC_NHAN", 
     "CHO_VAN_CHUYEN",
     "VAN_CHUYEN",
+    "DA_THANH_TOAN",
     "KHONG_TRA_HANG",
     "DA_HUY"
+   
   ]
 
   const convertString = (key) => {
-    return  key === "TAT_CA"
+    return  key === ""
     ? "Tất cả"
     : key === "CHO_XAC_NHAN"
     ? "Chờ xác nhận"
@@ -255,6 +259,8 @@ function BillManagement() {
     ? "Chờ vận chuyển"
     : key === "VAN_CHUYEN"
     ? "Vận chuyển"
+     : key === "DA_THANH_TOAN"
+    ? "Thanh toán"
     : key === "KHONG_TRA_HANG"
     ? "Hoàn thành"
     : "Hủy"
@@ -312,7 +318,7 @@ function BillManagement() {
               return {
                 label: convertString(item),
                 key: item,
-                children: <TabBills statusBill={item} />,
+                children: <TabBills statusBill={item} dataFillter={fillter}/>,
               };
             })}
           />

@@ -844,6 +844,25 @@ function CreateBill() {
   const handleQRCodeScanned = (data) => {
     ProducDetailtApi.getOne(data).then((res) => {
       setScannedQRCode(res.data.data);
+      var index = products.findIndex((x) => x.idProduct === res.data.data.id);
+      var data = {
+        image: res.data.data.image,
+        productName: res.data.data.nameProduct,
+        nameSize: res.data.data.nameSize,
+        idProduct: res.data.data.id,
+        quantity: 1,
+        price: res.data.data.price,
+        idSizeProduct: res.data.data.id,
+        maxQuantity: res.data.data.quantity,
+      };
+      if (index == -1) {
+        setProducts([...products, data]);
+      } else {
+        data.quantity = products[index].quantity + 1;
+        var updatedProducts = [...products];
+        updatedProducts[index] = data;
+        setProducts(updatedProducts);
+      }
     });
     setModalVisible(false); // Close the modal after scanning
   };

@@ -117,6 +117,14 @@ export class BillApi {
         data: data
       });
     };
+
+    static changeStatusAllBillByIds = ( data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/change-status-bill` ,
+        data: data
+      });
+    };
     // static getOne = (id) => {
     //   return request({
     //     method: "GET",
