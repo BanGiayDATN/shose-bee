@@ -41,6 +41,8 @@ public class ProductDetail extends PrimaryEntity {
 
     private Integer quantity;
 
+    private String maQR;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 

@@ -8,7 +8,7 @@
   left: 0;
   right: 0;
   z-index: 100;
-  transition: transform 0.3s, opacity 0.3s;
+  transition: transform 1s, opacity 1s;
 }
 
 /* Để menu ẩn đi khi cuộn lên trên, sử dụng thuộc tính transform để dịch chuyển menu xuống ngoài khung nhìn */

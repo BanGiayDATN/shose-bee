@@ -3,6 +3,7 @@ package com.example.shose.server.service;
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
+import com.example.shose.server.dto.request.customer.QuickCreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
@@ -33,4 +34,10 @@ public interface CustomerService {
     Boolean delete(String id);
 
     EmployeeResponse getOneById(String id);
+
+    User quickCreate(QuickCreateCustomerRequest request,
+                     CreateAddressRequest addressRequest
+                     );
+
+    EmployeeResponse getOneByPhoneNumber(String phoneNumber);
 }

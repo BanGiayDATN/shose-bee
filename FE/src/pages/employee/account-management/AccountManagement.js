@@ -210,7 +210,13 @@ const AccountManagement = () => {
       title: "Ảnh",
       dataIndex: "avata",
       key: "avata",
-      render: (text) => <img src={text} alt="Ảnh " style={{ width: "60px" }} />,
+      render: (avata) => (
+        <img
+          src={avata}
+          alt="Hình ảnh"
+          style={{ width: "150px", height: "110px", borderRadius: "20px" }}
+        />
+      ),
     },
     {
       title: "Tên nhân viên",

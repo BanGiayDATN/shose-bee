@@ -3,6 +3,7 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.product.FindProductRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.CustomProductRespone;
+import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,10 +31,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             FROM product p
             JOIN product_detail pd ON p.id = pd.id_product
             WHERE (
-                          :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''\s
-                          OR p.code LIKE %:#{#req.keyword}% 
-                          OR p.name LIKE %:#{#req.keyword}%
-                      )
+                  :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''
+                  OR p.code LIKE %:#{#req.keyword}% 
+                  OR p.name LIKE %:#{#req.keyword}%
+              )
             AND  ( :#{#req.status} IS NULL   OR :#{#req.status} LIKE '' OR p.status LIKE :#{#req.status} )
             AND  ( :#{#req.minQuantity} IS NULL OR pd.quantity >= :#{#req.minQuantity} ) 
             AND  ( :#{#req.maxQuantity} IS NULL OR pd.quantity <= :#{#req.maxQuantity} )
@@ -59,37 +60,43 @@ public interface ProductRepository extends JpaRepository<Product, String> {
  """,nativeQuery = true)
     List<String> findAllByName(@Param("name")String name);
 
+
     @Query(value = """
                 SELECT
-                                   ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
-                                   p.id AS id,
-                                   i.name AS image,
-                                   p.name  AS nameProduct,
-                                   detail.price AS price,
-                                   detail.created_date AS created_date,
-                                   detail.status AS status,
-                                   c.name AS nameCategory,
-                                   b.name AS nameBrand,
-                                   SUM(detail.quantity) AS quantity,
-                                    MAX(pr.value) AS promotion,
-                                     si.name AS nameSize,
-                                   s2.name AS size,
-                                   c2.code AS color,
-                                   MIN(detail.price) AS min,
-                                   MAX(detail.price) AS max
-                                FROM product  p
-                                JOIN product_detail detail  ON detail.id_product = p.id
-                                JOIN image i ON detail.id = i.id_product_detail
-                                JOIN sole s ON s.id = detail.id_sole
-                                JOIN material m ON detail.id_material = m.id
-                                JOIN category c ON detail.id_category = c.id
-                                JOIN brand b ON detail.id_brand = b.id
-                                LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-                                LEFT JOIN promotion pr on pr.id = ppd.id_promotion
-                                JOIN size s2 on detail.id_size = s2.id
-                                LEFT JOIN size si ON detail.id_size = si.id
-                                JOIN color c2 on detail.id_color = c2.id
-                WHERE i.status = true
+                   ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
+                   detail.id AS id,
+                   i.name AS image,
+                   CONCAT(p.name ,'[ ',s2.name,' - ',c2.name,' ]') AS nameProduct,
+                   detail.price AS price,
+                   detail.created_date AS created_date,
+                   detail.gender AS gender,
+                   detail.status AS status,
+                   si.name AS nameSize,
+                   c.name AS nameCategory,
+                   b.name AS nameBrand,
+                   detail.quantity AS quantity,
+                   AVG(pr.value) AS promotion,
+                   detail.quantity,
+                   s2.name AS size,
+                   c2.code AS color
+                FROM product_detail detail
+                JOIN product p ON detail.id_product = p.id
+                JOIN (
+                    SELECT id_product_detail, MAX(id) AS max_image_id
+                    FROM image
+                    GROUP BY id_product_detail
+                ) max_images ON detail.id = max_images.id_product_detail
+                LEFT JOIN image i ON max_images.max_image_id = i.id
+                JOIN sole s ON s.id = detail.id_sole
+                JOIN material m ON detail.id_material = m.id
+                JOIN category c ON detail.id_category = c.id
+                JOIN brand b ON detail.id_brand = b.id
+                LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+                LEFT JOIN promotion pr on pr.id = ppd.id_promotion
+                JOIN size s2 on detail.id_size = s2.id
+                JOIN color c2 on detail.id_color = c2.id
+                LEFT JOIN size si ON detail.id_size = si.id
+                WHERE i.status = true  
                 AND  ( :#{#req.size} = 0 OR s2.name = :#{#req.size} OR :#{#req.size} = '' )
                 AND  ( :#{#req.color} IS NULL OR c2.code LIKE %:#{#req.color}% OR :#{#req.color} LIKE '' )
                 AND  ( :#{#req.brand} IS NULL OR b.name LIKE %:#{#req.brand}% OR :#{#req.brand} LIKE '' )
@@ -101,9 +108,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                 AND  ( :#{#req.gender} IS NULL OR :#{#req.gender} LIKE '' OR detail.gender LIKE :#{#req.gender} )
                 AND  ( :#{#req.minPrice} IS NULL OR detail.price >= :#{#req.minPrice} ) 
                 AND  ( :#{#req.maxPrice} IS NULL OR detail.price <= :#{#req.maxPrice} )
-                GROUP BY p.id
+                GROUP BY detail.id, i.name, p.name, s2.name, c2.name, detail.price, detail.created_date, detail.gender, detail.status, si.name, c.name, b.name, detail.quantity, s2.name, c2.code
                 ORDER BY detail.last_modified_date DESC 
                  
             """, nativeQuery = true)
-    List<CustomProductRespone> getAllProduct(@Param("req") FindProductDetailRequest req);
+    List<ProductDetailReponse> getAllProduct(@Param("req") FindProductDetailRequest req);
+
 }

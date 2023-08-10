@@ -95,6 +95,7 @@ public class EmployeeRestController {
         employeeRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
         employeeRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
         employeeRequest.setCitizenIdentity(jsonObject.get("citizenIdentity").getAsString());
+
         // update địa chỉ
         UpdateAddressRequest addressRequest = new UpdateAddressRequest();
         addressRequest.setLine(jsonObject.get("line").getAsString());

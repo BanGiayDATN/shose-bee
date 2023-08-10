@@ -37,9 +37,10 @@ import { AddressApi } from "../../../api/customer/address/address.api";
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
   { id: 1, name: "Xác nhận", status: "CHO_XAC_NHAN" },
-  { id: 2, name: "Vận chuyển", status: "VAN_CHUYEN" },
-  { id: 3, name: "Thanh toán", status: "DA_THANH_TOAN" },
-  { id: 4, name: "Thành công", status: "KHONG_TRA_HANG" },
+  { id: 2, name: "Chờ vận chuyển", status: "CHO_VAN_CHUYEN" },
+  { id: 3, name: "Vận chuyển", status: "VAN_CHUYEN" },
+  { id: 4, name: "Thanh toán", status: "DA_THANH_TOAN" },
+  { id: 5, name: "Thành công", status: "KHONG_TRA_HANG" },
 ];
 
 function DetailBill() {
@@ -62,6 +63,7 @@ function DetailBill() {
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
+  const [payMentNo, setPayMentNo] = useState(false);
   const { Option } = Select;
 
   useEffect(() => {
@@ -87,6 +89,7 @@ function DetailBill() {
       console.log(res.data.data);
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
+      setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
       dispatch(getPaymentsMethod(res.data.data));
     });
     loadDataProvince();
@@ -199,6 +202,45 @@ function DetailBill() {
 
   // begin modal thanh toán
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
+  const XacNhanThanhToan = async (e) => {
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có đồng ý xác nhận không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async () => {
+        var data = paymentsMethod.map((item) => item.id);
+        await PaymentsMethodApi.updateStatus(id, data).then((res) => {
+          console.log(res.data.data);
+        });
+        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+          console.log(res.data.data);
+          dispatch(getProductInBillDetail(res.data.data));
+        });
+        await BillApi.fetchDetailBill(id).then((res) => {
+          console.log(res.data.data);
+          dispatch(getBill(res.data.data));
+          var index = listStatus.findIndex(
+            (item) => item.status == res.data.data.statusBill
+          );
+          if (res.data.data.statusBill == "TRA_HANG") {
+            index = 7;
+          }
+          if (res.data.data.statusBill == "DA_HUY") {
+            index = 6;
+          }
+          dispatch(addStatusPresent(index));
+        });
+        await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+          dispatch(getBillHistory(res.data.data));
+        });
+        toast("Thanh toán thành công");
+      },
+      onCancel: () => {
+        setIsModalOpenChangeStatus(false);
+      },
+    });
+  };
   const showModalPayMent = (e) => {
     setIsModalPayMentOpen(true);
   };
@@ -664,64 +706,76 @@ function DetailBill() {
   };
 
   const handleOkChangeStatus = () => {
-    setIsModalOpenChangeStatus(false);
-    if (
-      statusBill.totalMoney < bill.totalMoney &&
-      bill.statusBill == "VAN_CHUYEN"
-    ) {
-      toast.error("Số tiền thanh toán không đủ");
+    if (statusBill.actionDescription == "") {
+      toast.error("Vui lòng nhập mô tả");
     } else {
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có đồng ý xác nhận không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: () => {
-          BillApi.changeStatusBill(id, statusBill).then((res) => {
-            dispatch(getBill(res.data.data));
-            var index = listStatus.findIndex(
-              (item) => item.status == res.data.data.statusBill
-            );
-            console.log(index);
-            if (res.data.data.statusBill == "TRA_HANG") {
-              index = 5;
-            }
-            if (res.data.data.statusBill == "DA_HUY") {
-              index = 6;
-            }
-            console.log(res.data.data.statusBill);
-            var history = {
-              stt: billHistory.length + 1,
-              statusBill: res.data.data.statusBill,
-              actionDesc: statusBill.actionDescription,
-              id: "",
-              createDate: new Date().getTime(),
-            };
-            dispatch(addStatusPresent(index));
-            dispatch(addBillHistory(history));
-          });
-          PaymentsMethodApi.findByIdBill(id).then((res) => {
-            dispatch(getPaymentsMethod(res.data.data));
-          });
-          toast("Xác nhận thành công");
-          setIsModalOpenChangeStatus(false);
-        },
-        onCancel: () => {
-          setIsModalOpenChangeStatus(false);
-        },
-      });
-      setStatusBill({
-        actionDescription: "",
-        method: "TIEN_MAT",
-        totalMoney: 0,
-        status: "THANH_TOAN",
-      });
+      if (
+        statusBill.totalMoney < bill.totalMoney &&
+        bill.statusBill == "VAN_CHUYEN"
+      ) {
+        toast.error("Số tiền thanh toán không đủ");
+      } else {
+        Modal.confirm({
+          title: "Xác nhận",
+          content: "Bạn có đồng ý xác nhận thanh toán không?",
+          okText: "Đồng ý",
+          cancelText: "Hủy",
+          onOk: async () => {
+            await BillApi.changeStatusBill(id, statusBill).then((res) => {
+              dispatch(getBill(res.data.data));
+              var index = listStatus.findIndex(
+                (item) => item.status == res.data.data.statusBill
+              );
+
+              console.log(res.data.data.statusBill);
+              console.log(index);
+              if (res.data.data.statusBill == "TRA_HANG") {
+                index = 6;
+              }
+              if (res.data.data.statusBill == "DA_HUY") {
+                index = 7;
+              }
+              dispatch(addStatusPresent(index));
+            });
+            await PaymentsMethodApi.findByIdBill(id).then((res) => {
+              dispatch(getPaymentsMethod(res.data.data));
+            });
+            await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+              dispatch(getBillHistory(res.data.data));
+            });
+            toast("Xác nhận thành công");
+            setIsModalOpenChangeStatus(false);
+          },
+          onCancel: () => {
+            setIsModalOpenChangeStatus(false);
+          },
+        });
+        setStatusBill({
+          actionDescription: "",
+          method: "TIEN_MAT",
+          totalMoney: 0,
+          status: "THANH_TOAN",
+        });
+      }
+      setIsModalOpenChangeStatus(false);
     }
-    setIsModalOpenChangeStatus(false);
+
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
+    });
   };
 
   const handleCancelChangeStatus = () => {
     setIsModalOpenChangeStatus(false);
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
+    });
   };
 
   const onChangeDescStatusBill = (fileName, value) => {
@@ -918,6 +972,8 @@ function DetailBill() {
             ? "Tạo Hóa đơn"
             : statusBill == "CHO_XAC_NHAN"
             ? "Chờ xác nhận"
+            : statusBill === "CHO_VAN_CHUYEN"
+            ? "Chờ vận chuyển"
             : statusBill === "VAN_CHUYEN"
             ? "Đang vận chuyển"
             : statusBill === "DA_THANH_TOAN"
@@ -973,7 +1029,11 @@ function DetailBill() {
       key: "status",
       render: (status) => (
         <span className={status}>
-          {status == "THANH_TOAN" ? "Thanh toán" : "Hoàn tiền"}
+          {status == "THANH_TOAN"
+            ? "Thanh toán"
+            : status == "TRA_SAU"
+            ? "Trả sau"
+            : "Hoàn tiền"}
         </span>
       ),
     },
@@ -1101,9 +1161,9 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    span={statusPresent < 4 ? 7 : 0}
+                    span={statusPresent < 6 ? 7 : 0}
                   >
-                    {statusPresent < 4 ? (
+                    {statusPresent < 6 && statusPresent != 3 ? (
                       <Button
                         type="primary"
                         className="btn btn-primary"
@@ -1120,8 +1180,8 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent < 4 ? 6 : 0}>
-                    {statusPresent < 4 ? (
+                  <Col span={statusPresent < 2 ? 6 : 0}>
+                    {statusPresent < 2 ? (
                       <Button
                         type="danger"
                         onClick={() => showModalCanCel()}
@@ -1149,7 +1209,7 @@ function DetailBill() {
                     fontSize: "medium",
                     fontWeight: "500",
                     marginRight: "20px",
-                    backgroundColor: "#ccc",
+                    // backgroundColor: ",
                   }}
                 >
                   Lịch sử
@@ -1369,14 +1429,26 @@ function DetailBill() {
             </h2>
           </Col>
           <Col span={4}>
-            <Button
+            {/* <Button
               type="dashed"
               align={"end"}
               style={{ margin: "" }}
               onClick={(e) => showModalPayMent(e)}
             >
               Xác nhận thanh toán
-            </Button>
+            </Button> */}
+            {payMentNo && statusPresent == 3 ? (
+              <Button
+                type="dashed"
+                align={"end"}
+                style={{ margin: "" }}
+                onClick={(e) => XacNhanThanhToan(e)}
+              >
+                Xác nhận thanh toán
+              </Button>
+            ) : (
+              <div></div>
+            )}
           </Col>
         </Row>
         <Row style={{ width: "100%" }}>
@@ -1431,7 +1503,7 @@ function DetailBill() {
                   >
                     {bill.statusBill == "TAO_HOA_DON"
                       ? "Tạo Hóa đơn"
-                      : bill.statusBill == "CHO_THANH_TOAN"
+                      : bill.statusBill == "CHO_XAC_NHAN"
                       ? "Chờ xác nhận"
                       : bill.statusBill === "VAN_CHUYEN"
                       ? "Đang vận chuyển"

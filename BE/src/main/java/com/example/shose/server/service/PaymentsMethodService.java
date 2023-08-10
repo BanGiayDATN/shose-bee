@@ -16,4 +16,7 @@ public interface PaymentsMethodService {
     PaymentsMethod create(String idBill, String idEmployees, CreatePaymentsMethodRequest request);
 
     BigDecimal sumTotalMoneyByIdBill(String idBill);
+
+    boolean updatepayMent(String idBill,String idEmployees,List<String> ids);
+
 }

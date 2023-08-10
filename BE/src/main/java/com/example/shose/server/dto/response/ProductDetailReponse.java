@@ -56,5 +56,5 @@ public interface ProductDetailReponse {
     String getSize();
 
     @Value("#{target.promotion}")
-    String getPromotion();
+    Integer getPromotion();
 }

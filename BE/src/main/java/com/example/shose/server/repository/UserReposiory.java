@@ -76,6 +76,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 u.status AS status,
                 u.created_date AS createdDate,
                 u.last_modified_date AS lastModifiedDate,
+                 u.citizen_identity AS citizenIdentity,
                  a.password AS passWord,
                  a.id AS idAccount
             FROM user u
@@ -156,5 +157,33 @@ public interface UserReposiory extends JpaRepository<User, String> {
 
     @Query("SELECT u FROM  User u WHERE u.phoneNumber =:phoneNumber")
     User getOneUserByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query("SELECT u FROM  User u WHERE u.email =:email")
+    User getOneUserByEmail(@Param("email") String email);
+
+    @Query(value = """
+            SELECT
+             ROW_NUMBER() OVER (ORDER BY u.last_modified_date DESC ) AS stt,
+                u.id AS id,
+                u.gender AS gender,
+                u.full_name AS fullName,
+                u.date_of_birth AS dateOfBirth,
+                u.avata AS avata,
+                u.email AS email,
+                u.points AS points,
+                u.phone_number AS phoneNumber,
+                u.updated_by AS updatedBy,
+                u.created_by AS createdBy,
+                u.status AS status,
+                u.created_date AS createdDate,
+                u.last_modified_date AS lastModifiedDate,
+                u.citizen_identity AS citizenIdentity,
+                a.password AS password,
+                a.id AS idAccount
+            FROM user u
+            JOIN account a ON u.id = a.id_user
+            WHERE u.phoneNumber = :phoneNumber
+            """, nativeQuery = true)
+    Optional<EmployeeResponse> getOneByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
 }

@@ -1,16 +1,25 @@
 package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.ProductDetailDTO;
+import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
+import com.example.shose.server.entity.Brand;
+import com.example.shose.server.entity.Category;
+import com.example.shose.server.entity.Color;
 import com.example.shose.server.entity.Image;
+import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Sole;
+import com.example.shose.server.infrastructure.cloudinary.CloudinaryResult;
+import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -35,9 +44,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -81,6 +96,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Autowired
     private PromotionRepository promotionRepository;
 
+    @Autowired
+    private QRCodeAndCloudinary qrCodeAndCloudinary;
+
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
         return productDetailRepository.getAll(findProductDetailRequest);
@@ -88,51 +106,66 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     @Transactional
-    public ProductDetailDTO create(CreateProductDetailRequest req,
-                                   List<MultipartFile> multipartFiles,
-                                   List<CreateSizeData> listSize,
-                                   List<Boolean> listStatusImage,
-                                   List<String> listColor) throws IOException, ExecutionException, InterruptedException {
-        Product product = productRepository.getOneByName(req.getProductId());
-        if (product == null) {
-            product = new Product();
-            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
-            product.setName(req.getProductId());
-            product.setStatus(Status.DANG_SU_DUNG);
-            productRepository.save(product);
-        }
+    public List<ProductDetailDTO> create(List<CreateProductDetailRequest> listData,
+                                         List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException {
 
-        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
-        ProductDetail add = new ProductDetail();
-        add.setBrand(brandRepository.getById(req.getBrandId()));
-        add.setCategory(categoryRepository.getById(req.getCategoryId()));
-        add.setMaterial(materialRepository.getById(req.getMaterialId()));
-        add.setSole(soleRepository.getById(req.getSoleId()));
-        add.setProduct(product);
-        add.setDescription(req.getDescription());
-        add.setGender(getGenderProductDetail(req.getGender()));
-        add.setPrice(new BigDecimal(req.getPrice()));
-        add.setStatus(getStatus(req.getStatus()));
-        productDetailRepository.save(add);
+        CompletableFuture<List<CloudinaryResult>> uploadFuture = imageToCloudinary.uploadImagesAsync(listFileImage);
+        List<CloudinaryResult> listUrl = uploadFuture.get();
 
-        // Process images for each size
-        List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
-                .parallel()
-                .mapToObj(i -> {
-                    Image image = new Image();
-                    String imageUrl = imageUrls.get(i);
-                    boolean isStarred = listStatusImage.get(i);
-                    image.setName(imageUrl);
-                    image.setStatus(isStarred);
-                    image.setProductDetail(add);
-                    return image;
-                })
+        CreateProductDetailRequest request = listData.get(0);
+        String productId = request.getProductId();
+
+        Product product = createProductIfNotExist(productId);
+        Brand brand = brandRepository.getById(request.getBrandId());
+        Material material = materialRepository.getById(request.getMaterialId());
+        Sole sole = soleRepository.getById(request.getSoleId());
+        Category category = categoryRepository.getById(request.getCategoryId());
+        List<ProductDetail> listDetail = listData.parallelStream().map(req -> {
+            ProductDetail add = new ProductDetail();
+            add.setProduct(product);
+            add.setGender(getGenderProductDetail(req.getGender()));
+            add.setSize(sizeRepository.getOneByName(req.getSize()));
+            add.setQuantity(req.getQuantity());
+            add.setStatus(Status.DANG_SU_DUNG);
+            add.setPrice(new BigDecimal(req.getPrice()));
+            add.setColor(colorRepository.getOneByCode(req.getColor()));
+            add.setDescription(req.getDescription());
+            add.setSole(sole);
+            add.setMaterial(material);
+            add.setCategory(category);
+            add.setBrand(brand);
+            return add;
+        }).collect(Collectors.toList());
+        productDetailRepository.saveAll(listDetail);
+
+
+        listDetail.parallelStream().forEach(a -> a.setMaQR(qrCodeAndCloudinary.generateAndUploadQRCode(a.getId())));
+
+        // lấy danh sách chứa tất cả màu từ listUrl
+        List<String> existingColors = listUrl.stream()
+                .map(CloudinaryResult::getColor)
                 .collect(Collectors.toList());
-        imageRepository.saveAll(imagesToAdd);
 
-        ProductDetailDTO detailDTO = new ProductDetailDTO(add);
-        return detailDTO;
+        List<Image> images = listUrl.parallelStream().filter(result -> existingColors.contains(result.getColor()))
+                .flatMap(result -> {
+                    List<ProductDetail> matchingDetails = listDetail.stream()
+                            .filter(detail -> detail.getColor().getCode().equals(result.getColor()))
+                            .collect(Collectors.toList());
+
+                    return matchingDetails.stream().map(matchingDetail -> {
+                        Image image = new Image();
+                        image.setName(result.getUrl());
+                        image.setProductDetail(matchingDetail);
+                        image.setStatus(true);
+                        return image;
+                    });
+                }).collect(Collectors.toList());
+        imageRepository.saveAll(images);
+        List<ProductDetailDTO> detailDTOS = new ArrayList<>();
+        listDetail.stream().forEach(a -> detailDTOS.add(new ProductDetailDTO(a)));
+        return detailDTOS;
     }
+
 
     @Override
     public ProductDetailDTO update(UpdateProductDetailRequest req,
@@ -169,20 +202,20 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         imageRepository.deleteAll(existingImagesDetail);
 
         // Process images for each size
-        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
-        List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
-                .parallel()
-                .mapToObj(i -> {
-                    Image image = new Image();
-                    String imageUrl = imageUrls.get(i);
-                    boolean isStarred = listStatusImage.get(i);
-                    image.setName(imageUrl);
-                    image.setStatus(isStarred);
-                    image.setProductDetail(update);
-                    return image;
-                })
-                .collect(Collectors.toList());
-        imageRepository.saveAll(imagesToAdd);
+//        List<String> imageUrls = imageToCloudinary.uploadImages(multipartFiles);
+//        List<Image> imagesToAdd = IntStream.range(0, imageUrls.size())
+//                .parallel()
+//                .mapToObj(i -> {
+//                    Image image = new Image();
+//                    String imageUrl = imageUrls.get(i);
+//                    boolean isStarred = listStatusImage.get(i);
+//                    image.setName(imageUrl);
+//                    image.setStatus(isStarred);
+//                    image.setProductDetail(update);
+//                    return image;
+//                })
+//                .collect(Collectors.toList());
+//        imageRepository.saveAll(imagesToAdd);
 
         ProductDetailDTO detailDTO = new ProductDetailDTO(update);
         return detailDTO;
@@ -200,14 +233,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public ProductDetailDTO getOneById(String id) {
-        Optional<ProductDetail> optional = productDetailRepository.findById(id);
-        if (!optional.isPresent()) {
+    public ProductDetailReponse getOneById(String id) {
+        ProductDetailReponse optional = productDetailRepository.getOneById(id);
+        if (optional == null) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        ProductDetailDTO detailDTO = new ProductDetailDTO(optional.get());
-        System.out.println(detailDTO);
-        return detailDTO;
+        return optional;
     }
 
     @Override
@@ -229,14 +260,33 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private Status getStatus(String status) {
         return "DANG_SU_DUNG".equals(status) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
     }
+
+    private Product createProductIfNotExist(String productId) {
+        Product product = productRepository.getOneByName(productId);
+        if (product == null) {
+            product = new Product();
+            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
+            product.setName(productId);
+            product.setStatus(Status.DANG_SU_DUNG);
+            productRepository.save(product);
+        }
+        return product;
+    }
+
+
     @Override
     public List<ProductDetailReponse> findAllByIdProduct(String id) {
         return productDetailRepository.findAllByIdProduct(id);
     }
 
+//    @Override
+//    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
+//        return productDetailRepository.getAllProductDetail(req);
+//    }
+
     @Override
-    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
-        return productDetailRepository.getAllProductDetail(req);
+    public List<GetProductDetailByCategory> GetProductDetailByCategory(String id) {
+        return productDetailRepository.getProductDetailByCategory(id);
     }
 
 }

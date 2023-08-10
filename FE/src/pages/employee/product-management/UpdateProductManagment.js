@@ -125,7 +125,7 @@ const UpdateProductManagment = () => {
         }
 
         const formData = new FormData();
-
+        console.log(fileList);
         const promises = fileList.map((file) => {
           return new Promise((resolve, reject) => {
             if (file.originFileObj) {
@@ -159,6 +159,7 @@ const UpdateProductManagment = () => {
             // Tiếp tục xử lý các dữ liệu và gửi formData lên server
             fileList.forEach((file) => {
               formData.append(
+
                 `status`,
                 starredFiles[file.uid]?.isStarred ? "true" : "false"
               );

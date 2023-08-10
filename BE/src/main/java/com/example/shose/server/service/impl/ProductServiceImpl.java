@@ -93,7 +93,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<CustomProductRespone> getAllProduct(FindProductDetailRequest req) {
+    public List<ProductDetailReponse> getAllProduct(FindProductDetailRequest req) {
         return productRepository.getAllProduct(req);
     }
 }

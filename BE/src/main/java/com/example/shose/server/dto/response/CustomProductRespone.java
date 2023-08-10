@@ -24,39 +24,13 @@ public interface CustomProductRespone {
     @Value("#{target.nameProduct}")
     String getNameProduct();
 
-    @Value("#{target.price}")
-    BigDecimal getPrice();
-
-    @Value("#{target.created_date}")
-    Long getCreateDate();
-
     @Value("#{target.status}")
     String getStatus();
 
-    @Value("#{target.quantity}")
+    @Value("#{target.totalQuantity}")
     Integer getQuantity();
 
-    @Value("#{target.color}")
-    String getColor();
+    @Value("#{target.avg_promotion_value}")
+    Integer getPromotion();
 
-    @Value("#{target.nameSize}")
-    String getNameSize();
-
-    @Value("#{target.nameCategory}")
-    String getNameCategory();
-
-    @Value("#{target.nameBrand}")
-    String getNameBrand();
-
-    @Value("#{target.size}")
-    String getSize();
-
-    @Value("#{target.promotion}")
-    String getPromotion();
-
-    @Value("#{target.min}")
-    String getMin();
-
-    @Value("#{target.max}")
-    String getMax();
 }

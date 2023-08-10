@@ -1,29 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  Input,
-  Button,
-  Table,
-  Col,
-  Select,
-  Row,
-  Space,
-  Spin,
-  Slider,
-  Modal,
-} from "antd";
+import { Input, Button, Table, Col, Select, Row, Slider, Modal } from "antd";
 import "./style-product.css";
 import { useAppDispatch, useAppSelector } from "../../../../app/hook";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBookmark,
-  faEdit,
-  faEye,
-  faFilter,
-  faKaaba,
-  faListAlt,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { Option } from "antd/es/mentions";
 import { MaterialApi } from "../../../../api/employee/material/Material.api";
 import { SoleApi } from "../../../../api/employee/sole/sole.api";
@@ -31,7 +13,7 @@ import { CategoryApi } from "../../../../api/employee/category/category.api";
 import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
 import tinycolor from "tinycolor2";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
 import ModalDetailProduct from "./ModalDetailProduct";
 import {
@@ -51,7 +33,7 @@ function ModalAddProductDetail({
   const [listProduct, setListProduct] = useState([]);
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState("");
-  const[state, setState] = useState(true)
+  const [state, setState] = useState(true);
 
   // format tiền
   const formatCurrency = (value) => {
@@ -80,9 +62,7 @@ function ModalAddProductDetail({
     ProductApi.fetchAllCustomProduct({
       product: search,
     }).then((res) => {
-      var data =  res.data.data.filter(
-        (product) => product.quantity > 0
-      );
+      var data = res.data.data.filter((product) => product.quantity > 0);
       setListProduct(data);
       // dispatch(SetPr(data));
     });
@@ -91,13 +71,11 @@ function ModalAddProductDetail({
   // Xử lý làm mới bộ lọc
   const handleClear = () => {
     setSearch("");
-    
+
     ProductApi.fetchAllCustomProduct({
       product: "",
     }).then((res) => {
-      var data =  res.data.data.filter(
-        (product) => product.quantity > 0
-      );
+      var data = res.data.data.filter((product) => product.quantity > 0);
       setListProduct(data);
       // dispatch(SetProduct(data));
     });
@@ -150,8 +128,6 @@ function ModalAddProductDetail({
     }));
   };
 
- 
-
   const handleChangeValuePrice = (value) => {
     const [minPrice, maxPrice] = value;
 
@@ -163,19 +139,15 @@ function ModalAddProductDetail({
   };
 
   const loadData = () => {
-    
     ProductApi.fetchAllCustomProduct(selectedValues).then(
       (res) => {
-        var data =  res.data.data.filter(
-          (product) => product.quantity > 0
-        );
-
+        var data = res.data.data.filter((product) => product.quantity > 0);
+        console.log(data);
         setListProduct(data);
         // dispatch(SetProduct(data));
         setIsSubmitted(false);
       },
-      (err) => {
-      }
+      (err) => {}
     );
   };
 
@@ -276,24 +248,56 @@ function ModalAddProductDetail({
       sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
     },
     {
-      title: "Giá ",
-      dataIndex: "min",
-      key: "min",
+      title: "Giá Bán",
+      dataIndex: "price",
+      key: "price",
       sorter: (a, b) => a.price - b.price,
-      render: (text, record) => {
-        if(record.min === record.max){
-          return (formatCurrency(record.min))
-        }else{
-          return (formatCurrency(record.min) + " ~ " + formatCurrency(record.max))
-        }
-    },
+      render: (text) => formatCurrency(text),
     },
     {
-      title: "Số Lượng Tồn ",
+      title: "Số Lượng ",
       dataIndex: "quantity",
       key: "quantity",
       sorter: (a, b) => a.quantity - b.quantity,
       align: "center",
+    },
+    {
+      title: "Kích Thước",
+      dataIndex: "size",
+      key: "size",
+      sorter: (a, b) => a.quantity - b.quantity,
+      align: "center",
+    },
+    {
+      title: "Màu Sắc",
+      dataIndex: "color",
+      key: "color",
+      align: "center",
+      render: (color) => (
+        <div
+          style={{
+            backgroundColor: color,
+            borderRadius: "6px",
+            width: "60px",
+            height: "25px",
+            pointerEvents: "none", // Ngăn chặn sự kiện click
+          }}
+        />
+      ),
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        const genderClass =
+          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+        return (
+          <button className={`gender ${genderClass}`}>
+            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Không kinh doanh"}
+          </button>
+        );
+      },
     },
     {
       title: "Hành động",
@@ -319,10 +323,39 @@ function ModalAddProductDetail({
   const [product, setProduct] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
-    setSizes([]);
-    setProduct(record);
-    setState(true)
-    setIsModalOpen(true);
+    // setSizes([]);
+    // setProduct(record);
+    // setState(true);
+    // setIsModalOpen(true);
+    var list = products;
+    var index = list.findIndex((x) => x.idProduct === record.id);
+    var data = {
+      image: record.image,
+      productName: record.nameProduct,
+      nameSize: record.nameSize,
+      idProduct: record.id,
+      quantity: 1,
+      price: record.price,
+      idSizeProduct: record.id,
+      maxQuantity: record.quantity,
+    };
+    if (index == -1) {
+      list.push(data);
+    } else {
+      data.quantity = list[index].quantity + quantity;
+      list.splice(index, 1, data);
+    }
+    toast.success('thêm thành công', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+    setProducts(list);
   };
   const clearSelectSize = () => {
     setSizes([]);
@@ -341,7 +374,6 @@ function ModalAddProductDetail({
             idProduct: item.id,
             quantity: quantity,
             price: item.price,
-            idSizeProduct: item.id,
             maxQuantity: item.quantity,
           };
           if (index == -1) {
@@ -365,8 +397,7 @@ function ModalAddProductDetail({
           BillApi.addProductInBill(data).then((res) => {
             const price = item.price;
             if (item.promotion != null) {
-              price =
-                (item.price * (100 - item.promotion)) / 100;
+              price = (item.price * (100 - item.promotion)) / 100;
             }
             var product = {
               id: res.data.data,
@@ -376,21 +407,22 @@ function ModalAddProductDetail({
               idProduct: item.id,
               quantity: quantity,
               price: price,
-              idSizeProduct: item.id,
             };
             dispatch(addProductInBillDetail(product));
           });
         });
       }
     }
-    setQuantity(1)
-    setState(false)
+    setQuantity(1);
+    setState(false);
+    setSizes([]);
     // handleCancelProduct();
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-    setQuantity(1)
-    setState(false)
+    setQuantity(1);
+    setState(false);
+    setSizes([]);
   };
   // end modal detail product size
   const [sizes, setSizes] = useState([]);
@@ -409,7 +441,10 @@ function ModalAddProductDetail({
   };
   // end xử lý modal
   return (
-    <div className="modelProduct" style={{maxHeight: "500px", overflowY: "auto"}}>
+    <div
+      className="modelProduct"
+      style={{ maxHeight: "500px", overflowY: "auto" }}
+    >
       <div className="content">
         <div className="content-wrapper">
           <div style={{ width: "100%" }}>
@@ -450,7 +485,7 @@ function ModalAddProductDetail({
           </div>
         </div>
       </div>
-      <div className="box_btn_filter" style={{paddingBottom: "8px"}}>
+      <div className="box_btn_filter" style={{ paddingBottom: "8px" }}>
         <Row align="middle">
           <Col span={3} style={{ textAlign: "right", paddingRight: 10 }}>
             <label>Chất Liệu :</label>
@@ -552,7 +587,7 @@ function ModalAddProductDetail({
           </Col>
         </Row>
       </div>
-      <div className="box_btn_filter" style={{paddingBottom: "8px"}} >
+      <div className="box_btn_filter" style={{ paddingBottom: "8px" }}>
         <Row align="middle">
           <Col span={4} style={{ textAlign: "right", paddingRight: 10 }}>
             <label>Thể Loại :</label>
@@ -613,12 +648,12 @@ function ModalAddProductDetail({
           columns={columns}
           pagination={{ pageSize: 5 }}
           className="category-table"
-          style={{margin: "10px 0 0 0"}}
+          style={{ margin: "10px 0 0 0" }}
         />
       </div>
       <Modal
         title=""
-        width={800}
+        width={900}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -634,8 +669,14 @@ function ModalAddProductDetail({
           clearSelectSize={clearSelectSize}
           quantity={quantity}
           setQuantity={setQuantity}
+          selectedSizes={sizes}
+          setSelectedSizes={setSizes}
+          state={state}
         />
       </Modal>
+      {/* end modal payment  */}
+
+    
     </div>
   );
 }

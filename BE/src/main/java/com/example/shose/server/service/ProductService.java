@@ -17,6 +17,7 @@ import java.util.List;
 public interface ProductService {
 
     List<ProductResponse> findAll(final FindProductRequest req);
+
     List<String> fillAllByName(String name);
 
     Product create(final CreateProductRequest req);
@@ -26,6 +27,8 @@ public interface ProductService {
     Boolean delete(String id);
 
     Product getOneById(String id);
+
     List<Product> getProductUse();
-    List<CustomProductRespone> getAllProduct(FindProductDetailRequest req);
+
+    List<ProductDetailReponse> getAllProduct(FindProductDetailRequest req);
 }
