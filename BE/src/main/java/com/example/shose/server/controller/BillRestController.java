@@ -63,7 +63,7 @@ public class BillRestController {
     }
 
     @PutMapping("/change-status-bill")
-    public ResponseObject changeStatusAllBillByIds(@RequestBody() ChangAllStatusBillByIdsRequest request) {
+    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request) {
         return  new ResponseObject(billService.changeStatusAllBillByIds(request, userId));
     }
 
