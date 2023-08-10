@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
@@ -44,5 +45,7 @@ public interface ProductDetailService {
     List<ProductDetailReponse> findAllByIdProduct(String id);
 
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
+
+    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor);
 
 }
