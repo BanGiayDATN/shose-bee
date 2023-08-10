@@ -2,6 +2,7 @@ package com.example.shose.servertool;
 
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.AccountVoucher;
+import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
@@ -19,6 +20,7 @@ import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
+import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -142,7 +144,6 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private PromotionProductDetailRepository promotionProductDetailRepository;
-
 
     @Override
     public void run(String... args) throws Exception {
@@ -479,6 +480,10 @@ public class DBGenerator implements CommandLineRunner {
 
         AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
         accountVoucherRepository.save(accountVoucher1);
+
+        Address address1 = Address.builder().user(user2).status(Status.DANG_SU_DUNG).line("số 20 ngõ 19, Hoàng Hoa Thám").province("Hưng Yên").district("Huyện Văn Lâm")
+                .ward("Xã Lạc Hồng").provinceId(268).toDistrictId(2046).wardCode("220906").build();
+        addressRepository.save(address1);
     }
 
     public static void main(String[] args) {

@@ -31,6 +31,6 @@ public interface CustomProductRespone {
     Integer getQuantity();
 
     @Value("#{target.avg_promotion_value}")
-    String getPromotion();
+    Integer getPromotion();
 
 }

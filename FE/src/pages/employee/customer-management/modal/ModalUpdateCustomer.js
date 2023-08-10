@@ -212,7 +212,7 @@ const ModalUpdateCustomer = ({ visible }) => {
           const promises = () => {
             return new Promise((resolve, reject) => {
               if (uploadedFile.originFileObj) {
-                formData.append(`multipartFiles`, uploadedFile.originFileObj);
+                formData.append(`multipartFile`, uploadedFile.originFileObj);
                 resolve(); // Resolve the promise immediately if there is originFileObj
               } else if (uploadedFile.url) {
                 axios
@@ -302,11 +302,13 @@ const ModalUpdateCustomer = ({ visible }) => {
         <Col
           className="filter"
           span={6}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
+          style={
+            {
+              // display: "flex",
+              // flexDirection: "column",
+              // alignItems: "center",
+            }
+          }
         >
           <div>
             <h1
@@ -322,37 +324,42 @@ const ModalUpdateCustomer = ({ visible }) => {
               Ảnh đại diện
             </h1>
             {/* ... */}
-            <div>
-              <Upload
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                listType="picture-circle"
-                fileList={uploadedFile ? [uploadedFile] : []}
-                onPreview={handlePreview}
-                onChange={handleChange}
-                onRemove={() => setUploadedFile(null)}
-                showUploadList={{
-                  showPreviewIcon: true,
-                  showRemoveIcon: true,
-                  showErrorTips: true,
-                }}
-              >
-                {uploadedFile ? null : uploadButton}
-              </Upload>
-              <Modal
-                open={previewOpen}
-                title={previewTitle}
-                footer={null}
-                onCancel={handleCancelImagel}
-              >
-                <img
-                  alt="example"
-                  style={{
-                    width: "100%",
-                  }}
-                  src={previewImage}
-                />
-              </Modal>
-            </div>
+            <Row>
+              <Col span={5}></Col>
+              <Col span={6}>
+                <div>
+                  <Upload
+                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    listType="picture-circle"
+                    fileList={uploadedFile ? [uploadedFile] : []}
+                    onPreview={handlePreview}
+                    onChange={handleChange}
+                    onRemove={() => setUploadedFile(null)}
+                    showUploadList={{
+                      showPreviewIcon: true,
+                      showRemoveIcon: true,
+                      showErrorTips: true,
+                    }}
+                  >
+                    {uploadedFile ? null : uploadButton}
+                  </Upload>
+                  <Modal
+                    open={previewOpen}
+                    title={previewTitle}
+                    footer={null}
+                    onCancel={handleCancelImagel}
+                  >
+                    <img
+                      alt="example"
+                      style={{
+                        width: "100%",
+                      }}
+                      src={previewImage}
+                    />
+                  </Modal>
+                </div>
+              </Col>
+            </Row>
             {/* ... */}
           </div>
         </Col>

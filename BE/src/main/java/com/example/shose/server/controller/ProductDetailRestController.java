@@ -52,10 +52,10 @@ public class ProductDetailRestController {
         return new ResponseObject(productDetailService.getAll(request));
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseObject getOneById(@PathVariable("id") String id) {
-//        return new ResponseObject(productDetailService.getOneById(id));
-//    }
+    @GetMapping("/{id}")
+    public ResponseObject getOneById(@PathVariable("id") String id) {
+        return new ResponseObject(productDetailService.getOneById(id));
+    }
 
     @PostMapping("")
     public ResponseObject add(@RequestParam Map<String, MultipartFile> fileMap,

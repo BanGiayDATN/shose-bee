@@ -181,13 +181,13 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 ))
               as listCodeColor,
                 
-             (select GROUP_CONCAT(s.name) from size s where s.name in( 
+             (select GROUP_CONCAT(s.name) FROM size s WHERE s.name in( 
                SELECT s2.name
                 FROM color c3 
                 JOIN product_detail pd3 ON c3.id =  pd3.id_color 
                  JOIN product p3 ON p3.id = pd3.id_product  
                 JOIN size s2 ON s2.id = pd3.id_size
-                JOIN c3.code = c.code and p3.id = p.id
+                WHERE c3.code = c.code AND p3.id = p.id
                 ))
               as listNameSize
              from product_detail pd
@@ -199,5 +199,46 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """, nativeQuery = true)
     GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor);
 
+
+
+    @Query(value = """
+                SELECT
+                   ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
+                   detail.id AS id,
+                   i.name AS image,
+                   CONCAT(p.name ,'[ ',s2.name,' - ',c2.name,' ]') AS nameProduct,
+                   detail.price AS price,
+                   detail.created_date AS created_date,
+                   detail.gender AS gender,
+                   detail.status AS status,
+                   si.name AS nameSize,
+                   c.name AS nameCategory,
+                   b.name AS nameBrand,
+                   detail.quantity AS quantity,
+                   AVG(pr.value) AS promotion,
+                   detail.quantity,
+                   s2.name AS size,
+                   c2.code AS color
+                FROM product_detail detail
+                JOIN product p ON detail.id_product = p.id
+                JOIN (
+                    SELECT id_product_detail, MAX(id) AS max_image_id
+                    FROM image
+                    GROUP BY id_product_detail
+                ) max_images ON detail.id = max_images.id_product_detail
+                LEFT JOIN image i ON max_images.max_image_id = i.id
+                JOIN sole s ON s.id = detail.id_sole
+                JOIN material m ON detail.id_material = m.id
+                JOIN category c ON detail.id_category = c.id
+                JOIN brand b ON detail.id_brand = b.id
+                LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+                LEFT JOIN promotion pr on pr.id = ppd.id_promotion
+                JOIN size s2 on detail.id_size = s2.id
+                JOIN color c2 on detail.id_color = c2.id
+                LEFT JOIN size si ON detail.id_size = si.id
+                WHERE i.status = true  AND detail.id = :id
+                ORDER BY detail.last_modified_date DESC 
+            """, nativeQuery = true)
+    ProductDetailReponse getOneById(@Param("id") String id);
 
 }

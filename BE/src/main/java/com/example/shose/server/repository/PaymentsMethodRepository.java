@@ -32,4 +32,12 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,S
                    WHERE id_bill = :id
             """, nativeQuery = true)
     boolean deleteAllByIdBill(@Param("id") String idBill);
+
+    @Query(value = """
+             SELECT COUNT(id) FROM payments_method
+             WHERE id_bill = :idBill
+             AND status = 'TRA_SAU'
+            """, nativeQuery = true)
+    int countPayMentPostpaidByIdBill(@Param("idBill") String idBill);
+
 }

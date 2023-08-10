@@ -178,17 +178,6 @@
   font-size: 14px;
 }
 
-.switch {
-  display: inline-block;
-    height: 22px;
-    position: relative;
-    width: 52px;
-}
-
-.switch input {
-  display:none;
-}
-
 .slider {
   background-color: #ccc;
   bottom: 0;
@@ -211,23 +200,47 @@
   width: 15px;
 }
 
-input:checked + .slider {
-  background-color: #66bb6a;
+input[type=checkbox]{
+	height: 0;
+	width: 0;
+	visibility: hidden;
 }
 
-input:checked + .slider:before {
-  transform: translateX(26px);
+.labelSwitch {
+	cursor: pointer;
+	text-indent: -9999px;
+	width: 70px;
+	height: 30px;
+	background: grey;
+	display: block;
+	border-radius: 100px;
+	position: relative;
 }
 
-.slider.round {
-  border-radius: 34px;
+.labelSwitch:after {
+	content: '';
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	width: 20px;
+	height: 20px;
+	background: #fff;
+	border-radius: 90px;
+	transition: 0.3s;
 }
 
-.slider.round:before {
-  border-radius: 50%;
+input:checked + .labelSwitch {
+	background: #bada55;
 }
 
+input:checked + .labelSwitch:after {
+	left: calc(100% - 5px);
+	transform: translateX(-100%);
+}
 
+.labelSwitch:active:after {
+	width: 70px;
+}
 .ant-select-selection-overflow{
   width: 98%;
   max-width: 98%;

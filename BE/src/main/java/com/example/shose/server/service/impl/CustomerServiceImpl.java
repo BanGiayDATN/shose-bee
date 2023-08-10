@@ -3,14 +3,12 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
+import com.example.shose.server.dto.request.customer.QuickCreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
-import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
-import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Address;
-import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -21,7 +19,6 @@ import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.UserReposiory;
-import com.example.shose.server.service.AddressService;
 import com.example.shose.server.service.CustomerService;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * @author Phuong Oanh
@@ -70,9 +66,14 @@ public class CustomerServiceImpl implements CustomerService {
                        CreateAddressRequest addressRequest,
                        MultipartFile file) {
         // check xem có tồn tại sdt không => Khách hàng => roles là USER
-        User checkUser = userReposiory.getOneUserByPhoneNumber(request.getPhoneNumber());
-        if (checkUser != null) {
+        User checkUserPhoneNumber = userReposiory.getOneUserByPhoneNumber(request.getPhoneNumber());
+        if (checkUserPhoneNumber != null) {
             throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
+        }
+        //check email có tồn tại không
+        User checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
+        if (checkUserEmail != null) {
+            throw new RestApiException(Message.EMAIL_USER_EXIST);
         }
 
         // xử lý ảnh
@@ -128,11 +129,6 @@ public class CustomerServiceImpl implements CustomerService {
     public User update(UpdateCustomerRequest request,
                        UpdateAddressRequest addressRequest,
                        MultipartFile file) {
-        // check xem có tồn tại sdt không => Khách hàng => roles là USER
-//        User checkUser = userReposiory.getOneUserByPhoneNumber(request.getPhoneNumber());
-//        if (checkUser != null) {
-//            throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
-//        }
 
         // xử lý ảnh
         String urlImage = imageToCloudinary.uploadImage(file);
@@ -152,7 +148,7 @@ public class CustomerServiceImpl implements CustomerService {
         userReposiory.save(user); // update user vào database
 
         //  địa chỉ user
-        Address addressUser=  addressRepository.getAddressByUserIdAndStatus(user.getId(), Status.DANG_SU_DUNG);
+        Address addressUser = addressRepository.getAddressByUserIdAndStatus(user.getId(), Status.DANG_SU_DUNG);
         Address address = new Address();
         address.setId(addressUser.getId());
         address.setWard(addressRequest.getWard());
@@ -165,8 +161,6 @@ public class CustomerServiceImpl implements CustomerService {
         address.setDistrict(addressRequest.getDistrict());
         address.setUser(user);
         addressRepository.save(address);
-
-
         return user;
 
     }
@@ -185,6 +179,64 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public EmployeeResponse getOneById(String id) {
         Optional<EmployeeResponse> optional = userReposiory.getOneWithPassword(id);
+        if (!optional.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        return optional.get();
+    }
+
+    @Override
+    public User quickCreate(QuickCreateCustomerRequest request, CreateAddressRequest addressRequest) {
+        User checkUserPhoneNumber = userReposiory.getOneUserByPhoneNumber(request.getPhoneNumber());
+        if (checkUserPhoneNumber != null) {
+            throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
+        }
+
+        User checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
+        if (checkUserEmail != null) {
+            throw new RestApiException(Message.EMAIL_USER_EXIST);
+        }
+
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .phoneNumber(request.getPhoneNumber())
+                .email(request.getEmail())
+                .status(Status.DANG_SU_DUNG)
+                .gender(request.getGender())
+                .points(0)
+                .build();
+        userReposiory.save(user);
+        User addressUser = userReposiory.getById(user.getId());
+
+        Account account = new Account();
+        account.setUser(user);
+        account.setRoles(Roles.USER);
+        account.setEmail(user.getEmail());
+        account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
+        account.setStatus(Status.DANG_SU_DUNG);
+        accountRepository.save(account);
+
+        Address address = new Address();
+        address.setStatus(Status.DANG_SU_DUNG);
+        address.setWard(addressRequest.getWard());
+        address.setToDistrictId(addressRequest.getToDistrictId());
+        address.setProvinceId(addressRequest.getProvinceId());
+        address.setWardCode(addressRequest.getWardCode());
+        address.setLine(addressRequest.getLine());
+        address.setProvince(addressRequest.getProvince());
+        address.setDistrict(addressRequest.getDistrict());
+        address.setUser(addressUser);
+        addressRepository.save(address);
+
+        String subject = "Xin chào, bạn đã đăng ký thành công ";
+        sendEmailService.sendEmailPasword(account.getEmail(), subject, account.getPassword());
+
+        return user;
+    }
+
+    @Override
+    public EmployeeResponse getOneByPhoneNumber(String phoneNumber) {
+        Optional<EmployeeResponse> optional = userReposiory.getOneByPhoneNumber(phoneNumber);
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }

@@ -1,22 +1,11 @@
 package com.example.shose.server.controller;
 
-import com.example.shose.server.dto.request.bill.BillRequest;
-import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
-import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
-import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
-import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.dto.request.bill.*;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author thangdt
@@ -71,6 +60,11 @@ public class BillRestController {
     @PutMapping("/update-offline/{id}")
     public ResponseObject updateBillOffline(@PathVariable("id") String id, @RequestBody UpdateBillRequest request) {
         return  new ResponseObject(billService.updateBillOffline(id, request));
+    }
+
+    @PutMapping("/change-status-bill")
+    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request) {
+        return  new ResponseObject(billService.changeStatusAllBillByIds(request, userId));
     }
 
 }

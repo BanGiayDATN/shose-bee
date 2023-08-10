@@ -1,12 +1,7 @@
 package com.example.shose.server.service.impl;
 
 
-import com.example.shose.server.dto.request.bill.BillRequest;
-import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
-import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
-import com.example.shose.server.dto.request.bill.CreateBillRequest;
-import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
-import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.dto.request.bill.*;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
@@ -150,33 +145,36 @@ public class BillServiceImpl implements BillService {
             }
         }
         if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE){
-            bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+            bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                    .method(request.getMethod())
-                    .status(StatusPayMents.THANH_TOAN)
-                    .employees(account.get())
-                    .totalMoney(new BigDecimal(request.getTotalMoney()))
-                    .description(request.getNote())
-                    .bill(bill)
-                    .build();
-            paymentsMethodRepository.save(paymentsMethod);
+//            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+//                    .method(request.getMethod())
+//                    .status(StatusPayMents.THANH_TOAN)
+//                    .employees(account.get())
+//                    .totalMoney(new BigDecimal(request.getTotalMoney()))
+//                    .description(request.getNote())
+//                    .bill(bill)
+//                    .build();
+//            paymentsMethodRepository.save(paymentsMethod);
         }else{
-            bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
+            bill.setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                    .method(request.getMethod())
-                    .status(StatusPayMents.THANH_TOAN)
-                    .employees(account.get())
-                    .totalMoney(new BigDecimal(0))
-                    .description(request.getNote())
-                    .bill(bill)
-                    .build();
-            paymentsMethodRepository.save(paymentsMethod);
+
         }
 
+        request.getPaymentsMethodRequests().forEach(item -> {
+            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                    .method(item.getMethod())
+                    .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                    .employees(account.get())
+                    .totalMoney(item.getTotalMoney())
+                    .description(item.getActionDescription())
+                    .bill(bill)
+                    .build();
+            paymentsMethodRepository.save(paymentsMethod);
+        });
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
@@ -253,9 +251,12 @@ public class BillServiceImpl implements BillService {
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
         bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
-        if (nextIndex > 4) {
+        if (nextIndex > 5) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
+//        if (StatusBill.valueOf(statusBill[nextIndex].name()) ==  StatusBill.DA_THANH_TOAN && ) {
+//            throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+//        }
         if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
@@ -270,13 +271,58 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
+
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
         billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
+
+        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+            BillHistory billHistoryPayMent = new BillHistory();
+            billHistoryPayMent.setBill(bill.get());
+            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+            billHistoryPayMent.setActionDescription(request.getActionDescription());
+            billHistoryPayMent.setEmployees(account.get());
+            billHistoryRepository.save(billHistoryPayMent);
+        }
         return billRepository.save(bill.get());
+    }
+
+    @Override
+    public boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, String idEmployees) {
+        request.getIds().forEach(id ->{
+            Optional<Bill> bill = billRepository.findById(id);
+            Optional<Account> account = accountRepository.findById(idEmployees);
+            if (!bill.isPresent()) {
+                throw new RestApiException(Message.BILL_NOT_EXIT);
+            }
+            if (!account.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill.get());
+            billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
+//            billHistoryPayMent.setActionDescription(request.getActionDescription());
+            billHistory.setEmployees(account.get());
+            billHistoryRepository.save(billHistory);
+
+            bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
+            if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+                bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+                BillHistory billHistoryPayMent = new BillHistory();
+                billHistoryPayMent.setBill(bill.get());
+                billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+//                billHistoryPayMent.setActionDescription(request.getActionDescription());
+                billHistoryPayMent.setEmployees(account.get());
+                billHistoryRepository.save(billHistoryPayMent);
+            }
+            billRepository.save(bill.get());
+        });
+        return true;
     }
 
     @Override

@@ -5,13 +5,9 @@ import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -41,6 +37,11 @@ public class PaymentsMethodRestController {
     @GetMapping("/total-money/{id}")
     public ResponseObject sumTotalMoneyByIdBill(@PathVariable("id")  String idBill){
         return  new ResponseObject(paymentsMethodService.sumTotalMoneyByIdBill(idBill));
+    }
+
+    @PutMapping("/update-status/{id}")
+    public ResponseObject sumTotalMoneyByIdBill(@PathVariable("id")  String idBill, @RequestBody() List<String> ids){
+        return  new ResponseObject(paymentsMethodService.updatepayMent(idBill, userId, ids));
     }
 
 }
