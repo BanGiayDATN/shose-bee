@@ -853,13 +853,59 @@ function CreateBill() {
   // QR code sản phẩm
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [scannedQRCode, setScannedQRCode] = useState({});
-  const handleQRCodeScanned = (data) => {
-    ProducDetailtApi.getOne(data).then((res) => {
-      setScannedQRCode(res.data.data);
-    });
+  const [idData, setIdaData] = useState("");
+  const addProductDetailByQRCode = (data, products) => {
+    const existingProduct = products.find(
+      (product) => product.idProduct === data
+    );
+
+    if (
+      existingProduct &&
+      existingProduct.quantity < existingProduct.maxQuantity
+    ) {
+      setProducts((prevProducts) => {
+        const updatedProducts = prevProducts.map((product) => {
+          if (product.idProduct === data) {
+            return {
+              ...product,
+              quantity: product.quantity + 1,
+            };
+          }
+          return product;
+        });
+        return updatedProducts;
+      });
+      toast.success("Thêm sản phẩm thành công ");
+    } else if (!existingProduct) {
+      ProducDetailtApi.getOne(data).then((res) => {
+        const newProduct = {
+          image: res.data.data.image,
+          productName: res.data.data.nameProduct,
+          nameSize: res.data.data.nameSize,
+          idProduct: res.data.data.id,
+          quantity: 1,
+          price: res.data.data.price,
+          idSizeProduct: res.data.data.id,
+          maxQuantity: res.data.data.quantity,
+        };
+        setProducts((prevProducts) => [...prevProducts, newProduct]);
+      });
+      toast.success("Thêm sản phẩm thành công ");
+    } else {
+      toast.warning("Sản phẩm đã có số lượng tối đa.");
+    }
     setModalVisible(false); // Close the modal after scanning
   };
+
+  const handleQRCodeScanned = (data) => {
+    setIdaData(data);
+  };
+  useEffect(() => {
+    if (idData !== "") {
+      addProductDetailByQRCode(idData, products);
+      setIdaData("");
+    }
+  }, [idData]);
 
   const columns = [
     {
@@ -1224,7 +1270,6 @@ function CreateBill() {
           >
             Danh sách
           </Button>
-          {scannedQRCode && <p>Scanned QR Code: {scannedQRCode.nameProduct}</p>}
         </Col>
         {/* <Col span={16}></Col> */}
         <Col span={8}>

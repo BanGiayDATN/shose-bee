@@ -1,12 +1,15 @@
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Table } from "antd";
+import { Button, Col, Modal, Row, Table } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function TabBills({ statusBill }) {
+function TabBills({ statusBill, dataFillter }) {
+
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
   const columns = [
@@ -96,17 +99,18 @@ function TabBills({ statusBill }) {
     },
   ];
 
+ 
   const [fillter, setFillter] = useState({
-    startTimeString: "",
-    endTimeString: "",
+    startTimeString: dataFillter.startTimeString,
+    endTimeString: dataFillter.endTimeString,
     status: [statusBill],
-    endDeliveryDateString: "",
-    startDeliveryDateString: "",
-    key: "",
-    employees: "",
-    user: "",
-    phoneNumber: "",
-    type: "",
+    endDeliveryDateString: dataFillter.endDeliveryDateString,
+    startDeliveryDateString: dataFillter.startDeliveryDateString,
+    key: dataFillter.key,
+    employees: dataFillter.employees,
+    user: dataFillter.user,
+    phoneNumber: dataFillter.phoneNumber,
+    type: dataFillter.type,
     page: 0,
   });
 
@@ -116,39 +120,125 @@ function TabBills({ statusBill }) {
     });
   }, []);
 
+  useEffect(() => {
+    var data = dataFillter
+    dataFillter.status = [statusBill]
+    BillApi.fetchAll(data).then((res) => {
+      setDataBill(res.data.data);
+    });
+  }, [dataFillter]);
+
+  const convertString = (key) => {
+    return  key === ""
+    ? "Tất cả"
+    : key === "CHO_XAC_NHAN"
+    ? "Xác nhận"
+    : key === "CHO_VAN_CHUYEN"
+    ? "Vận chuyển"
+    : key === "VAN_CHUYEN"
+    ? "Đã Vận chuyển"
+    : key === "KHONG_TRA_HANG"
+    ? "Hoàn thành"
+    : key === "DA_THANH_TOAN"
+    ? "Thanh Toán"
+    : "Hủy"
+  }
+
+  const nextStatusBill = () => {
+    return statusBill == "CHO_XAC_NHAN" ? 
+    "CHO_VAN_CHUYEN" : statusBill == "CHO_VAN_CHUYEN" ? 
+    "VAN_CHUYEN" : statusBill == "VAN_CHUYEN" ? 
+    "DA_THANH_TOAN" :  statusBill == "DA_THANH_TOAN" ? "KHONG_TRA_HANG" :
+    "DA_HUY" 
+  }
+  const changeStatusBill = (e) => {
+    console.log(nextStatusBill())
+    Modal.confirm({
+      title: "Xác nhận",
+      content: `Bạn có đồng ý ${convertString(statusBill)} không?`,
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async() => {
+        var data = {
+          ids: dataIdCheck,
+          status: nextStatusBill()
+        }
+        await BillApi.changeStatusAllBillByIds(data).then(response =>{
+          if(response.data.data == true){
+            console.log(response.data.data );
+            toast(`${convertString(statusBill)} thành công`)
+          }
+        })
+        await  BillApi.fetchAll(fillter).then((res) => {
+          setDataBill(res.data.data);
+          console.log(res.data.data)
+        });
+      },
+      onCancel: () => {
+       
+      },
+    });
+  };
+
   return (
     <div style={{ width: "100%", marginTop: "0px" }}>
-      <Table
-        dataSource={dataBill}
-        rowKey="id"
-        style={{ width: "100%", marginTop: "0px" }}
-        columns={columns}
-        pagination={{ pageSize: 3 }}
-        rowSelection={{
-          type: "checkbox",
-          onSelectRow: (keys) => {},
-          onSelectAll: (checked) => {
-            if (checked) {
-              setDataIdCheck(dataBill.map((row) => row.id));
-            } else {
-              setDataIdCheck([]);
-            }
-          },
-          onSelect: (checked, keys) => {
-            if (checked) {
-              setDataIdCheck(...dataIdCheck, keys.id);
-            } else {
-              var data = [...dataIdCheck];
-              const index = data.indexOf(keys.id);
-              if (index > -1) {
-                data.splice(index, 1);
+      <Row style={{ width: "100%" }}>
+        <Table
+          dataSource={dataBill}
+          rowKey="id"
+          style={{ width: "100%", marginTop: "0px" }}
+          columns={columns}
+          pagination={{ pageSize: 10 }}
+          rowSelection={{
+            type: "checkbox",
+            onSelectRow: (keys) => {},
+            onSelectAll: (checked) => {
+              if (checked) {
+                setDataIdCheck(dataBill.map((row) => row.id));
+              } else {
+                setDataIdCheck([]);
               }
-              setDataIdCheck(data);
-            }
-          },
-        }}
-        className="bill-table"
+            },
+            onSelect: (checked, keys) => {
+              if (checked) {
+                setDataIdCheck(...dataIdCheck, keys.id);
+              } else {
+                var data = [...dataIdCheck];
+                const index = data.indexOf(keys.id);
+                if (index > -1) {
+                  data.splice(index, 1);
+                }
+                setDataIdCheck(data);
+              }
+            },
+          }}
+          className="bill-table"
+        />
+      </Row>
+      {statusBill != "" && statusBill != 'DA_HUY' && statusBill != 'KHONG_TRA_HANG'? (
+        <Row style={{ width: "100%", marginTop: "15px" }} justify={"end"}>
+          <Col span={3} style={{ marginRight: "10px" }}>
+            <Button onClick={(e) => changeStatusBill(e)}>{convertString(statusBill)}</Button>
+          </Col>
+        </Row>
+      ) : (
+        <Row></Row>
+      )}
+
+<ToastContainer
+        position="top-right"
+        autoClose={100}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
+      {/* Same as */}
+      <ToastContainer />
     </div>
   );
 }

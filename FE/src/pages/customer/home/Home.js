@@ -20,8 +20,15 @@ import CardItem from "../component/Card";
 import { Grid } from "react-virtualized";
 function Home() {
   const [listCategory, setListcategory] = useState([]);
-  const [listProductDetailByCategory, setListProductDetailByCategory] =
-    useState([]);
+  const [listProductDetailByCategory, setListProductDetailByCategory] =useState([]);
+
+
+  const firstCategoryId = listCategory.length > 0 ? listCategory[0].id : null;
+  useEffect(() => {
+    if (firstCategoryId !== null) {
+      getProductDetailByCategory(firstCategoryId);
+    }
+  }, [firstCategoryId]);
 
     const cellRenderer = ({ columnIndex, key, style }) => (
       <div key={key} style={style}>
@@ -113,7 +120,7 @@ function Home() {
             <div className="title-category-home">
               <div className="text-category">Loại giày</div>
 
-              <Menu>
+              <Menu defaultSelectedKeys={['0']}>
                 {listCategory.map((item, index) => (
                   <Menu.Item
                     className="item-category"
@@ -121,6 +128,7 @@ function Home() {
                     onClick={() => {
                       getProductDetailByCategory(item.id);
                     }}
+                    style={{ marginBottom: "20px" }}
                   >
                     {item.name}
                   </Menu.Item>
@@ -146,7 +154,8 @@ function Home() {
         columnWidth={380} // Chiều rộng của mỗi cột (bao gồm cả khoảng trống giữa cột)
         rowCount={1} // Số lượng hàng trong danh sách (chỉ có 1 hàng ngang)
         rowHeight={470} // Chiều cao của hàng ngang
-        cellRenderer={cellRenderer} // Hàm để render từng ô
+        cellRenderer={cellRenderer}
+        marginRight={50}
       />
             </div>
           </Col>
