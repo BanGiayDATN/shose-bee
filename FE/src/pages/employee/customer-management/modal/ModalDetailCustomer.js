@@ -91,25 +91,33 @@ const ModalDetailCustomer = ({ visible }) => {
       console.log(address);
       CustomerApi.getOne(id).then((res) => {
         AddressApi.getAddressByUserIdAndStatus(id).then((resAddress) => {
+          const addressData = resAddress.data.data;
           setCustomer(res.data.data);
-          form.setFieldsValue({
+          const formValues = {
             ...res.data.data,
             dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
-            province: resAddress.data.data.province,
-            district: resAddress.data.data.district,
-            ward: resAddress.data.data.ward,
-            line: resAddress.data.data.line,
-          });
-          AddressApi.fetchAllProvinceWard(
-            resAddress.data.data.toDistrictId
-          ).then((resWard) => {
-            setListWard(resWard.data.data);
-          });
-          AddressApi.fetchAllProvinceDistricts(
-            resAddress.data.data.provinceId
-          ).then((resDistrict) => {
-            setListDistricts(resDistrict.data.data);
-          });
+          };
+
+          if (addressData) {
+            formValues.province = addressData.province;
+            formValues.district = addressData.district;
+            formValues.ward = addressData.ward;
+            formValues.line = addressData.line;
+          }
+
+          form.setFieldsValue(formValues);
+          if (resAddress.data.data?.toDistrictId) {
+            AddressApi.fetchAllProvinceWard(
+              resAddress.data.data.toDistrictId
+            ).then((resWard) => {
+              setListWard(resWard.data.data);
+            });
+            AddressApi.fetchAllProvinceDistricts(
+              resAddress.data.data.provinceId
+            ).then((resDistrict) => {
+              setListDistricts(resDistrict.data.data);
+            });
+          }
         });
 
         if (res.data.data?.avata) {
