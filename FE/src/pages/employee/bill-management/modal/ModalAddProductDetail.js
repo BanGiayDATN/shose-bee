@@ -190,7 +190,7 @@ function ModalAddProductDetail({
           <img
             src={text}
             alt="Ảnh sản phẩm"
-            style={{ width: "170px", borderRadius: "10%", height: "140px" }}
+            style={{ width: "120px", borderRadius: "10%", height: "100px" }}
           />
           {record.promotion !== null && (
             <div
@@ -207,7 +207,7 @@ function ModalAddProductDetail({
                 icon={faBookmark}
                 style={{
                   ...getPromotionColor(record.promotion),
-                  fontSize: "3.5em",
+                  fontSize: "3.2em",
                 }}
               />
               <span
