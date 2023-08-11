@@ -123,8 +123,8 @@ function HeaderMenu() {
       </div>
 
       <div>
-        {modal && (
-          <div className={`search-panel ${modal ? "open" : ""}`}>
+     
+          <div className={`search-panel ${modal ? "visible" : "hidden"}`}>
             <div className="header-search">
               <div className="text-search">Tìm kiếm sản phẩm</div>
 
@@ -147,7 +147,7 @@ function HeaderMenu() {
               <Button className=" button-search">Tìm kiếm</Button>
             </div>
           </div>
-        )}
+        
       </div>
     </div>
   );
