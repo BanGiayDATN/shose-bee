@@ -20,9 +20,9 @@ import moment from "moment";
 import { AddressApi } from "../../../../api/customer/address/address.api";
 import { useNavigate } from "react-router";
 import { PlusOutlined, CameraOutlined } from "@ant-design/icons";
-
-import { QrReader } from "react-qr-reader";
-
+import ModalQRScanner from "./ModalQRScanner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 const { Option } = Select;
 
 const ModalCreateAccount = () => {
@@ -33,9 +33,8 @@ const ModalCreateAccount = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [qrScannerVisible, setQrScannerVisible] = useState(false);
-  const showQrScanner = () => {
-    setQrScannerVisible(true);
-  };
+  const [qrCodeData, setQRCodeData] = useState("");
+
   // ảnh
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -85,48 +84,22 @@ const ModalCreateAccount = () => {
       </div>
     </div>
   );
-
-  const [qrData, setQrData] = useState("");
-
   const handleScan = (qrData) => {
-    if (qrData) {
-      console.log("QR Data:", qrData);
+    setQRCodeData(qrData);
+    const qrDataArray = qrData.split("|");
+    const citizenIdentity = qrDataArray[0];
+    const fullName = qrDataArray[2];
+    const dateOfBirth = moment(qrDataArray[3], "DDMMYYYY").format("YYYY-MM-DD");
+    const gender = qrDataArray[4];
 
-      const qrDataArray = qrData.text.split("|");
-      const citizenIdentity = qrDataArray[0];
-      const fullName = qrDataArray[2];
+    form.setFieldsValue({
+      citizenIdentity: citizenIdentity,
+      fullName: fullName,
+      dateOfBirth: dateOfBirth,
+      gender: gender === "Nữ" ? "false" : "true",
+    });
 
-      const dateOfBirth = moment(qrDataArray[3], "DDMMYYYY").format(
-        "YYYY-MM-DD"
-      );
-
-      const gender = qrDataArray[4];
-
-      // const fullAddress = qrDataArray[5];
-      // //Phân tách địa chỉ
-      // const addressParts = fullAddress.split(", ");
-      // const line = addressParts[0] || "";
-      // const ward = addressParts[1] || "";
-      // const district = addressParts[2] || "";
-      // const province = addressParts[3] || "";
-      if (citizenIdentity && fullName && dateOfBirth && gender) {
-        form.setFieldsValue({
-          citizenIdentity: citizenIdentity,
-          fullName: fullName,
-          dateOfBirth: dateOfBirth,
-          gender: gender === "Nữ" ? "false" : "true",
-          // line: line,
-          // ward: ward,
-          // district: district,
-          // province: province,
-        });
-      } else {
-        console.error("Error");
-      }
-    }
-  };
-  const handleError = (error) => {
-    console.error("QR Scan Error:", error);
+    setQrScannerVisible(false);
   };
   const loadDataProvince = () => {
     AddressApi.fetchAllProvince().then(
@@ -247,17 +220,7 @@ const ModalCreateAccount = () => {
         </span>
       </div>
       <Row gutter={[24, 8]}>
-        <Col
-          className="filter"
-          span={6}
-          style={
-            {
-              // display: "flex",
-              // flexDirection: "column",
-              // alignItems: "center",
-            }
-          }
-        >
+        <Col className="filter" span={6}>
           <div>
             <h1
               style={{
@@ -323,26 +286,25 @@ const ModalCreateAccount = () => {
           </h1>
           <Form form={form} layout="vertical">
             <div className="title_add">
-              <Row style={{ marginLeft: "58%", width: "300px" }}>
-                <Col span={24}>
+              <Row gutter={[24, 8]}>
+                <Col span={10} style={{ marginLeft: "auto" }}>
                   <div>
-                    {qrScannerVisible && (
-                      <div>
-                        <QrReader
-                          delay={300}
-                          onError={handleError}
-                          onResult={handleScan}
-                        />
-                        <p> {qrData}</p>
-                      </div>
-                    )}
                     <Button
-                      icon={<CameraOutlined />}
-                      onClick={showQrScanner}
+                      className="btn_filter"
+                      icon={<FontAwesomeIcon icon={faQrcode} />}
+                      onClick={() => setQrScannerVisible(true)}
                       style={{ marginLeft: "160px" }}
                     >
                       Quét QR
                     </Button>
+                    <ModalQRScanner
+                      visible={qrScannerVisible}
+                      onCancel={() => setQrScannerVisible(false)}
+                      onQRCodeScanned={(qrData) => {
+                        setQRCodeData(qrData);
+                        handleScan(qrData);
+                      }}
+                    />
                   </div>
                 </Col>
               </Row>
@@ -351,9 +313,7 @@ const ModalCreateAccount = () => {
                   <Form.Item
                     label="Tên nhân viên"
                     name="fullName"
-                    rules={[
-                      { required: true,message: "Vui lòng nhập tên" },
-                    ]}
+                    rules={[{ required: true, message: "Vui lòng nhập tên" }]}
                   >
                     <Input className="input-item" placeholder="Tên nhân viên" />
                   </Form.Item>
