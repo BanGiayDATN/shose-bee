@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Space, Spin, Col, Slider, Select, Input } from "antd";
+import {
+  Button,
+  Table,
+  Space,
+  Spin,
+  Col,
+  Slider,
+  Select,
+  Input,
+  Tooltip,
+} from "antd";
 import "./style-product.css";
 import { useAppDispatch } from "../../../app/hook";
 
@@ -165,22 +175,26 @@ const ProductManagement = () => {
       key: "hanhDong",
       render: (text, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            type="primary"
-            title="Chi tiết sản phẩm"
-            style={{ backgroundColor: "#FF9900" }}
-            onClick={() => handleViewDetail(record.id)}
-          >
-            <FontAwesomeIcon icon={faEye} />
-          </Button>
-          <Button
-            type="primary"
-            title="Chỉnh sửa sản phẩm"
-            style={{ backgroundColor: "#0099FF", borderColor: "#0099FF" }}
-            onClick={() => handleUpdate(record.id)}
-          >
-            <FontAwesomeIcon icon={faEdit} />
-          </Button>
+          <Tooltip title="Xem chi tiết sản phẩm">
+            <Button
+              type="primary"
+              title="Chi tiết sản phẩm"
+              style={{ backgroundColor: "#FF9900" }}
+              onClick={() => handleViewDetail(record.id)}
+            >
+              <FontAwesomeIcon icon={faEye} />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Chỉnh sửa sản phẩm">
+            <Button
+              type="primary"
+              title="Chỉnh sửa sản phẩm"
+              style={{ backgroundColor: "#0099FF", borderColor: "#0099FF" }}
+              onClick={() => handleUpdate(record.id)}
+            >
+              <FontAwesomeIcon icon={faEdit} />
+            </Button>
+          </Tooltip>
           <ModalDetailProductManagment
             visible={modaleDetail}
             onCancel={handleCancel}
@@ -194,29 +208,6 @@ const ProductManagement = () => {
   return (
     <>
       <div className="title_sole">
-        {isSubmitted && (
-          <Space
-            direction="vertical"
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "white",
-              zIndex: 999999999,
-            }}
-          >
-            <Space>
-              <Spin tip="Loading" size="large">
-                <div className="content" />
-              </Spin>
-            </Space>
-          </Space>
-        )}{" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý sản phẩm</span>
       </div>
@@ -300,14 +291,15 @@ const ProductManagement = () => {
           </span>
           <div style={{ marginLeft: "auto" }}>
             <Link to="/create-product-management">
-              <Button
-                type="primary"
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                style={{ height: 40 }}
-                title="Tạo sản phẩm chi tiết"
-              >
-                Tạo sản phẩm
-              </Button>
+              <Tooltip title="Tạo sản phẩm chi tiết">
+                <Button
+                  type="primary"
+                  icon={<FontAwesomeIcon icon={faPlus} />}
+                  style={{ height: 40 }}
+                >
+                  Tạo sản phẩm
+                </Button>
+              </Tooltip>
             </Link>
           </div>
         </div>

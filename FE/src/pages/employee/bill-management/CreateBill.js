@@ -349,31 +349,39 @@ function CreateBill() {
     },
   ];
   const selectedAccount = (record) => {
+    setShipFee(0);
+    form.resetFields();
     dispatch(addUserBillWait(record));
     setIsModalAccountOpen(true);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
     });
     AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
-      setAddress({
-        city: res.data.data.province,
-        district: res.data.data.district,
-        wards: res.data.data.ward,
-        detail: res.data.data.line,
-      });
-      form.setFieldsValue({
-        phoneNumber: res.data.data.user.phoneNumber,
-        name: res.data.data.user.fullName,
-        city: res.data.data.province,
-        district: res.data.data.district,
-        wards: res.data.data.ward,
-        detail: res.data.data.line,
-      });
-      addressFull(
-        res.data.data.provinceId,
-        res.data.data.toDistrictId,
-        res.data.data.wardCode
-      );
+      const addressData = res.data.data;
+      const formValues = {
+        phoneNumber: record.phoneNumber,
+        name: record.fullName,
+      };
+      if (addressData) {
+        setAddress({
+          city: addressData.province,
+          district: addressData.district,
+          wards: addressData.ward,
+          detail: addressData.line,
+        });
+        addressFull(
+          addressData.provinceId,
+          addressData.toDistrictId,
+          addressData.wardCode
+        );
+        formValues.name = addressData.user.fullName;
+        formValues.phoneNumber = addressData.user.phoneNumber;
+        formValues.city = addressData.province;
+        formValues.district = addressData.district;
+        formValues.wards = addressData.ward;
+        formValues.detail = addressData.line;
+      }
+      form.setFieldsValue(formValues);
     });
 
     setBillRequest({
@@ -840,32 +848,59 @@ function CreateBill() {
   // QR code sản phẩm
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [scannedQRCode, setScannedQRCode] = useState({});
-  const handleQRCodeScanned = (data) => {
-    ProducDetailtApi.getOne(data).then((res) => {
-      setScannedQRCode(res.data.data);
-      var index = products.findIndex((x) => x.idProduct === res.data.data.id);
-      var data = {
-        image: res.data.data.image,
-        productName: res.data.data.nameProduct,
-        nameSize: res.data.data.nameSize,
-        idProduct: res.data.data.id,
-        quantity: 1,
-        price: res.data.data.price,
-        idSizeProduct: res.data.data.id,
-        maxQuantity: res.data.data.quantity,
-      };
-      if (index == -1) {
-        setProducts([...products, data]);
-      } else {
-        data.quantity = products[index].quantity + 1;
-        var updatedProducts = [...products];
-        updatedProducts[index] = data;
-        setProducts(updatedProducts);
-      }
-    });
+  const [idData, setIdaData] = useState("");
+  const addProductDetailByQRCode = (data, products) => {
+    const existingProduct = products.find(
+      (product) => product.idProduct === data
+    );
+
+    if (
+      existingProduct &&
+      existingProduct.quantity < existingProduct.maxQuantity
+    ) {
+      setProducts((prevProducts) => {
+        const updatedProducts = prevProducts.map((product) => {
+          if (product.idProduct === data) {
+            return {
+              ...product,
+              quantity: product.quantity + 1,
+            };
+          }
+          return product;
+        });
+        return updatedProducts;
+      });
+      toast.success("Thêm sản phẩm thành công ");
+    } else if (!existingProduct) {
+      ProducDetailtApi.getOne(data).then((res) => {
+        const newProduct = {
+          image: res.data.data.image,
+          productName: res.data.data.nameProduct,
+          nameSize: res.data.data.nameSize,
+          idProduct: res.data.data.id,
+          quantity: 1,
+          price: res.data.data.price,
+          idSizeProduct: res.data.data.id,
+          maxQuantity: res.data.data.quantity,
+        };
+        setProducts((prevProducts) => [...prevProducts, newProduct]);
+      });
+      toast.success("Thêm sản phẩm thành công ");
+    } else {
+      toast.warning("Sản phẩm đã có số lượng tối đa.");
+    }
     setModalVisible(false); // Close the modal after scanning
   };
+
+  const handleQRCodeScanned = (data) => {
+    setIdaData(data);
+  };
+  useEffect(() => {
+    if (idData !== "") {
+      addProductDetailByQRCode(idData, products);
+      setIdaData("");
+    }
+  }, [idData]);
 
   const columns = [
     {
@@ -1153,25 +1188,25 @@ function CreateBill() {
         CustomerApi.quickCreate(formData)
           .then((res) => {
             toast.success("Thêm thành công");
-            setAddress({
-              city: values.province,
-              district: values.district,
-              wards: values.ward,
-              detail: values.line,
-            });
+            // setAddress({
+            //   city: values.province,
+            //   district: values.district,
+            //   wards: values.ward,
+            //   detail: values.line,
+            // });
             form.setFieldsValue({
               phoneNumber: values.phoneNumber,
               name: values.fullName,
-              city: values.province,
-              district: values.district,
-              wards: values.ward,
-              detail: values.line,
+              // city: values.province,
+              // district: values.district,
+              // wards: values.ward,
+              // detail: values.line,
             });
-            addressFull(
-              values.provinceId,
-              values.toDistrictId,
-              values.wardCode
-            );
+            // addressFull(
+            //   values.provinceId,
+            //   values.toDistrictId,
+            //   values.wardCode
+            // );
             setBillRequest({
               ...billRequest,
               phoneNumber: values.phoneNumber,
@@ -1230,7 +1265,6 @@ function CreateBill() {
           >
             Danh sách
           </Button>
-          {scannedQRCode && <p>Scanned QR Code: {scannedQRCode.nameProduct}</p>}
         </Col>
         {/* <Col span={16}></Col> */}
         <Col span={8}>
@@ -2265,7 +2299,7 @@ function CreateBill() {
       >
         <Form form={formAddUser} layout="vertical">
           <Row gutter={[24, 8]}>
-            <Col span={10} style={{ marginLeft: "6%" }}>
+            <Col span={20} style={{ marginLeft: "6%" }}>
               <div className="title_add">
                 <Form.Item
                   label="Tên khách hàng"
@@ -2280,21 +2314,7 @@ function CreateBill() {
                 >
                   <Input className="input-item" placeholder="Tên khách hàng" />
                 </Form.Item>
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập email" },
-                    { max: 50, message: "Email tối đa 50 ký tự" },
-                    {
-                      pattern:
-                        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
-                      message: "Email không đúng định dạng",
-                    },
-                  ]}
-                >
-                  <Input className="input-item" placeholder="Email" />
-                </Form.Item>
+
                 <Form.Item
                   label="Số điện thoại"
                   name="phoneNumber"
@@ -2328,100 +2348,6 @@ function CreateBill() {
                   </Radio.Group>
                 </Form.Item>
               </div>
-            </Col>
-
-            <Col span={10} style={{ marginLeft: "40px", marginTop: "16px" }}>
-              <Form.Item
-                label="Tỉnh/Thành phố"
-                name="province"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn Tỉnh/Thành phố",
-                  },
-                ]}
-              >
-                <Select defaultValue="" onChange={handleProvinceChangeAddUser}>
-                  <Option value="">--Chọn Tỉnh/Thành phố--</Option>
-                  {listProvince?.map((item) => {
-                    return (
-                      <Option
-                        key={item.ProvinceID}
-                        value={item.ProvinceName}
-                        valueProvince={item.ProvinceID}
-                      >
-                        {item.ProvinceName}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Quận/Huyện"
-                name="district"
-                rules={[
-                  { required: true, message: "Vui lòng chọn Quận/Huyện" },
-                ]}
-              >
-                <Select defaultValue=" " onChange={handleDistrictChangeAddUser}>
-                  <Option value=" ">--Chọn Quận/Huyện--</Option>
-                  {listDistricts?.map((item) => {
-                    return (
-                      <Option
-                        key={item.DistrictID}
-                        value={item.DistrictName}
-                        valueDistrict={item.DistrictID}
-                      >
-                        {item.DistrictName}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Xã/Phường"
-                name="ward"
-                rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
-              >
-                <Select defaultValue="" onChange={handleWardChangeAddUser}>
-                  <Option value="">--Chọn Xã/Phường--</Option>
-                  {listWard?.map((item) => {
-                    return (
-                      <Option
-                        key={item.WardCode}
-                        value={item.WardName}
-                        valueWard={item.WardCode}
-                      >
-                        {item.WardName}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Số nhà/Ngõ/Đường"
-                name="line"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập số nhà/ngõ/đường",
-                  },
-                ]}
-              >
-                <Input className="input-item" placeholder="Số nhà/Ngõ/Đường" />
-              </Form.Item>
-
-              <Form.Item name="toDistrictId" hidden>
-                <Input disabled />
-              </Form.Item>
-              <Form.Item name="provinceId" hidden>
-                <Input disabled />
-              </Form.Item>
-              <Form.Item name="wardCode" hidden>
-                <Input disabled />
-              </Form.Item>
             </Col>
           </Row>
         </Form>

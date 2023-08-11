@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 /*
  *  @author diemdz
  */
@@ -16,10 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 @RequestMapping("/client/product-detail")
 public class ProductDetailClientRestController {
+
     @Autowired
     private ProductDetailService productDetailService;
     @GetMapping("/byCategory/{id}")
     public ResponseObject getByIdCategory(@PathVariable("id") String id) {
         return new ResponseObject(productDetailService.GetProductDetailByCategory(id));
+    }
+    @GetMapping("/{id}&&{codeColor}")
+    public ResponseObject  getDetailProductOfClient(@PathVariable("id") String id,@PathVariable("codeColor") String codeColor) {
+        String rawCodeColor = codeColor.replace("%23", "#");
+
+        return new ResponseObject(productDetailService.getDetailProductOfClient(id,rawCodeColor));
     }
 }

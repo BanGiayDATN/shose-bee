@@ -116,7 +116,6 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
   const loadData = () => {
     ProducDetailtApi.fetchAll(selectedValues).then((res) => {
       setListProductDetails(res.data.data);
-      setIsSubmitted(false);
     });
   };
 
@@ -130,7 +129,6 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
   useEffect(() => {
     console.log(selectedValues);
     if (id != null && id !== "") {
-      setIsSubmitted(true);
       getList();
       loadData();
     }
@@ -310,34 +308,10 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
     return formatter.format(value);
   };
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   return (
     <Modal visible={visible} onCancel={onCancel} footer={null} width={1200}>
       <div className="title_sole">
-        {isSubmitted && (
-          <Space
-            direction="vertical"
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "white",
-              zIndex: 999999999,
-            }}
-          >
-            <Space>
-              <Spin tip="Loading" size="large">
-                <div className="content" />
-              </Spin>
-            </Space>
-          </Space>
-        )}{" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý sản phẩm chi tiết</span>
       </div>
