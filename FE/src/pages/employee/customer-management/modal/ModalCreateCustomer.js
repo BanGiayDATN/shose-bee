@@ -186,7 +186,7 @@ const ModalCreateCustomer = () => {
   };
 
   const handleCancel = () => {
-    navigate("/customerr-management");
+    navigate("/customer-management");
   };
   const validateAge = (rule, value) => {
     if (value) {
