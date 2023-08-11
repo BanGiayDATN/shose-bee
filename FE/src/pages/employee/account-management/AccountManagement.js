@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider, Image, Row, Col } from "antd";
+import {
+  Input,
+  Button,
+  Select,
+  Table,
+  Slider,
+  Image,
+  Row,
+  Col,
+  Tooltip,
+} from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-staff.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
@@ -18,7 +28,7 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
-import { AddressApi } from "../../../api/customer/address/address.api";
+
 
 const { Option } = Select;
 
@@ -282,23 +292,25 @@ const AccountManagement = () => {
       render: (text, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
           <Link to={`/detail-staff-management/${record.id}`}>
-            <Button
-              type="primary"
-              title="Chi tiết nhân viên"
-              style={{ backgroundColor: "#FF9900" }}
-              onClick={() => handleViewDetail(record.id)}
-            >
-              <FontAwesomeIcon icon={faEye} />
-            </Button>
+            <Tooltip title="Chi tiết nhân viên">
+              <Button
+                type="primary"
+                style={{ backgroundColor: "#FF9900" }}
+                onClick={() => handleViewDetail(record.id)}
+              >
+                <FontAwesomeIcon icon={faEye} />
+              </Button>
+            </Tooltip>
           </Link>
           <Link to={`/update-staff-management/${record.id}`}>
-            <Button
-              type="primary"
-              title="Chỉnh sửa nhân viên"
-              style={{ backgroundColor: "green", borderColor: "green" }}
-            >
-              <FontAwesomeIcon icon={faEdit} />
-            </Button>
+            <Tooltip title="Chỉnh sửa nhân viên">
+              <Button
+                type="primary"
+                style={{ backgroundColor: "green", borderColor: "green" }}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+            </Tooltip>
           </Link>
         </div>
       ),
@@ -419,13 +431,15 @@ const AccountManagement = () => {
           </span>
           <div style={{ marginLeft: "auto" }}>
             <Link to="/create-staff-management">
-              <Button
-                type="primary"
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={() => setModalVisible(true)}
-              >
-                Thêm
-              </Button>
+              <Tooltip title="Thêm nhân viên">
+                <Button
+                  type="primary"
+                  icon={<FontAwesomeIcon icon={faPlus} />}
+                  onClick={() => setModalVisible(true)}
+                >
+                  Thêm
+                </Button>
+              </Tooltip>
             </Link>
           </div>
         </div>
