@@ -10,6 +10,8 @@ import com.example.shose.server.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,22 +33,31 @@ public class CreateBillOfflineRequest {
 
     private String userName;
 
+    @NotEmpty
     private String itemDiscount;
 
+    @NotEmpty
     private String totalMoney;
 
     private String note;
 
+    @NotEmpty
     private String typeBill;
 
+    @NotEmpty
     private String statusPayMents;
+
+    private String deliveryDate;
 
     private String moneyShip;
 
+    @NotNull
     private List<CreateBillDetailRequest> billDetailRequests;
 
+    @NotNull
     private List<CreatePaymentsMethodRequest> paymentsMethodRequests;
 
+    @NotNull
     private List<CreateVoucherDetailRequest> vouchers;
 
 }

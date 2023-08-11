@@ -1,6 +1,6 @@
-import { Button, Col, Row, Table } from "antd";
+import { Button, Col, Row, Table, Tabs } from "antd";
 import Search from "antd/es/input/Search";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -9,142 +9,103 @@ import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useAppDispatch } from "../../../app/hook";
 import { getAllBillAtCounter } from "../../../app/reducer/Bill.reducer";
 import moment from "moment";
+import CreateBill from "./CreateBill";
+import { toast } from "react-toastify";
 
 function Sale() {
-
-  var data = useSelector((state) => state.bill.billAtCounter.value);
-
-  const [fillter, setFillter] = useState({
-    key: "",
+  const [invoiceNumber, setInvoiceNumber] = useState(2);
+ 
+  const defaultPanes = new Array(invoiceNumber).fill(null).map((_, index) => {
+    const id = String(index + 1);
+    return {
+      label: `Hóa đơn  ${id}`,
+      children: <CreateBill />,
+      key: id,
+    };
   });
 
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    var value = ""
-    BillApi.fetchAllBillAtCounter(value).then((res) => {
-      dispatch(getAllBillAtCounter(res.data.data));
-    });
-  }, []);
+  const [activeKey, setActiveKey] = useState(defaultPanes[0].key);
+  const [items, setItems] = useState(defaultPanes);
+  const newTabIndex = useRef(1);
 
 
-  const columns = [
-    {
-      title: <div className="title-product">STT</div>,
-      dataIndex: "stt",
-      key: "stt",
-    },
-    {
-      title: <div className="title-product">Mã Hóa đơn</div>,
-      dataIndex: "code",
-      key: "code",
-    },
-    {
-      title: <div className="title-product">Số sản Phẩm</div>,
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title: <div className="title-product">Tổng tiền</div>,
-      dataIndex: "totalMoney",
-      key: "totalMoney",
-      render: (totalMoney) => (
-        <span>
-          {totalMoney >= 1000
-            ? totalMoney.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
-            : totalMoney}
-        </span>
-      ),
-    },
-    {
-      title: <div className="title-product">Giờ tạo</div>,
-      dataIndex: "createdDate",
-      key: "createdDate",
-      sorter: (a, b) => a.createdDate - b.createdDate,
-      render: (text) => {
-        const formattedDate = moment(text).format("HH:mm:ss"); // Định dạng ngày
-        return formattedDate;
-      },
-    },
-    {
-      title: <div className="title-product">Trạng thái</div>,
-      dataIndex: "statusBill",
-      key: "statusBill",
-      render: (text) => {
-        return (
-          <span
-            // className={`trangThai ${" status_" + text} `}
-            // style={{ border: "none", borderRadius: "0px" }}
-          >
-            {text === "TAO_HOA_DON"
-              ? "Tạo Hóa đơn"
-              : text === "CHO_XAC_NHAN"
-              ? "Chờ xác nhận"
-              : text === "VAN_CHUYEN"
-              ? "Đang vận chuyển"
-              : text === "DA_THANH_TOAN"
-              ? "Đã thanh toán"
-              : text === "TRA_HANG"
-              ? "Trả hàng"
-              : text === "KHONG_TRA_HANG"
-              ? "Thành công"
-              : "Đã hủy"}
-          </span>
-        );
-      },
-    },
-    {
-      title: <div className="title-product">Thao Tác</div>,
-      dataIndex: "id",
-      key: "actions",
-      render: (id) => (
-        <Button>
-          <Link to={`/bill-management/detail-bill/${id}`}>Chi tiết</Link>
-        </Button>
-      ),
-    },
-  ];
+  const onChange = (key) => {
+    setActiveKey(key);
+  };
+  const add = (e) => {
+    if(invoiceNumber >= 5){
+      toast.warning(`Không thể tạo thêm hóa đơn`);
+    }else{
+      const newActiveKey = `Hóa đơn ${newTabIndex.current++}`;
+      setItems([
+        ...items,
+        {
+          label: `Hóa đơn ${newTabIndex.current++}`,
+          children: <CreateBill style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
+          key: newActiveKey,
+        },
+      ]);
+      setActiveKey(newActiveKey);
+      setInvoiceNumber(invoiceNumber + 1)
+    }
+   
+  };
 
-  const search = (value) =>{
-    // setFillter({ ...fillter, ["key"]: value })
-    BillApi.fetchAllBillAtCounter(value).then((res) => {
-      console.log(res);
-      dispatch(getAllBillAtCounter(res.data.data));
-    });
-  }
+  const remove = (targetKey) => {
+    console.log(invoiceNumber);
+    if(invoiceNumber > 1){
+      const targetIndex = items.findIndex((pane) => pane.key === targetKey);
+    const newPanes = items.filter((pane) => pane.key !== targetKey);
+    if (newPanes.length && targetKey === activeKey) {
+      const { key } =
+        newPanes[
+          targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
+        ];
+      setActiveKey(key);
+    }
+    setItems(newPanes);
+    setInvoiceNumber(invoiceNumber - 1)
+    }else{
+
+    }
+    
+  };
+  const onEdit = (targetKey, action) => {
+    if (action === "add") {
+      // add();
+    } else {
+      remove(targetKey);
+    }
+  };
 
   return (
     <div>
       <Row style={{ background: "white", width: "100%" }}>
-        <Row style={{ width: "100%" , marginTop: "10px"}}>
+        <Row style={{ width: "100%", marginTop: "10px" }}>
           <Col span={12}>
-            <Search
-              placeholder="input search text"
-              allowClear
-              style={{ marginLeft: "30px" }}
-              enterButton="Search"
-              size="large"
-              onSearch={(value) => {search(value);}}
-            />
+          
           </Col>
-          <Col span={12} align={"end"} >
-            <Link to={"/create-bill"} style={{ marginRight: "10px" }}>
-              <Button type="primary" icon={<PlusOutlined />} size={"large"}>
-                Tạo đơn hàng
-              </Button>
-            </Link>
+          <Col span={12} align={"end"}>
+            <Button
+              type="primary"
+              onClick={(e) => add(e)}
+              icon={<PlusOutlined />}
+              size={"large"}
+              style={{marginRight: "20px"}}
+            >
+              Tạo hóa đơn
+            </Button>
           </Col>
         </Row>
         <Row style={{ width: "100%", marginTop: "40px" }}>
-          <Table
-            dataSource={data}
-            columns={columns}
-            rowKey="id"
-            pagination={{ pageSize: 10 }}
-            className="product-table"
+          <Tabs
+            hideAdd
+            onChange={onChange}
+            activeKey={activeKey}
+            style={{ width: "100%", marginLeft: "10px" }}
+            type="editable-card"
+            onEdit={onEdit}
+            items={items}
           />
         </Row>
       </Row>
@@ -153,3 +114,4 @@ function Sale() {
 }
 
 export default Sale;
+

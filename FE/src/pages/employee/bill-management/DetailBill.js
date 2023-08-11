@@ -1251,7 +1251,7 @@ function DetailBill() {
                               height: "37px",
                             }}
                             customInput={Input}
-                            value={statusBill.totalMoney}
+                            defaultValue={statusBill.totalMoney}
                             onChange={(e) =>
                               onChangeDescStatusBill(
                                 "totalMoney",
@@ -1282,7 +1282,7 @@ function DetailBill() {
                           onChange={(value) =>
                             onChangeDescStatusBill("method", value)
                           }
-                          value={statusBill.method}
+                          defaultValue={statusBill.method}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
                               .toLowerCase()
@@ -1325,7 +1325,7 @@ function DetailBill() {
                     >
                       <TextArea
                         rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
-                        value={statusBill.actionDescription}
+                        defaultValue={statusBill.actionDescription}
                         placeholder="Nhập mô tả"
                         style={{ width: "100%", position: "F" }}
                         onChange={(e) =>
@@ -1364,7 +1364,7 @@ function DetailBill() {
                     >
                       <TextArea
                         rows={4}
-                        value={statusBill.actionDescription}
+                        defaultValue={statusBill.actionDescription}
                         placeholder="Nhập mô tả"
                         onChange={(e) =>
                           onChangeDescStatusBill(
@@ -1775,20 +1775,25 @@ function DetailBill() {
                 </span>
               </Col>
             </Row>
-            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-              <Col span={7}></Col>
-              <Col span={6}>Phí vận chuyển:</Col>
-              <Col span={10} align={"end"}>
-                <span>
-                  {bill.moneyShip >= 1000
-                    ? bill.moneyShip.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : bill.moneyShip + " đ"}
-                </span>
-              </Col>
-            </Row>
+              {
+                bill.moneyShip == undefined || bill.moneyShip == "" ? (
+                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                  <Col span={7}></Col>
+                  <Col span={6}>Phí vận chuyển:</Col>
+                  <Col span={10} align={"end"}>
+                    <span>
+                      {bill.moneyShip >= 1000
+                        ? bill.moneyShip.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })
+                        : bill.moneyShip + " đ"}
+                    </span>
+                  </Col>
+                </Row>
+                ) :(<Row></Row>)
+              }
+           
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Tiền giảm: </Col>
@@ -1886,7 +1891,7 @@ function DetailBill() {
                     height: "37px",
                   }}
                   customInput={Input}
-                  value={statusBill.totalMoney}
+                  defaultValue={statusBill.totalMoney}
                   onChange={(e) =>
                     onChangeDescStatusBill("totalMoney", e.target.value)
                   }
@@ -1909,7 +1914,7 @@ function DetailBill() {
                 placeholder="Chọn hình thức"
                 optionFilterProp="children"
                 onChange={(value) => onChangeDescStatusBill("method", value)}
-                value={statusBill.method}
+                defaultValue={statusBill.method}
                 filterOption={(input, option) =>
                   (option?.label ?? "")
                     .toLowerCase()
@@ -1947,7 +1952,7 @@ function DetailBill() {
                 placeholder="Chọn Loại"
                 optionFilterProp="children"
                 onChange={(value) => onChangeDescStatusBill("status", value)}
-                value={statusBill.status}
+                defaultValue={statusBill.status}
                 filterOption={(input, option) =>
                   (option?.label ?? "")
                     .toLowerCase()
@@ -1971,7 +1976,7 @@ function DetailBill() {
               <label className="label-bill">Mô Tả</label>
               <TextArea
                 rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
-                value={statusBill.actionDescription}
+                defaultValue={statusBill.actionDescription}
                 style={{ width: "100%", position: "relative" }}
                 placeholder="Nhập mô tả"
                 onChange={(e) =>
@@ -2014,7 +2019,7 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                  value={billRequest.name}
+                   defaultValue={billRequest.name}
                   onChange={(e) => onChangeBill("name", e.target.value)}
                   placeholder="Nhập tên khách hàng"
                   style={{ width: "98%", position: "relative", height: "40px" }}
@@ -2047,7 +2052,7 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                  value={billRequest.phoneNumber}
+                   defaultValue={billRequest.phoneNumber}
                   onChange={(e) => onChangeBill("phoneNumber", e.target.value)}
                   placeholder="Nhập số điện thoại"
                   style={{ width: "98%", position: "relative", height: "40px" }}
@@ -2236,7 +2241,7 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                  value={address.detail}
+                   defaultValue={address.detail}
                   onChange={(e) => onChangeAddress("detail", e.target.value)}
                   placeholder="Nhập địa chỉ"
                   style={{ width: "98%", position: "relative", height: "40px" }}
@@ -2249,7 +2254,7 @@ function DetailBill() {
               <label className="label-bill">Ghi chú</label>
               <TextArea
                 rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
-                value={billRequest.note}
+                defaultValue={billRequest.note}
                 style={{ width: "100%", position: "relative" }}
                 placeholder="Nhập mô tả"
                 onChange={(e) => onChangeBill("note", e.target.value)}
@@ -2358,7 +2363,7 @@ function DetailBill() {
                   {" "}
                   <InputNumber
                     min={1}
-                    value={quantity}
+                    defaultValue={quantity}
                     max={detaiProduct.quantity}
                     style={{ marginLeft: "4px" }}
                     onChange={(value) => {
@@ -2389,7 +2394,7 @@ function DetailBill() {
               <label className="label-bill">Ghi chú</label>
               <TextArea
                 rows={4}
-                value={refundProduct.note}
+                defaultValue={refundProduct.note}
                 style={{ width: "100%", position: "relative" }}
                 placeholder="Nhập mô tả"
                 onChange={(e) => onChangeRefundProduct("note", e.target.value)}
@@ -2499,7 +2504,7 @@ function DetailBill() {
                   <InputNumber
                     min={1}
                     max={detaiProduct.maxQuantity}
-                    value={quantity}
+                    defaultValue={quantity}
                     style={{ marginLeft: "4px" }}
                     onChange={(value) => {
                       if (
@@ -2530,7 +2535,7 @@ function DetailBill() {
               <label className="label-bill">Ghi chú</label>
               <TextArea
                 rows={4}
-                value={refundProduct.note}
+                defaultValue={refundProduct.note}
                 style={{ width: "100%", position: "relative" }}
                 placeholder="Nhập mô tả"
                 onChange={(e) => onChangeUpdateProduct("note", e.target.value)}

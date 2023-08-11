@@ -51,7 +51,7 @@ import ModalQRScanner from "../product-management/modal/ModalQRScanner";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 
-function CreateBill() {
+function CreateBill({removePane , targetKey}) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
   const [billRequest, setBillRequest] = useState({
@@ -125,7 +125,7 @@ function CreateBill() {
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
-  const [dayShip, setDayShip] = useState([]);
+  const [dayShip, setDayShip] = useState("");
   const [shipFee, setShipFee] = useState(0);
   const [searchCustomer, setSearchCustomer] = useState({
     keyword: "",
@@ -470,8 +470,8 @@ function CreateBill() {
         status: "THANH_TOAN",
       };
       setDataPayMent([...dataPayment, data]);
+      setTotalMoneyPayment("")
     }
-    console.log(totalMoneyPayMent);
   };
   const deletePayMent = (e, index) => {
     const newDataPayment = [...dataPayment];
@@ -538,6 +538,8 @@ function CreateBill() {
   // enad modal thanh toán
 
   const orderBill = (e) => {
+   
+    
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -591,8 +593,8 @@ function CreateBill() {
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
       idUser: idAccount,
+      deliveryDate: dayShip
     };
-    console.log(data);
 
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
@@ -605,7 +607,42 @@ function CreateBill() {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
-                  navigate("/bill-management/detail-bill/" + res.data.data.id);
+                  if(targetKey == undefined){
+                    setProducts([])
+                    setBillRequest({
+                        phoneNumber: "",
+                        address: "",
+                        userName: "",
+                        idUser: "",
+                        itemDiscount: 0,
+                        totalMoney: 0,
+                        note: "",
+                        moneyShip: 0,
+                        billDetailRequests: [],
+                        vouchers: [],
+                      });
+                    setAddress({
+                        city: "",
+                        district: "",
+                        wards: "",
+                        detail: "",
+                      });
+                    setShipFee(0)
+                    setSearchCustomer({
+                        keyword: "",
+                        status: "",
+                      });
+                    dispatch(addUserBillWait(null));
+                    setDataPayMent([])
+                    setIsModalPayMentOpen(false)
+                    setTotalMoneyPayment(0)
+                    setTraSau(false)
+                    setKeyVoucher("")
+                    setCodeVoucher(false)
+                    setIdaData("")
+                  }else{
+                    removePane(targetKey)
+                  }
                 });
               },
               onCancel: () => {},
@@ -629,11 +666,47 @@ function CreateBill() {
             cancelText: "Hủy",
             onOk: async () => {
               await BillApi.createBillWait(data).then((res) => {
-                navigate("/bill-management/detail-bill/" + res.data.data.id);
+                if(targetKey == undefined){
+                  setProducts([])
+                  setBillRequest({
+                      phoneNumber: "",
+                      address: "",
+                      userName: "",
+                      idUser: "",
+                      itemDiscount: 0,
+                      totalMoney: 0,
+                      note: "",
+                      moneyShip: 0,
+                      billDetailRequests: [],
+                      vouchers: [],
+                    });
+                  setAddress({
+                      city: "",
+                      district: "",
+                      wards: "",
+                      detail: "",
+                    });
+                  setShipFee(0)
+                  setSearchCustomer({
+                      keyword: "",
+                      status: "",
+                    });
+                  dispatch(addUserBillWait(null));
+                  setDataPayMent([])
+                  setIsModalPayMentOpen(false)
+                  setTotalMoneyPayment(0)
+                  setTraSau(false)
+                  setKeyVoucher("")
+                  setCodeVoucher(false)
+                  setIdaData("")
+                }else{
+                  removePane(targetKey)
+                }
               });
             },
             onCancel: () => {},
           });
+         
         } else {
           toast("vui lòng thanh toán hóa đơn");
         }
@@ -1197,16 +1270,7 @@ function CreateBill() {
             form.setFieldsValue({
               phoneNumber: values.phoneNumber,
               name: values.fullName,
-              // city: values.province,
-              // district: values.district,
-              // wards: values.ward,
-              // detail: values.line,
             });
-            // addressFull(
-            //   values.provinceId,
-            //   values.toDistrictId,
-            //   values.wardCode
-            // );
             setBillRequest({
               ...billRequest,
               phoneNumber: values.phoneNumber,
@@ -1223,22 +1287,6 @@ function CreateBill() {
             toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
-        // CustomerApi.getOneByPhoneNumber(values.phoneNumber).then(
-        //   (res) => {
-        //     console.log(res.data.data);
-        //     console.log(res.data);
-        //     setBillRequest({
-        //       ...billRequest,
-        //       phoneNumber: res.data.data.phoneNumber,
-        //       userName: res.data.data.fullName,
-        //       idUser: res.data.data.id,
-        //     });
-        //     dispatch(addUserBillWait(res.data.data));
-        //   },
-        //   (err) => {
-        //     console.log(err);
-        //   }
-        // );
       })
       .catch(() => {
         // Xử lý khi người dùng từ chối xác nhận
@@ -1250,8 +1298,8 @@ function CreateBill() {
   };
 
   return (
-    <div>
-      <Row justify="space-between">
+    <div style={{width: "100%"}}>
+      <Row justify="space-between" >
         <Col span={4}>
           <Button
             type="primary"
@@ -1647,7 +1695,7 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập họ và tên"
                           style={{ width: "90%", height: "39px" }}
-                          value={billRequest.userName}
+                          defaultValue={billRequest.userName}
                           onChange={(e) =>
                             ChangeBillRequest("userName", e.target.value)
                           }
@@ -1685,7 +1733,7 @@ function CreateBill() {
                           onChange={(e) =>
                             ChangeBillRequest("phoneNumber", e.target.value)
                           }
-                          value={billRequest.phoneNumber}
+                          defaultValue={billRequest.phoneNumber}
                         />
                       </Form.Item>
                     </Col>
@@ -1712,7 +1760,7 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập địa chỉ"
                           style={{ width: "90%", height: "39px" }}
-                          value={address.detail}
+                          defaultValue={address.detail}
                           onChange={(e) =>
                             onChangeAddress("detail", e.target.value)
                           }
@@ -2390,7 +2438,7 @@ function CreateBill() {
                         height: "37px",
                       }}
                       customInput={Input}
-                      value={totalMoneyPayMent}
+                      defaultValue={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
