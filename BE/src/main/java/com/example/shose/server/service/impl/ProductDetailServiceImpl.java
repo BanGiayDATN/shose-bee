@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.productdetail.CreateProductDetailReq
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
+import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
@@ -220,6 +221,25 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         ProductDetailDTO detailDTO = new ProductDetailDTO(update);
         return detailDTO;
+    }
+
+    @Override
+    @Transactional
+    public List<UpdateQuantityAndPrice> updateList(List<UpdateQuantityAndPrice> requestData) {
+        List<ProductDetail> detailList = new ArrayList<>();
+        requestData.parallelStream().forEach(a -> {
+            Optional<ProductDetail> detailOptional = productDetailRepository.findById(a.getId());
+            System.out.println(detailOptional.get().getId());
+            if (!detailOptional.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            ProductDetail detail = detailOptional.get();
+            detail.setPrice(a.getPrice());
+            detail.setQuantity(a.getQuantity());
+            detailList.add(detail);
+        });
+        productDetailRepository.saveAll(detailList);
+        return requestData;
     }
 
 
