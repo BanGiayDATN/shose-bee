@@ -13,7 +13,7 @@ import CreateBill from "./CreateBill";
 import { toast } from "react-toastify";
 
 function Sale() {
-  const [invoiceNumber, setInvoiceNumber] = useState(2);
+  const [invoiceNumber, setInvoiceNumber] = useState(1);
  
   const defaultPanes = new Array(invoiceNumber).fill(null).map((_, index) => {
     const id = String(index + 1);
