@@ -543,7 +543,6 @@ function CreateBill() {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-<<<<<<< HEAD
     // var addressuser = "";
     // if (checkNotEmptyAddress()) {
     var addressuser =
@@ -555,11 +554,9 @@ function CreateBill() {
       ", " +
       address.city;
     // }
-=======
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
->>>>>>> e06d4b7df48246959615d80602e8e89e8e136914
     var addressuser = "";
     if (!checkNotEmptyAddress() && isOpenDelivery) {
       addressuser =
@@ -599,12 +596,9 @@ function CreateBill() {
       idUser: idAccount,
     };
     console.log(data);
-<<<<<<< HEAD
     console.log(address);
     console.log(addressuser);
-=======
 
->>>>>>> e06d4b7df48246959615d80602e8e89e8e136914
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
         if (totalBill > 0) {

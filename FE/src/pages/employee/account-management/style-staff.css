@@ -71,7 +71,7 @@
 .title_add Input {
   height: 40px;
 }
-.image-preview
+/* .image-preview
   .ant-upload-wrapper.ant-upload-picture-circle-wrapper
   .ant-upload-wrapper.ant-upload-picture-circle-wrapper
   .ant-upload.ant-upload-select {
@@ -105,7 +105,7 @@
   margin-block: 0 8px;
   margin-inline: 0 8px;
   vertical-align: top;
-}
+} */
 .form-inputs {
   width: 50%;
   padding: 20px;
