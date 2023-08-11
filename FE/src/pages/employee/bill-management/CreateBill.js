@@ -538,8 +538,8 @@ function CreateBill({removePane , targetKey}) {
   // enad modal thanh toán
 
   const orderBill = (e) => {
-   
-    
+
+
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -706,7 +706,6 @@ function CreateBill({removePane , targetKey}) {
             },
             onCancel: () => {},
           });
-         
         } else {
           toast("vui lòng thanh toán hóa đơn");
         }
