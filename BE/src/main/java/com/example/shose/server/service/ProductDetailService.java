@@ -6,7 +6,9 @@ import com.example.shose.server.dto.request.productdetail.CreateProductDetailReq
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
+import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
@@ -25,13 +27,15 @@ public interface ProductDetailService {
     List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest);
 
     List<ProductDetailDTO> create(List<CreateProductDetailRequest> listData,
-                            List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException;
+                                  List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException;
 
     ProductDetailDTO update(final UpdateProductDetailRequest req,
                             List<MultipartFile> multipartFiles,
                             List<CreateSizeData> listSize,
                             List<Boolean> listStatusImage,
                             List<String> listColor) throws IOException, ExecutionException, InterruptedException;
+
+    List<UpdateQuantityAndPrice> updateList(List<UpdateQuantityAndPrice> requestData);
 
     Boolean delete(String id);
 
@@ -45,5 +49,7 @@ public interface ProductDetailService {
     List<ProductDetailReponse> findAllByIdProduct(String id);
 
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
+
+    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor);
 
 }

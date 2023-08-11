@@ -13,6 +13,7 @@ import {
   Select,
   Space,
   Table,
+  Tooltip,
   Upload,
 } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -366,16 +367,14 @@ const CreateProductManagment = () => {
       width: "5%",
       render: (text, record) => (
         <Space size="middle">
-          <Button
-            title="Xóa chi tiết"
-            onClick={() => handleDelete(record)} // Gọi hàm xóa ở đây
-            type="danger"
-          >
-            <FontAwesomeIcon
-              icon={faTrash}
-              style={{ fontSize: "20px", color: "red" }}
-            />
-          </Button>
+          <Tooltip title="Xóa chi tiết">
+            <Button onClick={() => handleDelete(record)} type="danger">
+              <FontAwesomeIcon
+                icon={faTrash}
+                style={{ fontSize: "20px", color: "red" }}
+              />
+            </Button>
+          </Tooltip>
         </Space>
       ),
     },
@@ -626,15 +625,17 @@ const CreateProductManagment = () => {
           <div className="content">
             <Form form={form} initialValues={initialValues}>
               <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="form-submit-btn"
-                  onClick={handleUpload}
-                  disabled={isSubmitting}
-                >
-                  Hoàn Tất
-                </Button>
+                <Tooltip title="Thêm sản phẩm chi tiết">
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="form-submit-btn"
+                    onClick={handleUpload}
+                    disabled={isSubmitting}
+                  >
+                    Hoàn Tất
+                  </Button>
+                </Tooltip>
               </Form.Item>
               <Form.Item
                 label="Tên sản phẩm"
@@ -696,12 +697,14 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={5}>
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      icon={<FontAwesomeIcon icon={faPlus} />}
-                      style={{ height: 30 }}
-                      onClick={() => setModalAddBrand(true)}
-                    ></Button>
+                    <Tooltip title="Thêm thương hiệu">
+                      <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
+                        style={{ height: 30 }}
+                        onClick={() => setModalAddBrand(true)}
+                      />
+                    </Tooltip>
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -729,16 +732,17 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={2}>
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      icon={<FontAwesomeIcon icon={faPlus} />}
-                      style={{ height: 30 }}
-                      onClick={() => setModalAddCategory(true)}
-                    ></Button>
+                    <Tooltip title="Thêm thể loại">
+                      <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
+                        style={{ height: 30 }}
+                        onClick={() => setModalAddCategory(true)}
+                      ></Button>
+                    </Tooltip>
                   </Form.Item>
                 </Col>
               </Row>
-
               <Row gutter={7} justify="space-around">
                 <Col span={8}>
                   <Form.Item
@@ -765,12 +769,14 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={5}>
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      icon={<FontAwesomeIcon icon={faPlus} />}
-                      style={{ height: 30 }}
-                      onClick={() => setModalAddMaterial(true)}
-                    ></Button>
+                    <Tooltip title="Thêm vật liệu">
+                      <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
+                        style={{ height: 30 }}
+                        onClick={() => setModalAddMaterial(true)}
+                      />
+                    </Tooltip>
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -798,12 +804,14 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={2}>
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      icon={<FontAwesomeIcon icon={faPlus} />}
-                      style={{ height: 30 }}
-                      onClick={() => setModalAddSole(true)}
-                    ></Button>
+                    <Tooltip title="Thêm đế giày">
+                      <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
+                        style={{ height: 30 }}
+                        onClick={() => setModalAddSole(true)}
+                      />
+                    </Tooltip>
                   </Form.Item>
                 </Col>
               </Row>
@@ -838,11 +846,13 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={5}>
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      icon={<FontAwesomeIcon icon={faPlus} />}
-                      style={{ height: 30 }}
-                    ></Button>
+                    <Tooltip title="Thêm giới tính">
+                      <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
+                        style={{ height: 30 }}
+                      />
+                    </Tooltip>
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -931,22 +941,23 @@ const CreateProductManagment = () => {
                   </Button>
                 ))}
                 <Col span={5}>
-                  <Button
-                    style={{ height: "40px", marginLeft: "20%" }}
-                    type="primary"
-                    onClick={() => {
-                      if (isProductNameValid) {
-                        setModalAddSize(true);
-                      } else {
-                        toast.error(
-                          "Vui lòng nhập thông tin sản phẩm trước khi thêm kích cỡ!"
-                        );
-                      }
-                    }}
-                    title="Thêm kích cỡ"
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </Button>
+                  <Tooltip title="Thêm kích cỡ">
+                    <Button
+                      style={{ height: "40px", marginLeft: "20%" }}
+                      type="primary"
+                      onClick={() => {
+                        if (isProductNameValid) {
+                          setModalAddSize(true);
+                        } else {
+                          toast.error(
+                            "Vui lòng nhập thông tin sản phẩm trước khi thêm kích cỡ!"
+                          );
+                        }
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faPlus} />
+                    </Button>
+                  </Tooltip>
                   <ModalAddSizeProduct
                     visible={modalAddSize}
                     onCancel={handleCancel}
@@ -990,22 +1001,23 @@ const CreateProductManagment = () => {
                     justifyContent: "flex-end",
                   }}
                 >
-                  <Button
-                    style={{ height: "40px", marginRight: "50%" }}
-                    type="primary"
-                    onClick={() => {
-                      if (isProductNameValid) {
-                        setModalAddColor(true);
-                      } else {
-                        toast.error(
-                          "Vui lòng nhập thông tin sản phẩm trước khi thêm kích cỡ!"
-                        );
-                      }
-                    }}
-                    title="Thêm màu sắc"
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </Button>
+                  <Tooltip title="Thêm màu sắc">
+                    <Button
+                      style={{ height: "40px", marginRight: "50%" }}
+                      type="primary"
+                      onClick={() => {
+                        if (isProductNameValid) {
+                          setModalAddColor(true);
+                        } else {
+                          toast.error(
+                            "Vui lòng nhập thông tin sản phẩm trước khi thêm màu sắc!"
+                          );
+                        }
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faPlus} />
+                    </Button>
+                  </Tooltip>
                   <AddColorModal
                     visible={modalAddColor}
                     onCancel={handleCancel}

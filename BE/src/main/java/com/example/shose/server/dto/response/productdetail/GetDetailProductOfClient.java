@@ -6,15 +6,12 @@ package com.example.shose.server.dto.response.productdetail;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-public interface GetProductDetailByCategory {
+public interface GetDetailProductOfClient {
     @Value("#{target.idProduct}")
     String getIdProduct();
-    @Value("#{target.idProductDetail}")
-    String getIdProductDetail();
 
-    @Value("#{target.idColor}")
-    String getIdColor();
     @Value("#{target.image}")
     String getImage();
 
@@ -24,6 +21,14 @@ public interface GetProductDetailByCategory {
     @Value("#{target.price}")
     BigDecimal getPrice();
 
-    @Value("#{target.valuePromotion}")
-    String getValuePromotion();
+    @Value("#{target.quantity}")
+    Integer getQuantity();
+    @Value("#{target.listCodeColor}")
+    String getListCodeColor();
+    @Value("#{target.codeColor}")
+    String getCodeColor();
+
+    @Value("#{target.listNameSize}")
+    String getListNameSize();
+
 }
