@@ -5,8 +5,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {  toast } from "react-toastify";
 
 function TabBills({ statusBill, dataFillter }) {
 
@@ -166,7 +165,7 @@ function TabBills({ statusBill, dataFillter }) {
         await BillApi.changeStatusAllBillByIds(data).then(response =>{
           if(response.data.data == true){
             console.log(response.data.data );
-            toast(`${convertString(statusBill)} thành công`)
+            toast.success(`${convertString(statusBill)} thành công`)
           }
         })
         await  BillApi.fetchAll(fillter).then((res) => {
@@ -225,20 +224,6 @@ function TabBills({ statusBill, dataFillter }) {
         <Row></Row>
       )}
 
-<ToastContainer
-        position="top-right"
-        autoClose={100}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      {/* Same as */}
-      <ToastContainer />
     </div>
   );
 }
