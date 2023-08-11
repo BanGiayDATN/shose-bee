@@ -470,7 +470,7 @@ function CreateBill({removePane , targetKey}) {
         status: "THANH_TOAN",
       };
       setDataPayMent([...dataPayment, data]);
-      setTotalMoneyPayment("")
+      setTotalMoneyPayment(0)
     }
   };
   const deletePayMent = (e, index) => {
@@ -2592,8 +2592,6 @@ function CreateBill({removePane , targetKey}) {
           </Row>
         </Form>
       </Modal>
-
-      {/* end  modal Address */}
 
       {/* end modal payment  */}
 

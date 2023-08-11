@@ -353,7 +353,8 @@ function ModalAddProductDetail({
   };
   const handleOk = (e) => {
     var list = products;
-    var index = list.findIndex((x) => x.idProduct === productSelected.id);
+    var index = list.findIndex((x) => x.idProduct === productSelected.idProduct);
+    console.log(index);
     if (index == -1) {
       var data = {...productSelected}
       data.quantity = quantity;
