@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Table, Col, Select, Row, Slider, Modal } from "antd";
+import { Input, Button, Table, Col, Select, Row, Slider, Modal, InputNumber } from "antd";
 import "./style-product.css";
 import { useAppDispatch, useAppSelector } from "../../../../app/hook";
 import { ToastContainer, toast } from "react-toastify";
@@ -34,6 +34,16 @@ function ModalAddProductDetail({
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState("");
   const [state, setState] = useState(true);
+  const [productSelected, setProductSelected] = useState({
+    image: "",
+    productName: "",
+    nameSize: "",
+    idProduct: "",
+    quantity: 1,
+    price: "",
+    idSizeProduct: "",
+    maxQuantity: 1,
+  });
 
   // format tiền
   const formatCurrency = (value) => {
@@ -323,12 +333,6 @@ function ModalAddProductDetail({
   const [product, setProduct] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
-    // setSizes([]);
-    // setProduct(record);
-    // setState(true);
-    // setIsModalOpen(true);
-    var list = products;
-    var index = list.findIndex((x) => x.idProduct === record.id);
     var data = {
       image: record.image,
       productName: record.nameProduct,
@@ -339,9 +343,23 @@ function ModalAddProductDetail({
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
     };
+    console.log(data);
+    setProductSelected(data)
+    setIsModalOpen(true);
+  };
+  console.log(productSelected);
+  const clearSelectSize = () => {
+    setSizes([]);
+  };
+  const handleOk = (e) => {
+    var list = products;
+    var index = list.findIndex((x) => x.idProduct === productSelected.id);
     if (index == -1) {
+      var data = {...productSelected}
+      data.quantity = quantity;
       list.push(data);
     } else {
+      var data = {...productSelected}
       data.quantity = list[index].quantity + quantity;
       list.splice(index, 1, data);
     }
@@ -356,66 +374,63 @@ function ModalAddProductDetail({
       theme: "light",
       });
     setProducts(list);
-  };
-  const clearSelectSize = () => {
-    setSizes([]);
-  };
-  const handleOk = () => {
-    if (sizes.length > 0 && quantity >= 1) {
-      setIsModalOpen(false);
-      if (typeAddProductBill === "CREATE_BILL") {
-        var list = products;
-        sizes.map((item) => {
-          var index = list.findIndex((x) => x.idSizeProduct === item.id);
-          var data = {
-            image: item.image,
-            productName: item.nameProduct,
-            nameSize: item.nameSize,
-            idProduct: item.id,
-            quantity: quantity,
-            price: item.price,
-            maxQuantity: item.quantity,
-          };
-          if (index == -1) {
-            list.push(data);
-          } else {
-            data.quantity = list[index].quantity + quantity;
-            list.splice(index, 1, data);
-          }
-          dispatch(addProductBillWait(data));
-        });
-        setProducts(list);
-      } else {
-        sizes.map((item) => {
-          var data = {
-            idBill: typeAddProductBill,
-            idProduct: item.id,
-            size: item.nameSize,
-            quantity: quantity,
-            price: item.price,
-          };
-          BillApi.addProductInBill(data).then((res) => {
-            const price = item.price;
-            if (item.promotion != null) {
-              price = (item.price * (100 - item.promotion)) / 100;
-            }
-            var product = {
-              id: res.data.data,
-              image: item.image,
-              productName: item.nameProduct,
-              nameSize: item.nameSize,
-              idProduct: item.id,
-              quantity: quantity,
-              price: price,
-            };
-            dispatch(addProductInBillDetail(product));
-          });
-        });
-      }
-    }
-    setQuantity(1);
-    setState(false);
-    setSizes([]);
+    setQuantity(1)
+    setIsModalOpen(false);
+    // if (sizes.length > 0 && quantity >= 1) {
+    //   setIsModalOpen(false);
+    //   if (typeAddProductBill === "CREATE_BILL") {
+    //     var list = products;
+    //     sizes.map((item) => {
+    //       var index = list.findIndex((x) => x.idSizeProduct === item.id);
+    //       var data = {
+    //         image: item.image,
+    //         productName: item.nameProduct,
+    //         nameSize: item.nameSize,
+    //         idProduct: item.id,
+    //         quantity: quantity,
+    //         price: item.price,
+    //         maxQuantity: item.quantity,
+    //       };
+    //       if (index == -1) {
+    //         list.push(data);
+    //       } else {
+    //         data.quantity = list[index].quantity + quantity;
+    //         list.splice(index, 1, data);
+    //       }
+    //       dispatch(addProductBillWait(data));
+    //     });
+    //     setProducts(list);
+    //   } else {
+    //     sizes.map((item) => {
+    //       var data = {
+    //         idBill: typeAddProductBill,
+    //         idProduct: item.id,
+    //         size: item.nameSize,
+    //         quantity: quantity,
+    //         price: item.price,
+    //       };
+    //       BillApi.addProductInBill(data).then((res) => {
+    //         const price = item.price;
+    //         if (item.promotion != null) {
+    //           price = (item.price * (100 - item.promotion)) / 100;
+    //         }
+    //         var product = {
+    //           id: res.data.data,
+    //           image: item.image,
+    //           productName: item.nameProduct,
+    //           nameSize: item.nameSize,
+    //           idProduct: item.id,
+    //           quantity: quantity,
+    //           price: price,
+    //         };
+    //         dispatch(addProductInBillDetail(product));
+    //       });
+    //     });
+    //   }
+    // }
+    // setQuantity(1);
+    // setState(false);
+    // setSizes([]);
     // handleCancelProduct();
   };
   const handleCancel = () => {
@@ -435,9 +450,21 @@ function ModalAddProductDetail({
         : [...prevSelected, size]
     );
   };
+  const changeInputNumber = (v) => {
+    if (productSelected.maxQuantity > quantity) {
+      setQuantity(v);
+    }
+  };
 
-  const ChangeQuantity = (value) => {
-    setQuantity(value);
+  const handleIncrease = () => {
+    if (productSelected.maxQuantity > quantity) {
+      setQuantity((prevQuantity) => prevQuantity + 1);
+    }
+  };
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity((prevQuantity) => prevQuantity - 1);
+    }
   };
   // end xử lý modal
   return (
@@ -652,17 +679,17 @@ function ModalAddProductDetail({
         />
       </div>
       <Modal
-        title=""
-        width={900}
+        title= {"Số lượng sản phẩm: " + productSelected.maxQuantity}
+        width={400}
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={(e) => handleOk(e)}
         onCancel={handleCancel}
         okText="Đặt hàng"
         closeButton={true}
         closeIcon={null}
         cancelButton={true}
       >
-        <ModalDetailProduct
+        {/* <ModalDetailProduct
           id={product.id}
           ChangedSelectSize={ChangedSelectSize}
           ChangeQuantity={ChangeQuantity}
@@ -672,7 +699,27 @@ function ModalAddProductDetail({
           selectedSizes={sizes}
           setSelectedSizes={setSizes}
           state={state}
-        />
+        /> */}
+         <Row style={{ marginTop: "15px", width: "100%" }} justify={"center"}>
+            <Button onClick={handleDecrease} style={{ margin: "0 4px 0 10px" }}>
+              -
+            </Button>
+            <InputNumber
+              min={1}
+              max={productSelected.maxQuantity}
+              value={quantity}
+              defaultValue={quantity}
+              onChange={(value) => {
+                if(value < productSelected.maxQuantity || value != undefined || value > 0){
+                  changeInputNumber(value)
+                }
+                
+              }}
+            />
+            <Button onClick={handleIncrease} style={{ margin: "0 4px 0 4px" }}>
+              +
+            </Button>
+          </Row>
       </Modal>
       {/* end modal payment  */}
 
