@@ -131,28 +131,36 @@ const ModalUpdateCustomer = ({ visible }) => {
       console.log(id);
       CustomerApi.getOne(id).then((res) => {
         AddressApi.getAddressByUserIdAndStatus(id).then((resAddress) => {
+          const addressData = resAddress.data.data;
           setCustomer(res.data.data);
-          form.setFieldsValue({
+          const formValues = {
             ...res.data.data,
             dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
-            province: resAddress.data.data.province,
-            district: resAddress.data.data.district,
-            ward: resAddress.data.data.ward,
-            line: resAddress.data.data.line,
-            toDistrictId: resAddress.data.data.toDistrictId,
-            provinceId: resAddress.data.data.provinceId,
-            wardCode: resAddress.data.data.wardCode,
-          });
-          AddressApi.fetchAllProvinceWard(
-            resAddress.data.data.toDistrictId
-          ).then((resWard) => {
-            setListWard(resWard.data.data);
-          });
-          AddressApi.fetchAllProvinceDistricts(
-            resAddress.data.data.provinceId
-          ).then((resDistrict) => {
-            setListDistricts(resDistrict.data.data);
-          });
+          };
+
+          if (addressData) {
+            formValues.province = addressData.province;
+            formValues.district = addressData.district;
+            formValues.ward = addressData.ward;
+            formValues.line = addressData.line;
+            formValues.toDistrictId = addressData.toDistrictId;
+            formValues.provinceId = addressData.provinceId;
+            formValues.wardCode = addressData.wardCode;
+          }
+
+          form.setFieldsValue(formValues);
+          if (resAddress.data.data?.toDistrictId) {
+            AddressApi.fetchAllProvinceWard(
+              resAddress.data.data.toDistrictId
+            ).then((resWard) => {
+              setListWard(resWard.data.data);
+            });
+            AddressApi.fetchAllProvinceDistricts(
+              resAddress.data.data.provinceId
+            ).then((resDistrict) => {
+              setListDistricts(resDistrict.data.data);
+            });
+          }
         });
 
         if (res.data.data?.avata) {
