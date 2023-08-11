@@ -130,6 +130,11 @@ public class CustomerServiceImpl implements CustomerService {
                        UpdateAddressRequest addressRequest,
                        MultipartFile file) {
 
+//        User checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
+//        if (checkUserEmail != null) {
+//            throw new RestApiException(Message.EMAIL_USER_EXIST);
+//        }
+
         // xử lý ảnh
         String urlImage = imageToCloudinary.uploadImage(file);
 
@@ -149,8 +154,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         //  địa chỉ user
         Address addressUser = addressRepository.getAddressByUserIdAndStatus(user.getId(), Status.DANG_SU_DUNG);
+
         Address address = new Address();
-        address.setId(addressUser.getId());
+        if(addressUser != null){
+            address.setId(addressUser.getId());
+        }
         address.setWard(addressRequest.getWard());
         address.setToDistrictId(addressRequest.getToDistrictId());
         address.setProvinceId(addressRequest.getProvinceId());
@@ -192,15 +200,10 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
         }
 
-        User checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
-        if (checkUserEmail != null) {
-            throw new RestApiException(Message.EMAIL_USER_EXIST);
-        }
-
         User user = User.builder()
                 .fullName(request.getFullName())
                 .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
+//                .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .gender(request.getGender())
                 .points(0)
@@ -215,22 +218,6 @@ public class CustomerServiceImpl implements CustomerService {
         account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         account.setStatus(Status.DANG_SU_DUNG);
         accountRepository.save(account);
-
-        Address address = new Address();
-        address.setStatus(Status.DANG_SU_DUNG);
-        address.setWard(addressRequest.getWard());
-        address.setToDistrictId(addressRequest.getToDistrictId());
-        address.setProvinceId(addressRequest.getProvinceId());
-        address.setWardCode(addressRequest.getWardCode());
-        address.setLine(addressRequest.getLine());
-        address.setProvince(addressRequest.getProvince());
-        address.setDistrict(addressRequest.getDistrict());
-        address.setUser(addressUser);
-        addressRepository.save(address);
-
-        String subject = "Xin chào, bạn đã đăng ký thành công ";
-        sendEmailService.sendEmailPasword(account.getEmail(), subject, account.getPassword());
-
         return user;
     }
 
