@@ -252,7 +252,7 @@ const ModalUpdateCustomer = ({ visible }) => {
                 .then((res) => {
                   dispatch(UpdateCustomer(res.data.data));
                   toast.success("Cập nhật thành công");
-                  navigate("/customerr-management");
+                  navigate("/customer-management");
                 })
                 .catch((error) => {
                   toast.error(error.response.data.message);
