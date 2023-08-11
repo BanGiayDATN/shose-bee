@@ -99,22 +99,30 @@
 .cart-menu:hover {
   color: #ff4400;
 }
+
 .search-panel {
   padding: 30px;
   position: fixed;
-  top: 0;
   behavior: initial;
-  right: 0;
-  width: 400px;
+  top: 0;
+  right: -450px;
+  width: 450px;
   height: 100vh;
   background-color: #ffffff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s, opacity 0.3s ease;
-  transform: translateX(100%);
   z-index: 9999;
-  &.open {
-    transform: translateX(0);
-  }
+  transition: transform 0.8s, opacity 0.8s ease;
+}
+.search-panel.hidden {
+  transform: translateY(-100%);
+  right: -450px;
+  opacity: 0;
+}
+
+.search-panel.visible {
+  transform: translateY(0);
+  right: 0;
+  opacity: 1;
 }
 .text-search {
   float: left;

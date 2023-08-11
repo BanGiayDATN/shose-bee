@@ -7,12 +7,12 @@ import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.entity.Category;
-import com.example.shose.server.entity.Color;
 import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -279,6 +280,15 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.findAllByIdProduct(id);
     }
 
+    @Override
+    public GetDetailProductOfClient getDetailProductOfClient(String id,String codeColor) {
+        String color = "%23"+ codeColor.replace(Character.toString('#'), "");
+        System.out.println(color);
+ return productDetailRepository.getDetailProductOfClient(id,codeColor);
+
+
+    }
+
 //    @Override
 //    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
 //        return productDetailRepository.getAllProductDetail(req);
@@ -289,4 +299,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.getProductDetailByCategory(id);
     }
 
+    public static void main(String[] args) {
+        System.out.println(new ProductDetailServiceImpl().getDetailProductOfClient("","#800080"));
+    }
 }
