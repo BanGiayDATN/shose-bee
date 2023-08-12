@@ -172,7 +172,7 @@ const ModalCreateCustomer = () => {
             .then((res) => {
               dispatch(CreateCustomer(res.data.data));
               toast.success("Thêm thành công");
-              navigate("/customerr-management");
+              navigate("/customer-management");
             })
             .catch((error) => {
               toast.error(error.response.data.message);
@@ -332,7 +332,10 @@ const ModalCreateCustomer = () => {
                     name="fullName"
                     rules={[{ required: true, message: "Vui lòng nhập tên" }]}
                   >
-                    <Input className="input-item" placeholder="Tên khách hàng" />
+                    <Input
+                      className="input-item"
+                      placeholder="Tên khách hàng"
+                    />
                   </Form.Item>
                   <Form.Item
                     label="Căn cước công dân"

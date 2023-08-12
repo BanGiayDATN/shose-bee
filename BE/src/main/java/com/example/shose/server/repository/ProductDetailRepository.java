@@ -207,6 +207,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     @Query(value = """
                 SELECT
                    detail.id AS id,
+                   i.name AS image,
                    p.name AS nameProduct,
                    detail.description AS description,
                    b.id AS idBrand,
@@ -222,6 +223,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    detail.maqr AS QRCode
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
+                JOIN (
+                    SELECT id_product_detail, MAX(id) AS max_image_id
+                    FROM image
+                    GROUP BY id_product_detail
+                ) max_images ON detail.id = max_images.id_product_detail
+                LEFT JOIN image i ON max_images.max_image_id = i.id
                 JOIN sole s ON s.id = detail.id_sole
                 JOIN material m ON detail.id_material = m.id
                 JOIN category c ON detail.id_category = c.id

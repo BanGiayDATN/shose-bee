@@ -161,8 +161,8 @@
   .ant-upload-list-item-container
   .ant-upload-wrapper.ant-upload-picture-circle-wrapper
   .ant-upload.ant-upload-select {
-  width: 230%;
-  height: 180px;
+  /* width: 230%; */
+  /* height: 180px; */
 }
 
 .ant-upload-wrapper.ant-upload-picture-circle-wrapper

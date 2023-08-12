@@ -9,6 +9,9 @@ public interface ProductDetailDTOResponse {
     @Value("#{target.id}")
     String getId();
 
+    @Value("#{target.image}")
+    String getImage();
+
     @Value("#{target.nameProduct}")
     String getNameProduct();
 
