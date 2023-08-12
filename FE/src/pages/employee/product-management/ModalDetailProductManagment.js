@@ -138,6 +138,10 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
     };
   }, [selectedValues, visible, id]);
 
+  useEffect(() => {
+    loadData();
+  }, [selectedValues]);
+
   const getPromotionStyle = (promotion) => {
     return promotion >= 50 ? { color: "white" } : { color: "#000000" };
   };
@@ -307,7 +311,6 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
     });
     return formatter.format(value);
   };
-
 
   return (
     <Modal visible={visible} onCancel={onCancel} footer={null} width={1200}>

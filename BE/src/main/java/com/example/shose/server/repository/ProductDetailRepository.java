@@ -1,6 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
+import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
@@ -37,7 +38,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    AVG(pr.value) AS promotion,
                    detail.quantity,
                    s2.name AS size,
-                   c2.code AS color
+                   c2.code AS color,
+                   detail.maqr AS QRCode
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -122,7 +124,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                     detail.gender AS gender,
                     detail.status AS status,
                     si.name AS nameSize,
-                    col.code AS color
+                    col.code AS color,
+                    detail.maqr AS QRCode
              FROM product_detail detail
              LEFT JOIN product p on detail.id_product = p.id
              LEFT JOIN image i on detail.id = i.id_product_detail
@@ -203,42 +206,31 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
 
     @Query(value = """
                 SELECT
-                   ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
                    detail.id AS id,
-                   i.name AS image,
-                   CONCAT(p.name ,'[ ',s2.name,' - ',c2.name,' ]') AS nameProduct,
-                   detail.price AS price,
-                   detail.created_date AS created_date,
-                   detail.gender AS gender,
+                   p.name AS nameProduct,
+                   detail.description AS description,
+                   b.id AS idBrand,
+                   s.id AS idSole,
+                   c.id AS idCategory,
                    detail.status AS status,
-                   si.name AS nameSize,
-                   c.name AS nameCategory,
-                   b.name AS nameBrand,
+                   m.id AS idMaterial,
+                   detail.gender AS gender,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
-                   detail.quantity,
-                   s2.name AS size,
-                   c2.code AS color
+                   detail.price AS price,
+                   c2.id AS idCode,
+                   s2.id AS idSize,
+                   detail.maqr AS QRCode
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
-                JOIN (
-                    SELECT id_product_detail, MAX(id) AS max_image_id
-                    FROM image
-                    GROUP BY id_product_detail
-                ) max_images ON detail.id = max_images.id_product_detail
-                LEFT JOIN image i ON max_images.max_image_id = i.id
                 JOIN sole s ON s.id = detail.id_sole
                 JOIN material m ON detail.id_material = m.id
                 JOIN category c ON detail.id_category = c.id
                 JOIN brand b ON detail.id_brand = b.id
-                LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-                LEFT JOIN promotion pr on pr.id = ppd.id_promotion
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
-                WHERE i.status = true  AND detail.id = :id
-                ORDER BY detail.last_modified_date DESC 
+                WHERE  detail.id = :id
             """, nativeQuery = true)
-    ProductDetailReponse getOneById(@Param("id") String id);
+    ProductDetailDTOResponse getOneById(@Param("id") String id);
 
 }

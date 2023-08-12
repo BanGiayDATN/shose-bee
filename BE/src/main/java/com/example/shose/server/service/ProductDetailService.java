@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
+import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
@@ -39,7 +40,7 @@ public interface ProductDetailService {
 
     Boolean delete(String id);
 
-    ProductDetailReponse getOneById(String id);
+    ProductDetailDTOResponse getOneById(String id);
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 
