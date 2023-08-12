@@ -12,8 +12,6 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -52,5 +50,6 @@ public interface ProductDetailService {
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
 
     GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor);
+//    ProductDetail getProductDetailInCart(String idProuct,String codeColor,String nameSize);
 
 }

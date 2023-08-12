@@ -12,7 +12,6 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.entity.Category;
 import com.example.shose.server.entity.Image;
@@ -44,20 +43,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Nguyễn Vinh
@@ -101,6 +94,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
     private QRCodeAndCloudinary qrCodeAndCloudinary;
+
+    public static void main(String[] args) {
+        System.out.println(new ProductDetailServiceImpl().getDetailProductOfClient("", "#800080"));
+    }
 
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
@@ -168,7 +165,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         listDetail.stream().forEach(a -> detailDTOS.add(new ProductDetailDTO(a)));
         return detailDTOS;
     }
-
 
     @Override
     public ProductDetailDTO update(UpdateProductDetailRequest req,
@@ -244,6 +240,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
 
+
     @Override
     public Boolean delete(String id) {
         Optional<ProductDetail> optional = productDetailRepository.findById(id);
@@ -295,18 +292,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return product;
     }
 
-
     @Override
     public List<ProductDetailReponse> findAllByIdProduct(String id) {
         return productDetailRepository.findAllByIdProduct(id);
     }
 
-    @Override
-    public GetDetailProductOfClient getDetailProductOfClient(String id, String codeColor) {
-        String color = "%23" + codeColor.replace(Character.toString('#'), "");
-        System.out.println(color);
-        return productDetailRepository.getDetailProductOfClient(id, codeColor);
-    }
 
 //    @Override
 //    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
@@ -314,11 +304,21 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 //    }
 
     @Override
+    public GetDetailProductOfClient getDetailProductOfClient(String id, String codeColor) {
+        return productDetailRepository.getDetailProductOfClient(id, codeColor);
+
+
+    }
+
+//    @Override
+//    public ProductDetail getProductDetailInCart(String idProuct, String codeColor, String nameSize) {
+//        return productDetailRepository.getProductDetailInCart(idProuct,codeColor,nameSize);
+//    }
+
+    @Override
     public List<GetProductDetailByCategory> GetProductDetailByCategory(String id) {
         return productDetailRepository.getProductDetailByCategory(id);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new ProductDetailServiceImpl().getDetailProductOfClient("", "#800080"));
-    }
+
 }

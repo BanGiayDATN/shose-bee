@@ -6,6 +6,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -147,7 +148,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             SELECT
             p.id as idProduct,
              pd.id as idProductDetail,
-            REPLACE(c.code, '#', '%23') as idColor,
+            REPLACE(c.code, '#', '%23') as codeColor,
              i.name as image,
              p.name as nameProduct,
              pd.price as price,
@@ -202,8 +203,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """, nativeQuery = true)
     GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor);
 
-
-
     @Query(value = """
                 SELECT
                    detail.id AS id,
@@ -238,6 +237,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 LEFT JOIN size si ON detail.id_size = si.id
                 WHERE  detail.id = :id
             """, nativeQuery = true)
+
     ProductDetailDTOResponse getOneById(@Param("id") String id);
+
 
 }
