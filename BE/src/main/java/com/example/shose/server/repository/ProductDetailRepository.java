@@ -5,6 +5,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -144,7 +145,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             SELECT
             p.id as idProduct,
              pd.id as idProductDetail,
-            REPLACE(c.code, '#', '%23') as idColor,
+            REPLACE(c.code, '#', '%23') as codeColor,
              i.name as image,
              p.name as nameProduct,
              pd.price as price,
@@ -198,9 +199,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             where p.id = :id and c.code = :codeColor
             """, nativeQuery = true)
     GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor);
-
-
-
     @Query(value = """
                 SELECT
                    ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
@@ -240,5 +238,14 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 ORDER BY detail.last_modified_date DESC 
             """, nativeQuery = true)
     ProductDetailReponse getOneById(@Param("id") String id);
+//    {idProduct: '7ee38ba7-9ef1-496c-8b9b-b1f7424d3c0d', codeColor: '%23800000', nameSize: '41'} 90ffd24b-54e5-41fa-bb46-e5d3048401df d997eeba-5ba1-4cd6-a75c-bc8b24bc4d0c
+//    @Query( value = """
+//            SELECT pd FROM product_detail pd
+//            JOIN product p on pd.id_product = p.id
+//            JOIN color c on c.id = pd.id_color
+//            JOIN size s on s.id = pd.id_size
+//             WHERE p.id = :idProuct AND c.code = :codeColor AND s.name = :nameSize""")
+//    ProductDetail getProductDetailInCart(@Param("idProuct") String idProuct, @Param("codeColor") String codeColor, @Param("nameSize") String nameSize);
+
 
 }
