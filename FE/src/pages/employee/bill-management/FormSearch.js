@@ -147,7 +147,7 @@ function FormSearch({
             align={"end"}
             style={{ margin: "0px" }}
           >
-            <Link to={"/create-bill"} style={{ marginRight: "10px" }}>
+            <Link to={"/sale-counter"} style={{ marginRight: "10px" }}>
               <Button type="primary" icon={<PlusOutlined />} size={"large"}>
                 Tạo đơn hàng
               </Button>
