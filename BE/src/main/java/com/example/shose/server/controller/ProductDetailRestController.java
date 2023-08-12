@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.productdetail.CreateProductDetailReq
 import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
+import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
 import com.example.shose.server.dto.response.ImageResponse;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.service.ProductDetailService;
@@ -105,6 +106,12 @@ public class ProductDetailRestController {
 
         List<String> listCodeColor = gson.fromJson(litsColor, List.class);
         return new ResponseObject(productDetailService.update(request, multipartFiles, listSize, listStatusImage, listCodeColor));
+    }
+
+    @PutMapping("/list-data")
+    public ResponseObject updateList(@RequestBody List<UpdateQuantityAndPrice> requestData) {
+        System.out.println(requestData);
+        return new ResponseObject(productDetailService.updateList(requestData));
     }
 
     @GetMapping("/byProduct/{id}")

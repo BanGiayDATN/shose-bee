@@ -258,7 +258,7 @@ function App() {
             }
           />
           <Route
-            path="/customerr-management"
+            path="/customer-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>

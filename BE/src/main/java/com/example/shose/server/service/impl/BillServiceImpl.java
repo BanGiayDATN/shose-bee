@@ -26,6 +26,7 @@ import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.VoucherDetailRepository;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
+import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.FormUtils;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.Transactional;
@@ -144,19 +145,13 @@ public class BillServiceImpl implements BillService {
                 bill.setAccount(user.get());
             }
         }
+        if(!request.getDeliveryDate().isEmpty()){
+            bill.setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+        }
         if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE){
             bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-//            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-//                    .method(request.getMethod())
-//                    .status(StatusPayMents.THANH_TOAN)
-//                    .employees(account.get())
-//                    .totalMoney(new BigDecimal(request.getTotalMoney()))
-//                    .description(request.getNote())
-//                    .bill(bill)
-//                    .build();
-//            paymentsMethodRepository.save(paymentsMethod);
         }else{
             bill.setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(bill);
