@@ -65,7 +65,7 @@ margin-bottom: 10px;
 }
 
 .modal-detail-product{
-    margin-top:30px;
+    margin-top:10px;
 }
 .list-color-detail{
     display:flex;
@@ -74,15 +74,19 @@ margin-bottom: 10px;
 .img-detail-product{
     width:400px;
     height:500px;
-    margin-left:40px
 }
 .color-product{
     margin-top: 10px;
-    margin-right: 6px;
+    margin-right: 15px;
     width: 25px;
     height: 25px;
     border-radius: 30px;
-    
+    box-shadow: 0 0 0 2px rgb(255, 255, 255),0 0 0 3px #e6e0e0 ;
+    transition: box-shadow 0.3s;
+}
+.color-product:hover{
+    /* border: 1px solid #000000; */
+    box-shadow: 0 0 0 3px white, 0 0 0 4px #000000;
 }
 
 .list-size-product{
@@ -96,7 +100,7 @@ margin-bottom: 10px;
     margin-right: 5px;
     border: 2px solid transparent; 
     transition: border-color 0.3s; /* Tạo hiệu ứng mượt mà khi thay đổi viền */
-    border: 2px solid rgb(203, 198, 193);
+    border: 2px solid rgb(238, 237, 235);
     /* text-align: center; */
     display:flex;
     justify-content: center;
@@ -104,18 +108,21 @@ margin-bottom: 10px;
     border-radius: 5px;
    
 }
-.color-product:hover{
-    border: 1px solid #000000;
-}
+
 .size-product:focus,
-.size-product:active {
+.size-product:active,
+.size-product.clicked  {
     border: 1px solid rgb(0, 0, 0); 
     outline: none;
 }
+
 .input-quantity{
     border-radius: 0;
     height: 50px;
     width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .add-to-card{
     display: flex;
@@ -125,7 +132,6 @@ margin-bottom: 10px;
     height: 50px;
     background-color: #000000;
     color: white;
-    text-transform: uppercase;
     font-size: 20px;
     margin-left: 10px;
     display:flex;
@@ -133,3 +139,6 @@ margin-bottom: 10px;
     align-items: center;
 }
 
+.size-product.highlight {
+    border: 1px solid #000000;
+}
