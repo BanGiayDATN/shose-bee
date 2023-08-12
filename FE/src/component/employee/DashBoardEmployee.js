@@ -99,7 +99,7 @@ const DashBoardEmployee = ({ children }) => {
           >
             <Link to="/bill-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
-         
+
           <SubMenu
             key="6"
             icon={
@@ -138,12 +138,14 @@ const DashBoardEmployee = ({ children }) => {
               <Link to="/staff-management">Nhân Viên</Link>
             </Menu.Item>
             <Menu.Item key="7.1">
-              <Link to="/customerr-management">Khách Hàng</Link>
+              <Link to="/customer-management">Khách Hàng</Link>
             </Menu.Item>
           </SubMenu>
           <Menu.Item
             key="8"
-            icon={<FontAwesomeIcon icon={faPercent} style={{ color: "white" }}  />}
+            icon={
+              <FontAwesomeIcon icon={faPercent} style={{ color: "white" }} />
+            }
           >
             <Link to="/promotion-management">Khuyến Mại</Link>
           </Menu.Item>
@@ -153,12 +155,12 @@ const DashBoardEmployee = ({ children }) => {
           >
             <Link to="/voucher-management">Khuyến Mãi</Link>
           </Menu.Item>
-          <Menu.Item
+          {/* <Menu.Item
             key="10"
             icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
           >
             <Link to="/address">Quản lý địa chỉ</Link>
-          </Menu.Item>
+          </Menu.Item> */}
         </Menu>
       </Sider>
       <Layout>

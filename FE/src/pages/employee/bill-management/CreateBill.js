@@ -51,7 +51,7 @@ import ModalQRScanner from "../product-management/modal/ModalQRScanner";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 
-function CreateBill() {
+function CreateBill({removePane , targetKey}) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
   const [billRequest, setBillRequest] = useState({
@@ -125,7 +125,7 @@ function CreateBill() {
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
-  const [dayShip, setDayShip] = useState([]);
+  const [dayShip, setDayShip] = useState("");
   const [shipFee, setShipFee] = useState(0);
   const [searchCustomer, setSearchCustomer] = useState({
     keyword: "",
@@ -349,31 +349,39 @@ function CreateBill() {
     },
   ];
   const selectedAccount = (record) => {
+    setShipFee(0);
+    form.resetFields();
     dispatch(addUserBillWait(record));
     setIsModalAccountOpen(true);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
     });
     AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
-      setAddress({
-        city: res.data.data.province,
-        district: res.data.data.district,
-        wards: res.data.data.ward,
-        detail: res.data.data.line,
-      });
-      form.setFieldsValue({
-        phoneNumber: res.data.data.user.phoneNumber,
-        name: res.data.data.user.fullName,
-        city: res.data.data.province,
-        district: res.data.data.district,
-        wards: res.data.data.ward,
-        detail: res.data.data.line,
-      });
-      addressFull(
-        res.data.data.provinceId,
-        res.data.data.toDistrictId,
-        res.data.data.wardCode
-      );
+      const addressData = res.data.data;
+      const formValues = {
+        phoneNumber: record.phoneNumber,
+        name: record.fullName,
+      };
+      if (addressData) {
+        setAddress({
+          city: addressData.province,
+          district: addressData.district,
+          wards: addressData.ward,
+          detail: addressData.line,
+        });
+        addressFull(
+          addressData.provinceId,
+          addressData.toDistrictId,
+          addressData.wardCode
+        );
+        formValues.name = addressData.user.fullName;
+        formValues.phoneNumber = addressData.user.phoneNumber;
+        formValues.city = addressData.province;
+        formValues.district = addressData.district;
+        formValues.wards = addressData.ward;
+        formValues.detail = addressData.line;
+      }
+      form.setFieldsValue(formValues);
     });
 
     setBillRequest({
@@ -462,8 +470,8 @@ function CreateBill() {
         status: "THANH_TOAN",
       };
       setDataPayMent([...dataPayment, data]);
+      setTotalMoneyPayment(0)
     }
-    console.log(totalMoneyPayMent);
   };
   const deletePayMent = (e, index) => {
     const newDataPayment = [...dataPayment];
@@ -530,6 +538,8 @@ function CreateBill() {
   // enad modal thanh toán
 
   const orderBill = (e) => {
+
+
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -583,8 +593,8 @@ function CreateBill() {
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
       idUser: idAccount,
+      deliveryDate: dayShip
     };
-    console.log(data);
 
     if (isOpenDelivery) {
       if (!checkNotEmptyAddress() && !checkNotEmptyBill()) {
@@ -597,7 +607,42 @@ function CreateBill() {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
-                  navigate("/bill-management/detail-bill/" + res.data.data.id);
+                  if(targetKey == undefined){
+                    setProducts([])
+                    setBillRequest({
+                        phoneNumber: "",
+                        address: "",
+                        userName: "",
+                        idUser: "",
+                        itemDiscount: 0,
+                        totalMoney: 0,
+                        note: "",
+                        moneyShip: 0,
+                        billDetailRequests: [],
+                        vouchers: [],
+                      });
+                    setAddress({
+                        city: "",
+                        district: "",
+                        wards: "",
+                        detail: "",
+                      });
+                    setShipFee(0)
+                    setSearchCustomer({
+                        keyword: "",
+                        status: "",
+                      });
+                    dispatch(addUserBillWait(null));
+                    setDataPayMent([])
+                    setIsModalPayMentOpen(false)
+                    setTotalMoneyPayment(0)
+                    setTraSau(false)
+                    setKeyVoucher("")
+                    setCodeVoucher(false)
+                    setIdaData("")
+                  }else{
+                    removePane(targetKey)
+                  }
                 });
               },
               onCancel: () => {},
@@ -621,7 +666,42 @@ function CreateBill() {
             cancelText: "Hủy",
             onOk: async () => {
               await BillApi.createBillWait(data).then((res) => {
-                navigate("/bill-management/detail-bill/" + res.data.data.id);
+                if(targetKey == undefined){
+                  setProducts([])
+                  setBillRequest({
+                      phoneNumber: "",
+                      address: "",
+                      userName: "",
+                      idUser: "",
+                      itemDiscount: 0,
+                      totalMoney: 0,
+                      note: "",
+                      moneyShip: 0,
+                      billDetailRequests: [],
+                      vouchers: [],
+                    });
+                  setAddress({
+                      city: "",
+                      district: "",
+                      wards: "",
+                      detail: "",
+                    });
+                  setShipFee(0)
+                  setSearchCustomer({
+                      keyword: "",
+                      status: "",
+                    });
+                  dispatch(addUserBillWait(null));
+                  setDataPayMent([])
+                  setIsModalPayMentOpen(false)
+                  setTotalMoneyPayment(0)
+                  setTraSau(false)
+                  setKeyVoucher("")
+                  setCodeVoucher(false)
+                  setIdaData("")
+                }else{
+                  removePane(targetKey)
+                }
               });
             },
             onCancel: () => {},
@@ -1180,25 +1260,16 @@ function CreateBill() {
         CustomerApi.quickCreate(formData)
           .then((res) => {
             toast.success("Thêm thành công");
-            setAddress({
-              city: values.province,
-              district: values.district,
-              wards: values.ward,
-              detail: values.line,
-            });
+            // setAddress({
+            //   city: values.province,
+            //   district: values.district,
+            //   wards: values.ward,
+            //   detail: values.line,
+            // });
             form.setFieldsValue({
               phoneNumber: values.phoneNumber,
               name: values.fullName,
-              city: values.province,
-              district: values.district,
-              wards: values.ward,
-              detail: values.line,
             });
-            addressFull(
-              values.provinceId,
-              values.toDistrictId,
-              values.wardCode
-            );
             setBillRequest({
               ...billRequest,
               phoneNumber: values.phoneNumber,
@@ -1215,22 +1286,6 @@ function CreateBill() {
             toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
-        // CustomerApi.getOneByPhoneNumber(values.phoneNumber).then(
-        //   (res) => {
-        //     console.log(res.data.data);
-        //     console.log(res.data);
-        //     setBillRequest({
-        //       ...billRequest,
-        //       phoneNumber: res.data.data.phoneNumber,
-        //       userName: res.data.data.fullName,
-        //       idUser: res.data.data.id,
-        //     });
-        //     dispatch(addUserBillWait(res.data.data));
-        //   },
-        //   (err) => {
-        //     console.log(err);
-        //   }
-        // );
       })
       .catch(() => {
         // Xử lý khi người dùng từ chối xác nhận
@@ -1242,8 +1297,8 @@ function CreateBill() {
   };
 
   return (
-    <div>
-      <Row justify="space-between">
+    <div style={{width: "100%"}}>
+      <Row justify="space-between" >
         <Col span={4}>
           <Button
             type="primary"
@@ -1639,7 +1694,7 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập họ và tên"
                           style={{ width: "90%", height: "39px" }}
-                          value={billRequest.userName}
+                          defaultValue={billRequest.userName}
                           onChange={(e) =>
                             ChangeBillRequest("userName", e.target.value)
                           }
@@ -1677,7 +1732,7 @@ function CreateBill() {
                           onChange={(e) =>
                             ChangeBillRequest("phoneNumber", e.target.value)
                           }
-                          value={billRequest.phoneNumber}
+                          defaultValue={billRequest.phoneNumber}
                         />
                       </Form.Item>
                     </Col>
@@ -1704,7 +1759,7 @@ function CreateBill() {
                         <Input
                           placeholder="Nhập địa chỉ"
                           style={{ width: "90%", height: "39px" }}
-                          value={address.detail}
+                          defaultValue={address.detail}
                           onChange={(e) =>
                             onChangeAddress("detail", e.target.value)
                           }
@@ -2291,7 +2346,7 @@ function CreateBill() {
       >
         <Form form={formAddUser} layout="vertical">
           <Row gutter={[24, 8]}>
-            <Col span={10} style={{ marginLeft: "6%" }}>
+            <Col span={20} style={{ marginLeft: "6%" }}>
               <div className="title_add">
                 <Form.Item
                   label="Tên khách hàng"
@@ -2306,21 +2361,7 @@ function CreateBill() {
                 >
                   <Input className="input-item" placeholder="Tên khách hàng" />
                 </Form.Item>
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập email" },
-                    { max: 50, message: "Email tối đa 50 ký tự" },
-                    {
-                      pattern:
-                        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
-                      message: "Email không đúng định dạng",
-                    },
-                  ]}
-                >
-                  <Input className="input-item" placeholder="Email" />
-                </Form.Item>
+
                 <Form.Item
                   label="Số điện thoại"
                   name="phoneNumber"
@@ -2354,100 +2395,6 @@ function CreateBill() {
                   </Radio.Group>
                 </Form.Item>
               </div>
-            </Col>
-
-            <Col span={10} style={{ marginLeft: "40px", marginTop: "16px" }}>
-              <Form.Item
-                label="Tỉnh/Thành phố"
-                name="province"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn Tỉnh/Thành phố",
-                  },
-                ]}
-              >
-                <Select defaultValue="" onChange={handleProvinceChangeAddUser}>
-                  <Option value="">--Chọn Tỉnh/Thành phố--</Option>
-                  {listProvince?.map((item) => {
-                    return (
-                      <Option
-                        key={item.ProvinceID}
-                        value={item.ProvinceName}
-                        valueProvince={item.ProvinceID}
-                      >
-                        {item.ProvinceName}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Quận/Huyện"
-                name="district"
-                rules={[
-                  { required: true, message: "Vui lòng chọn Quận/Huyện" },
-                ]}
-              >
-                <Select defaultValue=" " onChange={handleDistrictChangeAddUser}>
-                  <Option value=" ">--Chọn Quận/Huyện--</Option>
-                  {listDistricts?.map((item) => {
-                    return (
-                      <Option
-                        key={item.DistrictID}
-                        value={item.DistrictName}
-                        valueDistrict={item.DistrictID}
-                      >
-                        {item.DistrictName}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Xã/Phường"
-                name="ward"
-                rules={[{ required: true, message: "Vui lòng chọn Xã/Phường" }]}
-              >
-                <Select defaultValue="" onChange={handleWardChangeAddUser}>
-                  <Option value="">--Chọn Xã/Phường--</Option>
-                  {listWard?.map((item) => {
-                    return (
-                      <Option
-                        key={item.WardCode}
-                        value={item.WardName}
-                        valueWard={item.WardCode}
-                      >
-                        {item.WardName}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Số nhà/Ngõ/Đường"
-                name="line"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập số nhà/ngõ/đường",
-                  },
-                ]}
-              >
-                <Input className="input-item" placeholder="Số nhà/Ngõ/Đường" />
-              </Form.Item>
-
-              <Form.Item name="toDistrictId" hidden>
-                <Input disabled />
-              </Form.Item>
-              <Form.Item name="provinceId" hidden>
-                <Input disabled />
-              </Form.Item>
-              <Form.Item name="wardCode" hidden>
-                <Input disabled />
-              </Form.Item>
             </Col>
           </Row>
         </Form>
@@ -2490,7 +2437,7 @@ function CreateBill() {
                         height: "37px",
                       }}
                       customInput={Input}
-                      value={totalMoneyPayMent}
+                      defaultValue={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
@@ -2645,8 +2592,6 @@ function CreateBill() {
           </Row>
         </Form>
       </Modal>
-
-      {/* end  modal Address */}
 
       {/* end modal payment  */}
 

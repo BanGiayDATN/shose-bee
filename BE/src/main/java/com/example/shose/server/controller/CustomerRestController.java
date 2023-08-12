@@ -118,18 +118,18 @@ public class CustomerRestController {
         QuickCreateCustomerRequest customerRequest = new QuickCreateCustomerRequest();
         customerRequest.setFullName(jsonObject.get("fullName").getAsString());
         customerRequest.setPhoneNumber(jsonObject.get("phoneNumber").getAsString());
-        customerRequest.setEmail(jsonObject.get("email").getAsString());
+//        customerRequest.setEmail(jsonObject.get("email").getAsString());
         customerRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
 
         // add địa chỉ
         CreateAddressRequest addressRequest = new CreateAddressRequest();
-        addressRequest.setLine(jsonObject.get("line").getAsString());
-        addressRequest.setProvince(jsonObject.get("province").getAsString());
-        addressRequest.setDistrict(jsonObject.get("district").getAsString());
-        addressRequest.setWard(jsonObject.get("ward").getAsString());
-        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
-        addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
-        addressRequest.setWardCode(jsonObject.get("wardCode").getAsString());
+//        addressRequest.setLine(jsonObject.get("line").getAsString());
+//        addressRequest.setProvince(jsonObject.get("province").getAsString());
+//        addressRequest.setDistrict(jsonObject.get("district").getAsString());
+//        addressRequest.setWard(jsonObject.get("ward").getAsString());
+//        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
+//        addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
+//        addressRequest.setWardCode(jsonObject.get("wardCode").getAsString());
 
         return new ResponseObject(customerService.quickCreate(customerRequest, addressRequest));
     }

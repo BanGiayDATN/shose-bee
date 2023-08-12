@@ -23,7 +23,9 @@ import { AddressApi } from "../../../../api/customer/address/address.api";
 import { useNavigate } from "react-router";
 import { PlusOutlined } from "@ant-design/icons";
 
-// import QrReader from "react-qr-reader";
+import ModalQRScanner from "./ModalQRScanner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 
 const { Option } = Select;
 
@@ -34,7 +36,8 @@ const ModalCreateCustomer = () => {
   const [listWard, setListWard] = useState([]);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
+  const [qrScannerVisible, setQrScannerVisible] = useState(false);
+  const [qrCodeData, setQRCodeData] = useState("");
   // ảnh
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -85,17 +88,24 @@ const ModalCreateCustomer = () => {
     </div>
   );
 
-  // const [qrData, setQrData] = useState("");
+  //quét qr
+  const handleScan = (qrData) => {
+    setQRCodeData(qrData);
+    const qrDataArray = qrData.split("|");
+    const citizenIdentity = qrDataArray[0];
+    const fullName = qrDataArray[2];
+    const dateOfBirth = moment(qrDataArray[3], "DDMMYYYY").format("YYYY-MM-DD");
+    const gender = qrDataArray[4];
 
-  // const handleScan = (data) => {
-  //   if (data) {
-  //     setQrData(data);
-  //   }
-  // };
+    form.setFieldsValue({
+      citizenIdentity: citizenIdentity,
+      fullName: fullName,
+      dateOfBirth: dateOfBirth,
+      gender: gender === "Nữ" ? "false" : "true",
+    });
 
-  // const handleError = (error) => {
-  //   console.error("QR Scan Error:", error);
-  // };
+    setQrScannerVisible(false);
+  };
   const loadDataProvince = () => {
     AddressApi.fetchAllProvince().then(
       (res) => {
@@ -176,7 +186,7 @@ const ModalCreateCustomer = () => {
   };
 
   const handleCancel = () => {
-    navigate("/customerr-management");
+    navigate("/customer-management");
   };
   const validateAge = (rule, value) => {
     if (value) {
@@ -292,24 +302,50 @@ const ModalCreateCustomer = () => {
             Thông tin khách hàng
           </h1>
           <Form form={form} layout="vertical">
-            <Row gutter={[24, 8]}>
-              <Col span={10} style={{ marginLeft: "6%" }}>
-                <div className="title_add">
+            <div className="title_add">
+              <Row gutter={[24, 8]}>
+                <Col span={10} style={{ marginLeft: "auto" }}>
+                  <div>
+                    <Button
+                      className="btn_filter"
+                      icon={<FontAwesomeIcon icon={faQrcode} />}
+                      onClick={() => setQrScannerVisible(true)}
+                      style={{ marginLeft: "160px" }}
+                    >
+                      Quét QR
+                    </Button>
+                    <ModalQRScanner
+                      visible={qrScannerVisible}
+                      onCancel={() => setQrScannerVisible(false)}
+                      onQRCodeScanned={(qrData) => {
+                        setQRCodeData(qrData);
+                        handleScan(qrData);
+                      }}
+                    />
+                  </div>
+                </Col>
+              </Row>
+              <Row gutter={[24, 8]}>
+                <Col span={10} style={{ marginLeft: "6%" }}>
                   <Form.Item
                     label="Tên khách hàng"
                     name="fullName"
+                    rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+                  >
+                    <Input className="input-item" placeholder="Tên khách hàng" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Căn cước công dân"
+                    name="citizenIdentity"
                     rules={[
                       {
                         required: true,
-                        message: "Vui lòng nhập tên khách hàng",
+                        message: "Vui lòng nhập số CCCD",
                       },
-                      { max: 30, message: "Tên khách hàng tối đa 30 ký tự" },
+                      { max: 12, message: "Số CCCD tối đa 12 ký tự" },
                     ]}
                   >
-                    <Input
-                      className="input-item"
-                      placeholder="Tên khách hàng"
-                    />
+                    <Input className="input-item" placeholder="CCCD" />
                   </Form.Item>
                   <Form.Item
                     label="Email"
@@ -388,110 +424,102 @@ const ModalCreateCustomer = () => {
                       </Option>
                     </Select>
                   </Form.Item>
-                </div>
-              </Col>
+                </Col>
 
-              <Col span={10} style={{ marginLeft: "40px", marginTop: "16px" }}>
-                <Form.Item
-                  label="Số điện thoại"
-                  name="phoneNumber"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập số điện thoại",
-                    },
-                    {
-                      pattern: /^0\d{9}$/,
-                      message:
-                        "Số điện thoại phải bắt đầu từ số 0 và gồm 10 chữ số",
-                    },
-                  ]}
-                >
-                  <Input className="input-item" placeholder="Số điện thoại" />
-                </Form.Item>
-                <Form.Item
-                  label="Ngày sinh"
-                  name="dateOfBirth"
-                  rules={[
-                    { required: true, message: "Vui lòng chọn ngày sinh" },
-                    { validator: validateAge },
-                  ]}
-                >
-                  <Input className="input-item" type="date" />
-                </Form.Item>
-                <Form.Item
-                  label="Quận/Huyện"
-                  name="district"
-                  rules={[
-                    { required: true, message: "Vui lòng chọn Quận/Huyện" },
-                  ]}
-                >
-                  <Select defaultValue=" " onChange={handleDistrictChange}>
-                    <Option value=" ">--Chọn Quận/Huyện--</Option>
-                    {listDistricts?.map((item) => {
-                      return (
-                        <Option
-                          key={item.DistrictID}
-                          value={item.DistrictName}
-                          valueDistrict={item.DistrictID}
-                        >
-                          {item.DistrictName}
-                        </Option>
-                      );
-                    })}
-                  </Select>
-                </Form.Item>
+                <Col span={10} style={{ marginLeft: "40px" }}>
+                  <Form.Item
+                    label="Ngày sinh"
+                    name="dateOfBirth"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn ngày sinh" },
+                      { validator: validateAge },
+                    ]}
+                  >
+                    <Input className="input-item" type="date" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Giới tính"
+                    name="gender"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn giới tinh" },
+                    ]}
+                    initialValue="true"
+                  >
+                    <Radio.Group>
+                      <Radio value="true" checked>
+                        Nam
+                      </Radio>
+                      <Radio value="false">Nữ</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item
+                    label="Số điện thoại"
+                    name="phoneNumber"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số điện thoại",
+                      },
+                      {
+                        pattern: /^0\d{9}$/,
+                        message:
+                          "Số điện thoại phải bắt đầu từ số 0 và gồm 10 chữ số",
+                      },
+                    ]}
+                  >
+                    <Input className="input-item" placeholder="Số điện thoại" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Quận/Huyện"
+                    name="district"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn Quận/Huyện" },
+                    ]}
+                  >
+                    <Select defaultValue=" " onChange={handleDistrictChange}>
+                      <Option value=" ">--Chọn Quận/Huyện--</Option>
+                      {listDistricts?.map((item) => {
+                        return (
+                          <Option
+                            key={item.DistrictID}
+                            value={item.DistrictName}
+                            valueDistrict={item.DistrictID}
+                          >
+                            {item.DistrictName}
+                          </Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
 
-                <Form.Item
-                  label="Số nhà/Ngõ/Đường"
-                  name="line"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập số nhà/ngõ/đường",
-                    },
-                  ]}
-                >
-                  <Input
-                    className="input-item"
-                    placeholder="Số nhà/Ngõ/Đường"
-                  />
-                </Form.Item>
-                <Form.Item
-                  label="Giới tính"
-                  name="gender"
-                  rules={[
-                    { required: true, message: "Vui lòng chọn giới tinh" },
-                  ]}
-                  initialValue="true"
-                >
-                  <Radio.Group>
-                    <Radio value="true" checked>
-                      Nam
-                    </Radio>
-                    <Radio value="false">Nữ</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                <Form.Item name="toDistrictId" hidden>
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item name="provinceId" hidden>
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item name="wardCode" hidden>
-                  <Input disabled />
-                </Form.Item>
-                {/* <div>
-                  <QrReader
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: "100%" }}
-                  />
-                  <p>Scanned Data: {qrData}</p>
-                </div> */}
-              </Col>
-            </Row>
+                  <Form.Item
+                    label="Số nhà/Ngõ/Đường"
+                    name="line"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số nhà/ngõ/đường",
+                      },
+                    ]}
+                  >
+                    <Input
+                      className="input-item"
+                      placeholder="Số nhà/Ngõ/Đường"
+                    />
+                  </Form.Item>
+
+                  <Form.Item name="toDistrictId" hidden>
+                    <Input disabled />
+                  </Form.Item>
+                  <Form.Item name="provinceId" hidden>
+                    <Input disabled />
+                  </Form.Item>
+                  <Form.Item name="wardCode" hidden>
+                    <Input disabled />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </div>
           </Form>
           {/* </div> */}
 
