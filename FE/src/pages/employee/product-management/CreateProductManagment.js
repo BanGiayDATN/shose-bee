@@ -575,8 +575,6 @@ const CreateProductManagment = () => {
     setProductNameValid(value.trim() !== "");
   };
 
-  // phân trang theo màu
-
   const [tableData, setTableData] = useState([]);
   const dataDetail = () => {
     const formData = form.getFieldsValue();
@@ -709,37 +707,30 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Thể loại"
-                    name="categoryId"
+                    label="Trạng thái"
+                    name="status"
                     style={{ fontWeight: "bold" }}
                     rules={[
-                      { required: true, message: "Vui lòng chọn thể loại" },
+                      {
+                        required: true,
+                        message: "Vui lòng chọn trạng thái sản phẩm",
+                      },
                     ]}
                   >
-                    <Select
-                      placeholder="Chọn thể loại"
-                      style={{ marginLeft: "15px", width: "95%" }}
-                    >
-                      {listCategory.map((category, index) => (
-                        <Option key={index} value={category.id}>
-                          <span style={{ fontWeight: "bold" }}>
-                            {category.name}
-                          </span>
-                        </Option>
-                      ))}
+                    <Select>
+                      <Option value="DANG_SU_DUNG">
+                        <span style={{ fontWeight: "bold" }}>Kinh Doanh</span>
+                      </Option>
                     </Select>
                   </Form.Item>
                 </Col>
                 <Col span={2}>
                   <Form.Item>
-                    <Tooltip title="Thêm thể loại">
-                      <Button
-                        type="primary"
-                        icon={<FontAwesomeIcon icon={faPlus} />}
-                        style={{ height: 30 }}
-                        onClick={() => setModalAddCategory(true)}
-                      ></Button>
-                    </Tooltip>
+                    <Button
+                      type="primary"
+                      icon={<FontAwesomeIcon icon={faPlus} />}
+                      style={{ height: 30 }}
+                    ></Button>
                   </Form.Item>
                 </Col>
               </Row>
@@ -753,10 +744,7 @@ const CreateProductManagment = () => {
                       { required: true, message: "Vui lòng chọn thương hiệu" },
                     ]}
                   >
-                    <Select
-                      placeholder="Chọn chất liệu"
-                      style={{ marginLeft: "20px", width: "260px" }}
-                    >
+                    <Select placeholder="Chọn chất liệu">
                       {listMaterial.map((material, index) => (
                         <Option key={index} value={material.id}>
                           <span style={{ fontWeight: "bold" }}>
@@ -788,10 +776,7 @@ const CreateProductManagment = () => {
                       { required: true, message: "Vui lòng chọn thể loại" },
                     ]}
                   >
-                    <Select
-                      placeholder="Chọn đế giày"
-                      style={{ marginLeft: "15px", width: "95%" }}
-                    >
+                    <Select placeholder="Chọn đế giày">
                       {listSole.map((sole, index) => (
                         <Option key={index} value={sole.id}>
                           <span style={{ fontWeight: "bold" }}>
@@ -826,10 +811,7 @@ const CreateProductManagment = () => {
                       { required: true, message: "Vui lòng chọn giới tính" },
                     ]}
                   >
-                    <Select
-                      placeholder="Chọn giới tính"
-                      style={{ marginLeft: "20px", width: "260px" }}
-                    >
+                    <Select placeholder="Chọn giới tính">
                       <Option value="NAM">
                         <span style={{ fontWeight: "bold" }}>Nam</span>
                       </Option>
@@ -857,30 +839,34 @@ const CreateProductManagment = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Trạng thái"
-                    name="status"
+                    label="Thể loại"
+                    name="categoryId"
                     style={{ fontWeight: "bold" }}
                     rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng chọn trạng thái sản phẩm",
-                      },
+                      { required: true, message: "Vui lòng chọn thể loại" },
                     ]}
                   >
-                    <Select>
-                      <Option value="DANG_SU_DUNG">
-                        <span style={{ fontWeight: "bold" }}>Kinh Doanh</span>
-                      </Option>
+                    <Select placeholder="Chọn thể loại">
+                      {listCategory.map((category, index) => (
+                        <Option key={index} value={category.id}>
+                          <span style={{ fontWeight: "bold" }}>
+                            {category.name}
+                          </span>
+                        </Option>
+                      ))}
                     </Select>
                   </Form.Item>
                 </Col>
                 <Col span={2}>
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      icon={<FontAwesomeIcon icon={faPlus} />}
-                      style={{ height: 30 }}
-                    ></Button>
+                    <Tooltip title="Thêm thể loại">
+                      <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
+                        style={{ height: 30 }}
+                        onClick={() => setModalAddCategory(true)}
+                      ></Button>
+                    </Tooltip>
                   </Form.Item>
                 </Col>
               </Row>

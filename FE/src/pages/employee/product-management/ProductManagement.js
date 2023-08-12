@@ -124,6 +124,7 @@ const ProductManagement = () => {
     setIsSubmitted(true);
     loadData();
   }, [selectedValues]);
+  
 
   const getRowClassName = (record, index) => {
     return index % 2 === 0 ? "even-row" : "odd-row";
@@ -195,11 +196,6 @@ const ProductManagement = () => {
               <FontAwesomeIcon icon={faEdit} />
             </Button>
           </Tooltip>
-          <ModalDetailProductManagment
-            visible={modaleDetail}
-            onCancel={handleCancel}
-            id={productDetailId}
-          />
         </div>
       ),
     },
@@ -313,6 +309,11 @@ const ProductManagement = () => {
             rowClassName={getRowClassName}
           />
         </div>
+        <ModalDetailProductManagment
+          visible={modaleDetail}
+          onCancel={handleCancel}
+          id={productDetailId}
+        />
       </div>
     </>
   );

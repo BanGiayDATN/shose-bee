@@ -78,7 +78,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                    AVG(pr.value) AS promotion,
                    detail.quantity,
                    s2.name AS size,
-                   c2.code AS color
+                   c2.code AS color,
+                   detail.maqr AS QRCode
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (

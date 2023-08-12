@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
+import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
@@ -251,8 +252,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public ProductDetailReponse getOneById(String id) {
-        ProductDetailReponse optional = productDetailRepository.getOneById(id);
+    public ProductDetailDTOResponse getOneById(String id) {
+        ProductDetailDTOResponse optional = productDetailRepository.getOneById(id);
         if (optional == null) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
@@ -296,6 +297,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.findAllByIdProduct(id);
     }
 
+
 //    @Override
 //    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
 //        return productDetailRepository.getAllProductDetail(req);
@@ -317,4 +319,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     public List<GetProductDetailByCategory> GetProductDetailByCategory(String id) {
         return productDetailRepository.getProductDetailByCategory(id);
     }
+
+
 }

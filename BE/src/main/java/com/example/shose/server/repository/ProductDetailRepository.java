@@ -1,6 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
+import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
@@ -38,7 +39,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    AVG(pr.value) AS promotion,
                    detail.quantity,
                    s2.name AS size,
-                   c2.code AS color
+                   c2.code AS color,
+                   detail.maqr AS QRCode
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -123,7 +125,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                     detail.gender AS gender,
                     detail.status AS status,
                     si.name AS nameSize,
-                    col.code AS color
+                    col.code AS color,
+                    detail.maqr AS QRCode
              FROM product_detail detail
              LEFT JOIN product p on detail.id_product = p.id
              LEFT JOIN image i on detail.id = i.id_product_detail
@@ -199,24 +202,24 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             where p.id = :id and c.code = :codeColor
             """, nativeQuery = true)
     GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor);
+
     @Query(value = """
                 SELECT
-                   ROW_NUMBER() OVER (ORDER BY detail.last_modified_date DESC) AS stt,
                    detail.id AS id,
                    i.name AS image,
-                   CONCAT(p.name ,'[ ',s2.name,' - ',c2.name,' ]') AS nameProduct,
-                   detail.price AS price,
-                   detail.created_date AS created_date,
-                   detail.gender AS gender,
+                   p.name AS nameProduct,
+                   detail.description AS description,
+                   b.id AS idBrand,
+                   s.id AS idSole,
+                   c.id AS idCategory,
                    detail.status AS status,
-                   si.name AS nameSize,
-                   c.name AS nameCategory,
-                   b.name AS nameBrand,
+                   m.id AS idMaterial,
+                   detail.gender AS gender,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
-                   detail.quantity,
-                   s2.name AS size,
-                   c2.code AS color
+                   detail.price AS price,
+                   c2.id AS idCode,
+                   s2.id AS idSize,
+                   detail.maqr AS QRCode
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -229,23 +232,13 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN material m ON detail.id_material = m.id
                 JOIN category c ON detail.id_category = c.id
                 JOIN brand b ON detail.id_brand = b.id
-                LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-                LEFT JOIN promotion pr on pr.id = ppd.id_promotion
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
-                WHERE i.status = true  AND detail.id = :id
-                ORDER BY detail.last_modified_date DESC 
+                WHERE  detail.id = :id
             """, nativeQuery = true)
-    ProductDetailReponse getOneById(@Param("id") String id);
-//    {idProduct: '7ee38ba7-9ef1-496c-8b9b-b1f7424d3c0d', codeColor: '%23800000', nameSize: '41'} 90ffd24b-54e5-41fa-bb46-e5d3048401df d997eeba-5ba1-4cd6-a75c-bc8b24bc4d0c
-//    @Query( value = """
-//            SELECT pd FROM product_detail pd
-//            JOIN product p on pd.id_product = p.id
-//            JOIN color c on c.id = pd.id_color
-//            JOIN size s on s.id = pd.id_size
-//             WHERE p.id = :idProuct AND c.code = :codeColor AND s.name = :nameSize""")
-//    ProductDetail getProductDetailInCart(@Param("idProuct") String idProuct, @Param("codeColor") String codeColor, @Param("nameSize") String nameSize);
+
+    ProductDetailDTOResponse getOneById(@Param("id") String id);
 
 
 }
