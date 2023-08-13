@@ -1,5 +1,11 @@
 import { request } from "../../../helper/request";
 export class AccountApi {
+  static getAllAccount = () => {
+    return request({
+      method: "GET",
+      url:`/account`,
+    });
+  };
   static fetchAll = (filter) => {
     return request({
       method: "GET",

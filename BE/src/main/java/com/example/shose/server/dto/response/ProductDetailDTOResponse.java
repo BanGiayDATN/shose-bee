@@ -9,17 +9,29 @@ public interface ProductDetailDTOResponse {
     @Value("#{target.id}")
     String getId();
 
-    @Value("#{target.stt}")
-    Integer getSTT();
-
     @Value("#{target.image}")
     String getImage();
 
     @Value("#{target.nameProduct}")
     String getNameProduct();
 
-    @Value("#{target.price}")
-    BigDecimal getPrice();
+    @Value("#{target.description}")
+    String getDescription();
+
+    @Value("#{target.idBrand}")
+    String getIdBrand();
+
+    @Value("#{target.idSole}")
+    String getIdSole();
+
+    @Value("#{target.idCategory}")
+    String getIdCategory();
+
+    @Value("#{target.idMaterial}")
+    String getIdMaterial();
+
+    @Value("#{target.idCode}")
+    String getIdCode();
 
     @Value("#{target.gender}")
     String getGender();
@@ -30,9 +42,13 @@ public interface ProductDetailDTOResponse {
     @Value("#{target.quantity}")
     Integer getQuantity();
 
-    @Value("#{target.sizeName}")
-    String getSizeName();
+    @Value("#{target.price}")
+    BigDecimal getPrice();
 
-    @Value("#{target.colorCode}")
-    String getColorCode();
+    @Value("#{target.idsize}")
+    String getIdSize();
+
+    @Value("#{target.QRCode}")
+    String getQRCode();
+
 }

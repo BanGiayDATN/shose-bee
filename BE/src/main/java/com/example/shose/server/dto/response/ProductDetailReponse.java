@@ -57,4 +57,7 @@ public interface ProductDetailReponse {
 
     @Value("#{target.promotion}")
     Integer getPromotion();
+
+    @Value("#{target.QRCode}")
+    String getQRCode();
 }

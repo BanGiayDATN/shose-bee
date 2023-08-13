@@ -1,8 +1,10 @@
 package com.example.shose.server.controller.client;
 
+import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,4 +36,9 @@ public class ProductDetailClientRestController {
 
         return new ResponseObject(productDetailService.getDetailProductOfClient(id,rawCodeColor));
     }
+//    @GetMapping("/{idProduct}&&{codeColor}&&{nameSize}")
+//    public ResponseObject getProductDetailInCart (@PathVariable("idProduct") String idProduct,@PathVariable("codeColor") String codeColor,@PathVariable("nameSize") String nameSize){
+//        String rawCodeColor = codeColor.replace("%23", "#");
+//        return new ResponseObject(productDetailService.getProductDetailInCart(idProduct,rawCodeColor,nameSize));
+//    }
 }

@@ -27,7 +27,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
            LEFT JOIN material ma ON ma.id = prde.id_material
            LEFT JOIN category ca ON ca.id = prde.id_category
             WHERE bi.id LIKE :idBill
-           GROUP BY id
+           GROUP BY bi.id, im.name, bide.id, prde.id, pr.code, pr.name, co.name, si.name, so.name, ma.name, ca.name, bide.price, bide.quantity, prde.quantity, bide.status_bill
             """, nativeQuery = true)
     List<BillDetailResponse> findAllByIdBill(String idBill);
 

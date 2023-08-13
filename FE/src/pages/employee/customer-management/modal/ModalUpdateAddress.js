@@ -10,6 +10,7 @@ const { Option } = Select;
 const ModalUpdateAddress = ({ visible, id, onCancel }) => {
   const [form] = Form.useForm();
   const [address, setAddress] = useState([]);
+  const [statusAddress, setStatusAddress] = useState([]);
   const [idCustomer, setIdCustomer] = useState([]);
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
@@ -18,10 +19,9 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
 
   const getOne = () => {
     AddressApi.getOne(id).then((res) => {
-      console.log(res.data.data);
       form.setFieldsValue({ userId: res.data.data.user.id });
       setAddress(res.data.data);
-
+      setStatusAddress(res.data.data.status);
       form.setFieldsValue(res.data.data);
       AddressApi.fetchAllProvinceWard(res.data.data.toDistrictId).then(
         (resWard) => {
@@ -211,12 +211,22 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
         >
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
-        <Form.Item label="Trạng thái" name="status">
-          <Select>
-            <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-            <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
-          </Select>
-        </Form.Item>
+
+        {statusAddress === "DANG_SU_DUNG" ? (
+          <Form.Item label="Trạng thái" name="status">
+            <Select>
+              <Option value="DANG_SU_DUNG">Mặc định</Option>
+            </Select>
+          </Form.Item>
+        ) : (
+          <Form.Item label="Trạng thái" name="status">
+            <Select>
+              <Option value="DANG_SU_DUNG">Mặc định</Option>
+              <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+            </Select>
+          </Form.Item>
+        )}
+
         <Form.Item name="userId" hidden>
           <Input disabled />
         </Form.Item>

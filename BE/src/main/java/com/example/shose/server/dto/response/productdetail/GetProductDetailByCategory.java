@@ -13,8 +13,8 @@ public interface GetProductDetailByCategory {
     @Value("#{target.idProductDetail}")
     String getIdProductDetail();
 
-    @Value("#{target.idColor}")
-    String getIdColor();
+    @Value("#{target.codeColor}")
+    String getCodeColor();
     @Value("#{target.image}")
     String getImage();
 

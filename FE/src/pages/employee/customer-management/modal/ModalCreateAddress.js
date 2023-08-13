@@ -184,9 +184,9 @@ const ModalCreateAddress = ({ visible, onCancel, id }) => {
         >
           <Input placeholder="Số nhà/Ngõ/Đường" />
         </Form.Item>
-        <Form.Item label="Trạng thái" name="status">
-          <Select>
-            <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
+        <Form.Item label="Trạng thái" name="status" hidden>
+          <Select defaultValue="DANG_SU_DUNG">
+            <Option value="DANG_SU_DUNG">Mặc định</Option>
             <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
           </Select>
         </Form.Item>
