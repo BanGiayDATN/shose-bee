@@ -176,6 +176,9 @@ public class BillServiceImpl implements BillService {
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
+            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity( productDetail.get().getQuantity() - billDetailRequest.getQuantity());

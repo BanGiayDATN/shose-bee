@@ -66,6 +66,15 @@ function DetailBill() {
   const [payMentNo, setPayMentNo] = useState(false);
   const { Option } = Select;
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
       console.log(res);
@@ -906,10 +915,9 @@ function DetailBill() {
       key: "price",
       render: (price) => (
         <span>
-          {price.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })}
+          {
+          formatCurrency(price)
+          }
         </span>
       ),
     },
@@ -1014,12 +1022,7 @@ function DetailBill() {
       key: "totalMoney",
       render: (totalMoney) => (
         <span>
-          {totalMoney >= 1000
-            ? totalMoney.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
-            : totalMoney + " đ"}
+          {formatCurrency(totalMoney)}
         </span>
       ),
     },
@@ -1161,9 +1164,9 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    span={statusPresent < 6 ? 7 : 0}
+                    span={statusPresent < 5 ? 7 : 0}
                   >
-                    {statusPresent < 6 && statusPresent != 3 ? (
+                    {statusPresent < 5 && statusPresent != 3 ? (
                       <Button
                         type="primary"
                         className="btn btn-primary"
@@ -1650,12 +1653,7 @@ function DetailBill() {
                   </Row>
                   <Row>
                     <span style={{ color: "red", fontWeight: "500" }}>
-                      {item.price >= 1000
-                        ? item.price.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
-                        : item.price + " đ"}
+                      {formatCurrency(item.price )}
                     </span>{" "}
                   </Row>
                   <Row>
@@ -1766,12 +1764,7 @@ function DetailBill() {
               <Col span={6}>Tiền hàng:</Col>
               <Col span={10} align={"end"}>
                 <span>
-                  {bill.totalMoney >= 1000
-                    ? bill.totalMoney.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : bill.totalMoney + " đ"}
+                  {formatCurrency(bill.totalMoney) }
                 </span>
               </Col>
             </Row>
@@ -1782,12 +1775,7 @@ function DetailBill() {
                   <Col span={6}>Phí vận chuyển:</Col>
                   <Col span={10} align={"end"}>
                     <span>
-                      {bill.moneyShip >= 1000
-                        ? bill.moneyShip.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
-                        : bill.moneyShip + " đ"}
+                      {formatCurrency(bill.moneyShip)}
                     </span>
                   </Col>
                 </Row>
@@ -1799,12 +1787,7 @@ function DetailBill() {
               <Col span={6}>Tiền giảm: </Col>
               <Col span={10} align={"end"}>
                 <span>
-                  {bill.itemDiscount >= 1000
-                    ? bill.itemDiscount.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : bill.itemDiscount + " đ"}
+                  {formatCurrency(bill.itemDiscount) }
                 </span>
               </Col>
             </Row>
@@ -1815,42 +1798,13 @@ function DetailBill() {
               </Col>
               <Col span={10} align={"end"}>
                 <span style={{ color: "red", fontWeight: "bold" }}>
-                  {detailProductInBill.reduce((accumulator, currentValue) => {
+                  { formatCurrency(detailProductInBill.reduce((accumulator, currentValue) => {
                     return (
                       accumulator + currentValue.price * currentValue.quantity
                     );
                   }, 0) +
                     bill.moneyShip -
-                    bill.itemDiscount >=
-                  1000
-                    ? (
-                        detailProductInBill.reduce(
-                          (accumulator, currentValue) => {
-                            return (
-                              accumulator +
-                              currentValue.price * currentValue.quantity
-                            );
-                          },
-                          0
-                        ) +
-                        bill.moneyShip -
-                        bill.itemDiscount
-                      ).toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : detailProductInBill.reduce(
-                        (accumulator, currentValue) => {
-                          return (
-                            accumulator +
-                            currentValue.price * currentValue.quantity
-                          );
-                        },
-                        0
-                      ) +
-                      bill.moneyShip -
-                      bill.itemDiscount +
-                      " đ"}
+                    bill.itemDiscount)  }
                 </span>
               </Col>
             </Row>

@@ -36,11 +36,11 @@ function Sale() {
     if(invoiceNumber >= 5){
       toast.warning(`Không thể tạo thêm hóa đơn`);
     }else{
-      const newActiveKey = `Hóa đơn ${newTabIndex.current++}`;
+      const newActiveKey = `Hóa đơn ${newTabIndex.current}`;
       setItems([
         ...items,
         {
-          label: `Hóa đơn ${newTabIndex.current++}`,
+          label: `Hóa đơn ${newTabIndex.current}`,
           children: <CreateBill style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
           key: newActiveKey,
         },
