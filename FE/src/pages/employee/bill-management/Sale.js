@@ -26,7 +26,7 @@ function Sale() {
 
   const [activeKey, setActiveKey] = useState(defaultPanes[0].key);
   const [items, setItems] = useState(defaultPanes);
-  const newTabIndex = useRef(1);
+  const newTabIndex = useRef(2);
 
 
   const onChange = (key) => {
@@ -40,7 +40,7 @@ function Sale() {
       setItems([
         ...items,
         {
-          label: `Hóa đơn ${newTabIndex.current}`,
+          label: `Hóa đơn ${newTabIndex.current++}`,
           children: <CreateBill style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
           key: newActiveKey,
         },

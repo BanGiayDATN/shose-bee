@@ -51,10 +51,13 @@ import { MdOutlinePayment } from "react-icons/md";
 import ModalQRScanner from "../product-management/modal/ModalQRScanner";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import { Navigate } from 'react-router-dom';
 
 function CreateBill({removePane , targetKey}) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
+  
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -66,6 +69,7 @@ function CreateBill({removePane , targetKey}) {
     moneyShip: 0,
     billDetailRequests: [],
     vouchers: [],
+    code: ""
   });
 
   var optionsPayMent = [
@@ -143,6 +147,9 @@ function CreateBill({removePane , targetKey}) {
     loadData();
     loadDataProvince();
     dispatch(addUserBillWait(null));
+    BillApi.getCodeBill().then(res =>{
+      setBillRequest({...billRequest, code: res.data.data})
+    })
   }, []);
 
   const loadData = () => {
@@ -463,6 +470,16 @@ function CreateBill({removePane , targetKey}) {
     }
   };
   const addPayMent = (e, method) => {
+    if(method == "CHUYEN_KHOAN"){
+      const data = {
+        vnp_Ammount: totalMoneyPayMent,
+        vnp_TxnRef: billRequest.code
+      }
+      console.log(data);
+      PaymentsMethodApi.paymentVnpay(data).then(res => {
+        window.open(res.data.data);
+      })
+    }
     if (totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -568,9 +585,9 @@ function CreateBill({removePane , targetKey}) {
       idAccount = user.idAccount;
     }
     var typeBill = "OFFLINE";
-    if (isOpenDelivery) {
-      typeBill = "ONLINE";
-    }
+    // if (isOpenDelivery) {
+    //   typeBill = "ONLINE";
+    // }
     var statusPayMents = "THANH_TOAN";
     if (traSau) {
       statusPayMents = "TRA_SAU";
@@ -589,7 +606,8 @@ function CreateBill({removePane , targetKey}) {
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
       idUser: idAccount,
-      deliveryDate: dayShip
+      deliveryDate: dayShip,
+      code: billRequest.code
     };
 
     if (isOpenDelivery) {
@@ -616,6 +634,7 @@ function CreateBill({removePane , targetKey}) {
                         moneyShip: 0,
                         billDetailRequests: [],
                         vouchers: [],
+                        code: ""
                       });
                     setAddress({
                         city: "",
