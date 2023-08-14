@@ -469,8 +469,9 @@ function CreateBill({removePane , targetKey}) {
       setDataPayMent([]);
     }
   };
+  const formRef = React.useRef(null);
   const addPayMent = (e, method) => {
-    if(method == "CHUYEN_KHOAN"){
+    if(method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000){
       const data = {
         vnp_Ammount: totalMoneyPayMent,
         vnp_TxnRef: billRequest.code
@@ -489,6 +490,7 @@ function CreateBill({removePane , targetKey}) {
       };
       setDataPayMent([...dataPayment, data]);
       setTotalMoneyPayment("")
+      form.resetFields();
     }
   };
   const deletePayMent = (e, index) => {
@@ -623,6 +625,7 @@ function CreateBill({removePane , targetKey}) {
                 await BillApi.createBillWait(data).then((res) => {
                   if(targetKey == undefined){
                     setProducts([])
+                    form.resetFields();
                     setBillRequest({
                         phoneNumber: "",
                         address: "",
@@ -657,6 +660,7 @@ function CreateBill({removePane , targetKey}) {
                     setIdaData("")
                   }else{
                     removePane(targetKey)
+                    form.resetFields();
                   }
                 });
               },
@@ -1682,7 +1686,7 @@ function CreateBill({removePane , targetKey}) {
         <Row style={{ width: "100%" }}>
           <Col span={14}>
             {isOpenDelivery ? (
-              <Form form={form} initialValues={initialValues}>
+              <Form form={form} ref={formRef} initialValues={initialValues}>
                 <div>
                   <Row
                     style={{
@@ -2036,7 +2040,7 @@ function CreateBill({removePane , targetKey}) {
                   Toggle
                 </label> */}
 
-                <Switch defaultChecked={isOpenDelivery} onChange={(e) => setIsOpenDelivery(!isOpenDelivery)} />
+                <Switch defaultChecked={isOpenDelivery} onChange={(e) => { setIsOpenDelivery(!isOpenDelivery)}} />
               </Col>
             </Row>
 
@@ -2364,7 +2368,7 @@ function CreateBill({removePane , targetKey}) {
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
       >
-        <Form>
+        <Form form={form}  ref={formRef} >
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
               <Row style={{ width: "100%" }}>
@@ -2394,14 +2398,14 @@ function CreateBill({removePane , targetKey}) {
                         height: "37px",
                       }}
                       customInput={Input}
-                      defaultValue={totalMoneyPayMent}
+                      // defaultValue={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
                         );
                       }}
                     />
-                  </Form.Item>{" "}
+                  </Form.Item>
                 </Col>
               </Row>
             </Col>

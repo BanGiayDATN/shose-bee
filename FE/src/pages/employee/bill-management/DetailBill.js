@@ -23,6 +23,8 @@ import { useState } from "react";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+
 import { useParams } from "react-router";
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
@@ -59,6 +61,8 @@ function DetailBill() {
     status: "THANH_TOAN",
   });
   const dispatch = useDispatch();
+
+  const formRef = React.useRef(null);
 
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
@@ -155,6 +159,8 @@ function DetailBill() {
 
   console.log(bill);
 
+  const [form] = Form.useForm();
+
   // begin cancelBill
   const [isModalCanCelOpen, setIsModalCanCelOpen] = useState(false);
   const showModalCanCel = () => {
@@ -203,9 +209,11 @@ function DetailBill() {
       totalMoney: 0,
       status: "THANH_TOAN",
     });
+    form.resetFields();
   };
   const handleCanCelClose = () => {
     setIsModalCanCelOpen(false);
+    form.resetFields();
   };
   // end  cancelBill
 
@@ -249,9 +257,11 @@ function DetailBill() {
         setIsModalOpenChangeStatus(false);
       },
     });
+    form.resetFields();
   };
   const showModalPayMent = (e) => {
     setIsModalPayMentOpen(true);
+    form.resetFields();
   };
   const handleOkPayMent = () => {
     if (statusBill.totalMoney >= 0) {
@@ -308,6 +318,7 @@ function DetailBill() {
           });
         },
       });
+      form.resetFields();
     }
     setStatusBill({
       actionDescription: "",
@@ -765,6 +776,7 @@ function DetailBill() {
           totalMoney: 0,
           status: "THANH_TOAN",
         });
+        form.resetFields();
       }
       setIsModalOpenChangeStatus(false);
     }
@@ -785,6 +797,7 @@ function DetailBill() {
       totalMoney: 0,
       status: "THANH_TOAN",
     });
+    form.resetFields();
   };
 
   const onChangeDescStatusBill = (fileName, value) => {
@@ -1225,7 +1238,7 @@ function DetailBill() {
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}
             >
-              <Form onFinish={onFinish} initialValues={initialValues}>
+              <Form onFinish={onFinish} ref={formRef} form={form} initialValues={initialValues}>
                 {bill.statusBill === "VAN_CHUYEN" ? (
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -1254,7 +1267,6 @@ function DetailBill() {
                               height: "37px",
                             }}
                             customInput={Input}
-                            defaultValue={statusBill.totalMoney}
                             onChange={(e) =>
                               onChangeDescStatusBill(
                                 "totalMoney",
@@ -1328,7 +1340,6 @@ function DetailBill() {
                     >
                       <TextArea
                         rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
-                        defaultValue={statusBill.actionDescription}
                         placeholder="Nhập mô tả"
                         style={{ width: "100%", position: "F" }}
                         onChange={(e) =>
@@ -1350,7 +1361,7 @@ function DetailBill() {
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
               >
-                <Form onFinish={onFinish} initialValues={initialValues}>
+                <Form onFinish={onFinish}  ref={formRef}  form={form} initialValues={initialValues}>
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
 
@@ -1367,7 +1378,6 @@ function DetailBill() {
                     >
                       <TextArea
                         rows={4}
-                        defaultValue={statusBill.actionDescription}
                         placeholder="Nhập mô tả"
                         onChange={(e) =>
                           onChangeDescStatusBill(
@@ -1818,7 +1828,7 @@ function DetailBill() {
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
       >
-        <Form>
+        <Form form={form} ref={formRef} >
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
               <label className="label-bill" style={{ top: "-14px" }}>
@@ -1845,7 +1855,6 @@ function DetailBill() {
                     height: "37px",
                   }}
                   customInput={Input}
-                  defaultValue={statusBill.totalMoney}
                   onChange={(e) =>
                     onChangeDescStatusBill("totalMoney", e.target.value)
                   }
@@ -1950,7 +1959,7 @@ function DetailBill() {
         onOk={handleOkBill}
         onCancel={handleCancelBill}
       >
-        <Form initialValues={initialValues}>
+        <Form initialValues={initialValues} form={form} ref={formRef} >
           <Row style={{ width: "100%", marginTop: "10px" }}></Row>
 
           <Row style={{ width: "100%" }}>
@@ -1973,7 +1982,6 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                   defaultValue={billRequest.name}
                   onChange={(e) => onChangeBill("name", e.target.value)}
                   placeholder="Nhập tên khách hàng"
                   style={{ width: "98%", position: "relative", height: "40px" }}
@@ -2006,7 +2014,6 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                   defaultValue={billRequest.phoneNumber}
                   onChange={(e) => onChangeBill("phoneNumber", e.target.value)}
                   placeholder="Nhập số điện thoại"
                   style={{ width: "98%", position: "relative", height: "40px" }}
@@ -2228,7 +2235,7 @@ function DetailBill() {
         onCancel={handleCancelRefundProduct}
         style={{ width: "800px" }}
       >
-        <Form initialValues={initialValues}>
+        <Form initialValues={initialValues} ref={formRef}  form={form}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}></Col>
           </Row>
@@ -2368,7 +2375,7 @@ function DetailBill() {
         onCancel={handleCancelUpdateProduct}
         style={{ width: "800px" }}
       >
-        <Form initialValues={initialValues}>
+        <Form initialValues={initialValues} form={form} ref={formRef} >
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}></Col>
           </Row>

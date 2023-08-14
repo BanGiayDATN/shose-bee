@@ -52,7 +52,6 @@ function Sale() {
   };
 
   const remove = (targetKey) => {
-    console.log(invoiceNumber);
     if(invoiceNumber > 1){
       const targetIndex = items.findIndex((pane) => pane.key === targetKey);
     const newPanes = items.filter((pane) => pane.key !== targetKey);
