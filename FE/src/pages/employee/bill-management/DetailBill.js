@@ -2268,12 +2268,7 @@ function DetailBill() {
               </Row>
               <Row>
                 <span style={{ color: "red", fontWeight: "500" }}>
-                  {detaiProduct.price >= 1000
-                    ? detaiProduct.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : detaiProduct.price + " đ"}
+                  { formatCurrency(detaiProduct.price) }
                 </span>{" "}
               </Row>
               <Row>
@@ -2295,15 +2290,8 @@ function DetailBill() {
                   marginBottom: "30px",
                 }}
               >
-                {detaiProduct.price * detaiProduct.quantity >= 1000
-                  ? (detaiProduct.price * detaiProduct.quantity).toLocaleString(
-                      "vi-VN",
-                      {
-                        style: "currency",
-                        currency: "VND",
-                      }
-                    )
-                  : detaiProduct.price * detaiProduct.quantity + " đ"}
+                 { formatCurrency(detaiProduct.price * detaiProduct.quantity )
+               }
               </span>{" "}
             </Col>
           </Row>
