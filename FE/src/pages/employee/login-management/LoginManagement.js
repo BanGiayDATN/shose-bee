@@ -1,18 +1,69 @@
-import React from "react";
-import { Button, Checkbox, Form, Input } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Button, Checkbox, Form, Input, Modal } from "antd";
+import { LockOutlined, MailOutlined, PhoneOutlined } from "@ant-design/icons";
 import "./style-login-management.css";
 import Logo from "../../../assets/images/logo_client.png";
+import { LoginApi } from "../../../api/employee/login/Login.api";
+import { toast } from "react-toastify";
 const LoginManagement = () => {
   const [form] = Form.useForm();
+  const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
+
+  const showPasswordModal = () => {
+    setPasswordModalVisible(true);
+  };
+
+  const handleForgotPasswordCancel = () => {
+    setPasswordModalVisible(false);
+    form.resetFields();
+  };
 
   const onFinish = (values) => {
     console.log("Success:", values);
+    LoginApi.authentication(values)
+      .then((res) => {
+        toast.success("Đăng nhập thành công");
+        window.location.href = "/dashboard";
+      })
+      .catch((err) => {
+        toast.error("Tài khoản hoặc mật khẩu không đúng");
+      });
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  const handResetPassword = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        return new Promise((resolve, reject) => {
+          Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có muốn tiếp tục không?",
+            okText: "Đồng ý",
+            cancelText: "Hủy",
+            onOk: () => resolve(values),
+            onCancel: () => reject(),
+          });
+        });
+      })
+      .then((values) => {
+        LoginApi.restPassword(values)
+          .then((res) => {
+            setPasswordModalVisible(false);
+            toast.success("Đổi mật khẩu thành công");
+          })
+          .catch((err) => {
+            toast.error("Tài khoản hoặc mật khẩu không đúng");
+          });
+      })
+      .catch(() => {
+        // Xử lý khi người dùng từ chối xác nhận
+      });
+  };
+
   return (
     <div className="login-page">
       <div className="login-box">
@@ -23,7 +74,6 @@ const LoginManagement = () => {
           />
         </div>
         <Form
-          form={form}
           name="login-form"
           initialValues={{ remember: true }}
           onFinish={onFinish}
@@ -34,7 +84,13 @@ const LoginManagement = () => {
           <p>Login to the Dashboard</p>
           <Form.Item
             name="email"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập địa chỉ Email" },
+              {
+                type: "email",
+                message: "Định dạng Email không hợp lệ",
+              },
+            ]}
           >
             <Input
               prefix={<MailOutlined />}
@@ -45,7 +101,7 @@ const LoginManagement = () => {
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập password!" }]}
           >
             <Input.Password
               prefix={<LockOutlined />}
@@ -57,7 +113,6 @@ const LoginManagement = () => {
           <Form.Item name="remember" valuePropName="checked">
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
-
           <Form.Item>
             <Button
               type="primary"
@@ -66,9 +121,59 @@ const LoginManagement = () => {
             >
               LOGIN
             </Button>
+            <Button type="link" onClick={showPasswordModal}>
+              Forgot Password ?
+            </Button>
           </Form.Item>
         </Form>
       </div>
+      <Modal
+        title="Forgot Password"
+        visible={isPasswordModalVisible}
+        onCancel={handleForgotPasswordCancel}
+        footer={null}
+      >
+        <Form form={form}>
+          <Form.Item
+            name="emailForgot"
+            rules={[
+              { required: true, message: "Vui lòng nhập địa chỉ Email" },
+              {
+                type: "email",
+                message: "Định dạng Email không hợp lệ",
+              },
+            ]}
+          >
+            <Input
+              prefix={<MailOutlined />}
+              placeholder="Email address"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="phoneNumber"
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại!" },
+            ]}
+          >
+            <Input
+              prefix={<PhoneOutlined />}
+              size="large"
+              placeholder="Phone Number"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              onClick={handResetPassword}
+            >
+              Reset Password
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

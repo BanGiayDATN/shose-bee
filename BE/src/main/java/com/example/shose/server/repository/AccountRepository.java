@@ -1,5 +1,6 @@
 package com.example.shose.server.repository;
 
+import com.example.shose.server.dto.response.LoginResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
 import com.example.shose.server.entity.User;
@@ -27,5 +28,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
                         WHERE roles IN (0,2)
             """, nativeQuery = true)
     List<SimpleEmployeeResponse> getAllSimpleEntityEmployess();
+
+    @Query("SELECT ac FROM Account ac WHERE ac.email =:email AND ac.user.phoneNumber =:phoneNumber")
+    Account resetPassword(@Param("email") String email , @Param("phoneNumber") String phoneNumber);
 
 }

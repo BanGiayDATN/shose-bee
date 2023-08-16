@@ -1,4 +1,4 @@
-package com.example.shose.server.controller;
+package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.service.AccountService;
 import com.example.shose.server.util.ResponseObject;
