@@ -19,7 +19,7 @@
 .row-body {
   width: 91%;
   margin-left: 59px;
-  height: 600px;
+  height: 700px;
   margin-top: 65px;
   background-color: rgb(255, 255, 255);
   border-radius: 15px;
@@ -44,7 +44,19 @@
   border-radius: 15px;
   padding: 10px;
 }
-
+.header-date{
+  margin-left: 50px;
+}
+.row-body-container {
+  margin-right: 139px;
+  margin-bottom: 159px;
+}
+.color-text-topic{
+  color: rgb(150, 150, 150);
+}
+.color-text-content{
+  color: rgb(196, 133, 56);
+}
 
 
 
