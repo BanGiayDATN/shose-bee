@@ -1,4 +1,4 @@
-package com.example.shose.server.controller;
+package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.size.CreateSizeRequest;
 import com.example.shose.server.dto.request.size.FindSizeRequest;

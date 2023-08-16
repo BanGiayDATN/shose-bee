@@ -233,7 +233,9 @@ const DashBoard = () => {
           <Col span={7} className="col-header">
             <div className="content-header">
               <h2 className="color-text-topic">Hàng bán được tháng này</h2>
-              <h3 className="color-text-content">{totalProductMonth} chiếc</h3>
+              <h3 className="color-text-content">
+                {totalProductMonth} sản phẩm
+              </h3>
             </div>
           </Col>
         </Row>
@@ -242,16 +244,29 @@ const DashBoard = () => {
           <div className="row-body-container">
             <div class="header-date">
               <br />
-              <Input
-                style={{ width: "27%", height: "45px" }}
-                type="date"
-                onChange={handleStartDateChange}
-              />
-              <Input
-                style={{ width: "27%", height: "45px", marginLeft: "20px" }}
-                type="date"
-                onChange={handleEndDateChange}
-              />
+              <div className="header-date">
+                <label htmlFor="startDate" style={{ marginRight: "10px" }}>
+                  Ngày bắt đầu:
+                </label>
+                <Input
+                  id="startDate"
+                  style={{ width: "27%", height: "45px" }}
+                  type="date"
+                  onChange={handleStartDateChange}
+                />
+                <label
+                  htmlFor="endDate"
+                  style={{ marginLeft: "20px", marginRight: "10px" }}
+                >
+                  Ngày kết thúc:
+                </label>
+                <Input
+                  id="endDate"
+                  style={{ width: "27%", height: "45px" }}
+                  type="date"
+                  onChange={handleEndDateChange}
+                />
+              </div>
             </div>
             <div>
               <CChart
@@ -272,6 +287,9 @@ const DashBoard = () => {
                     legend: {
                       labels: {
                         color: "#333", // Màu văn bản
+                        font: {
+                          size: 15,
+                        },
                       },
                     },
                     tooltip: {
@@ -314,7 +332,9 @@ const DashBoard = () => {
         </Row>
         <Row className="row-footer">
           <Col className="row-footer-left">
-            <h2>Top sản phẩm bán chạy</h2>
+            <h2 style={{ textAlign: "center", margin: " 2%" }}>
+              Top sản phẩm bán chạy
+            </h2>
             <Table
               style={{ marginTop: "30px" }}
               dataSource={listSellingProduct}
@@ -326,12 +346,12 @@ const DashBoard = () => {
             />
           </Col>
           <Col className="row-footer-right">
-            <h2>Trạng thái đơn hàng</h2>
+            <h2 style={{ textAlign: "center", margin: " 3%" }}>
+              Trạng thái đơn hàng
+            </h2>
             <CChart
-              style={{ marginTop: "30px" }}
               type="doughnut"
               data={{
-                labels: chartPieLabels,
                 datasets: [
                   {
                     backgroundColor: [
@@ -346,12 +366,17 @@ const DashBoard = () => {
                     data: chartPieData,
                   },
                 ],
+                labels: chartPieLabels,
               }}
               options={{
                 plugins: {
                   legend: {
+                    position: "bottom",
                     labels: {
                       color: "#333",
+                      font: {
+                        size: 19,
+                      },
                     },
                   },
                 },

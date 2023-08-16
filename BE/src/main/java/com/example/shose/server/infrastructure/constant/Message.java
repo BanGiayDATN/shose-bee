@@ -25,6 +25,7 @@ public enum Message {
     STATUS_ADDRESS_EXIST("Trạng thái đang sử dụng đã được dùng cho địa chỉ khác"),
 
     EMAIL_USER_EXIST("Email người dùng đã tồn tại"),
+    PASSWORD_NOT_EXISTS("Password không đúng"),
     NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán");
 
 

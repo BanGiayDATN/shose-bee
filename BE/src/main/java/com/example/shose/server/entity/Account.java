@@ -36,6 +36,7 @@ public class Account extends PrimaryEntity {
     @Column(name = "password")
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private Roles roles;
 
     @Enumerated(EnumType.STRING)
