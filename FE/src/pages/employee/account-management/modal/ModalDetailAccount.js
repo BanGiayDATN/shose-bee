@@ -222,8 +222,8 @@ const ModalDetailAccount = ({ visible }) => {
               Ảnh đại diện
             </h1>
             <Row>
-              <Col span={5}></Col>
-              <Col span={6}>
+            <Col span={3}></Col>
+              <Col span={7}>
                 <div>
                   <Upload
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"

@@ -1,13 +1,21 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
+import com.example.shose.server.dto.request.statistical.FindBillDateRequest;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
+import com.example.shose.server.dto.response.statistical.StatisticalBestSellingProductResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalStatusBillResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -85,4 +93,75 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             HAVING COUNT(bide.id) = 0
             """, nativeQuery = true)
     List<String> getAllBillTrash();
+
+    @Query(value = """
+            SELECT   
+            COUNT(DISTINCT b.id) AS totalBill,
+            SUM(b.total_money) AS totalBillAmount,
+            SUM(bd.quantity) AS totalProduct
+            FROM bill b JOIN bill_detail bd ON b.id = bd.id_bill
+            WHERE
+            b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
+            AND b.status_bill = 'DA_THANH_TOAN'
+            AND bd.status_bill = 'DA_THANH_TOAN';
+                                         
+              """, nativeQuery = true)
+
+    List<StatisticalMonthlyResponse> getAllStatisticalMonthly(@Param("startOfMonth") Long startOfMonth, @Param("endOfMonth") Long endOfMonth);
+
+    @Query(value = """
+            SELECT
+                COUNT(id) AS totalBillToday,
+                SUM(total_money) AS totalBillAmountToday
+            FROM
+                bill
+            WHERE
+                completion_date >= :currentDate
+                AND status_bill like 'DA_THANH_TOAN';                       
+                          """, nativeQuery = true)
+    List<StatisticalDayResponse> getAllStatisticalDay(@Param("currentDate") Long currentDate);
+
+    @Query(value = """
+          SELECT
+              status_bill AS statusBill,
+              COUNT(*) AS totalStatusBill
+          FROM
+              bill
+          GROUP BY
+              statusBill;                   
+                          """, nativeQuery = true)
+    List<StatisticalStatusBillResponse> getAllStatisticalStatusBill();
+
+    @Query(value = """
+            SELECT 
+                ROW_NUMBER() OVER () AS stt,
+                i.name AS image,
+                p.name  AS nameProduct,
+                pd.price AS price,
+                COUNT(bd.id_product_detail) AS sales
+            FROM bill_detail bd
+            JOIN product_detail pd on pd.id = bd.id_product_detail
+            JOIN product p on pd.id_product = p.id
+            JOIN (SELECT id_product_detail, MAX(id) AS max_image_id
+                  FROM image
+                  GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
+            LEFT JOIN image i ON max_images.max_image_id = i.id
+            WHERE bd.id_product_detail IS NOT NULL
+            GROUP BY image, nameProduct, price
+            ORDER BY sales DESC             
+                                      """, nativeQuery = true)
+    List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct();
+
+    @Query(value = """
+    SELECT
+        completion_date AS billDate,
+        COUNT(*) AS totalBillDate
+    FROM
+        bill
+    WHERE   (completion_date >= :#{#req.startDate} AND completion_date <= :#{#req.endDate} )
+        AND (status_bill like 'DA_THANH_TOAN')
+    GROUP BY billDate
+    ORDER BY completion_date ASC;
+                          """, nativeQuery = true)
+    List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
 }

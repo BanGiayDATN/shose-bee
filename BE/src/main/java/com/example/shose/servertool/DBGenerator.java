@@ -393,7 +393,7 @@ public class DBGenerator implements CommandLineRunner {
 
         Bill bill1 = Bill.builder().code("HD0001")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("10/05/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("11/08/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
                 .employees(account2).account(account3)
@@ -401,24 +401,152 @@ public class DBGenerator implements CommandLineRunner {
 
         Bill bill2 = Bill.builder().code("HD0002")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/05/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill3 = Bill.builder().code("HD0003")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill4 = Bill.builder().code("HD0004")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("13/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.VAN_CHUYEN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill5 = Bill.builder().code("HD0005")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("14/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.CHO_VAN_CHUYEN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill6 = Bill.builder().code("HD0006")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("15/08/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_HUY)
                 .employees(account1).customer(customer1)
                 .build();
+        Bill bill7 = Bill.builder().code("HD0007")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.CHO_XAC_NHAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill8 = Bill.builder().code("HD0008")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account2).account(account3)
+                .build();
+
+        Bill bill9 = Bill.builder().code("HD0009")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill10 = Bill.builder().code("HD0010")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill11 = Bill.builder().code("HD0011")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill12 = Bill.builder().code("HD0012")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill13 = Bill.builder().code("HD0013")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("18/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill14 = Bill.builder().code("HD0014")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("19/08/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .employees(account1).customer(customer1)
+                .build();
         billRepository.save(bill1);
         billRepository.save(bill2);
+        billRepository.save(bill3);
+        billRepository.save(bill4);
+        billRepository.save(bill5);
+        billRepository.save(bill6);
+        billRepository.save(bill7);
+        billRepository.save(bill8);
+        billRepository.save(bill9);
+        billRepository.save(bill10);
+        billRepository.save(bill11);
+        billRepository.save(bill12);
+        billRepository.save(bill13);
+        billRepository.save(bill14);
 
-        BillDetail billDetail = BillDetail.builder().bill(bill1).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
-        BillDetail billDetail1 = BillDetail.builder().bill(bill1).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail3).quantity(1).price(productDetail3.getPrice()).build();
-        BillDetail billDetail2 = BillDetail.builder().bill(bill1).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail9).quantity(1).price(productDetail9.getPrice()).build();
-        BillDetail billDetail3 = BillDetail.builder().bill(bill2).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
-        BillDetail billDetail4 = BillDetail.builder().bill(bill2).statusBill(StatusBill.TAO_HOA_DON).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail = BillDetail.builder().bill(bill1).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
+        BillDetail billDetail1 = BillDetail.builder().bill(bill1).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
+        BillDetail billDetail2 = BillDetail.builder().bill(bill1).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail9).quantity(2).price(productDetail9.getPrice()).build();
+        BillDetail billDetail3 = BillDetail.builder().bill(bill2).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail4 = BillDetail.builder().bill(bill2).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail5 = BillDetail.builder().bill(bill3).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(2).price(productDetail1.getPrice()).build();
+        BillDetail billDetail6 = BillDetail.builder().bill(bill4).statusBill(StatusBill.VAN_CHUYEN).productDetail(productDetail3).quantity(3).price(productDetail3.getPrice()).build();
+        BillDetail billDetail7 = BillDetail.builder().bill(bill5).statusBill(StatusBill.CHO_VAN_CHUYEN).productDetail(productDetail9).quantity(3).price(productDetail9.getPrice()).build();
+        BillDetail billDetail8 = BillDetail.builder().bill(bill6).statusBill(StatusBill.DA_HUY).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
+        BillDetail billDetail9 = BillDetail.builder().bill(bill7).statusBill(StatusBill.CHO_XAC_NHAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+
+        BillDetail billDetail10 = BillDetail.builder().bill(bill8).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(3).price(productDetail1.getPrice()).build();
+        BillDetail billDetail11 = BillDetail.builder().bill(bill9).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
+        BillDetail billDetail12 = BillDetail.builder().bill(bill10).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail9).quantity(2).price(productDetail9.getPrice()).build();
+        BillDetail billDetail13 = BillDetail.builder().bill(bill11).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(4).price(productDetail2.getPrice()).build();
+        BillDetail billDetail14 = BillDetail.builder().bill(bill12).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
+        BillDetail billDetail15 = BillDetail.builder().bill(bill13).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
+        BillDetail billDetail16 = BillDetail.builder().bill(bill14).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
+        BillDetail billDetail17 = BillDetail.builder().bill(bill13).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail9).quantity(3).price(productDetail9.getPrice()).build();
+        BillDetail billDetail18 = BillDetail.builder().bill(bill14).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
+        BillDetail billDetail19 = BillDetail.builder().bill(bill12).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
         billDetailRepository.save(billDetail);
         billDetailRepository.save(billDetail1);
         billDetailRepository.save(billDetail2);
         billDetailRepository.save(billDetail3);
         billDetailRepository.save(billDetail4);
+        billDetailRepository.save(billDetail5);
+        billDetailRepository.save(billDetail6);
+        billDetailRepository.save(billDetail7);
+        billDetailRepository.save(billDetail8);
+        billDetailRepository.save(billDetail9);
+        billDetailRepository.save(billDetail10);
+        billDetailRepository.save(billDetail11);
+        billDetailRepository.save(billDetail12);
+        billDetailRepository.save(billDetail13);
+        billDetailRepository.save(billDetail14);
+        billDetailRepository.save(billDetail15);
+        billDetailRepository.save(billDetail16);
+        billDetailRepository.save(billDetail17);
+        billDetailRepository.save(billDetail18);
+        billDetailRepository.save(billDetail19);
 
         BillHistory billHistory = BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill1)
                 .build();
