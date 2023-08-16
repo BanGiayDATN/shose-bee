@@ -37,7 +37,7 @@ import UpdateProductManagment from "./pages/employee/product-management/UpdatePr
 import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 import loading from "./../src/assets/images/s_discount_icon.png";
-import Hello from "./pages/employee/bill-management/Hello";
+import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -93,7 +93,7 @@ function App() {
             element={
               <AuthGuard>
                 <DashBoardEmployee>
-                  <Hello />
+                  <PayMentSuccessful />
                 </DashBoardEmployee>
               </AuthGuard>
             }
