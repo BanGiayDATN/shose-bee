@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hào Ngô
  */
 @RestController
-    @CrossOrigin("*")
+@CrossOrigin("*")
 @RequestMapping("/customer/address")
 public class AddressRestController {
     @Autowired
@@ -32,6 +32,7 @@ public class AddressRestController {
     public ResponseObject view(@ModelAttribute final FindAddressRequest request) {
         return new ResponseObject(addressService.getList(request));
     }
+
     @GetMapping("/address-user/{idUser}")
     public ResponseObject view(@PathVariable("idUser") String idUser) {
         return new ResponseObject(addressService.findAddressByUserId(idUser));

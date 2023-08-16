@@ -613,13 +613,13 @@ const CreateProductManagment = () => {
           }}
         >
           <span
-            style={{ fontSize: "25px", fontWeight: "bold", marginTop: "10px" }}
+            style={{ fontSize: "25px", fontWeight: "bold", marginTop: "5%" }}
           >
             THÊM SẢN PHẨM
           </span>
         </div>
 
-        <div style={{ marginTop: "25px" }}>
+        <div style={{ marginTop: "1%" }}>
           <div className="content">
             <Form form={form} initialValues={initialValues}>
               <Form.Item>

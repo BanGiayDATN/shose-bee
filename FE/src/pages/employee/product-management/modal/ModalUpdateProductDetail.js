@@ -46,7 +46,7 @@ import axios from "axios";
 import { SizeApi } from "../../../../api/employee/size/Size.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
 
-const ModalUpdateProductDetail = ({ id, visible, onCancel, onUpdate }) => {
+const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
   const [form] = Form.useForm();
   const [initialValues, setInitialValues] = useState({
     id: "",
@@ -282,7 +282,12 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel, onUpdate }) => {
           toast.error("Bạn cần thêm ảnh cho sản phẩm");
           return;
         }
+        const isVndFormat = /VND$/.test(values.price);
+        if (isVndFormat) {
+          values.price = values.price.replace(/\D/g, "");
+        }
         const formData = new FormData();
+
         const promises = fileList.map((file) => {
           return new Promise((resolve, reject) => {
             if (file.originFileObj) {
@@ -290,7 +295,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel, onUpdate }) => {
               resolve();
             } else if (file.url) {
               axios
-                .get(file.url, { responseType: "arraybuffer" }) // Tải ảnh từ URL dưới dạng mảng byte (arraybuffer)
+                .get(file.url, { responseType: "arraybuffer" })
                 .then((response) => {
                   const imageFile = new File(
                     [response.data],
@@ -302,20 +307,41 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel, onUpdate }) => {
                 })
                 .catch((error) => {
                   console.error("Error fetching image:", error);
-                  reject(error); // Từ chối promise nếu xảy ra lỗi
+                  reject(error);
                 });
             } else {
-              resolve(); // Giải quyết promise ngay lập tức nếu không có originFileObj hoặc url
+              resolve();
             }
           });
         });
-        console.log(fileList);
         console.log(values);
+        Promise.all(promises)
+          .then(() => {
+            formData.append("data", JSON.stringify(values));
+            axios
+              .put(
+                `http://localhost:8080/admin/product-detail/${initialValues.id}`,
+                formData
+              )
+              .then((response) => {
+                console.log(response.data);
+                toast.success("Cập nhật thành công");
+                // Tải lại trang hiện tại
+                window.location.reload();
+              })
+              .catch((error) => {
+                console.error(error);
+                toast.error("Có lỗi xảy ra khi cập nhật");
+              });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
         form.resetFields();
       })
       .catch((error) => {
         toast.error("Cập nhật thất bại");
-        console.log("Validation failed:", error);
       });
   };
 
@@ -612,7 +638,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel, onUpdate }) => {
                 name="sizeId"
                 style={{ fontWeight: "bold" }}
                 rules={[
-                  { required: true, message: "Vui lòng nhập giá sản phẩm" },
+                  { required: true, message: "Vui lòng nhập kích cỡ sản phẩm" },
                 ]}
               >
                 <Select placeholder="Chọn kích cỡ">
