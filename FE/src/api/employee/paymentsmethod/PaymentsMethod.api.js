@@ -23,6 +23,13 @@ export class PaymentsMethodApi {
     });
   };
 
+  static checkPaymentVnPay = ( ) => {
+    return request({
+      method: "GET",
+      url: `/admin/payment/payment-success` ,
+    });
+  };
+
   static updateStatus = (id, data) => {
     return request({
       method: "PUT",

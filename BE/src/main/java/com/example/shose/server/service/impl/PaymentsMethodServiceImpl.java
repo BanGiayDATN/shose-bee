@@ -121,7 +121,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         vnp_Params.put("vnp_Version", VnPayConstant.vnp_Version);
         vnp_Params.put("vnp_Command",VnPayConstant.vnp_Command);
         vnp_Params.put("vnp_TmnCode",VnPayConstant.vnp_TmnCode);
-        vnp_Params.put("vnp_Amount",String.valueOf(payModel.vnp_Ammount));
+        vnp_Params.put("vnp_Amount",String.valueOf(payModel.vnp_Ammount + "00"));
         vnp_Params.put("vnp_BankCode", VnPayConstant.vnp_BankCode);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
         vnp_Params.put("vnp_CurrCode",VnPayConstant.vnp_CurrCode);

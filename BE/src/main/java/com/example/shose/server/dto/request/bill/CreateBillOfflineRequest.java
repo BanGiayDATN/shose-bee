@@ -52,6 +52,8 @@ public class CreateBillOfflineRequest {
 
     private String deliveryDate;
 
+    private boolean openDelivery;
+
     private String moneyShip;
 
     @NotNull

@@ -37,6 +37,7 @@ import UpdateProductManagment from "./pages/employee/product-management/UpdatePr
 import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 import loading from "./../src/assets/images/s_discount_icon.png";
+import Hello from "./pages/employee/bill-management/Hello";
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -83,6 +84,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <BillManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/payment/payment-success"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <Hello />
                 </DashBoardEmployee>
               </AuthGuard>
             }
