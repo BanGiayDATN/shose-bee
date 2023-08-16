@@ -5,7 +5,18 @@ import {
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Form, Table, Select, Space, Row, Col, Tabs, Tooltip } from "antd";
+import {
+  Button,
+  Form,
+  Table,
+  Select,
+  Space,
+  Row,
+  Col,
+  Tabs,
+  Tooltip,
+  Badge,
+} from "antd";
 import moment from "moment";
 import React from "react";
 import { useEffect } from "react";
@@ -32,6 +43,10 @@ function BillManagement() {
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);
+  var [quantityNotify, setQuantityNotify] = useState([
+    {status: "CHO_VAN_CHUYEN",
+    quantity:10}
+  ])
 
   const dispatch = useAppDispatch();
   const { Option } = Select;
@@ -40,7 +55,6 @@ function BillManagement() {
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
-
   }, []);
 
   const onChangeFillter = (value, fileName) => {
@@ -99,10 +113,11 @@ function BillManagement() {
     });
     setStatus([]);
     BillApi.fetchAll(fillter).then((res) => {
-      console.log(res.data.data);
       dispatch(getAllBill(res.data.data));
     });
   };
+
+  
 
   const [fillter, setFillter] = useState({
     startTimeString: "",
@@ -118,153 +133,59 @@ function BillManagement() {
     page: 0,
   });
 
-  const columns = [
-    {
-      title: "STT",
-      dataIndex: "stt",
-      key: "stt",
-      sorter: (a, b) => a.stt - b.stt,
-    },
-    {
-      title: "Mã hóa đơn",
-      dataIndex: "code",
-      key: "code",
-      sorter: (a, b) => a.code.localeCompare(b.code),
-    },
-    {
-      title: "Tên khách hàng",
-      dataIndex: "userName",
-      key: "userName",
-      sorter: (a, b) => a.userName - b.userName,
-    },
-    {
-      title: "Tên nhân viên",
-      dataIndex: "nameEmployees",
-      key: "nameEmployees",
-      sorter: (a, b) => a.nameEmployees - b.nameEmployees,
-    },
-    {
-      title: "Loại",
-      dataIndex: "type",
-      key: "type",
-      render: (type) => {
-        return <p>{type === "ONLINE" ? "OnLine" : "Tại quầy"}</p>;
-      },
-    },
-    {
-      title: <div className="title-product">Ngày tạo</div>,
-      dataIndex: "createdDate",
-      key: "createdDate",
-      sorter: (a, b) => a.createdDate - b.createdDate,
-      render: (text) => {
-        const formattedDate = moment(text).format("HH:mm:ss DD-MM-YYYY"); // Định dạng ngày
-        return formattedDate;
-      },
-    },
-    {
-      title: <div className="title-product">Tiền giảm</div>,
-      dataIndex: "itemDiscount",
-      key: "itemDiscount",
-      render: (itemDiscount) => (
-        <span>
-          {itemDiscount >= 1000
-            ? itemDiscount.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
-            : itemDiscount + " đ"}
-        </span>
-      ),
-    },
-    {
-      title: <div className="title-product">Tổng tiền</div>,
-      dataIndex: "totalMoney",
-      key: "totalMoney",
-      render: (totalMoney) => (
-        <span>
-          {totalMoney >= 1000
-            ? totalMoney.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
-            : totalMoney + " đ"}
-        </span>
-      ),
-    },
-    {
-      title: "Trạng Thái",
-      dataIndex: "statusBill",
-      key: "statusBill",
-      render: (text) => {
-        return (
-          <button
-            className={`trangThai ${" status_" + text} `}
-            style={{ border: "none", borderRadius: "22px" }}
-          >
-            {text === "TAO_HOA_DON"
-              ? "Hóa đơn chờ"
-              : text === "CHO_XAC_NHAN"
-              ? "Chờ xác nhận"
-              : text === "VAN_CHUYEN"
-              ? "Đang vận chuyển"
-              : text === "DA_THANH_TOAN"
-              ? "Đã thanh toán"
-              : text === "TRA_HANG"
-              ? "Trả hàng"
-              : text === "KHONG_TRA_HANG"
-              ? "Thành công"
-              : "Đã hủy"}
-          </button>
-        );
-      },
-    },
-    {
-      title: <div className="title-product">Thao Tác</div>,
-      dataIndex: "id",
-      key: "actions",
-      render: (id) => (
-        <Tooltip placement="top" title={"Chi tiết"}>
-        <Button style={{ backgroundColor: "#FF9900" }} title="Chi tiết hóa đơn">
-          <Link to={`/bill-management/detail-bill/${id}`}>
-            <FontAwesomeIcon icon={faEye} />
-          </Link>
-        </Button>
-        </Tooltip>
-      ),
-    },
-  ];
 
   const onChange = (key) => {
-    console.log(key);
+    setQuantityNotify(quantityNotify.filter(item => item.status !== key))
   };
-
 
   const listtab = [
     "",
-    "CHO_XAC_NHAN", 
+    "CHO_XAC_NHAN",
     "CHO_VAN_CHUYEN",
     "VAN_CHUYEN",
     "DA_THANH_TOAN",
     "KHONG_TRA_HANG",
-    "DA_HUY"
-   
-  ]
+    "DA_HUY",
+  ];
 
   const convertString = (key) => {
-    return  key === ""
-    ? "Tất cả"
-    : key === "CHO_XAC_NHAN"
-    ? "Chờ xác nhận"
-    : key === "CHO_VAN_CHUYEN"
-    ? "Chờ vận chuyển"
-    : key === "VAN_CHUYEN"
-    ? "Vận chuyển"
-     : key === "DA_THANH_TOAN"
-    ? "Thanh toán"
-    : key === "KHONG_TRA_HANG"
-    ? "Hoàn thành"
-    : "Hủy"
+    return key === ""
+      ? "Tất cả"
+      : key === "CHO_XAC_NHAN"
+      ? "Chờ xác nhận"
+      : key === "CHO_VAN_CHUYEN"
+      ? "Chờ vận chuyển"
+      : key === "VAN_CHUYEN"
+      ? "Vận chuyển"
+      : key === "DA_THANH_TOAN"
+      ? "Thanh toán"
+      : key === "KHONG_TRA_HANG"
+      ? "Hoàn thành"
+      : "Hủy";
+  };
+  const checkNotifyNew = (key) => {
+   var index =  quantityNotify.findIndex((item) => item.name == key)
+   if(index == -1){
+    return false
+   }else{
+    return true
+   }
   }
+
+  const showQuantityBillNotify = (key) => {
+    var index = quantityNotify.findIndex((item) => item.status == key);
+    if(index != -1){
+      return quantityNotify[index].quantity
+    }
+    return null
+   }
+
+  const addNotify = (notify) =>{
+    setQuantityNotify([...quantityNotify, notify])
+  }
+
+  
+
   return (
     <div>
       <div className="title_category">
@@ -292,8 +213,7 @@ function BillManagement() {
             />
           </div>
         </div>
-        <div className="box_btn_filter">
-        </div>
+        <div className="box_btn_filter"></div>
       </div>
 
       <div className="bill-table">
@@ -316,9 +236,15 @@ function BillManagement() {
             type="card"
             items={listtab.map((item) => {
               return {
-                label: convertString(item),
+                label: (
+                  <Badge count={showQuantityBillNotify(item)}>
+                    <span >
+                      {convertString(item)}
+                    </span>
+                  </Badge>
+                ),
                 key: item,
-                children: <TabBills statusBill={item} dataFillter={fillter}/>,
+                children: <TabBills statusBill={item} dataFillter={fillter} addNotify={addNotify}/>,
               };
             })}
           />

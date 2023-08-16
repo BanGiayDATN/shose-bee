@@ -67,4 +67,9 @@ public class BillRestController {
         return  new ResponseObject(billService.changeStatusAllBillByIds(request, userId));
     }
 
+    @GetMapping("/code-bill")
+    public ResponseObject CreateCodeBill() {
+        return  new ResponseObject(billService.CreateCodeBill());
+    }
+
 }

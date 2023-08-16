@@ -26,7 +26,7 @@ function Sale() {
 
   const [activeKey, setActiveKey] = useState(defaultPanes[0].key);
   const [items, setItems] = useState(defaultPanes);
-  const newTabIndex = useRef(1);
+  const newTabIndex = useRef(2);
 
 
   const onChange = (key) => {
@@ -36,7 +36,7 @@ function Sale() {
     if(invoiceNumber >= 5){
       toast.warning(`Không thể tạo thêm hóa đơn`);
     }else{
-      const newActiveKey = `Hóa đơn ${newTabIndex.current++}`;
+      const newActiveKey = `Hóa đơn ${newTabIndex.current}`;
       setItems([
         ...items,
         {
@@ -52,7 +52,6 @@ function Sale() {
   };
 
   const remove = (targetKey) => {
-    console.log(invoiceNumber);
     if(invoiceNumber > 1){
       const targetIndex = items.findIndex((pane) => pane.key === targetKey);
     const newPanes = items.filter((pane) => pane.key !== targetKey);
