@@ -15,6 +15,14 @@ export class PaymentsMethodApi {
     });
   };
 
+  static paymentVnpay = ( data) => {
+    return request({
+      method: "POST",
+      url: `/admin/payment/payment-vnpay` ,
+      data: data
+    });
+  };
+
   static updateStatus = (id, data) => {
     return request({
       method: "PUT",

@@ -131,7 +131,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = Bill.builder()
                 .employees(account.get())
                 .typeBill(TypeBill.valueOf(request.getTypeBill()))
-                .code("HD" + RandomStringUtils.randomNumeric(6))
+                .code(request.getCode())
                 .note(request.getNote())
                 .userName(request.getUserName())
                 .address(request.getAddress())
@@ -176,6 +176,9 @@ public class BillServiceImpl implements BillService {
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
+            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity( productDetail.get().getQuantity() - billDetailRequest.getQuantity());
@@ -208,6 +211,11 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepository.save(Bill.builder().account(account.get()).userName(request.getName()).address(request.getAddress()).phoneNumber(request.getPhoneNumber()).statusBill(StatusBill.TAO_HOA_DON).typeBill(TypeBill.OFFLINE).code("HD" + RandomStringUtils.randomNumeric(6)).build());
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).build());
         return bill;
+    }
+
+    @Override
+    public String CreateCodeBill() {
+        return "HD" + RandomStringUtils.randomNumeric(6);
     }
 
     @Override

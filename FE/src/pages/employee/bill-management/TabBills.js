@@ -7,10 +7,20 @@ import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import {  toast } from "react-toastify";
 
-function TabBills({ statusBill, dataFillter }) {
+function TabBills({ statusBill, dataFillter, addNotify }) {
 
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
+
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+  
   const columns = [
     {
       title: "STT",
@@ -60,12 +70,7 @@ function TabBills({ statusBill, dataFillter }) {
       key: "itemDiscount",
       render: (itemDiscount) => (
         <span>
-          {itemDiscount >= 1000
-            ? itemDiscount.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
-            : itemDiscount + " đ"}
+          {formatCurrency(itemDiscount) }
         </span>
       ),
     },
@@ -75,12 +80,7 @@ function TabBills({ statusBill, dataFillter }) {
       key: "totalMoney",
       render: (totalMoney) => (
         <span>
-          {totalMoney >= 1000
-            ? totalMoney.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
-            : totalMoney + " đ"}
+          {formatCurrency(totalMoney) }
         </span>
       ),
     },
@@ -151,7 +151,6 @@ function TabBills({ statusBill, dataFillter }) {
     "DA_HUY" 
   }
   const changeStatusBill = (e) => {
-    console.log(nextStatusBill())
     Modal.confirm({
       title: "Xác nhận",
       content: `Bạn có đồng ý ${convertString(statusBill)} không?`,
@@ -164,13 +163,13 @@ function TabBills({ statusBill, dataFillter }) {
         }
         await BillApi.changeStatusAllBillByIds(data).then(response =>{
           if(response.data.data == true){
-            console.log(response.data.data );
+            addNotify( {status: nextStatusBill() ,
+            quantity:dataIdCheck.length})
             toast.success(`${convertString(statusBill)} thành công`)
           }
         })
         await  BillApi.fetchAll(fillter).then((res) => {
           setDataBill(res.data.data);
-          console.log(res.data.data)
         });
       },
       onCancel: () => {
@@ -198,9 +197,9 @@ function TabBills({ statusBill, dataFillter }) {
                 setDataIdCheck([]);
               }
             },
-            onSelect: (checked, keys) => {
+            onSelect: ( keys, checked) => {
               if (checked) {
-                setDataIdCheck(...dataIdCheck, keys.id);
+                setDataIdCheck([...dataIdCheck, keys.id]);
               } else {
                 var data = [...dataIdCheck];
                 const index = data.indexOf(keys.id);
