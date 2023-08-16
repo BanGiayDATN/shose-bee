@@ -125,10 +125,10 @@ export class BillApi {
         data: data
       });
     };
-    // static getOne = (id) => {
-    //   return request({
-    //     method: "GET",
-    //     url: `/admin/category/${id}`,
-    //   });
-    // };
+    static getCodeBill = () => {
+      return request({
+        method: "GET",
+        url: `/admin/bill/code-bill`,
+      });
+    };
 }
