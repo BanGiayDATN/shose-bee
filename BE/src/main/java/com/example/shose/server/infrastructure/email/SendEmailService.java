@@ -18,6 +18,7 @@ public class SendEmailService {
 
     @Value("${spring.mail.username}")
     private String sender;
+
     public void sendEmailPasword(String to, String subject, String password) {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
@@ -54,7 +55,7 @@ public class SendEmailService {
             helper.setFrom(sender);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(htmlBody, true); // Đặt tham số thứ hai là true để cho phép nội dung HTML
+            helper.setText(htmlBody, true);
             javaMailSender.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();

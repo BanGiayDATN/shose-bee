@@ -11,4 +11,8 @@ import lombok.Setter;
 public class UpdateProductDetailRequest extends BaseProductDetailRequest{
 
     private String id;
+
+    private String colorId;
+
+    private String sizeId;
 }

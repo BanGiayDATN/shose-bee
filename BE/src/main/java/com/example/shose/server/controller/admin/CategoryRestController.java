@@ -1,15 +1,14 @@
-package com.example.shose.server.controller;
+package com.example.shose.server.controller.admin;
 
-import com.example.shose.server.dto.request.sole.CreateSoleRequest;
-import com.example.shose.server.dto.request.sole.FindSoleRequest;
-import com.example.shose.server.dto.request.sole.UpdateSoleRequest;
-import com.example.shose.server.service.SoleService;
+import com.example.shose.server.dto.request.category.CreateCategoryRequest;
+import com.example.shose.server.dto.request.category.FindCategoryRequest;
+import com.example.shose.server.dto.request.category.UpdateCategoryRequest;
+import com.example.shose.server.service.CategoryService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,36 +21,38 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/admin/sole")
-public class SoleRestController {
+@RequestMapping("/admin/category")
+public class CategoryRestController {
 
     @Autowired
-    private SoleService soleService;
+    private CategoryService categoryService;
 
     @GetMapping()
-    public ResponseObject view(@ModelAttribute final FindSoleRequest req) {
-        return new ResponseObject(soleService.findAll(req));
+    public ResponseObject getList(final FindCategoryRequest req) {
+        return new ResponseObject(categoryService.getList(req));
     }
 
     @GetMapping("/{id}")
     public ResponseObject getOneById(@PathVariable("id") String id) {
-        return new ResponseObject(soleService.getOneById(id));
+        return new ResponseObject(categoryService.getOneById(id));
     }
 
     @PostMapping
-    public ResponseObject add(@RequestBody CreateSoleRequest req) {
-        return new ResponseObject(soleService.create(req));
+    public ResponseObject add(@RequestBody CreateCategoryRequest req) {
+        return new ResponseObject(categoryService.create(req));
     }
 
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id,
-                                 @RequestBody UpdateSoleRequest req) {
+                                 @RequestBody UpdateCategoryRequest req) {
         req.setId(id);
-        return new ResponseObject(soleService.update(req));
+        return new ResponseObject(categoryService.update(req));
     }
 
     @DeleteMapping("/{id}")
     public ResponseObject delete(@PathVariable("id") String id) {
-        return new ResponseObject(soleService.delete(id));
+        return new ResponseObject(categoryService.delete(id));
     }
+
 }
+

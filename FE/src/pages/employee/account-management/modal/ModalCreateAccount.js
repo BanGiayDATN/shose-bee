@@ -236,8 +236,8 @@ const ModalCreateAccount = () => {
             </h1>
           </div>
           <Row>
-            <Col span={5}></Col>
-            <Col span={6}>
+            <Col span={3}></Col>
+            <Col span={7}>
               <div className="image-preview">
                 <Upload
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -325,7 +325,10 @@ const ModalCreateAccount = () => {
                         required: true,
                         message: "Vui lòng nhập số CCCD",
                       },
-                      { max: 12, message: "Số CCCD tối đa 12 ký tự" },
+                      {
+                        pattern: /^\d{12}$/,
+                        message: "Số CCCD phải gồm 12 chữ số",
+                      },
                     ]}
                   >
                     <Input className="input-item" placeholder="CCCD" />

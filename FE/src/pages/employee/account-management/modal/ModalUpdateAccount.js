@@ -289,13 +289,6 @@ const ModalUpdateAccount = ({ visible }) => {
         <Col
           className="filter"
           span={6}
-          style={
-            {
-              // display: "flex",
-              // flexDirection: "column",
-              // alignItems: "center",
-            }
-          }
         >
           <div>
             <h1
@@ -311,8 +304,8 @@ const ModalUpdateAccount = ({ visible }) => {
               Ảnh đại diện
             </h1>
             <Row>
-              <Col span={5}></Col>
-              <Col span={6}>
+              <Col span={3}></Col>
+              <Col span={7}>
                 <div>
                   <Upload
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -387,7 +380,10 @@ const ModalUpdateAccount = ({ visible }) => {
                         required: true,
                         message: "Vui lòng nhập số CCCD",
                       },
-                      { max: 12, message: "Số CCCD tối đa 12 ký tự" },
+                      {
+                        pattern: /^\d{12}$/,
+                        message: "Số CCCD phải gồm 12 chữ số",
+                      },
                     ]}
                   >
                     <Input className="input-item" placeholder="CCCD" />
@@ -489,11 +485,7 @@ const ModalUpdateAccount = ({ visible }) => {
                       },
                     ]}
                   >
-                    <Input
-                      className="input-item"
-                      placeholder="Số điện thoại"
-                      readOnly
-                    />
+                    <Input className="input-item" placeholder="Số điện thoại" />
                   </Form.Item>
                   <Form.Item
                     label="Ngày sinh"
