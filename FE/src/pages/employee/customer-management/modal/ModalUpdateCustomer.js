@@ -510,7 +510,6 @@ const ModalUpdateCustomer = ({ visible }) => {
                   <Input
                     className="input-item"
                     placeholder="Số điện thoại"
-                    readOnly
                   />
                 </Form.Item>
                 <Form.Item
