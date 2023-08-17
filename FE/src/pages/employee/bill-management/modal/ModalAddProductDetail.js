@@ -343,6 +343,7 @@ function ModalAddProductDetail({
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
     };
+     dispatch(addProductBillWait(data));
     console.log("test 1")
     console.log(data);
     setProductSelected(data)

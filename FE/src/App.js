@@ -36,6 +36,7 @@ import ModalDetailCustomer from "./pages/employee/customer-management/modal/Moda
 import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 import loading from "./../src/assets/images/s_discount_icon.png";
+import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
 import LoginManagement from "./pages/employee/login-management/LoginManagement";
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -91,6 +92,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <BillManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/payment/payment-success"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <PayMentSuccessful />
                 </DashBoardEmployee>
               </AuthGuard>
             }
