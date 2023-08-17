@@ -1007,20 +1007,25 @@ function CreateBill({ removePane, targetKey }) {
       });
       toast.success("Thêm sản phẩm thành công ");
     } else if (!existingProduct) {
-      ProducDetailtApi.getOne(data).then((res) => {
-        const newProduct = {
-          image: res.data.data.image,
-          productName: res.data.data.nameProduct,
-          nameSize: res.data.data.nameSize,
-          idProduct: res.data.data.id,
-          quantity: 1,
-          price: res.data.data.price,
-          idSizeProduct: res.data.data.id,
-          maxQuantity: res.data.data.quantity,
-        };
-        setProducts((prevProducts) => [...prevProducts, newProduct]);
-      });
-      toast.success("Thêm sản phẩm thành công ");
+      ProducDetailtApi.getOne(data)
+        .then((res) => {
+          const newProduct = {
+            image: res.data.data.image,
+            productName: res.data.data.nameProduct,
+            nameSize: res.data.data.nameSize,
+            idProduct: res.data.data.id,
+            quantity: 1,
+            price: res.data.data.price,
+            idSizeProduct: res.data.data.id,
+            maxQuantity: res.data.data.quantity,
+          };
+          setProducts((prevProducts) => [...prevProducts, newProduct]);
+          toast.success("Thêm sản phẩm thành công ");
+        })
+        .catch((error) => {
+          toast.error("Không tìm thấy sản phẩm");
+          console.log(error);
+        });
     } else {
       toast.warning("Sản phẩm đã có số lượng tối đa.");
     }

@@ -510,12 +510,6 @@ const UpdateProductDetailManagment = () => {
     setSelectedDetail(detail);
   };
 
-  const handleModalUpdate = (newQuantity, newPrice) => {
-    // Update your data and state here
-    console.log("Updating detail with new quantity:", newQuantity);
-    console.log("Updating detail with new price:", newPrice);
-  };
-
   const handleModalCancel = () => {
     setModalUpdateVisible(false);
   };
@@ -785,7 +779,6 @@ const UpdateProductDetailManagment = () => {
           id={selectedDetail}
           visible={modalUpdateVisible}
           onCancel={handleModalCancel}
-          onUpdate={handleModalUpdate}
         />
       </div>
     </>

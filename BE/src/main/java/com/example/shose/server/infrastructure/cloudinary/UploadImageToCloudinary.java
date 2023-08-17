@@ -70,4 +70,27 @@ public class UploadImageToCloudinary {
         }
     }
 
+    @Async
+    public CompletableFuture<List<String>> uploadImages(List<MultipartFile> files) throws InterruptedException, ExecutionException {
+        List<CompletableFuture<String>> futures = files.stream()
+                .map(file -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        String publicId = UUID.randomUUID().toString();
+                        Map<String, String> imageUploadData = new HashMap<>();
+                        imageUploadData.put("public_id", publicId);
+
+                        Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), imageUploadData);
+                        return extractUrlFromResult(result);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }))
+                .collect(Collectors.toList());
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList()))
+                .toCompletableFuture();
+    }
 }

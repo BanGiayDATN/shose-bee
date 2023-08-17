@@ -29,10 +29,7 @@ public interface ProductDetailService {
                                   List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException;
 
     ProductDetailDTO update(final UpdateProductDetailRequest req,
-                            List<MultipartFile> multipartFiles,
-                            List<CreateSizeData> listSize,
-                            List<Boolean> listStatusImage,
-                            List<String> listColor) throws IOException, ExecutionException, InterruptedException;
+                            List<MultipartFile> multipartFiles) throws IOException, ExecutionException, InterruptedException;
 
     List<UpdateQuantityAndPrice> updateList(List<UpdateQuantityAndPrice> requestData);
 

@@ -128,10 +128,7 @@
       align-items: center;
       margin-bottom: 10px;
   }
-  /* .ant-upload-list-item-container{
-    width: 25% !important;
-    height: 100px !important;
-  } */
+
   .ant-upload-list-item-name {
     display: none;
   }
@@ -145,13 +142,6 @@
     z-index: 1;
   }
   
-  /* .upload-list-inline .ant-upload-list-item {
-    display: inline-block;
-    margin-right: 5px; 
-  }
-  .upload-container .ant-upload-list-picture-card-container {
-    width: auto;
-  } */
   .uploaded-file-container {
     position: relative; 
   }

@@ -1,4 +1,4 @@
-package com.example.shose.server.controller;
+package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.bill.*;
 import com.example.shose.server.service.BillService;

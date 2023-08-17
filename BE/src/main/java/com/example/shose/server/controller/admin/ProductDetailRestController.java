@@ -1,4 +1,4 @@
-package com.example.shose.server.controller;
+package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
@@ -88,24 +88,13 @@ public class ProductDetailRestController {
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id,
                                  @RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
-                                 @RequestParam("data") String requestData,
-                                 @RequestParam("status") List<Boolean> listStatusImage,
-                                 @RequestParam("listColor") String litsColor,
-                                 @RequestParam("listSize") String dataSize) throws IOException, ExecutionException, InterruptedException {
+                                 @RequestParam("data") String requestData) throws IOException, ExecutionException, InterruptedException {
 
         Gson gson = new Gson();
         UpdateProductDetailRequest request = gson.fromJson(requestData, UpdateProductDetailRequest.class);
         request.setId(id);
 
-        JsonArray jsonListSize = JsonParser.parseString(dataSize).getAsJsonArray();
-        List<CreateSizeData> listSize = new ArrayList<>();
-        for (JsonElement sizeDataElement : jsonListSize) {
-            CreateSizeData sizeData = gson.fromJson(sizeDataElement, CreateSizeData.class);
-            listSize.add(sizeData);
-        }
-
-        List<String> listCodeColor = gson.fromJson(litsColor, List.class);
-        return new ResponseObject(productDetailService.update(request, multipartFiles, listSize, listStatusImage, listCodeColor));
+        return new ResponseObject(productDetailService.update(request, multipartFiles));
     }
 
     @PutMapping("/list-data")
@@ -124,11 +113,6 @@ public class ProductDetailRestController {
         return new ResponseObject(productDetailService.findAllByIdProduct(id));
     }
 
-
-//    @GetMapping("/all-product-detail")
-//    public ResponseObject getAllProductDetail(FindProductDetailRequest req){
-//        return  new ResponseObject(productDetailService.getAllProductDetail(req));
-//    }
 
 
 }

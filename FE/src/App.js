@@ -33,11 +33,11 @@ import ModalDetailAccount from "./pages/employee/account-management/modal/ModalD
 import ModalCreateCustomer from "./pages/employee/customer-management/modal/ModalCreateCustomer";
 import ModalUpdateCustomer from "./pages/employee/customer-management/modal/ModalUpdateCustomer";
 import ModalDetailCustomer from "./pages/employee/customer-management/modal/ModalDetailCustomer";
-import UpdateProductManagment from "./pages/employee/product-management/UpdateProductManagment";
 import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 import loading from "./../src/assets/images/s_discount_icon.png";
 import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
+import LoginManagement from "./pages/employee/login-management/LoginManagement";
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -76,6 +76,14 @@ function App() {
                   <Home />
                 </DashBoardCustomer>
               </GuestGuard>
+            }
+          />
+          <Route
+            path="/login-management"
+            element={
+              <AuthGuard>
+                <LoginManagement />
+              </AuthGuard>
             }
           />
           <Route
@@ -154,16 +162,6 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <UpdateProductDetailManagment />
-                </DashBoardEmployee>
-              </AuthGuard>
-            }
-          />
-          <Route
-            path="/product-management/:id"
-            element={
-              <AuthGuard>
-                <DashBoardEmployee>
-                  <UpdateProductManagment />
                 </DashBoardEmployee>
               </AuthGuard>
             }
