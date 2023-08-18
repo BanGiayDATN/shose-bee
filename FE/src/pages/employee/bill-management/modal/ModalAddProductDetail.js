@@ -339,13 +339,11 @@ function ModalAddProductDetail({
       nameSize: record.nameSize,
       idProduct: record.id,
       quantity: 1,
-      price: record.price,
+      price: (record.price * (100 - record.promotion) /100),
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
     };
      dispatch(addProductBillWait(data));
-    console.log("test 1")
-    console.log(data);
     setProductSelected(data)
     setIsModalOpen(true);
   };

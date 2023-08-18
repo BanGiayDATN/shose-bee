@@ -1015,7 +1015,7 @@ function CreateBill({ removePane, targetKey }) {
             nameSize: res.data.data.nameSize,
             idProduct: res.data.data.id,
             quantity: 1,
-            price: res.data.data.price,
+            price: res.data.data.price * (100 - res.data.data.promotion)/100,
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
           };

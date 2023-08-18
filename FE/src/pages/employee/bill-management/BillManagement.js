@@ -43,10 +43,7 @@ function BillManagement() {
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);
-  var [quantityNotify, setQuantityNotify] = useState([
-    {status: "CHO_VAN_CHUYEN",
-    quantity:10}
-  ])
+  var [quantityNotify, setQuantityNotify] = useState([ ])
 
   const dispatch = useAppDispatch();
   const { Option } = Select;
