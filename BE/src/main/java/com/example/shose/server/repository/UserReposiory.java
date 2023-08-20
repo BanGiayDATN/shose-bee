@@ -38,7 +38,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
-            WHERE a.roles=2
+            WHERE a.roles='NHAN_VIEN'
              AND  
               ( :#{#req.fullName} IS NULL 
                     OR :#{#req.fullName} LIKE '' 
@@ -81,7 +81,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                  a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
-            WHERE a.roles=1
+            WHERE a.roles='USER'
              AND  
               ( :#{#req.fullName} IS NULL 
                     OR :#{#req.fullName} LIKE '' 

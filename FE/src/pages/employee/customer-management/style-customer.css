@@ -161,15 +161,15 @@
   .ant-upload-list-item-container
   .ant-upload-wrapper.ant-upload-picture-circle-wrapper
   .ant-upload.ant-upload-select {
-  width: 230%;
-  height: 180px;
+  /* width: 230%; */
+  /* height: 180px; */
 }
 
 .ant-upload-wrapper.ant-upload-picture-circle-wrapper
   .ant-upload-list.ant-upload-list-picture-circle
   .ant-upload-list-item {
-  width: 175%;
-  height: 180px;
+  width: 225%;
+  height: 235px;
   /* display: flex;
   justify-content: center;
   margin: 0 auto; */

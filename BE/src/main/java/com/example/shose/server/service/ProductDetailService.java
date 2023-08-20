@@ -3,18 +3,15 @@ package com.example.shose.server.service;
 import com.example.shose.server.dto.ProductDetailDTO;
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
-import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
+import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.dto.response.productdetail.GetProductDetailInCart;
-import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.ProductDetail;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,16 +29,13 @@ public interface ProductDetailService {
                                   List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException;
 
     ProductDetailDTO update(final UpdateProductDetailRequest req,
-                            List<MultipartFile> multipartFiles,
-                            List<CreateSizeData> listSize,
-                            List<Boolean> listStatusImage,
-                            List<String> listColor) throws IOException, ExecutionException, InterruptedException;
+                            List<MultipartFile> multipartFiles) throws IOException, ExecutionException, InterruptedException;
 
     List<UpdateQuantityAndPrice> updateList(List<UpdateQuantityAndPrice> requestData);
 
     Boolean delete(String id);
 
-    ProductDetailReponse getOneById(String id);
+    ProductDetailDTOResponse getOneById(String id);
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 

@@ -12,6 +12,7 @@ import {
   Tabs,
   Tooltip,
   Radio,
+  Switch,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import "./create-bill.css";
@@ -20,7 +21,7 @@ import "./style-bill.css";
 import { useSelector } from "react-redux";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { FaShoppingBag } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { CiDeliveryTruck } from "react-icons/ci";
@@ -44,16 +45,19 @@ import "react-toastify/dist/ReactToastify.css";
 import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
 import { set } from "lodash";
-import { Center } from "@chakra-ui/react";
+import { Center, useInterval } from "@chakra-ui/react";
 import NumberFormat from "react-number-format";
 import { MdOutlinePayment } from "react-icons/md";
 import ModalQRScanner from "../product-management/modal/ModalQRScanner";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import { Navigate } from "react-router-dom";
 
-function CreateBill({removePane , targetKey}) {
+function CreateBill({ removePane, targetKey }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
+
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -65,6 +69,7 @@ function CreateBill({removePane , targetKey}) {
     moneyShip: 0,
     billDetailRequests: [],
     vouchers: [],
+    code: "",
   });
 
   var optionsPayMent = [
@@ -142,6 +147,17 @@ function CreateBill({removePane , targetKey}) {
     loadData();
     loadDataProvince();
     dispatch(addUserBillWait(null));
+    BillApi.getCodeBill().then((res) => {
+      setBillRequest({ ...billRequest, code: res.data.data });
+      setDataPayMentVnpay({
+        vnp_TransactionStatus: "00",
+        vnp_TxnRef: res.data.data,
+      });
+      setDataPayMentVnpayError({
+        vnp_TransactionStatus: "01",
+        vnp_TxnRef: res.data.data,
+      })
+    });
   }, []);
 
   const loadData = () => {
@@ -429,11 +445,44 @@ function CreateBill({removePane , targetKey}) {
   // begin modal thanh toán
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
   const [dataPayment, setDataPayMent] = useState([]);
+  const [payMentVnPay, setPayMentVnPay] = useState(false);
+  const [dataPaymentVnpay, setDataPayMentVnpay] = useState({});
+  const [dataPaymentVnpayError, setDataPayMentVnpayError] = useState({});
   useEffect(() => {
     if (data != null) {
       setListaccount(data);
     }
   }, [data]);
+
+  useInterval(() => {
+    if (payMentVnPay) {
+      var dataPayMent = localStorage.getItem("parameters");
+      //  var dataPaymentVnpay ={
+      //  vnp_TransactionStatus: "00", vnp_TxnRef: billRequest.code
+      //  }
+      if (dataPayMent != undefined) {
+        if(JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpay)){
+            var data = {
+              actionDescription: "",
+              method: "CHUYEN_KHOAN",
+              totalMoney: totalMoneyPayMent,
+              status: "THANH_TOAN",
+            };
+            setDataPayMent([...dataPayment, data]);
+            setTotalMoneyPayment("");
+            form.resetFields();
+            setPayMentVnPay(false);
+            localStorage.setItem("parameters", "");
+          }else if(JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpayError)){
+            setPayMentVnPay(false);
+            localStorage.setItem("parameters", "");
+          }
+        localStorage.setItem("parameters", "");
+      }
+      // setPayMentVnPay(false);
+    }
+    // const subscription = window.addEventListener("payment/success", () => {
+  }, 3000);
 
   const [totalMoneyPayMent, setTotalMoneyPayment] = useState(0);
   const [traSau, setTraSau] = useState(false);
@@ -461,8 +510,19 @@ function CreateBill({removePane , targetKey}) {
       setDataPayMent([]);
     }
   };
+  const formRef = React.useRef(null);
+
   const addPayMent = (e, method) => {
-    if (totalMoneyPayMent >= 1000) {
+    if (method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000) {
+      const data = {
+        vnp_Ammount: totalMoneyPayMent,
+        vnp_TxnRef: billRequest.code,
+      };
+      PaymentsMethodApi.paymentVnpay(data).then((res) => {
+        setPayMentVnPay(true);
+        window.open(res.data.data);
+      });
+    } else if (totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
         method: method,
@@ -470,7 +530,8 @@ function CreateBill({removePane , targetKey}) {
         status: "THANH_TOAN",
       };
       setDataPayMent([...dataPayment, data]);
-      setTotalMoneyPayment(0)
+      setTotalMoneyPayment("");
+      form.resetFields();
     }
   };
   const deletePayMent = (e, index) => {
@@ -483,16 +544,7 @@ function CreateBill({removePane , targetKey}) {
       title: <div className="title-product">Số tiền</div>,
       dataIndex: "totalMoney",
       key: "totalMoney",
-      render: (totalMoney) => (
-        <span>
-          {totalMoney >= 1000
-            ? totalMoney.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
-            : totalMoney + " đ"}
-        </span>
-      ),
+      render: (totalMoney) => <span>{formatCurrency(totalMoney)}</span>,
     },
     {
       title: <div className="title-product">Phương thức</div>,
@@ -513,7 +565,11 @@ function CreateBill({removePane , targetKey}) {
       dataIndex: "method",
       key: "method",
       render: (method, record, index) => (
-        <Button title="Xóa" onClick={(e) => deletePayMent(e, index)}>
+        <Button
+          title="Xóa"
+          style={{ border: "none" }}
+          onClick={(e) => deletePayMent(e, index)}
+        >
           <BsFillTrash3Fill />
         </Button>
       ),
@@ -537,9 +593,11 @@ function CreateBill({removePane , targetKey}) {
   };
   // enad modal thanh toán
 
+  const openDelivery = (e) => {
+    setShipFee(0);
+    setIsOpenDelivery(!isOpenDelivery);
+  };
   const orderBill = (e) => {
-
-
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -572,9 +630,9 @@ function CreateBill({removePane , targetKey}) {
       idAccount = user.idAccount;
     }
     var typeBill = "OFFLINE";
-    if (isOpenDelivery) {
-      typeBill = "ONLINE";
-    }
+    // if (isOpenDelivery) {
+    //   typeBill = "ONLINE";
+    // }
     var statusPayMents = "THANH_TOAN";
     if (traSau) {
       statusPayMents = "TRA_SAU";
@@ -593,7 +651,9 @@ function CreateBill({removePane , targetKey}) {
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
       idUser: idAccount,
-      deliveryDate: dayShip
+      deliveryDate: dayShip,
+      code: billRequest.code,
+      openDelivery: isOpenDelivery,
     };
 
     if (isOpenDelivery) {
@@ -607,41 +667,44 @@ function CreateBill({removePane , targetKey}) {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
-                  if(targetKey == undefined){
-                    setProducts([])
+                  if (targetKey == undefined) {
+                    setProducts([]);
+                    form.resetFields();
                     setBillRequest({
-                        phoneNumber: "",
-                        address: "",
-                        userName: "",
-                        idUser: "",
-                        itemDiscount: 0,
-                        totalMoney: 0,
-                        note: "",
-                        moneyShip: 0,
-                        billDetailRequests: [],
-                        vouchers: [],
-                      });
+                      phoneNumber: "",
+                      address: "",
+                      userName: "",
+                      idUser: "",
+                      itemDiscount: 0,
+                      totalMoney: 0,
+                      note: "",
+                      moneyShip: 0,
+                      billDetailRequests: [],
+                      vouchers: [],
+                      code: "",
+                    });
                     setAddress({
-                        city: "",
-                        district: "",
-                        wards: "",
-                        detail: "",
-                      });
-                    setShipFee(0)
+                      city: "",
+                      district: "",
+                      wards: "",
+                      detail: "",
+                    });
+                    setShipFee(0);
                     setSearchCustomer({
-                        keyword: "",
-                        status: "",
-                      });
+                      keyword: "",
+                      status: "",
+                    });
                     dispatch(addUserBillWait(null));
-                    setDataPayMent([])
-                    setIsModalPayMentOpen(false)
-                    setTotalMoneyPayment(0)
-                    setTraSau(false)
-                    setKeyVoucher("")
-                    setCodeVoucher(false)
-                    setIdaData("")
-                  }else{
-                    removePane(targetKey)
+                    setDataPayMent([]);
+                    setIsModalPayMentOpen(false);
+                    setTotalMoneyPayment(0);
+                    setTraSau(false);
+                    setKeyVoucher("");
+                    setCodeVoucher(false);
+                    setIdaData("");
+                  } else {
+                    removePane(targetKey);
+                    form.resetFields();
                   }
                 });
               },
@@ -666,41 +729,41 @@ function CreateBill({removePane , targetKey}) {
             cancelText: "Hủy",
             onOk: async () => {
               await BillApi.createBillWait(data).then((res) => {
-                if(targetKey == undefined){
-                  setProducts([])
+                if (targetKey == undefined) {
+                  setProducts([]);
                   setBillRequest({
-                      phoneNumber: "",
-                      address: "",
-                      userName: "",
-                      idUser: "",
-                      itemDiscount: 0,
-                      totalMoney: 0,
-                      note: "",
-                      moneyShip: 0,
-                      billDetailRequests: [],
-                      vouchers: [],
-                    });
+                    phoneNumber: "",
+                    address: "",
+                    userName: "",
+                    idUser: "",
+                    itemDiscount: 0,
+                    totalMoney: 0,
+                    note: "",
+                    moneyShip: 0,
+                    billDetailRequests: [],
+                    vouchers: [],
+                  });
                   setAddress({
-                      city: "",
-                      district: "",
-                      wards: "",
-                      detail: "",
-                    });
-                  setShipFee(0)
+                    city: "",
+                    district: "",
+                    wards: "",
+                    detail: "",
+                  });
+                  setShipFee(0);
                   setSearchCustomer({
-                      keyword: "",
-                      status: "",
-                    });
+                    keyword: "",
+                    status: "",
+                  });
                   dispatch(addUserBillWait(null));
-                  setDataPayMent([])
-                  setIsModalPayMentOpen(false)
-                  setTotalMoneyPayment(0)
-                  setTraSau(false)
-                  setKeyVoucher("")
-                  setCodeVoucher(false)
-                  setIdaData("")
-                }else{
-                  removePane(targetKey)
+                  setDataPayMent([]);
+                  setIsModalPayMentOpen(false);
+                  setTotalMoneyPayment(0);
+                  setTraSau(false);
+                  setKeyVoucher("");
+                  setCodeVoucher(false);
+                  setIdaData("");
+                } else {
+                  removePane(targetKey);
                 }
               });
             },
@@ -944,20 +1007,25 @@ function CreateBill({removePane , targetKey}) {
       });
       toast.success("Thêm sản phẩm thành công ");
     } else if (!existingProduct) {
-      ProducDetailtApi.getOne(data).then((res) => {
-        const newProduct = {
-          image: res.data.data.image,
-          productName: res.data.data.nameProduct,
-          nameSize: res.data.data.nameSize,
-          idProduct: res.data.data.id,
-          quantity: 1,
-          price: res.data.data.price,
-          idSizeProduct: res.data.data.id,
-          maxQuantity: res.data.data.quantity,
-        };
-        setProducts((prevProducts) => [...prevProducts, newProduct]);
-      });
-      toast.success("Thêm sản phẩm thành công ");
+      ProducDetailtApi.getOne(data)
+        .then((res) => {
+          const newProduct = {
+            image: res.data.data.image,
+            productName: res.data.data.nameProduct,
+            nameSize: res.data.data.nameSize,
+            idProduct: res.data.data.id,
+            quantity: 1,
+            price: res.data.data.price,
+            idSizeProduct: res.data.data.id,
+            maxQuantity: res.data.data.quantity,
+          };
+          setProducts((prevProducts) => [...prevProducts, newProduct]);
+          toast.success("Thêm sản phẩm thành công ");
+        })
+        .catch((error) => {
+          toast.error("Không tìm thấy sản phẩm");
+          console.log(error);
+        });
     } else {
       toast.warning("Sản phẩm đã có số lượng tối đa.");
     }
@@ -1296,9 +1364,18 @@ function CreateBill({removePane , targetKey}) {
     formAddUser.resetFields();
   };
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+
   return (
-    <div style={{width: "100%"}}>
-      <Row justify="space-between" >
+    <div style={{ width: "100%" }}>
+      <Row justify="space-between">
         <Col span={4}>
           <Button
             type="primary"
@@ -1456,11 +1533,8 @@ function CreateBill({removePane , targetKey}) {
                       }}
                     >
                       {item.price >= 1000
-                        ? item.price.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
-                        : item.price + " đ"}
+                        ? formatCurrency(item.price)
+                        : item.price + " VND"}
                     </span>{" "}
                   </Row>
                   <Row>
@@ -1516,12 +1590,7 @@ function CreateBill({removePane , targetKey}) {
                       fontWeight: "bold",
                     }}
                   >
-                    {item.price * item.quantity >= 1000
-                      ? (item.price * item.quantity).toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      : item.price * item.quantity + " đ"}
+                    {formatCurrency(item.price * item.quantity)}
                   </span>{" "}
                 </Col>
                 <Col span={2} style={{ display: "flex", alignItems: "center" }}>
@@ -1561,21 +1630,18 @@ function CreateBill({removePane , targetKey}) {
               {products.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.price * currentValue.quantity;
               }, 0) >= 1000
-                ? products
-                    .reduce((accumulator, currentValue) => {
+                ? formatCurrency(
+                    products.reduce((accumulator, currentValue) => {
                       return (
                         accumulator + currentValue.price * currentValue.quantity
                       );
                     }, 0)
-                    .toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                  )
                 : products.reduce((accumulator, currentValue) => {
                     return (
                       accumulator + currentValue.price * currentValue.quantity
                     );
-                  }, 0) + " đ"}
+                  }, 0) + " VND"}
             </Col>
           </Row>
         ) : (
@@ -1670,7 +1736,7 @@ function CreateBill({removePane , targetKey}) {
         <Row style={{ width: "100%" }}>
           <Col span={14}>
             {isOpenDelivery ? (
-              <Form form={form} initialValues={initialValues}>
+              <Form form={form} ref={formRef} initialValues={initialValues}>
                 <div>
                   <Row
                     style={{
@@ -1972,20 +2038,11 @@ function CreateBill({removePane , targetKey}) {
                 </Button>
               </Col>
               <Col span={14} align={"end"} style={{ marginRight: "10px" }}>
-                {dataPayment.reduce((accumulator, currentValue) => {
-                  return accumulator + currentValue.totalMoney;
-                }, 0) >= 1000
-                  ? dataPayment
-                      .reduce((accumulator, currentValue) => {
-                        return accumulator + currentValue.totalMoney;
-                      }, 0)
-                      .toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                  : dataPayment.reduce((accumulator, currentValue) => {
-                      return accumulator + currentValue.totalMoney;
-                    }, 0) + " đ"}
+                {formatCurrency(
+                  dataPayment.reduce((accumulator, currentValue) => {
+                    return accumulator + currentValue.totalMoney;
+                  }, 0)
+                )}
               </Col>
             </Row>
             {isOpenDelivery ? (
@@ -1999,15 +2056,19 @@ function CreateBill({removePane , targetKey}) {
                   className="debit"
                   style={{ display: "flex", alignItems: "center" }}
                 >
-                  <input
+                  {/* <input
                     type="checkbox"
                     id="switch2"
-                    defaultChecked={traSau}
+                    
                     onClick={(e) => traTienSau(e)}
                   />
                   <label for="switch2" className="labelSwitch">
                     Toggle
-                  </label>
+                  </label> */}
+                  <Switch
+                    defaultChecked={traSau}
+                    onChange={(e) => traTienSau(e)}
+                  />
                 </Col>
               </Row>
             ) : (
@@ -2023,54 +2084,42 @@ function CreateBill({removePane , targetKey}) {
                 className="delivery"
                 style={{ display: "flex", alignItems: "center" }}
               >
-                <input
+                {/* <input
                   type="checkbox"
                   id="switch"
-                  defaultChecked={isOpenDelivery}
-                  onChange={(e) => setIsOpenDelivery(!isOpenDelivery)}
+                  
+                  onChange={}
                 />
                 <label for="switch" className="labelSwitch">
                   Toggle
-                </label>
+                </label> */}
+
+                <Switch
+                  defaultChecked={isOpenDelivery}
+                  onChange={(e) => {
+                    openDelivery(e);
+                  }}
+                />
               </Col>
             </Row>
 
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Tiền hàng: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {products.reduce((accumulator, currentValue) => {
-                  return (
-                    accumulator + currentValue.price * currentValue.quantity
-                  );
-                }, 0) >= 1000
-                  ? products
-                      .reduce((accumulator, currentValue) => {
-                        return (
-                          accumulator +
-                          currentValue.price * currentValue.quantity
-                        );
-                      }, 0)
-                      .toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                  : products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) + " đ"}
+                {formatCurrency(
+                  products.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0)
+                )}
               </Col>
             </Row>
             {isOpenDelivery == true ? (
               <Row justify="space-between" style={{ marginTop: "29px" }}>
                 <Col span={8}>Phí vận chuyển: </Col>
                 <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                  {shipFee >= 1000
-                    ? shipFee.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : shipFee + " đ"}
+                  {formatCurrency(shipFee)}
                 </Col>
               </Row>
             ) : (
@@ -2080,12 +2129,7 @@ function CreateBill({removePane , targetKey}) {
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={5}>Giảm giá: </Col>
               <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
-                {voucher.discountPrice >= 1000
-                  ? voucher.discountPrice.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                  : voucher.discountPrice + " đ"}
+                {formatCurrency(voucher.discountPrice)}
               </Col>
             </Row>
             <Row justify="space-between" style={{ marginTop: "29px" }}>
@@ -2110,35 +2154,15 @@ function CreateBill({removePane , targetKey}) {
                 }}
                 align={"end"}
               >
-                {products.reduce((accumulator, currentValue) => {
-                  return (
-                    accumulator + currentValue.price * currentValue.quantity
-                  );
-                }, 0) +
-                  shipFee -
-                  voucher.discountPrice >=
-                1000
-                  ? (
-                      products.reduce((accumulator, currentValue) => {
-                        return (
-                          accumulator +
-                          currentValue.price * currentValue.quantity
-                        );
-                      }, 0) +
-                      shipFee -
-                      voucher.discountPrice
-                    ).toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                  : products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) +
+                {formatCurrency(
+                  products.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0) +
                     shipFee -
-                    voucher.discountPrice +
-                    " đ"}
+                    voucher.discountPrice
+                )}
               </Col>
             </Row>
             <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
@@ -2407,7 +2431,7 @@ function CreateBill({removePane , targetKey}) {
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
       >
-        <Form>
+        <Form form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
               <Row style={{ width: "100%" }}>
@@ -2437,14 +2461,14 @@ function CreateBill({removePane , targetKey}) {
                         height: "37px",
                       }}
                       customInput={Input}
-                      defaultValue={totalMoneyPayMent}
+                      value={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
                         );
                       }}
                     />
-                  </Form.Item>{" "}
+                  </Form.Item>
                 </Col>
               </Row>
             </Col>
@@ -2476,32 +2500,15 @@ function CreateBill({removePane , targetKey}) {
               align={"end"}
               style={{ fontSize: "18px", fontWeight: "bold", color: "#00d6f4" }}
             >
-              {products.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.price * currentValue.quantity;
-              }, 0) +
-                shipFee -
-                voucher.discountPrice >=
-              1000
-                ? (
-                    products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) +
-                    shipFee -
-                    voucher.discountPrice
-                  ).toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
-                : products.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0) +
+              {formatCurrency(
+                products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) +
                   shipFee -
-                  voucher.discountPrice +
-                  " đ"}
+                  voucher.discountPrice
+              )}
             </Col>
           </Row>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2522,14 +2529,11 @@ function CreateBill({removePane , targetKey}) {
               align={"end"}
               style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
             >
-              {dataPayment
-                .reduce((accumulator, currentValue) => {
+              {formatCurrency(
+                dataPayment.reduce((accumulator, currentValue) => {
                   return accumulator + currentValue.totalMoney;
                 }, 0)
-                .toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
+              )}
             </Col>
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
@@ -2558,36 +2562,31 @@ function CreateBill({removePane , targetKey}) {
               }, 0) +
                 shipFee -
                 voucher.discountPrice
-                ? (
+                ? formatCurrency(
                     products.reduce((accumulator, currentValue) => {
                       return (
                         accumulator + currentValue.price * currentValue.quantity
                       );
                     }, 0) +
-                    shipFee -
-                    voucher.discountPrice -
-                    dataPayment.reduce((accumulator, currentValue) => {
-                      return accumulator + currentValue.totalMoney;
-                    }, 0)
-                  ).toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
-                : (
+                      shipFee -
+                      voucher.discountPrice -
+                      dataPayment.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.totalMoney;
+                      }, 0)
+                  )
+                : formatCurrency(
                     dataPayment.reduce((accumulator, currentValue) => {
                       return accumulator + currentValue.totalMoney;
                     }, 0) -
-                    products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) +
-                    shipFee -
-                    voucher.discountPrice
-                  ).toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
+                      products.reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0) +
+                      shipFee -
+                      voucher.discountPrice
+                  )}
             </Col>
           </Row>
         </Form>

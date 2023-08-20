@@ -40,7 +40,6 @@ import ModalUpdateProductDetail from "./modal/ModalUpdateProductDetail";
 
 const UpdateProductDetailManagment = () => {
   const { id } = useParams();
-  console.log(id);
 
   // Bộ lọc
   const [listMaterial, setListMaterial] = useState([]);
@@ -323,15 +322,6 @@ const UpdateProductDetailManagment = () => {
             >
               <FontAwesomeIcon icon={faEye} />
             </Button>
-            {selectedDetail && (
-              <ModalUpdateProductDetail
-                visible={modalUpdateVisible}
-                onCancel={handleModalCancel}
-                onUpdate={handleModalUpdate}
-                initialQuantity={selectedDetail.quantity}
-                initialPrice={selectedDetail.price}
-              />
-            )}
           </div>
         </Tooltip>
       ),
@@ -516,19 +506,12 @@ const UpdateProductDetailManagment = () => {
   const [selectedDetail, setSelectedDetail] = useState(null);
 
   const handleUpdateClick = (detail) => {
-    setSelectedDetail(detail);
     setModalUpdateVisible(true);
-  };
-
-  const handleModalUpdate = (newQuantity, newPrice) => {
-    // Update your data and state here
-    console.log("Updating detail with new quantity:", newQuantity);
-    console.log("Updating detail with new price:", newPrice);
+    setSelectedDetail(detail);
   };
 
   const handleModalCancel = () => {
-    setSelectedDetail(null);
-    setModalVisible(false);
+    setModalUpdateVisible(false);
   };
 
   return (
@@ -792,6 +775,11 @@ const UpdateProductDetailManagment = () => {
             rowClassName={getRowClassName}
           />
         </div>
+        <ModalUpdateProductDetail
+          id={selectedDetail}
+          visible={modalUpdateVisible}
+          onCancel={handleModalCancel}
+        />
       </div>
     </>
   );

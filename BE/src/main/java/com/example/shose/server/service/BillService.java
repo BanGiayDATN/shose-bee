@@ -23,6 +23,8 @@ public interface BillService {
 
     Bill  saveOnline(CreateBillRequest request);
 
+    String CreateCodeBill();
+
     Bill  save(String id,  CreateBillOfflineRequest request);
 
     Bill updateBillOffline(String id, UpdateBillRequest bill);

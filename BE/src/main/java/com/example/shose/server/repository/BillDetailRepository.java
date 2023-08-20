@@ -16,19 +16,23 @@ import java.util.List;
 public interface BillDetailRepository extends JpaRepository<BillDetail, String> {
 
     @Query(value = """
-           SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, bi.id AS id_bill, im.name AS image, bide.id, prde.id AS id_product, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity, prde.quantity AS max_quantity, bide.status_bill from bill_detail bide
-           LEFT JOIN bill bi ON bide.id_bill = bi.id
-           LEFT JOIN product_detail prde ON bide.id_product_detail = prde.id
-           LEFT JOIN image im ON prde.id = im.id_product_detail
-           LEFT JOIN product pr ON pr.id = prde.id_product
-           LEFT JOIN color co ON co.id = prde.id_color
-           LEFT JOIN size si ON si.id = prde.id_size
-           LEFT JOIN sole so ON so.id = prde.id_sole
-           LEFT JOIN material ma ON ma.id = prde.id_material
-           LEFT JOIN category ca ON ca.id = prde.id_category
+            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, bi.id AS id_bill, im.name AS image, bide.id, prde.id AS id_product, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity, prde.quantity AS max_quantity, bide.status_bill from bill_detail bide
+            LEFT JOIN bill bi ON bide.id_bill = bi.id
+            LEFT JOIN product_detail prde ON bide.id_product_detail = prde.id
+            JOIN (
+                 SELECT id_product_detail, MAX(id) AS max_image_id
+                 FROM image
+                 GROUP BY id_product_detail
+            ) max_images ON prde.id = max_images.id_product_detail
+            LEFT JOIN image im ON max_images.max_image_id = im.id
+            LEFT JOIN product pr ON pr.id = prde.id_product
+            LEFT JOIN color co ON co.id = prde.id_color
+            LEFT JOIN size si ON si.id = prde.id_size
+            LEFT JOIN sole so ON so.id = prde.id_sole
+            LEFT JOIN material ma ON ma.id = prde.id_material
+            LEFT JOIN category ca ON ca.id = prde.id_category
             WHERE bi.id LIKE :idBill
-           GROUP BY id
-            """, nativeQuery = true)
+             """, nativeQuery = true)
     List<BillDetailResponse> findAllByIdBill(String idBill);
 
     @Query(value = """
@@ -58,7 +62,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             LEFT JOIN material ma ON ma.id = prde.id_material
             LEFT JOIN category ca ON ca.id = prde.id_category
             WHERE bi.type = 1 AND bi.status_bill = 'TAO_HOA_DON'
-              AND (:#{#request.startCreateBill} <= bi.created_date)
+            AND (:#{#request.startCreateBill} <= bi.created_date)
             AND ( :#{#request.nameUser} IS NULL
                      OR :#{#request.nameUser} LIKE ''
                      OR bi.user_name LIKE :#{#request.nameUser})

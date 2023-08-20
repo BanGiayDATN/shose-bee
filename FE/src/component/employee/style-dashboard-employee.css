@@ -7,21 +7,16 @@
     overflow: hidden;
   }
   
-
-
-  
 .logo {
-    padding-left: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 92%; /* Ví dụ: chiều rộng 100% của phần tử cha */
-    /* height: 200px;  */
-    height: 80px;
-    margin-bottom: 50px;
-    margin-top: 50px;
+    width: auto; 
+    height: 10%; 
+    margin-bottom: 20%;
+    margin-top: 20%; 
 
-    transition: all 0.2s; /* Add a transition effect for smooth resizing */
+    transition: all 0.2s; 
 }
   
 .logo-content {
@@ -32,3 +27,5 @@
 .ant-layout-sider-collapsed .logo {
     height:25px; 
 }
+
+

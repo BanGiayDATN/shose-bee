@@ -343,10 +343,13 @@ function ModalAddProductDetail({
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
     };
+     dispatch(addProductBillWait(data));
+    console.log("test 1")
     console.log(data);
     setProductSelected(data)
     setIsModalOpen(true);
   };
+  
   console.log(productSelected);
   const clearSelectSize = () => {
     setSizes([]);
@@ -354,7 +357,6 @@ function ModalAddProductDetail({
   const handleOk = (e) => {
     var list = products;
     var index = list.findIndex((x) => x.idProduct === productSelected.idProduct);
-    console.log(index);
     if (index == -1) {
       var data = {...productSelected}
       data.quantity = quantity;

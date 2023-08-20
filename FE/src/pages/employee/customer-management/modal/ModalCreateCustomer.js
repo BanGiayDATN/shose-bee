@@ -172,7 +172,7 @@ const ModalCreateCustomer = () => {
             .then((res) => {
               dispatch(CreateCustomer(res.data.data));
               toast.success("Thêm thành công");
-              navigate("/customerr-management");
+              navigate("/customer-management");
             })
             .catch((error) => {
               toast.error(error.response.data.message);
@@ -249,8 +249,8 @@ const ModalCreateCustomer = () => {
             </h1>
             {/* ... */}
             <Row>
-              <Col span={5}></Col>
-              <Col span={6}>
+              <Col span={3}></Col>
+              <Col span={7}>
                 <div style={{ width: "100%" }}>
                   <Upload
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -332,7 +332,10 @@ const ModalCreateCustomer = () => {
                     name="fullName"
                     rules={[{ required: true, message: "Vui lòng nhập tên" }]}
                   >
-                    <Input className="input-item" placeholder="Tên khách hàng" />
+                    <Input
+                      className="input-item"
+                      placeholder="Tên khách hàng"
+                    />
                   </Form.Item>
                   <Form.Item
                     label="Căn cước công dân"
@@ -342,7 +345,10 @@ const ModalCreateCustomer = () => {
                         required: true,
                         message: "Vui lòng nhập số CCCD",
                       },
-                      { max: 12, message: "Số CCCD tối đa 12 ký tự" },
+                      {
+                        pattern: /^\d{12}$/,
+                        message: "Số CCCD phải gồm 12 chữ số",
+                      },
                     ]}
                   >
                     <Input className="input-item" placeholder="CCCD" />

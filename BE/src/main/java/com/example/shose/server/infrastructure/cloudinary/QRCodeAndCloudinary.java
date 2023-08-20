@@ -26,7 +26,7 @@ public class QRCodeAndCloudinary {
 
     private ExecutorService executorService = Executors.newFixedThreadPool(5); // luồng chạy
 
-    public String generateAndUploadQRCode(String content) {
+    public  String generateAndUploadQRCode(String content) {
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 200, 200);
@@ -46,5 +46,6 @@ public class QRCodeAndCloudinary {
             return null;
         }
     }
+
 
 }
