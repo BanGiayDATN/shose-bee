@@ -8,6 +8,7 @@ import AuthGuard from "./guard/AuthGuard";
 import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
+import Cart from "./pages/customer/cart/Cart";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
@@ -73,6 +74,16 @@ function App() {
               <GuestGuard>
                 <DashBoardCustomer>
                   <Home />
+                </DashBoardCustomer>
+              </GuestGuard>
+            }
+          />
+            <Route
+            path="/cart"
+            element={
+              <GuestGuard>
+                <DashBoardCustomer>
+                  <Cart />
                 </DashBoardCustomer>
               </GuestGuard>
             }
@@ -337,6 +348,7 @@ function App() {
               </AuthGuard>
             }
           />
+          
         </Routes>
       </BrowserRouter>
       <ToastContainer />

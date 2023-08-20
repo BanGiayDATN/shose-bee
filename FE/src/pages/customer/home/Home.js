@@ -1,27 +1,28 @@
-import { useState, useEffect, useRef } from "react";
-import { Select, Space, Input, Button, Row, Col, Card, Menu } from "antd";
+import { useState, useEffect } from "react";
+import {  Button, Row, Col, Menu } from "antd";
 import {
   RiseOutlined,
-  LeftCircleOutlined,
-  RightCircleOutlined,
+
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import banner1 from "./../../../assets/images/third_slider_img01.png";
 import banner2 from "./../../../assets/images/shoes_cat_img01.jpg";
 import banner3 from "./../../../assets/images/shoes_cat_img03.jpg";
 import banner4 from "./../../../assets/images/shoes_cat_img02.jpg";
-import category1 from "./../../../assets/images/trending_banner.jpg";
-import category2 from "./../../../assets/images/trending_banner02.jpg";
 import category3 from "./../../../assets/images/trending_banner03.jpg";
-import "./style-home.css";
+import "./style-home.css"; 
+
 import { CategoryClientApi } from "./../../../api/customer/category/categoryClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
+
 import CardItem from "../component/Card";
 import { Grid } from "react-virtualized";
 function Home() {
   const [listCategory, setListcategory] = useState([]);
   const [listProductDetailByCategory, setListProductDetailByCategory] =useState([]);
 
+
+  // home
 
   const firstCategoryId = listCategory.length > 0 ? listCategory[0].id : null;
   useEffect(() => {
@@ -33,7 +34,7 @@ function Home() {
     const cellRenderer = ({ columnIndex, key, style }) => (
       <div key={key} style={style}>
         {listProductDetailByCategory[columnIndex] && (
-          <CardItem item={listProductDetailByCategory[columnIndex]} index={columnIndex} key={columnIndex} />
+          <CardItem item={listProductDetailByCategory[columnIndex]} index={columnIndex} key={columnIndex}/>
         )}
       </div>
     );

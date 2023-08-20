@@ -11,6 +11,7 @@
 
   
 .logo {
+    padding-left: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -29,5 +30,5 @@
 }
   
 .ant-layout-sider-collapsed .logo {
-    height: 70px; 
+    height:25px; 
 }

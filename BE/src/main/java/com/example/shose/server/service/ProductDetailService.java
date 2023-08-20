@@ -11,6 +11,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailInCart;
 import com.example.shose.server.dto.response.productdetail.ProductDetailResponse;
 import com.example.shose.server.entity.ProductDetail;
 import org.springframework.data.repository.query.Param;
@@ -51,7 +52,8 @@ public interface ProductDetailService {
 
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
 
-    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor);
-//    ProductDetail getProductDetailInCart(String idProuct,String codeColor,String nameSize);
+    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor, String nameSize);
 
+//    GetProductDetailInCart getProductDetailInCart()
+List<ProductDetail> listSizeByProductAndColor(String idProduct,String codeColor);
 }

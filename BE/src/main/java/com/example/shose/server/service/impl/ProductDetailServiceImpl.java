@@ -11,6 +11,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailInCart;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.entity.Category;
 import com.example.shose.server.entity.Image;
@@ -94,9 +95,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Autowired
     private QRCodeAndCloudinary qrCodeAndCloudinary;
 
-    public static void main(String[] args) {
-        System.out.println(new ProductDetailServiceImpl().getDetailProductOfClient("", "#800080"));
-    }
 
     @Override
     public List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest) {
@@ -302,16 +300,17 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 //    }
 
     @Override
-    public GetDetailProductOfClient getDetailProductOfClient(String id, String codeColor) {
-        return productDetailRepository.getDetailProductOfClient(id, codeColor);
+    public GetDetailProductOfClient getDetailProductOfClient(String id, String codeColor, String nameSize) {
+        return productDetailRepository.getDetailProductOfClient(id, codeColor,nameSize);
 
 
     }
 
-//    @Override
-//    public ProductDetail getProductDetailInCart(String idProuct, String codeColor, String nameSize) {
-//        return productDetailRepository.getProductDetailInCart(idProuct,codeColor,nameSize);
-//    }
+    @Override
+    public List<ProductDetail> listSizeByProductAndColor(String idProduct, String codeColor) {
+        return productDetailRepository.listSizeByProductAndColor(idProduct, codeColor);
+    }
+
 
     @Override
     public List<GetProductDetailByCategory> GetProductDetailByCategory(String id) {
