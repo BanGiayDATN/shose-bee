@@ -19,6 +19,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Nguyễn Vinh
@@ -66,7 +67,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                         LEFT JOIN customer cu ON cu.id = bi.id_customer
                         LEFT JOIN user usac ON usac.id = ac.id_user
                         LEFT JOIN user usem ON usem.id = em.id_user
-            WHERE (:#{#request.startCreateBill} <= bi.created_date)
+            AND bi.type = 'OFFLINE'
+            AND bi.status_bill = 'TAO_HOA_DON'
             AND ( :#{#request.key} IS NULL
                      OR :#{#request.key} LIKE ''
                      OR bi.user_name LIKE :#{#request.key}
@@ -164,4 +166,6 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     ORDER BY completion_date ASC;
                           """, nativeQuery = true)
     List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
+
+    Optional<Bill> findByCode(String code);
 }

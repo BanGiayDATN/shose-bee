@@ -7,46 +7,68 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useAppDispatch } from "../../../app/hook";
-import { getAllBillAtCounter } from "../../../app/reducer/Bill.reducer";
+import { addBillAtCounTer, getAllBillAtCounter } from "../../../app/reducer/Bill.reducer";
 import moment from "moment";
 import CreateBill from "./CreateBill";
 import { toast } from "react-toastify";
 
 function Sale() {
-  const [invoiceNumber, setInvoiceNumber] = useState(1);
+  const [invoiceNumber, setInvoiceNumber] = useState(0);
  
   const defaultPanes = new Array(invoiceNumber).fill(null).map((_, index) => {
     const id = String(index + 1);
     return {
       label: `Hóa đơn  ${id}`,
       children: <CreateBill />,
-      key: id,
     };
   });
 
-  const [activeKey, setActiveKey] = useState(defaultPanes[0].key);
+  const [activeKey, setActiveKey] = useState(0);
   const [items, setItems] = useState(defaultPanes);
-  const newTabIndex = useRef(2);
-
+  const newTabIndex = useRef(1);
+  const dispatch = useAppDispatch();
 
   const onChange = (key) => {
     setActiveKey(key);
   };
-  const add = (e) => {
-    if(invoiceNumber >= 5){
-      toast.warning(`Không thể tạo thêm hóa đơn`);
-    }else{
+  useEffect( () => {
+     BillApi.getCodeBill().then((res) => {
       const newActiveKey = `Hóa đơn ${newTabIndex.current}`;
       setItems([
         ...items,
         {
           label: `Hóa đơn ${newTabIndex.current++}`,
-          children: <CreateBill style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
+          children: <CreateBill code={res.data.data.code} key={activeKey} invoiceNumber={invoiceNumber} style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
           key: newActiveKey,
         },
       ]);
+      dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`))
       setActiveKey(newActiveKey);
       setInvoiceNumber(invoiceNumber + 1)
+    });
+   
+   
+  },[])
+
+  const add = (e) => {
+    if(invoiceNumber >= 5){
+      toast.warning(`Không thể tạo thêm hóa đơn`);
+    }else{
+      BillApi.getCodeBill().then((res) => {
+       const newActiveKey = `Hóa đơn ${newTabIndex.current}`;
+      setItems([
+        ...items,
+        {
+          label: `Hóa đơn ${newTabIndex.current++}`,
+          children: <CreateBill code={ res.data.data.code} key={activeKey}  invoiceNumber={invoiceNumber} style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
+          key: newActiveKey,
+        },
+      ]);
+      dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`))
+      setActiveKey(newActiveKey);
+      setInvoiceNumber(invoiceNumber + 1)
+     });
+      
     }
    
   };

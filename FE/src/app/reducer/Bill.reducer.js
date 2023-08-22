@@ -57,6 +57,9 @@ const billSlice = createSlice({
     getAllBillAtCounter:  (state, action) => {
       state.billAtCounter.value = [...action.payload];
     },
+    addBillAtCounTer:  (state, action) => {
+      state.billAtCounter.value.push(action.payload);
+    },
     deletebillWait: (state, action) => {
       state.search.users = [];
     },
@@ -95,6 +98,7 @@ export const {
   getProductInBillDetail,
   getBillHistory,
   getBill,
+  addBillAtCounTer,
   addStatusPresent,
   addBillHistory,
   addProductBillWait,
