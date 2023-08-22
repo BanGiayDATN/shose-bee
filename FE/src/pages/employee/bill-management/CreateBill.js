@@ -54,7 +54,7 @@ import { ProducDetailtApi } from "../../../api/employee/product-detail/productDe
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { Navigate } from "react-router-dom";
 
-function CreateBill({ removePane, targetKey }) {
+function CreateBill({ removePane, targetKey, code, invoiceNumber, key }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
 
@@ -107,6 +107,69 @@ function CreateBill({ removePane, targetKey }) {
     status: "DANG_SU_DUNG",
   };
 
+  useEffect(() => {
+    var newProduct = products.map((product) => ({
+      idProduct: product.idProduct,
+      size: product.nameSize,
+      quantity: product.quantity,
+      price: product.price,
+    }));
+    var newVoucher = [];
+    if (voucher.idVoucher != "") {
+      newVoucher.push(voucher);
+    }
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.totalMoney;
+    }, 0);
+    var addressuser = "";
+    if (!checkNotEmptyAddress() && isOpenDelivery) {
+      addressuser =
+        address.detail +
+        ", " +
+        address.wards +
+        ", " +
+        address.district +
+        ", " +
+        address.city;
+    }
+    var idAccount = "";
+    if (user != null) {
+      idAccount = user.idAccount;
+    }
+    var typeBill = "OFFLINE";
+    // if (isOpenDelivery) {
+    //   typeBill = "ONLINE";
+    // }
+    var statusPayMents = "THANH_TOAN";
+    if (traSau) {
+      statusPayMents = "TRA_SAU";
+    }
+    var data = {
+      phoneNumber: billRequest.phoneNumber,
+      address: addressuser,
+      userName: billRequest.userName,
+      itemDiscount: voucher.discountPrice,
+      totalMoney: totalBill,
+      note: billRequest.note,
+      statusPayMents: statusPayMents,
+      typeBill: typeBill,
+      moneyShip: shipFee,
+      billDetailRequests: newProduct,
+      paymentsMethodRequests: dataPayment,
+      vouchers: newVoucher,
+      idUser: idAccount,
+      deliveryDate: dayShip,
+      code: billRequest.code,
+      openDelivery: isOpenDelivery,
+    };
+         BillApi.updateBillWait(data).then((res) => {
+          console.log(res.data.data)
+    });
+  }, [key]);
+
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
   };
@@ -147,17 +210,17 @@ function CreateBill({ removePane, targetKey }) {
     loadData();
     loadDataProvince();
     dispatch(addUserBillWait(null));
-    BillApi.getCodeBill().then((res) => {
-      setBillRequest({ ...billRequest, code: res.data.data });
-      setDataPayMentVnpay({
-        vnp_TransactionStatus: "00",
-        vnp_TxnRef: res.data.data,
-      });
-      setDataPayMentVnpayError({
-        vnp_TransactionStatus: "01",
-        vnp_TxnRef: res.data.data,
-      })
+    console.log(code);
+    setBillRequest({ ...billRequest, code: code });
+    setDataPayMentVnpay({
+      vnp_TransactionStatus: "00",
+      vnp_TxnRef: code,
     });
+    setDataPayMentVnpayError({
+      vnp_TransactionStatus: "01",
+      vnp_TxnRef: code,
+    });
+    // });
   }, []);
 
   const loadData = () => {
@@ -461,22 +524,24 @@ function CreateBill({ removePane, targetKey }) {
       //  vnp_TransactionStatus: "00", vnp_TxnRef: billRequest.code
       //  }
       if (dataPayMent != undefined) {
-        if(JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpay)){
-            var data = {
-              actionDescription: "",
-              method: "CHUYEN_KHOAN",
-              totalMoney: totalMoneyPayMent,
-              status: "THANH_TOAN",
-            };
-            setDataPayMent([...dataPayment, data]);
-            setTotalMoneyPayment("");
-            form.resetFields();
-            setPayMentVnPay(false);
-            localStorage.setItem("parameters", "");
-          }else if(JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpayError)){
-            setPayMentVnPay(false);
-            localStorage.setItem("parameters", "");
-          }
+        if (JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpay)) {
+          var data = {
+            actionDescription: "",
+            method: "CHUYEN_KHOAN",
+            totalMoney: totalMoneyPayMent,
+            status: "THANH_TOAN",
+          };
+          setDataPayMent([...dataPayment, data]);
+          setTotalMoneyPayment("");
+          form.resetFields();
+          setPayMentVnPay(false);
+          localStorage.setItem("parameters", "");
+        } else if (
+          JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpayError)
+        ) {
+          setPayMentVnPay(false);
+          localStorage.setItem("parameters", "");
+        }
         localStorage.setItem("parameters", "");
       }
       // setPayMentVnPay(false);
@@ -667,7 +732,7 @@ function CreateBill({ removePane, targetKey }) {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
-                  if (targetKey == undefined) {
+                  if (targetKey == undefined || invoiceNumber == 1) {
                     setProducts([]);
                     form.resetFields();
                     setBillRequest({
@@ -1015,7 +1080,8 @@ function CreateBill({ removePane, targetKey }) {
             nameSize: res.data.data.nameSize,
             idProduct: res.data.data.id,
             quantity: 1,
-            price: res.data.data.price * (100 - res.data.data.promotion)/100,
+            price:
+              (res.data.data.price * (100 - res.data.data.promotion)) / 100,
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
           };

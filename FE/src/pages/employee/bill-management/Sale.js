@@ -32,20 +32,42 @@ function Sale() {
     setActiveKey(key);
   };
   useEffect( () => {
-     BillApi.getCodeBill().then((res) => {
-      const newActiveKey = `Hóa đơn ${newTabIndex.current}`;
-      setItems([
-        ...items,
-        {
-          label: `Hóa đơn ${newTabIndex.current++}`,
-          children: <CreateBill code={res.data.data.code} key={activeKey} invoiceNumber={invoiceNumber} style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
-          key: newActiveKey,
-        },
-      ]);
-      dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`))
-      setActiveKey(newActiveKey);
-      setInvoiceNumber(invoiceNumber + 1)
-    });
+     BillApi.fetchAllBillAtCounter().then((res) =>{
+      setInvoiceNumber(res.data.data.length)
+      if(res.data.data.length < 0){
+        BillApi.getCodeBill().then((res) => {
+          const newActiveKey = `Hóa đơn ${newTabIndex.current}`;
+          setItems([
+            ...items,
+            {
+              label: `Hóa đơn ${newTabIndex.current++}`,
+              children: <CreateBill code={res.data.data.code} key={activeKey} invoiceNumber={invoiceNumber} style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
+              key: newActiveKey,
+            },
+          ]);
+          dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`))
+          setActiveKey(newActiveKey);
+          setInvoiceNumber(invoiceNumber + 1)
+        });
+      }else{
+        new Array(res.data.data).fill(null).map((item, index) => {
+          const id = String(index + 1);
+          const newActiveKey = `Hóa đơn ${newTabIndex.current}`;
+          setItems([
+            ...items,
+            {
+              label: `Hóa đơn ${newTabIndex.current++}`,
+              children: <CreateBill code={item.code} key={activeKey}  invoiceNumber={invoiceNumber} style={{ width: "100%" }} removePane={remove} targetKey={newTabIndex}/>,
+              key: newActiveKey,
+            },
+          ]);
+          dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`))
+          setActiveKey(newActiveKey);
+          setInvoiceNumber(invoiceNumber + 1)
+        });
+      }
+    })
+    
    
    
   },[])

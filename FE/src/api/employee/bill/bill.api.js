@@ -58,6 +58,15 @@ export class BillApi {
       });
     };
 
+    static updateBillWait = ( data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/update-bill-wait`,
+        data: data,
+      });
+    };
+
+
     static changeCancelStatusBill = (id, data) => {
       return request({
         method: "PUT",
