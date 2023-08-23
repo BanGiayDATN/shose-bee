@@ -54,10 +54,9 @@ import { ProducDetailtApi } from "../../../api/employee/product-detail/productDe
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { Navigate } from "react-router-dom";
 
-function CreateBill({ removePane, targetKey, code, invoiceNumber, key }) {
+function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
-
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -108,66 +107,65 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key }) {
   };
 
   useEffect(() => {
-    var newProduct = products.map((product) => ({
-      idProduct: product.idProduct,
-      size: product.nameSize,
-      quantity: product.quantity,
-      price: product.price,
-    }));
-    var newVoucher = [];
-    if (voucher.idVoucher != "") {
-      newVoucher.push(voucher);
+    if(key){
+      var newProduct = products.map((product) => ({
+        idProduct: product.idProduct,
+        size: product.nameSize,
+        quantity: product.quantity,
+        price: product.price,
+      }));
+      var newVoucher = [];
+      if (voucher.idVoucher != "") {
+        newVoucher.push(voucher);
+      }
+      var totalBill = products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0);
+      var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.totalMoney;
+      }, 0);
+      var addressuser = "";
+      if (!checkNotEmptyAddress() && isOpenDelivery) {
+        addressuser =
+          address.detail +
+          ", " +
+          address.wards +
+          ", " +
+          address.district +
+          ", " +
+          address.city;
+      }
+      var idAccount = "";
+      if (user != null) {
+        idAccount = user.idAccount;
+      }
+      var typeBill = "OFFLINE";
+      var statusPayMents = "THANH_TOAN";
+      if (traSau) {
+        statusPayMents = "TRA_SAU";
+      }
+      var data = {
+        phoneNumber: billRequest.phoneNumber,
+        address: addressuser,
+        userName: billRequest.userName,
+        itemDiscount: voucher.discountPrice,
+        totalMoney: totalBill,
+        note: billRequest.note,
+        statusPayMents: statusPayMents,
+        typeBill: typeBill,
+        moneyShip: shipFee,
+        billDetailRequests: newProduct,
+        paymentsMethodRequests: dataPayment,
+        vouchers: newVoucher,
+        idUser: idAccount,
+        deliveryDate: dayShip,
+        code: code,
+        openDelivery: isOpenDelivery,
+      };
+           BillApi.updateBillWait(data).then((res) => {
+            console.log(res.data.data)
+      });
     }
-    var totalBill = products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
-    }, 0);
-    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.totalMoney;
-    }, 0);
-    var addressuser = "";
-    if (!checkNotEmptyAddress() && isOpenDelivery) {
-      addressuser =
-        address.detail +
-        ", " +
-        address.wards +
-        ", " +
-        address.district +
-        ", " +
-        address.city;
-    }
-    var idAccount = "";
-    if (user != null) {
-      idAccount = user.idAccount;
-    }
-    var typeBill = "OFFLINE";
-    // if (isOpenDelivery) {
-    //   typeBill = "ONLINE";
-    // }
-    var statusPayMents = "THANH_TOAN";
-    if (traSau) {
-      statusPayMents = "TRA_SAU";
-    }
-    var data = {
-      phoneNumber: billRequest.phoneNumber,
-      address: addressuser,
-      userName: billRequest.userName,
-      itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
-      note: billRequest.note,
-      statusPayMents: statusPayMents,
-      typeBill: typeBill,
-      moneyShip: shipFee,
-      billDetailRequests: newProduct,
-      paymentsMethodRequests: dataPayment,
-      vouchers: newVoucher,
-      idUser: idAccount,
-      deliveryDate: dayShip,
-      code: billRequest.code,
-      openDelivery: isOpenDelivery,
-    };
-         BillApi.updateBillWait(data).then((res) => {
-          console.log(res.data.data)
-    });
   }, [key]);
 
   const ChangeBillRequest = (filleName, value) => {
@@ -221,6 +219,52 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key }) {
       vnp_TxnRef: code,
     });
     // });
+    console.log(code)
+    BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
+       const data = res.data.data.map((item) => {
+        return {
+          image: item.image,
+          productName: item.productName,
+          nameSize: item.nameSize,
+          idProduct: item.id,
+          quantity: item.quantity,
+          price: item.price ,
+          idSizeProduct: item.id,
+          maxQuantity: item.maxQuantity,
+        };
+       })
+       setProducts(data)
+    });
+    BillApi.fetchDetailBill(id).then((res) => {
+      console.log(res.data.data)
+      setBillRequest(
+        {
+          phoneNumber: res.data.data.phoneNumber,
+          address: res.data.data.address,
+          userName: res.data.data.userName,
+          idUser: res.data.data.account?.id,
+          itemDiscount: res.data.data.itemDiscount,
+          totalMoney: res.data.data.totalMoney,
+          note: res.data.data.note,
+          moneyShip: res.data.data.moneyShip,
+          billDetailRequests: [],
+          vouchers: [],
+          code: res.data.data.code,
+        }
+      )
+    });
+    PaymentsMethodApi.findByIdBill(id).then((res) => {
+      console.log(res.data.data)
+      const data = res.data.data.map((item) => {
+        return {
+          actionDescription: "",
+          method: item.method,
+          totalMoney: item.totalMoney,
+          status: "THANH_TOAN",
+        }
+      })
+      setDataPayMent(data)
+    });
   }, []);
 
   const loadData = () => {
@@ -717,7 +761,7 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key }) {
       vouchers: newVoucher,
       idUser: idAccount,
       deliveryDate: dayShip,
-      code: billRequest.code,
+      code: code,
       openDelivery: isOpenDelivery,
     };
 

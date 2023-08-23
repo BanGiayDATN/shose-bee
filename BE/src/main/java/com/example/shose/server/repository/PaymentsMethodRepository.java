@@ -3,6 +3,7 @@ package com.example.shose.server.repository;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.PaymentsMethod;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,11 +28,13 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,S
             """, nativeQuery = true)
     BigDecimal sumTotalMoneyByIdBill(String idBill);
 
+    @Modifying
     @Query(value = """
              DELETE FROM  payments_method
                    WHERE id_bill = :id
             """, nativeQuery = true)
-    boolean deleteAllByIdBill(@Param("id") String idBill);
+    int deleteAllByIdBill(@Param("id") String idBill);
+
 
     @Query(value = """
              SELECT COUNT(id) FROM payments_method

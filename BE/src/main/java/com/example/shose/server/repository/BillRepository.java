@@ -67,7 +67,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                         LEFT JOIN customer cu ON cu.id = bi.id_customer
                         LEFT JOIN user usac ON usac.id = ac.id_user
                         LEFT JOIN user usem ON usem.id = em.id_user
-            AND bi.type = 'OFFLINE'
+            WHERE bi.type = 'OFFLINE'
             AND bi.status_bill = 'TAO_HOA_DON'
             AND ( :#{#request.key} IS NULL
                      OR :#{#request.key} LIKE ''

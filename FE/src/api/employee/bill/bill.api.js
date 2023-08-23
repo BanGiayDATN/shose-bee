@@ -7,10 +7,10 @@ export class BillApi {
     });
   };
 
-  static fetchAllBillAtCounter = (value) => {
+  static fetchAllBillAtCounter = () => {
     return request({
       method: "GET",
-      url: `/admin/bill/details-invoices-counter?key=`+ value ,
+      url: `/admin/bill/details-invoices-counter` ,
     });
   };
 

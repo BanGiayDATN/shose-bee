@@ -219,11 +219,12 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill CreateCodeBill(String idEmployees) {
         Optional<Account> account = accountRepository.findById(idEmployees);
-        if (account.get().getRoles() == Roles.USER) {
-        }
+//        if (account.get().getRoles() == Roles.USER) {
+//        }
         Bill bill = Bill.builder()
                 .employees(account.get())
                 .typeBill(TypeBill.OFFLINE)
+                .statusBill(StatusBill.TAO_HOA_DON)
                 .code("HD" + RandomStringUtils.randomNumeric(6))
                 .itemDiscount(new BigDecimal("0"))
                 .totalMoney(new BigDecimal("0"))
@@ -244,7 +245,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
-
+        billRepository.save(optional.get());
         billDetailRepository.deleteAllByIdBill(optional.get().getId());
         billHistoryRepository.deleteAllByIdBill(optional.get().getId());
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
