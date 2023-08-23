@@ -11,6 +11,8 @@ import java.util.List;
 public interface GetDetailProductOfClient {
     @Value("#{target.idProduct}")
     String getIdProduct();
+    @Value("#{target.idProductDetail}")
+    String getIdProductDetail();
 
     @Value("#{target.image}")
     String getImage();
@@ -23,12 +25,12 @@ public interface GetDetailProductOfClient {
 
     @Value("#{target.quantity}")
     Integer getQuantity();
-    @Value("#{target.listCodeColor}")
-    String getListCodeColor();
     @Value("#{target.codeColor}")
     String getCodeColor();
 
     @Value("#{target.listNameSize}")
     String getListNameSize();
 
+    @Value("#{target.nameSize}")
+    String getNameSize();
 }

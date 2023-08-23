@@ -8,6 +8,7 @@ import AuthGuard from "./guard/AuthGuard";
 import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
+import Cart from "./pages/customer/cart/Cart";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
@@ -36,6 +37,7 @@ import ModalDetailCustomer from "./pages/employee/customer-management/modal/Moda
 import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 import loading from "./../src/assets/images/s_discount_icon.png";
+import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
 import LoginManagement from "./pages/employee/login-management/LoginManagement";
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -77,6 +79,16 @@ function App() {
               </GuestGuard>
             }
           />
+            <Route
+            path="/cart"
+            element={
+              <GuestGuard>
+                <DashBoardCustomer>
+                  <Cart />
+                </DashBoardCustomer>
+              </GuestGuard>
+            }
+          />
           <Route
             path="/login-management"
             element={
@@ -91,6 +103,16 @@ function App() {
               <AuthGuard>
                 <DashBoardEmployee>
                   <BillManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/payment/payment-success"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <PayMentSuccessful />
                 </DashBoardEmployee>
               </AuthGuard>
             }
@@ -335,6 +357,7 @@ function App() {
               </AuthGuard>
             }
           />
+          
         </Routes>
       </BrowserRouter>
       <ToastContainer />

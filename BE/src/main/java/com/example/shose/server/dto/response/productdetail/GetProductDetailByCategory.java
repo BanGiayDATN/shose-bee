@@ -15,6 +15,8 @@ public interface GetProductDetailByCategory {
 
     @Value("#{target.codeColor}")
     String getCodeColor();
+    @Value("#{target.nameSize}")
+    String getNameSize();
     @Value("#{target.image}")
     String getImage();
 

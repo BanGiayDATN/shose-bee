@@ -21,7 +21,7 @@ import "./style-bill.css";
 import { useSelector } from "react-redux";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { FaShoppingBag } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { CiDeliveryTruck } from "react-icons/ci";
@@ -45,7 +45,7 @@ import "react-toastify/dist/ReactToastify.css";
 import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
 import { set } from "lodash";
-import { Center } from "@chakra-ui/react";
+import { Center, useInterval } from "@chakra-ui/react";
 import NumberFormat from "react-number-format";
 import { MdOutlinePayment } from "react-icons/md";
 import ModalQRScanner from "../product-management/modal/ModalQRScanner";
@@ -149,6 +149,14 @@ function CreateBill({ removePane, targetKey }) {
     dispatch(addUserBillWait(null));
     BillApi.getCodeBill().then((res) => {
       setBillRequest({ ...billRequest, code: res.data.data });
+      setDataPayMentVnpay({
+        vnp_TransactionStatus: "00",
+        vnp_TxnRef: res.data.data,
+      });
+      setDataPayMentVnpayError({
+        vnp_TransactionStatus: "01",
+        vnp_TxnRef: res.data.data,
+      })
     });
   }, []);
 
@@ -437,11 +445,44 @@ function CreateBill({ removePane, targetKey }) {
   // begin modal thanh toán
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
   const [dataPayment, setDataPayMent] = useState([]);
+  const [payMentVnPay, setPayMentVnPay] = useState(false);
+  const [dataPaymentVnpay, setDataPayMentVnpay] = useState({});
+  const [dataPaymentVnpayError, setDataPayMentVnpayError] = useState({});
   useEffect(() => {
     if (data != null) {
       setListaccount(data);
     }
   }, [data]);
+
+  useInterval(() => {
+    if (payMentVnPay) {
+      var dataPayMent = localStorage.getItem("parameters");
+      //  var dataPaymentVnpay ={
+      //  vnp_TransactionStatus: "00", vnp_TxnRef: billRequest.code
+      //  }
+      if (dataPayMent != undefined) {
+        if(JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpay)){
+            var data = {
+              actionDescription: "",
+              method: "CHUYEN_KHOAN",
+              totalMoney: totalMoneyPayMent,
+              status: "THANH_TOAN",
+            };
+            setDataPayMent([...dataPayment, data]);
+            setTotalMoneyPayment("");
+            form.resetFields();
+            setPayMentVnPay(false);
+            localStorage.setItem("parameters", "");
+          }else if(JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpayError)){
+            setPayMentVnPay(false);
+            localStorage.setItem("parameters", "");
+          }
+        localStorage.setItem("parameters", "");
+      }
+      // setPayMentVnPay(false);
+    }
+    // const subscription = window.addEventListener("payment/success", () => {
+  }, 3000);
 
   const [totalMoneyPayMent, setTotalMoneyPayment] = useState(0);
   const [traSau, setTraSau] = useState(false);
@@ -470,18 +511,18 @@ function CreateBill({ removePane, targetKey }) {
     }
   };
   const formRef = React.useRef(null);
+
   const addPayMent = (e, method) => {
     if (method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000) {
       const data = {
         vnp_Ammount: totalMoneyPayMent,
         vnp_TxnRef: billRequest.code,
       };
-      console.log(data);
       PaymentsMethodApi.paymentVnpay(data).then((res) => {
+        setPayMentVnPay(true);
         window.open(res.data.data);
       });
-    }
-    if (totalMoneyPayMent >= 1000) {
+    } else if (totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
         method: method,
@@ -552,6 +593,10 @@ function CreateBill({ removePane, targetKey }) {
   };
   // enad modal thanh toán
 
+  const openDelivery = (e) => {
+    setShipFee(0);
+    setIsOpenDelivery(!isOpenDelivery);
+  };
   const orderBill = (e) => {
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
@@ -608,6 +653,7 @@ function CreateBill({ removePane, targetKey }) {
       idUser: idAccount,
       deliveryDate: dayShip,
       code: billRequest.code,
+      openDelivery: isOpenDelivery,
     };
 
     if (isOpenDelivery) {
@@ -2051,7 +2097,7 @@ function CreateBill({ removePane, targetKey }) {
                 <Switch
                   defaultChecked={isOpenDelivery}
                   onChange={(e) => {
-                    setIsOpenDelivery(!isOpenDelivery);
+                    openDelivery(e);
                   }}
                 />
               </Col>
@@ -2415,7 +2461,7 @@ function CreateBill({ removePane, targetKey }) {
                         height: "37px",
                       }}
                       customInput={Input}
-                      // defaultValue={totalMoneyPayMent}
+                      value={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))

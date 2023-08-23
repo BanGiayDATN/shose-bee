@@ -148,7 +148,7 @@ public class BillServiceImpl implements BillService {
         if(!request.getDeliveryDate().isEmpty()){
             bill.setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
-        if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE){
+        if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE || !request.isOpenDelivery()){
             bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
             billRepository.save(bill);
             billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());

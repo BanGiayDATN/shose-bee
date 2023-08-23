@@ -346,7 +346,10 @@ const ModalCreateCustomer = () => {
                         required: true,
                         message: "Vui lòng nhập số CCCD",
                       },
-                      { max: 12, message: "Số CCCD tối đa 12 ký tự" },
+                      {
+                        pattern: /^\d{12}$/,
+                        message: "Số CCCD phải gồm 12 chữ số",
+                      },
                     ]}
                   >
                     <Input className="input-item" placeholder="CCCD" />
