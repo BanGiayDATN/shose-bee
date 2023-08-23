@@ -237,21 +237,22 @@ const ModalCreateCustomer = () => {
           <div>
             <h1
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                // display: "flex",
+                // alignItems: "center",
+                // justifyContent: "center",
                 marginTop: "50px",
                 marginBottom: "50px",
                 fontSize: "20px",
+                marginLeft: "31%",
               }}
             >
               Ảnh đại diện
             </h1>
             {/* ... */}
             <Row>
-              <Col span={3}></Col>
-              <Col span={7}>
-                <div style={{ width: "100%" }}>
+              <Col span={1}></Col>
+              <Col span={12}>
+                <div style={{ marginLeft: "20%" }}>
                   <Upload
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                     listType="picture-circle"
