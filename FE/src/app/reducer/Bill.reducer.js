@@ -7,7 +7,8 @@ const billSlice = createSlice({
       value: [],
     },
     billAtCounter: {
-      value: []
+      value: [],
+      key: '-1',
     },
     search: {
       users: [],
@@ -60,6 +61,9 @@ const billSlice = createSlice({
     addBillAtCounTer:  (state, action) => {
       state.billAtCounter.value.push(action.payload);
     },
+    updateKeyBillAtCounter:  (state, action) => {
+      state.billAtCounter.key = (action.payload);
+    },
     deletebillWait: (state, action) => {
       state.search.users = [];
     },
@@ -107,7 +111,8 @@ export const {
   addUserBillWait,
   addVoucherBillWait,
   getAllBillAtCounter,
-  addProductInBillDetail
+  addProductInBillDetail,
+  updateKeyBillAtCounter
 } = billSlice.actions;
 export default billSlice.reducer;
 export const GetBill = (state) => state.bill;

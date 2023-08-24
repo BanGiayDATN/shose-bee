@@ -1,6 +1,6 @@
 import { Button, Col, Row, Table, Tabs } from "antd";
 import Search from "antd/es/input/Search";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import { useAppDispatch } from "../../../app/hook";
 import {
   addBillAtCounTer,
   getAllBillAtCounter,
+  updateKeyBillAtCounter,
 } from "../../../app/reducer/Bill.reducer";
 import moment from "moment";
 import CreateBill from "./CreateBill";
@@ -19,16 +20,17 @@ function Sale() {
   const [invoiceNumber, setInvoiceNumber] = useState(0);
 
   const [activeKey, setActiveKey] = useState(0);
-  const [changeTab, setChangTab] = useState(false);
+  const [changeTab, setChangTab] = useState();
   const [items, setItems] = useState([]);
   const newTabIndex = useRef(1);
   const dispatch = useAppDispatch();
 
   const onChange = (key) => {
-    
     setActiveKey(key);
-    setChangTab(true);
+    setChangTab(key);
+    dispatch(updateKeyBillAtCounter(key))
   };
+
   useEffect(() => {
     BillApi.fetchAllBillAtCounter().then((res) => {
       setInvoiceNumber(res.data.data.length);
@@ -113,8 +115,9 @@ function Sale() {
         ]);
         dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`));
         setActiveKey(newActiveKey);
-        setChangTab(true);
+        setChangTab(newActiveKey);
         setInvoiceNumber(invoiceNumber + 1);
+        dispatch(updateKeyBillAtCounter(newActiveKey))
       });
     }
   };
@@ -130,9 +133,11 @@ function Sale() {
             targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
           ];
         setActiveKey(key);
+        setChangTab(key);
+        dispatch(updateKeyBillAtCounter(key))
       }
       setItems(newPanes);
-      setChangTab(true);
+      
       setInvoiceNumber(invoiceNumber - 1);
     } else {
     }
@@ -179,3 +184,5 @@ function Sale() {
 }
 
 export default Sale;
+
+

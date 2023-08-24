@@ -163,15 +163,17 @@ public class BillServiceImpl implements BillService {
         }
 
         request.getPaymentsMethodRequests().forEach(item -> {
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                    .method(item.getMethod())
-                    .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                    .employees(optional.get().getEmployees())
-                    .totalMoney(item.getTotalMoney())
-                    .description(item.getActionDescription())
-                    .bill(optional.get())
-                    .build();
-            paymentsMethodRepository.save(paymentsMethod);
+            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN){
+                PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                        .method(item.getMethod())
+                        .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                        .employees(optional.get().getEmployees())
+                        .totalMoney(item.getTotalMoney())
+                        .description(item.getActionDescription())
+                        .bill(optional.get())
+                        .build();
+                paymentsMethodRepository.save(paymentsMethod);
+            }
         });
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {
@@ -229,7 +231,9 @@ public class BillServiceImpl implements BillService {
                 .itemDiscount(new BigDecimal("0"))
                 .totalMoney(new BigDecimal("0"))
                 .moneyShip(new BigDecimal("0")).build();
-        return billRepository.save(bill) ;
+        billRepository.save(bill) ;
+        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(bill.getEmployees()).build());
+        return bill;
     }
 
     @Override
@@ -247,7 +251,6 @@ public class BillServiceImpl implements BillService {
         optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
         billRepository.save(optional.get());
         billDetailRepository.deleteAllByIdBill(optional.get().getId());
-        billHistoryRepository.deleteAllByIdBill(optional.get().getId());
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
@@ -263,17 +266,18 @@ public class BillServiceImpl implements BillService {
         }
              optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         request.getPaymentsMethodRequests().forEach(item -> {
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                    .method(item.getMethod())
-                    .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                    .employees(optional.get().getEmployees())
-                    .totalMoney(item.getTotalMoney())
-                    .description(item.getActionDescription())
-                    .bill(optional.get())
-                    .build();
-            paymentsMethodRepository.save(paymentsMethod);
+            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN){
+                PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                        .method(item.getMethod())
+                        .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                        .employees(optional.get().getEmployees())
+                        .totalMoney(item.getTotalMoney())
+                        .description(item.getActionDescription())
+                        .bill(optional.get())
+                        .build();
+                paymentsMethodRepository.save(paymentsMethod);
+            }
         });
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {

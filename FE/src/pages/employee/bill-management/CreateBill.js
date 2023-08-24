@@ -57,6 +57,7 @@ import { Navigate } from "react-router-dom";
 function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
+  const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -105,9 +106,10 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
   const initialValues = {
     status: "DANG_SU_DUNG",
   };
-
+ 
   useEffect(() => {
-    if(key){
+    if(keyTab != '-1'){
+      console.log("update bill")
       var newProduct = products.map((product) => ({
         idProduct: product.idProduct,
         size: product.nameSize,
@@ -162,11 +164,12 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
         code: code,
         openDelivery: isOpenDelivery,
       };
-           BillApi.updateBillWait(data).then((res) => {
-            console.log(res.data.data)
+      BillApi.updateBillWait(data).then((res) => {
+        console.log(res.data.data)
       });
     }
-  }, [key]);
+    console.log("update bill");
+  }, [keyTab]);
 
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
