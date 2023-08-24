@@ -10,11 +10,13 @@ function HeaderMenu() {
   const [isOptionVisible, setOptionVisible] = useState(false);
   const [modal, setModal] = useState(false);
   const [activeField, setActiveField] = useState("");
-
+  const idAccountLocal = localStorage.getItem("idAccount");
+  const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
   const fields = [
     {
       className: "title-menu",
       title: "TRANG CHỦ",
+      href:"/home"
     },
     {
       className: "title-menu",
@@ -53,7 +55,6 @@ function HeaderMenu() {
       console.log(modal);
     } else {
       setModal(true);
-      //  window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn trang lên đầu
       console.log(modal);
     }
   };
@@ -63,8 +64,8 @@ function HeaderMenu() {
   };
 
   return (
-    <div>
-      <div className="menu">
+    <div className="menu">
+      <div className="menu-content">
         <div className="logo-menu">
           <Link to="/home">
             {" "}
@@ -74,6 +75,7 @@ function HeaderMenu() {
         <div className="space-menu">
           {fields.map((field, index) => {
             return (
+              
               <div
                 key={index}
                 className={field.className}
@@ -83,7 +85,7 @@ function HeaderMenu() {
                 {field.option ? (
                   field.title
                 ) : (
-                  <Link className="link-menu" to={"/a"}>
+                  <Link className="link-menu" to={field.href}>
                     {field.title}
                   </Link>
                 )}
@@ -111,10 +113,10 @@ function HeaderMenu() {
        |
     
        <div > 
-       <Link >
-       <Badge size="small" count={5}  style={{ backgroundColor:"#ff4400", fontSize: '10px' }}>
+       <Link to="/cart">
+       <Badge size="small" count= {!idAccountLocal ?initialCartLocal.length :5}  style={{ backgroundColor:"#ff4400", fontSize: '10px' }}>
        <ShoppingCartOutlined className="cart-menu" style={{ fontSize: '20px' }}/>
-    </Badge>
+       </Badge>
       
         </Link>
         </div>

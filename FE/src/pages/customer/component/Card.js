@@ -3,45 +3,113 @@ import { Link } from "react-router-dom";
 import "./style-card.css";
 import { Card, Modal, Row, Col, Button, InputNumber } from "antd";
 import { toast } from "react-toastify";
+import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
-function CardItem({ item, index }) {
+function CardItem({
+  item,
+  index
+}) {
   const [hovered, setHovered] = useState(false);
   const [modal, setModal] = useState(false);
+  const [clickedIndex, setClickedIndex] = useState(-1);
+
+
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProduct: "",
+    idProductDetail:"",
     image: "",
-    listIdColor: "",
-    listCodeColor: "",
+    nameSize: "",
     listNameSize: "",
     nameProduct: "",
     price: 0,
     quantity: 0,
   });
-  const [formAdd, setFormAdd] = useState({
-    // idProduct:"",
-    // codeColor:"",
-    // nameSize:""
-  });
-  const [clickedIndex, setClickedIndex] = useState(-1);
 
-  const handleSizeClick = (index, nameSize) => {
-    setFormAdd((prevFormAdd) => ({
-      ...prevFormAdd,
-      nameSize: nameSize,
-    }));
-    setClickedIndex(index);
+  const idAccountLocal = localStorage.getItem("idAccount");
+  const [quantity, setQuantity] = useState(1);
+  const [cartAccount,setCartAccount] = useState([]);
+  const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
+
+  const [cartLocal, setCartLocal] = useState(initialCartLocal);
+
+  useEffect(() => {
+    localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
+  }, [cartLocal]);
+
+
+
+
+  const addToCard = () => {
+    if (!idAccountLocal) {
+      const newCartItem = {
+        idProductDetail: detailProduct.idProductDetail,
+        name: detailProduct.nameProduct,
+        image: detailProduct.image,
+        price: detailProduct.price,
+        quantity: quantity,
+        idProduct:detailProduct.idProduct,
+        codeColor:detailProduct.codeColor
+      };
+      
+     
+        setCartLocal((prev) => {
+          console.log(cartLocal);
+          const exists = prev.find(item =>item.idProductDetail === newCartItem.idProductDetail); 
+        if (!exists) {
+          console.log("mới");
+          return [...prev, newCartItem];
+        }else{
+          console.log("trùng");
+          return prev.map(item => 
+            item.idProductDetail === newCartItem.idProductDetail
+              ? { ...item, quantity: item.quantity + newCartItem.quantity} 
+              : item
+          );
+        }
+        
+      });
+      window.location.href = "/cart"
+      toast.success("Add cart không login", {
+        autoClose: 3000,
+      });  
+     
+    } else {
+
+      
+      const newCartItem = {
+        idAccount:idAccountLocal,
+        idProductDetail: detailProduct.idProductDetail,
+        price: detailProduct.price,
+        quantity: quantity
+      };
+
+        CartClientApi.addCart(newCartItem).then(
+          (res) => {
+            console.log(res.data.data);
+            // setListProductDetailByCategory(res.data.data);
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+        window.location.href = "/cart"
+      toast.success("Add cart có login!", {
+        autoClose: 3000,
+      });
+    }
   };
-  useEffect(() => {
-    console.log(detailProduct);
-  }, [detailProduct]);
-  useEffect(() => {
-    console.log(formAdd);
-  }, [formAdd]);
-  const getDetailProduct = (idProduct, idColor) => {
-    ProductDetailClientApi.getDetailProductOfClient(idProduct, idColor).then(
+
+  const getDetailProduct = (idProduct, idColor, nameSize) => {
+    // console.log(detailProduct);
+    ProductDetailClientApi.getDetailProductOfClient(
+      idProduct,
+      idColor,
+      nameSize
+    ).then(
       (res) => {
-        setDetailProduct( res.data.data);
+        console.log(res.data.data);
+        setDetailProduct(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -49,31 +117,21 @@ function CardItem({ item, index }) {
     );
     setModal(true);
   };
-  const addToCard = () => {
-    if (!formAdd.nameSize) {
-      toast.success("Chưa chọn size ạ?", {
-        autoClose: 3000,
-      });
-    } else {
-      toast.success("Love you so much!", {
-        autoClose: 3000,
-      });
-    }
+  const handleSizeClick = (index, idProduct, codeColor, nameSize) => {
+    getDetailProduct(idProduct, codeColor, nameSize);
+    setClickedIndex(index);
   };
-  const handleClickDetail = (idProduct, codeColor) => {
+
+  const handleClickDetail = (idProduct, codeColor, nameSize) => {
     setClickedIndex(-1);
-    setFormAdd({});
-    setFormAdd((prevFormAdd) => ({
-      ...prevFormAdd,
-      idProduct: idProduct,
-      codeColor: codeColor,
-    }));
-    getDetailProduct(idProduct, codeColor);
+    getDetailProduct(idProduct, codeColor, nameSize);
   };
   const closeModal = () => {
     setModal(false);
     setClickedIndex(-1);
+    setQuantity(1);
   };
+
   const formatMoney = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
   };
@@ -100,7 +158,12 @@ function CardItem({ item, index }) {
               </p>
             )}
             <img className="image-product" src={item.image} alt="..." />
-            <p className="name-product">{item.nameProduct}</p>
+            <div>
+              <p className="name-product">
+                {item.nameProduct}
+                {/* - [{item.nameSize}] */}
+              </p>
+            </div>
             <p className="price-product">{formatMoney(item.price)}</p>
           </Link>
         </Card>
@@ -110,7 +173,7 @@ function CardItem({ item, index }) {
           onMouseEnter={handleButtonMouseEnter}
           onMouseLeave={handleButtonMouseLeave}
           onClick={() => {
-            handleClickDetail(item.idProduct, item.codeColor);
+            handleClickDetail(item.idProduct, item.codeColor, item.nameSize);
           }}
         >
           Mua ngay
@@ -147,29 +210,16 @@ function CardItem({ item, index }) {
                 </div>
                 <div>Màu:</div>
                 <div className="list-color-detail">
-                  {detailProduct.listCodeColor
-                    .split(",")
-                    .sort((a, b) => {
-                      if (a === detailProduct.codeColor) {
-                        return -1;
-                      } else if (b === detailProduct.codeColor) {
-                        return 1;
-                      } else {
-                        return 0;
-                      }
-                    })
-                    .map((codeColor, index) => (
-                      <p
-                        className="color-product"
-                        key={index}
-                        style={{
-                          backgroundColor: codeColor.replace("%23", "#"),
-                        }}
-                        onClick={() => {
-                          handleClickDetail(detailProduct.idProduct, codeColor);
-                        }}
-                      ></p>
-                    ))}
+                  <div
+                    className="color-product"
+                    key={index}
+                    style={{
+                      backgroundColor: detailProduct.codeColor.replace(
+                        "%23",
+                        "#"
+                      ),
+                    }}
+                  ></div>
                 </div>
               </div>
 
@@ -182,26 +232,41 @@ function CardItem({ item, index }) {
                   {detailProduct.listNameSize
                     .split(",")
                     .sort()
-                    .map((item, index) => (
+                    .map((nameSize, index) => (
                       <div
                         className={`size-product ${
                           clickedIndex === index ? "clicked" : ""
                         }`}
                         key={index}
                         tabIndex="0"
-                        onClick={() => handleSizeClick(index, item)}
+                        onClick={() =>
+                          handleSizeClick(
+                            index,
+                            item.idProduct,
+                            item.codeColor,
+                            nameSize
+                          )
+                        }
+                        style={
+                          nameSize !== detailProduct.nameSize
+                            ? {}
+                            : { border: "1px solid black" }
+                        }
                       >
-                        {item}
+                        {nameSize}
                       </div>
                     ))}
                 </div>
               </div>
               <div className="add-to-card">
                 <InputNumber
-                  className="input-quantity"
+                  className="input-quantity-card"
+                  name="quantity"
                   type="number"
-                  min={1}
-                  defaultValue={1}
+                  value={quantity}
+                  // defaultValue="1"
+                  min="1"
+                  onChange={(value) => setQuantity(value)}
                 ></InputNumber>
                 <div className="button-add-to-card" onClick={addToCard}>
                   Thêm vào Giỏ hàng

@@ -19,6 +19,9 @@ function SalesHeader() {
   const [openInfor, setOpenInfo] = useState(false);
 
   useEffect(() => {
+    localStorage.setItem("idAccount", "");
+  }, []);
+  useEffect(() => {
     console.log(idUser);
   }, [idUser]);
   useEffect(() => {
@@ -27,9 +30,7 @@ function SalesHeader() {
   useEffect(() => {
     console.log(listAccount);
   }, [listAccount]);
-  useEffect(() => {
-  
-  }, [openInfor]);
+  useEffect(() => {}, [openInfor]);
   useEffect(() => {
     getAllAccount();
   }, []);
@@ -66,7 +67,7 @@ function SalesHeader() {
     console.log(formLogin);
     const matchedAccount = listAccount.find(
       (item) =>
-        item.email === formLogin.email && item.password === formLogin.password  
+        item.email === formLogin.email && item.password === formLogin.password
     );
 
     if (matchedAccount) {
@@ -81,12 +82,12 @@ function SalesHeader() {
         autoClose: 1000,
       });
     }
-   
   };
-  const logout = ()=>{
-    setIdUser("")
+  const logout = () => {
+    setIdUser("");
     setFormLogin({});
-  }
+    localStorage.removeItem("idAccount");
+  };
 
   const fieldsLogin = [
     {
@@ -122,7 +123,11 @@ function SalesHeader() {
           ? openModalLogin
           : [
               { title: "Thông tin", act: "", className: "title-option-info" },
-              { title: "Đăng xuất", act: logout, className: "title-option-info" },
+              {
+                title: "Đăng xuất",
+                act: logout,
+                className: "title-option-info",
+              },
             ],
     },
   ];
@@ -137,31 +142,34 @@ function SalesHeader() {
                 {field.title}
               </Link>
             ) : (
-               <div
-                  className={field.className}
-                  onClick={idUser === "" ? field.form : undefined}
-                  onMouseEnter={handleMenuHover}
-                  onMouseLeave={handleMenuLeave}
-                >
-                  <span className={field.classIcon}>{field.icon}  {field.title}</span>
-                 
-                  {openInfor && idUser !== "" && (
+              <div
+                className={field.className}
+                onClick={idUser === "" ? field.form : undefined}
+                onMouseEnter={handleMenuHover}
+                onMouseLeave={handleMenuLeave}
+              >
+                <span className={field.classIcon}>
+                  {field.icon} {field.title}
+                </span>
+
+                {openInfor && idUser !== "" && (
                   <Menu className="option-container-infor">
                     {field.form.map((option, index) => (
-                    
-                        // <Link to="/diem" >
-                        <div key={index} className={option.className} onClick={option.act}>
-                          {option.title}
-                        </div>
+                      // <Link to="/diem" >
+                      <div
+                        key={index}
+                        className={option.className}
+                        onClick={option.act}
+                      >
+                        {option.title}
+                      </div>
                       // </Link>
-                       
                     ))}
                   </Menu>
                 )}
-                </div>
+              </div>
             )}
           </div>
-          
         );
       })}
 

@@ -3,7 +3,6 @@ package com.example.shose.server.service;
 import com.example.shose.server.dto.ProductDetailDTO;
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
-import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
@@ -12,6 +11,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.entity.ProductDetail;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -46,7 +46,8 @@ public interface ProductDetailService {
 
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
 
-    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor);
-//    ProductDetail getProductDetailInCart(String idProuct,String codeColor,String nameSize);
+    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor, String nameSize);
 
+//    GetProductDetailInCart getProductDetailInCart()
+List<ProductDetail> listSizeByProductAndColor(String idProduct,String codeColor);
 }

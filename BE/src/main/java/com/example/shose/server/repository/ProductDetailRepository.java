@@ -6,6 +6,7 @@ import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.dto.response.productdetail.GetProductDetailInCart;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -149,6 +150,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             p.id as idProduct,
              pd.id as idProductDetail,
             REPLACE(c.code, '#', '%23') as codeColor,
+             s.name as nameSize,
              i.name as image,
              p.name as nameProduct,
              pd.price as price,
@@ -160,6 +162,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
              LEFT JOIN promotion po on po.id = ppd.id_promotion
              JOIN product p on pd.id_product = p.id
              JOIN color c on c.id = pd.id_color
+              JOIN size s on s.id = pd.id_size
             JOIN category ca on ca.id = pd.id_category
             where ca.id = :id
 
@@ -171,20 +174,13 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
 
             SELECT
             p.id as idProduct,
+            pd.id as idProductDetail,
             GROUP_CONCAT(i.name)as image,
              p.name as nameProduct,
              pd.price as price,
              pd.quantity as quantity,
-             REPLACE(c.code, '#', '%23') as codeColor,
-             (select GROUP_CONCAT(REPLACE(co.code, '#', '%23'))from color co where co.code in( 
-               SELECT c2.code
-                FROM  product p2 
-                JOIN product_detail pd2 ON p2.id = pd2.id_product  
-                JOIN color c2 ON c2.id = pd2.id_color
-              WHERE p2.id = p.id
-                ))
-              as listCodeColor,
-                
+             REPLACE(c.code, '#','%23') as codeColor,
+             s.name as nameSize,
              (select GROUP_CONCAT(s.name) FROM size s WHERE s.name in( 
                SELECT s2.name
                 FROM color c3 
@@ -199,9 +195,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
              JOIN product p on pd.id_product = p.id
              JOIN color c on c.id = pd.id_color
              JOIN size s on s.id = pd.id_size
-            where p.id = :id and c.code = :codeColor
+            where p.id = :id and c.code = :codeColor and s.name =:nameSize
             """, nativeQuery = true)
-    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor);
+
+    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor,@Param("nameSize") String nameSize);
+
+
 
     @Query(value = """
                 SELECT
@@ -239,6 +238,10 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """, nativeQuery = true)
 
     ProductDetailDTOResponse getOneById(@Param("id") String id);
-
+    @Query(value = "select pd.size.name from ProductDetail pd" +
+            " JOIN Product p on p.id = pd.product.id" +
+            " join Color c on c.id = pd.color.id" +
+            " WHERE p.id = :idProduct AND c.code = :codeColor")
+    List<ProductDetail> listSizeByProductAndColor(@Param("idProduct") String idProduct,@Param("codeColor") String codeColor);
 
 }

@@ -13,8 +13,7 @@
     align-items: center;
     width: auto; 
     height: 10%; 
-    /* height: 80px;  */
-    margin-bottom: 5%;
+    margin-bottom: 20%;
     margin-top: 20%; 
 
     transition: all 0.2s; 
@@ -26,5 +25,7 @@
 }
   
 .ant-layout-sider-collapsed .logo {
-    height: 70px; 
+    height:25px; 
 }
+
+
