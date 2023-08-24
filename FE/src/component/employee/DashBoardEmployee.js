@@ -12,14 +12,11 @@ import { Link } from "react-router-dom";
 import Logo from "../../assets/images/logo_admin.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBagShopping,
   faChartLine,
   faDumpsterFire,
-  faFileInvoiceDollar,
   faMoneyBill1Wave,
   faTags,
   faUserGroup,
-  faMap,
   faBoxesPacking,
   faPercent,
 } from "@fortawesome/free-solid-svg-icons";
@@ -65,17 +62,6 @@ const DashBoardEmployee = ({ children }) => {
             }
           >
             <Link to="/dashboard">Thống Kê</Link>
-          </Menu.Item>
-          <Menu.Item
-            key="2"
-            icon={
-              <FontAwesomeIcon
-                icon={faBagShopping}
-                style={{ color: "white" }}
-              />
-            }
-          >
-            <Link to="/product-management">Quản Lý Đơn Hàng</Link>
           </Menu.Item>
           <Menu.Item
             key="3"

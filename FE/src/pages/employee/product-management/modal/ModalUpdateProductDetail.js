@@ -63,7 +63,6 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
     brandId: "",
     QRCode: "",
     sizeId: "",
-    colorId: "",
   });
 
   // lấy đối tượng theo id

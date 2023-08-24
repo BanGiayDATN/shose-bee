@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Table, Col, Select, Row, Slider, Modal, InputNumber } from "antd";
+import {
+  Input,
+  Button,
+  Table,
+  Col,
+  Select,
+  Row,
+  Slider,
+  Modal,
+  InputNumber,
+} from "antd";
 import "./style-product.css";
 import { useAppDispatch, useAppSelector } from "../../../../app/hook";
 import { ToastContainer, toast } from "react-toastify";
@@ -343,30 +353,32 @@ function ModalAddProductDetail({
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
     };
-     dispatch(addProductBillWait(data));
-    console.log("test 1")
+    dispatch(addProductBillWait(data));
+    console.log("test 1");
     console.log(data);
-    setProductSelected(data)
+    setProductSelected(data);
     setIsModalOpen(true);
   };
-  
+
   console.log(productSelected);
   const clearSelectSize = () => {
     setSizes([]);
   };
   const handleOk = (e) => {
     var list = products;
-    var index = list.findIndex((x) => x.idProduct === productSelected.idProduct);
+    var index = list.findIndex(
+      (x) => x.idProduct === productSelected.idProduct
+    );
     if (index == -1) {
-      var data = {...productSelected}
+      var data = { ...productSelected };
       data.quantity = quantity;
       list.push(data);
     } else {
-      var data = {...productSelected}
+      var data = { ...productSelected };
       data.quantity = list[index].quantity + quantity;
       list.splice(index, 1, data);
     }
-    toast.success('thêm thành công', {
+    toast.success("thêm thành công", {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -375,9 +387,9 @@ function ModalAddProductDetail({
       draggable: true,
       progress: undefined,
       theme: "light",
-      });
+    });
     setProducts(list);
-    setQuantity(1)
+    setQuantity(1);
     setIsModalOpen(false);
     // if (sizes.length > 0 && quantity >= 1) {
     //   setIsModalOpen(false);
@@ -600,17 +612,15 @@ function ModalAddProductDetail({
             >
               <Option value="">Tất cả</Option>
               {listColor.map((color, index) => (
-                <Option key={index} value={color}>
+                <Option key={index} value={color.code}>
                   <div
                     style={{
-                      backgroundColor: color,
+                      backgroundColor: color.code,
                       width: "100%",
                       height: "100%",
                       borderRadius: "5px",
                     }}
-                  >
-                    {getColorName(color)}
-                  </div>
+                  ></div>
                 </Option>
               ))}
             </Select>
@@ -682,7 +692,7 @@ function ModalAddProductDetail({
         />
       </div>
       <Modal
-        title= {"Số lượng sản phẩm: " + productSelected.maxQuantity}
+        title={"Số lượng sản phẩm: " + productSelected.maxQuantity}
         width={400}
         open={isModalOpen}
         onOk={(e) => handleOk(e)}
@@ -703,30 +713,31 @@ function ModalAddProductDetail({
           setSelectedSizes={setSizes}
           state={state}
         /> */}
-         <Row style={{ marginTop: "15px", width: "100%" }} justify={"center"}>
-            <Button onClick={handleDecrease} style={{ margin: "0 4px 0 10px" }}>
-              -
-            </Button>
-            <InputNumber
-              min={1}
-              max={productSelected.maxQuantity}
-              value={quantity}
-              defaultValue={quantity}
-              onChange={(value) => {
-                if(value < productSelected.maxQuantity || value != undefined || value > 0){
-                  changeInputNumber(value)
-                }
-                
-              }}
-            />
-            <Button onClick={handleIncrease} style={{ margin: "0 4px 0 4px" }}>
-              +
-            </Button>
-          </Row>
+        <Row style={{ marginTop: "15px", width: "100%" }} justify={"center"}>
+          <Button onClick={handleDecrease} style={{ margin: "0 4px 0 10px" }}>
+            -
+          </Button>
+          <InputNumber
+            min={1}
+            max={productSelected.maxQuantity}
+            value={quantity}
+            defaultValue={quantity}
+            onChange={(value) => {
+              if (
+                value < productSelected.maxQuantity ||
+                value != undefined ||
+                value > 0
+              ) {
+                changeInputNumber(value);
+              }
+            }}
+          />
+          <Button onClick={handleIncrease} style={{ margin: "0 4px 0 4px" }}>
+            +
+          </Button>
+        </Row>
       </Modal>
       {/* end modal payment  */}
-
-    
     </div>
   );
 }
