@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.size.FindSizeRequest;
 import com.example.shose.server.dto.request.size.UpdateSizeRequest;
 import com.example.shose.server.dto.response.SizeResponse;
 import com.example.shose.server.entity.Size;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ public interface SizeService {
 
     List<Size> getAll();
 
-    Size create(final CreateSizeRequest req);
+    Size create(@Valid final CreateSizeRequest req);
 
-    Size update(final UpdateSizeRequest req);
+    Size update(@Valid final UpdateSizeRequest req);
 
     Boolean delete(String id);
 

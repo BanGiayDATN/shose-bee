@@ -10,11 +10,9 @@ const { Option } = Select;
 
 const ModalUpdateCategory = ({ visible, id, onCancel }) => {
   const [form] = Form.useForm();
-  const [category, setCategory] = useState({});
   const dispatch = useAppDispatch();
   const getOne = () => {
     CategoryApi.getOne(id).then((res) => {
-      setCategory(res.data.data);
       form.setFieldsValue(res.data.data);
     });
   };
@@ -25,7 +23,6 @@ const ModalUpdateCategory = ({ visible, id, onCancel }) => {
     }
     form.resetFields();
     return () => {
-      setCategory(null);
       id = null;
     };
   }, [id, visible]);
@@ -34,29 +31,34 @@ const ModalUpdateCategory = ({ visible, id, onCancel }) => {
     form
       .validateFields()
       .then((values) => {
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+          acc[key] =
+            typeof values[key] === "string" ? values[key].trim() : values[key];
+          return acc;
+        }, {});
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có đồng ý cập nhật không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
-            onOk: () => resolve(values),
+            onOk: () => resolve(trimmedValues),
             onCancel: () => reject(),
           });
         });
       })
-      .then((values) => {
-        form.resetFields();
-        CategoryApi.update(id, values).then((res) => {
-          dispatch(UpdateCategory(res.data.data));
-          toast.success("Cập nhật thành công");
-          onCancel();
-        });
-        form.resetFields();
-      })
-      .catch((error) => {
-        toast.error("Cập nhật thất bại");
-        console.log("Validation failed:", error);
+      .then((trimmedValues) => {
+        CategoryApi.update(id, trimmedValues)
+          .then((res) => {
+            dispatch(UpdateCategory(res.data.data));
+            toast.success("Cập nhật thành công");
+            onCancel();
+            form.resetFields();
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+            console.log("Create failed:", error);
+          });
       });
   };
 
@@ -86,6 +88,15 @@ const ModalUpdateCategory = ({ visible, id, onCancel }) => {
           rules={[
             { required: true, message: "Vui lòng nhập tên thể loại" },
             { max: 50, message: "Tên thể loại tối đa 50 ký tự" },
+            {
+              validator: (_, value) => {
+                // Kiểm tra xem giá trị chỉ chứa khoảng trắng
+                if (value && value.trim() === "") {
+                  return Promise.reject("Không được chỉ nhập khoảng trắng");
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input placeholder="Tên thể loại" />

@@ -8,6 +8,7 @@ import com.example.shose.server.dto.response.CustomProductRespone;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.ProductResponse;
 import com.example.shose.server.entity.Product;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -20,9 +21,9 @@ public interface ProductService {
 
     List<String> fillAllByName(String name);
 
-    Product create(final CreateProductRequest req);
+    Product create(@Valid final CreateProductRequest req);
 
-    Product update(final UpdateProductRequest req);
+    Product update(@Valid final UpdateProductRequest req);
 
     Boolean delete(String id);
 

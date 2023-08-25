@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Table,
-  Space,
-  Spin,
-  Col,
-  Slider,
-  Select,
-  Input,
-  Tooltip,
-} from "antd";
+import { Button, Table, Col, Slider, Select, Input, Tooltip } from "antd";
 import "./style-product.css";
 import { useAppDispatch } from "../../../app/hook";
 
@@ -91,10 +81,8 @@ const ProductManagement = () => {
   };
 
   const loadData = () => {
-    console.log(selectedValues);
     ProductApi.fetchAll(selectedValues).then(
       (res) => {
-        console.log(res);
         setListProduct(res.data.data);
         setIsSubmitted(false);
       },
@@ -124,7 +112,6 @@ const ProductManagement = () => {
     setIsSubmitted(true);
     loadData();
   }, [selectedValues]);
-  
 
   const getRowClassName = (record, index) => {
     return index % 2 === 0 ? "even-row" : "odd-row";

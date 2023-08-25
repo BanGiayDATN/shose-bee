@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.brand.FindBrandRequest;
 import com.example.shose.server.dto.request.brand.UpdateBrandRequest;
 import com.example.shose.server.dto.response.BrandResponse;
 import com.example.shose.server.entity.Brand;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ public interface BrandService {
 
     List<BrandResponse> findAll(final FindBrandRequest req);
 
-    Brand create(final CreateBrandRequest req);
+    Brand create( @Valid final CreateBrandRequest req);
 
-    Brand update(final UpdateBrandRequest req);
+    Brand update(@Valid final UpdateBrandRequest req);
 
     Boolean delete(String id);
 

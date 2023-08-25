@@ -10,11 +10,9 @@ const { Option } = Select;
 
 const ModalUpdateBrand = ({ visible, id, onCancel }) => {
   const [form] = Form.useForm();
-  const [brand, setBrand] = useState({});
   const dispatch = useAppDispatch();
   const getOne = () => {
     BrandApi.getOne(id).then((res) => {
-      setBrand(res.data.data);
       console.log(res);
       form.setFieldsValue(res.data.data);
     });
@@ -27,7 +25,6 @@ const ModalUpdateBrand = ({ visible, id, onCancel }) => {
     }
     form.resetFields();
     return () => {
-      setBrand(null);
       id = null;
     };
   }, [id, visible]);
@@ -36,20 +33,25 @@ const ModalUpdateBrand = ({ visible, id, onCancel }) => {
     form
       .validateFields()
       .then((values) => {
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+          acc[key] =
+            typeof values[key] === "string" ? values[key].trim() : values[key];
+          return acc;
+        }, {});
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có đồng ý thêm không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
-            onOk: () => resolve(values),
+            onOk: () => resolve(trimmedValues),
             onCancel: () => reject(),
           });
         });
       })
-      .then((values) => {
+      .then((trimmedValues) => {
         form.resetFields();
-        BrandApi.update(id, values).then((res) => {
+        BrandApi.update(id, trimmedValues).then((res) => {
           dispatch(UpdateBrand(res.data.data));
           toast.success("Cập nhật thành công");
           onCancel();
