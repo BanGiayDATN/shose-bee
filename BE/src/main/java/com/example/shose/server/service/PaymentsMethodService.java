@@ -23,7 +23,7 @@ public interface PaymentsMethodService {
 
     String payWithVNPAY(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException;
 
-    boolean paymentSuccess(PayMentVnpayResponse response);
+    boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response);
 
     boolean updatepayMent(String idBill,String idEmployees,List<String> ids);
 

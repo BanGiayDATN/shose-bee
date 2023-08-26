@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import './paymentSuccessFull.css'
 import { white } from "color-name";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 
 const getUrlVars = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -60,9 +61,22 @@ function PayMentSuccessful() {
     return formatter.format(value);
   };
   useEffect(() => {
+    const param = new URLSearchParams(window.location.search)
+
+// // chia chuỗi URL thành các phần tử
+// const parts = url.split("?");
+
+// lấy phần tử thứ hai
+// const queryString = parts[1];
+
+// in kết quả
+// console.log(url);
     fetchData();
     setStatus(getTransactionStatus());
     setAmount(getAmount());
+    PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {
+      
+    })
   }, []);
   console.log(status);
   return (

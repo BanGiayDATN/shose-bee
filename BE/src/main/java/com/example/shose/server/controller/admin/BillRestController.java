@@ -69,7 +69,12 @@ public class BillRestController {
 
     @GetMapping("/code-bill")
     public ResponseObject CreateCodeBill() {
-        return  new ResponseObject(billService.CreateCodeBill());
+        return  new ResponseObject(billService.CreateCodeBill(userId));
+    }
+
+    @PutMapping("/update-bill-wait")
+    public ResponseObject updateBillWait(@RequestBody CreateBillOfflineRequest request) {
+        return  new ResponseObject(billService.updateBillWait(request));
     }
 
 }
