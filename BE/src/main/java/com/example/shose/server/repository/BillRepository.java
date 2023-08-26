@@ -1,7 +1,6 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
-import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.statistical.FindBillDateRequest;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.statistical.StatisticalBestSellingProductResponse;
@@ -135,22 +134,23 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     List<StatisticalStatusBillResponse> getAllStatisticalStatusBill();
 
     @Query(value = """
-            SELECT 
-                ROW_NUMBER() OVER () AS stt,
-                i.name AS image,
-                p.name  AS nameProduct,
-                pd.price AS price,
-                COUNT(bd.id_product_detail) AS sales
-            FROM bill_detail bd
+   SELECT
+       i.name AS image,
+       p.name  AS nameProduct,
+       pd.price AS price,
+       SUM(bd.quantity) AS sold,
+       SUM(bd.price) AS sales
+   FROM bill_detail bd
+            JOIN bill b on bd.id_bill = b.id
             JOIN product_detail pd on pd.id = bd.id_product_detail
             JOIN product p on pd.id_product = p.id
             JOIN (SELECT id_product_detail, MAX(id) AS max_image_id
                   FROM image
                   GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
             LEFT JOIN image i ON max_images.max_image_id = i.id
-            WHERE bd.id_product_detail IS NOT NULL
-            GROUP BY image, nameProduct, price
-            ORDER BY sales DESC             
+   WHERE bd.id_product_detail IS NOT NULL AND b.status_bill like 'DA_THANH_TOAN'
+   GROUP BY image, nameProduct, price
+   ORDER BY sold desc
                                       """, nativeQuery = true)
     List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct();
 
