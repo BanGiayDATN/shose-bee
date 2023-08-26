@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import "./style-menu.css";
+import { useCart }  from "./../../../pages/customer/cart/CartContext";
 import logo from "./../../../assets/images/logo_client.png";
 import { Link } from "react-router-dom";
 import { Select, Input, Button, Menu,Badge } from "antd";
-import { SearchOutlined, LoginOutlined ,ShoppingCartOutlined} from "@ant-design/icons";
+import { SearchOutlined, LoginOutlined ,ShoppingCartOutlined,MenuFoldOutlined} from "@ant-design/icons";
 
 const { Option } = Select;
 function HeaderMenu() {
@@ -11,7 +12,10 @@ function HeaderMenu() {
   const [modal, setModal] = useState(false);
   const [activeField, setActiveField] = useState("");
   const idAccountLocal = localStorage.getItem("idAccount");
-  const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
+  const {totalQuantity} = useCart()
+
+
+
   const fields = [
     {
       className: "title-menu",
@@ -114,17 +118,21 @@ function HeaderMenu() {
     
        <div > 
        <Link to="/cart">
-       <Badge size="small" count= {!idAccountLocal ?initialCartLocal.length :5}  style={{ backgroundColor:"#ff4400", fontSize: '10px' }}>
+       <Badge size="small" count= {totalQuantity}  style={{ backgroundColor:"#ff4400", fontSize: '10px' }}>
        <ShoppingCartOutlined className="cart-menu" style={{ fontSize: '20px' }}/>
        </Badge>
       
         </Link>
         </div>
+          <div className="icon-menu-block">
+        <MenuFoldOutlined />
+        </div>
       
        </div>
+     
       </div>
 
-      <div>
+      {/* <div> */}
      
           <div className={`search-panel ${modal ? "visible" : "hidden"}`}>
             <div className="header-search">
@@ -151,7 +159,7 @@ function HeaderMenu() {
           </div>
         
       </div>
-    </div>
+    // </div>
   );
 }
 

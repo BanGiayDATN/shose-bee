@@ -66,7 +66,7 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
             """,
             nativeQuery = true )
     List<VoucherRespone> getAllVoucher( @Param("req") FindVoucherRequest req);
-    @Query("SELECT vo FROM Voucher vo WHERE vo.code like %:code%")
+    @Query("SELECT vo FROM Voucher vo WHERE vo.code like :code")
     Voucher getByCode(@Param("code") String code);
     @Query("SELECT vo FROM Voucher vo WHERE vo.endDate < :currentDate")
     List<Voucher> findExpiredVouchers(@Param("currentDate") Long currentDate);

@@ -72,7 +72,7 @@ function Home() {
   return (
     <div className="home">
       <div className="banner">
-        <img className="banner1" src={banner1} alt="..." />
+        <img className="img-banner-home" src={banner1} alt="..." />
       </div>
       <div>
         <Row justify="center">
@@ -86,7 +86,7 @@ function Home() {
               </Link>
             </div>
           </Col>
-          <Col className="col-choose" lg={{ span: 6, offset: 0 }}>
+          <Col className="col-choose" lg={{ span: 7, offset: 1 }}>
             <div className="type-gender">
               <Link className="hover-wrapper">
                 <img className="choose-gender" src={banner4} alt="..." />
@@ -99,7 +99,7 @@ function Home() {
               </div>
             </div>
           </Col>
-          <Col lg={{ span: 7, offset: 0 }}>
+          <Col className="col-choose" lg={{ span: 7, offset: 1 }}>
             <div className="type-gender">
               <Link className="hover-wrapper">
                 <img className="choose-gender" src={banner2} alt="..." />
@@ -140,6 +140,7 @@ function Home() {
               style={{
                 width: "362px",
                 height: "100%",
+                
               }}
             >
               <Link>
@@ -157,6 +158,7 @@ function Home() {
         rowHeight={470} // Chiều cao của hàng ngang
         cellRenderer={cellRenderer}
         marginRight={50}
+        
       />
             </div>
           </Col>

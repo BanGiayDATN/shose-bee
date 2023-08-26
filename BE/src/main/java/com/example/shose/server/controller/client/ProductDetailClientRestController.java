@@ -39,7 +39,7 @@ public class ProductDetailClientRestController {
         return new ResponseObject(productDetailService.getDetailProductOfClient(id, rawCodeColor, nameSize));
     }
     @GetMapping("/listSizeCart/{id}&&{codeColor}")
-    public ResponseObject getListSizeInCart(@PathVariable("id") String id, @PathVariable("codeColor") String codeColor, @PathVariable("nameSize") String nameSize) {
+    public ResponseObject getListSizeInCart(@PathVariable("id") String id, @PathVariable("codeColor") String codeColor) {
         String rawCodeColor = codeColor.replace("%23", "#");
 
         return new ResponseObject(productDetailService.listSizeByProductAndColor(id,rawCodeColor));

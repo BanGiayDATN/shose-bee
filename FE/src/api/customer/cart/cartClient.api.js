@@ -8,7 +8,17 @@ export class CartClientApi {
           data:data
         });
       };
-    
-  
-   
+      static listCart = (idAccount) => {
+        return request({
+          method: "GET",
+          url: `/cart/${idAccount}`,
+        });
+      };
+      static quantityInCart = (idAccount) => {
+        return request({
+          method: "GET",
+          url: `/cart/quantityInCart/${idAccount}`,
+        });
+      };
+
 }

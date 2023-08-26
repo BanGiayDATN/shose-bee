@@ -3,7 +3,8 @@ package com.example.shose.server.service.impl;
  *  @author diemdz
  */
 
-import com.example.shose.server.dto.response.cart.ListAddToCart;
+import com.example.shose.server.dto.response.cart.AddToCart;
+import com.example.shose.server.dto.response.cart.ListCart;
 import com.example.shose.server.entity.Cart;
 import com.example.shose.server.entity.CartDetail;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -29,7 +30,7 @@ public class CartServiceImpl implements CartService {
     private CartDetailRepository cartDetailRepository;
 
     @Override
-    public Cart addToCart(ListAddToCart listAddToCart) {
+    public Cart addToCart(AddToCart listAddToCart) {
 
         Cart cart = cartRepository.getCartByAccount_Id(listAddToCart.getIdAccount());
         if (cart == null) {
@@ -80,4 +81,18 @@ public class CartServiceImpl implements CartService {
         }
         return cart;
     }
+
+    @Override
+    public List<ListCart> getListCart(String idAccount) {
+        return cartRepository.getListCart(idAccount);
+    }
+
+    @Override
+    public Integer quantityInCart(String idACcount) {
+        return cartRepository.quantityInCart(idACcount);
+    }
+
+
+
+
 }

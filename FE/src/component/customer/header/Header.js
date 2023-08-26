@@ -15,15 +15,15 @@ function SalesHeader() {
   const [modalLogin, setModalLogin] = useState(false);
   const [listAccount, setListAccount] = useState({});
   const [formLogin, setFormLogin] = useState({});
-  const [idUser, setIdUser] = useState("");
+  const idUser = localStorage.getItem("idAccount");
   const [openInfor, setOpenInfo] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("idAccount", "");
-  }, []);
-  useEffect(() => {
     console.log(idUser);
-  }, [idUser]);
+  }, []);
+  // useEffect(() => {
+  //   setIdUser(localStorage.getItem("idAccount"))
+  // }, []);
   useEffect(() => {
     console.log(formLogin);
   }, [formLogin]);
@@ -74,9 +74,11 @@ function SalesHeader() {
       toast.success("Login thành công?", {
         autoClose: 1000,
       });
+      debugger
       setModalLogin(false);
-      setIdUser(matchedAccount.id);
+      // setIdUser(matchedAccount.id);
       localStorage.setItem("idAccount", matchedAccount.id);
+      window.location.href = "/home"
     } else {
       toast.error("Login thất bại?", {
         autoClose: 1000,
@@ -84,9 +86,10 @@ function SalesHeader() {
     }
   };
   const logout = () => {
-    setIdUser("");
+    // setIdUser("");
     setFormLogin({});
     localStorage.removeItem("idAccount");
+    window.location.href = "/home"
   };
 
   const fieldsLogin = [
@@ -117,9 +120,9 @@ function SalesHeader() {
       icon: <UserOutlined />,
       className: "title-header",
 
-      title: idUser === "" ? "Đăng nhập" : "Thông tin",
+      title: idUser === null ? "Đăng nhập" : "Thông tin",
       form:
-        idUser === ""
+        idUser === null
           ? openModalLogin
           : [
               { title: "Thông tin", act: "", className: "title-option-info" },
@@ -135,7 +138,7 @@ function SalesHeader() {
     <div className="header">
       {fields.map((field, index) => {
         return (
-          <div key={index}>
+          <div key={index} className="content-header">
             {!field.form ? (
               <Link to="#" className={field.className}>
                 <span className={field.classIcon}>{field.icon}</span>
@@ -144,7 +147,7 @@ function SalesHeader() {
             ) : (
               <div
                 className={field.className}
-                onClick={idUser === "" ? field.form : undefined}
+                onClick={idUser === null ? field.form : undefined}
                 onMouseEnter={handleMenuHover}
                 onMouseLeave={handleMenuLeave}
               >
@@ -152,7 +155,7 @@ function SalesHeader() {
                   {field.icon} {field.title}
                 </span>
 
-                {openInfor && idUser !== "" && (
+                {openInfor && idUser !== null && (
                   <Menu className="option-container-infor">
                     {field.form.map((option, index) => (
                       // <Link to="/diem" >

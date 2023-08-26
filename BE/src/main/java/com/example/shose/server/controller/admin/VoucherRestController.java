@@ -8,6 +8,7 @@ import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.service.VoucherService;
 import com.example.shose.server.util.ResponseObject;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,12 +44,12 @@ public class VoucherRestController {
     }
 
     @PostMapping
-    public ResponseObject add(@RequestBody CreateVoucherRequest request) {
+    public ResponseObject add(@RequestBody  CreateVoucherRequest request) {
         return new ResponseObject(voucherService.add(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseObject update(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
+    public ResponseObject update(@PathVariable("id") String id, @RequestBody  UpdateVoucherRequest request) {
         request.setId(id);
         return new ResponseObject(voucherService.update(request));
     }

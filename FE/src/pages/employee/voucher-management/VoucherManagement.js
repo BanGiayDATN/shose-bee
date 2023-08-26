@@ -133,13 +133,26 @@ const VoucherManagement = () => {
     }
 
     if (!id) {
-      VoucherApi.create(convertToLong()).then((res) => {
-        dispatch(UpdateVoucher(res.data.data));
-
-        toast.success("Thêm thành công!", {
-          autoClose: 5000,
+      VoucherApi.create(convertToLong())
+        .then((res) => {
+          console.log(res.data.message);
+          dispatch(UpdateVoucher(res.data.data));
+          toast.success("Thêm thành công!", {
+            autoClose: 5000,
+          });
+          setModal(false);
+          setShowData(true);
+          setFormData([]);
+          setFormErrors([]);
+        })
+        .catch((error) => {
+          if (error.response.data.message === "BS-400") {
+             toast.success("Vui lòng nhập đầy đủ!", {
+              autoClose: 5000,
+            });
+            return;
+          }
         });
-      });
     } else {
       VoucherApi.update(id, convertToLong()).then((res) => {
         dispatch(UpdateVoucher(res.data.data));
@@ -148,12 +161,20 @@ const VoucherManagement = () => {
         toast.success("Cập nhập thành công!", {
           autoClose: 5000,
         });
+        setModal(false);
+        setShowData(true);
+        setFormData([]);
+        setFormErrors([]);
+      }).catch((error) => {
+        if (error.response.data.message === "BS-400") {
+           toast.success("Vui lòng nhập đầy đủ!", {
+            autoClose: 5000,
+          });
+          return;
+        }
       });
     }
-    setModal(false);
-    setShowData(true);
-    setFormData([]);
-    setFormErrors([]);
+   
     console.log(showData);
   };
 
@@ -580,9 +601,8 @@ const VoucherManagement = () => {
                         }
                       }}
                       min="1"
-                      required 
+                      required
                     />
-
                   )}
                   {field.type === "date" &&
                     (showDetail ? (

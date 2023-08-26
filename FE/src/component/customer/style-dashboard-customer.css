@@ -1,5 +1,11 @@
-
-
+*{
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+.dashboard-customer{
+  width:100%;
+}
 .header-menu {
   height: 60px;
   background-color: #f0f0f0;

@@ -3,6 +3,7 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.cart.ListSizeOfItemCart;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
@@ -238,10 +239,17 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """, nativeQuery = true)
 
     ProductDetailDTOResponse getOneById(@Param("id") String id);
-    @Query(value = "select pd.size.name from ProductDetail pd" +
-            " JOIN Product p on p.id = pd.product.id" +
-            " join Color c on c.id = pd.color.id" +
-            " WHERE p.id = :idProduct AND c.code = :codeColor")
-    List<ProductDetail> listSizeByProductAndColor(@Param("idProduct") String idProduct,@Param("codeColor") String codeColor);
+    @Query(value = """
+SELECT
+    s.name as nameSize,
+    p.id as idProduct,
+    REPLACE(c.code, '#','%23') as codeColor
+FROM product_detail detail
+join product p on detail.id_product = p.id
+join size s on detail.id_size = s.id
+join color c on detail.id_color = c.id
+where p.id = :idProduct and c.code = :codeColor
+""",nativeQuery = true)
+    List<ListSizeOfItemCart> listSizeByProductAndColor(@Param("idProduct") String idProduct, @Param("codeColor") String codeColor);
 
 }

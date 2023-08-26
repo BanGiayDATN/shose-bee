@@ -22,4 +22,6 @@ public interface VoucherService {
     Voucher getById(String id);
     List<Voucher> expiredVoucher();
     List<Voucher> startVoucher();
+    Voucher getByCode(String code);
+
 }

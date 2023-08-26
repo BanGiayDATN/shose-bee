@@ -9,6 +9,8 @@ import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import Cart from "./pages/customer/cart/Cart";
+import Payment from "./pages/customer/payment/Payment";
+import { CartProvider }  from "./pages/customer/cart/CartContext";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
@@ -45,6 +47,17 @@ function App() {
   useEffect(() => {
     setIsLoading(false); // Giả sử trang đã tải xong sau khi component hiển thị
   }, []);
+
+//   window.addEventListener('beforeunload', function() {
+//     // Xóa dữ liệu trong localStorage
+//     localStorage.removeItem('data');
+// });
+
+// Bắt đầu lắng nghe sự kiện unload (trang bị đóng)
+// window.addEventListener('unload', function() {
+//     // Xóa dữ liệu trong localStorage
+//     localStorage.removeItem('idAccount');
+// });
   return (
     <div className="App">
       {isLoading && (
@@ -73,9 +86,11 @@ function App() {
             path="/home"
             element={
               <GuestGuard>
+                  <CartProvider>
                 <DashBoardCustomer>
                   <Home />
                 </DashBoardCustomer>
+                </CartProvider>
               </GuestGuard>
             }
           />
@@ -83,9 +98,23 @@ function App() {
             path="/cart"
             element={
               <GuestGuard>
+                 <CartProvider>
                 <DashBoardCustomer>
                   <Cart />
                 </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+           <Route
+            path="/payment"
+            element={
+              <GuestGuard>
+                 <CartProvider>
+                <DashBoardCustomer>
+                  <Payment/>
+                </DashBoardCustomer>
+                </CartProvider>
               </GuestGuard>
             }
           />
