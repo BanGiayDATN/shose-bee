@@ -42,7 +42,13 @@ const DashBoard = () => {
 
     StatisticalApi.fetchAllStatisticalBestSellingProduct().then(
       (res) => {
-        const data = res.data.data;
+        const data = res.data.data.map((dataBestSell, index) => ({
+          ...dataBestSell,
+          stt: index + 1,
+        }));
+        // const data = res.data.data;
+        console.log(res.data.data);
+        console.log(data);
         setListSellingProduct(data);
       },
       (err) => {
@@ -62,7 +68,6 @@ const DashBoard = () => {
       (res) => {
         const data = res.data.data;
         setDataColumn(data);
-        console.log(data);
       },
       (err) => {
         console.log(err);
@@ -118,10 +123,18 @@ const DashBoard = () => {
       render: (text) => formatCurrency(text),
     },
     {
+      title: "Số lượng đã bán",
+      dataIndex: "sold",
+      key: "sold",
+      sorter: (a, b) => a.sold - b.sold,
+      align: "center",
+    },
+    {
       title: "Doanh số",
       dataIndex: "sales",
       key: "sales",
       sorter: (a, b) => a.seles - b.seles,
+      render: (text) => formatCurrency(text),
       align: "center",
     },
   ];
@@ -139,8 +152,20 @@ const DashBoard = () => {
     DA_HUY: "Đã Hủy",
   };
 
+  const statusColors = {
+    TAO_HOA_DON: "#E46651",
+    CHO_XAC_NHAN: "#00D8FF",
+    CHO_VAN_CHUYEN: "#FFCE56",
+    VAN_CHUYEN: "#9C27B0",
+    DA_THANH_TOAN: "#41B883",
+    KHONG_TRA_HANG: "#4CAF50",
+    TRA_HANG: "##FF5733",
+    DA_HUY: "#DD1B16",
+  };
+
   const chartPieLabels = dataPie.map((item) => statusMapping[item.statusBill]);
   const chartPieData = dataPie.map((item) => item.totalStatusBill);
+  const chartPieColor = dataPie.map((item) => statusColors[item.statusBill]);
 
   const dateMap = {};
   dataColumn.forEach((item) => {
@@ -162,8 +187,6 @@ const DashBoard = () => {
   const handleStartDateChange = (event) => {
     const startDate = event.target.value;
     const startDateLong = new Date(startDate).getTime();
-    console.log(startDate);
-    console.log(startDateLong);
     setStartDate(startDateLong);
     loadDataChartColumn(startDateLong, endDate);
   };
@@ -171,8 +194,6 @@ const DashBoard = () => {
   const handleEndDateChange = (event) => {
     const endDate = event.target.value;
     const endDateLong = new Date(endDate).getTime();
-    console.log(endDate);
-    console.log(endDateLong);
     setEndDate(endDateLong);
     loadDataChartColumn(startDate, endDateLong);
   };
@@ -182,7 +203,6 @@ const DashBoard = () => {
       (res) => {
         const data = res.data.data;
         setDataColumn(data);
-        console.log(data);
       },
       (err) => {
         console.log(err);
@@ -354,15 +374,7 @@ const DashBoard = () => {
               data={{
                 datasets: [
                   {
-                    backgroundColor: [
-                      "#41B883",
-                      "#00D8FF",
-                      "#E46651",
-                      "#DD1B16",
-                      "#FFCE56",
-                      "#4CAF50",
-                      "#9C27B0",
-                    ],
+                    backgroundColor: chartPieColor,
                     data: chartPieData,
                   },
                 ],
