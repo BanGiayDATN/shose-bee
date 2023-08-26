@@ -110,66 +110,70 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
   useEffect(() => {
     if(keyTab != '-1'){
       console.log("update bill")
-      var newProduct = products.map((product) => ({
-        idProduct: product.idProduct,
-        size: product.nameSize,
-        quantity: product.quantity,
-        price: product.price,
-      }));
-      var newVoucher = [];
-      if (voucher.idVoucher != "") {
-        newVoucher.push(voucher);
-      }
-      var totalBill = products.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0);
-      var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.totalMoney;
-      }, 0);
-      var addressuser = "";
-      if (!checkNotEmptyAddress() && isOpenDelivery) {
-        addressuser =
-          address.detail +
-          ", " +
-          address.wards +
-          ", " +
-          address.district +
-          ", " +
-          address.city;
-      }
-      var idAccount = "";
-      if (user != null) {
-        idAccount = user.idAccount;
-      }
-      var typeBill = "OFFLINE";
-      var statusPayMents = "THANH_TOAN";
-      if (traSau) {
-        statusPayMents = "TRA_SAU";
-      }
-      var data = {
-        phoneNumber: billRequest.phoneNumber,
-        address: addressuser,
-        userName: billRequest.userName,
-        itemDiscount: voucher.discountPrice,
-        totalMoney: totalBill,
-        note: billRequest.note,
-        statusPayMents: statusPayMents,
-        typeBill: typeBill,
-        moneyShip: shipFee,
-        billDetailRequests: newProduct,
-        paymentsMethodRequests: dataPayment,
-        vouchers: newVoucher,
-        idUser: idAccount,
-        deliveryDate: dayShip,
-        code: code,
-        openDelivery: isOpenDelivery,
-      };
-      BillApi.updateBillWait(data).then((res) => {
-        console.log(res.data.data)
-      });
+      updateBill()
     }
     console.log("update bill");
   }, [keyTab]);
+
+  const updateBill = () =>{
+    var newProduct = products.map((product) => ({
+      idProduct: product.idProduct,
+      size: product.nameSize,
+      quantity: product.quantity,
+      price: product.price,
+    }));
+    var newVoucher = [];
+    if (voucher.idVoucher != "") {
+      newVoucher.push(voucher);
+    }
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.totalMoney;
+    }, 0);
+    var addressuser = "";
+    if (!checkNotEmptyAddress() && isOpenDelivery) {
+      addressuser =
+        address.detail +
+        ", " +
+        address.wards +
+        ", " +
+        address.district +
+        ", " +
+        address.city;
+    }
+    var idAccount = "";
+    if (user != null) {
+      idAccount = user.idAccount;
+    }
+    var typeBill = "OFFLINE";
+    var statusPayMents = "THANH_TOAN";
+    if (traSau) {
+      statusPayMents = "TRA_SAU";
+    }
+    var data = {
+      phoneNumber: billRequest.phoneNumber,
+      address: addressuser,
+      userName: billRequest.userName,
+      itemDiscount: voucher.discountPrice,
+      totalMoney: totalBill,
+      note: billRequest.note,
+      statusPayMents: statusPayMents,
+      typeBill: typeBill,
+      moneyShip: shipFee,
+      billDetailRequests: newProduct,
+      paymentsMethodRequests: dataPayment,
+      vouchers: newVoucher,
+      idUser: idAccount,
+      deliveryDate: dayShip,
+      code: code,
+      openDelivery: isOpenDelivery,
+    };
+    BillApi.updateBillWait(data).then((res) => {
+      console.log(res.data.data)
+    });
+  }
 
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
@@ -564,37 +568,37 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
     }
   }, [data]);
 
-  useInterval(() => {
-    if (payMentVnPay) {
-      var dataPayMent = localStorage.getItem("parameters");
-      //  var dataPaymentVnpay ={
-      //  vnp_TransactionStatus: "00", vnp_TxnRef: billRequest.code
-      //  }
-      if (dataPayMent != undefined) {
-        if (JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpay)) {
-          var data = {
-            actionDescription: "",
-            method: "CHUYEN_KHOAN",
-            totalMoney: totalMoneyPayMent,
-            status: "THANH_TOAN",
-          };
-          setDataPayMent([...dataPayment, data]);
-          setTotalMoneyPayment("");
-          form.resetFields();
-          setPayMentVnPay(false);
-          localStorage.setItem("parameters", "");
-        } else if (
-          JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpayError)
-        ) {
-          setPayMentVnPay(false);
-          localStorage.setItem("parameters", "");
-        }
-        localStorage.setItem("parameters", "");
-      }
-      // setPayMentVnPay(false);
-    }
-    // const subscription = window.addEventListener("payment/success", () => {
-  }, 3000);
+  // useInterval(() => {
+  //   if (payMentVnPay) {
+  //     var dataPayMent = localStorage.getItem("parameters");
+  //     //  var dataPaymentVnpay ={
+  //     //  vnp_TransactionStatus: "00", vnp_TxnRef: billRequest.code
+  //     //  }
+  //     if (dataPayMent != undefined) {
+  //       if (JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpay)) {
+  //         var data = {
+  //           actionDescription: "",
+  //           method: "CHUYEN_KHOAN",
+  //           totalMoney: totalMoneyPayMent,
+  //           status: "THANH_TOAN",
+  //         };
+  //         setDataPayMent([...dataPayment, data]);
+  //         setTotalMoneyPayment("");
+  //         form.resetFields();
+  //         setPayMentVnPay(false);
+  //         localStorage.setItem("parameters", "");
+  //       } else if (
+  //         JSON.stringify(dataPayMent) === JSON.stringify(dataPaymentVnpayError)
+  //       ) {
+  //         setPayMentVnPay(false);
+  //         localStorage.setItem("parameters", "");
+  //       }
+  //       localStorage.setItem("parameters", "");
+  //     }
+  //     // setPayMentVnPay(false);
+  //   }
+  //   // const subscription = window.addEventListener("payment/success", () => {
+  // }, 3000);
 
   const [totalMoneyPayMent, setTotalMoneyPayment] = useState(0);
   const [traSau, setTraSau] = useState(false);
@@ -634,6 +638,7 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
         setPayMentVnPay(true);
         window.open(res.data.data);
       });
+      updateBill()
     } else if (totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -645,11 +650,13 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
       setTotalMoneyPayment("");
       form.resetFields();
     }
+    updateBill()
   };
   const deletePayMent = (e, index) => {
     const newDataPayment = [...dataPayment];
     newDataPayment.splice(index, 1);
     setDataPayMent(newDataPayment);
+
   };
   const columnsPayments = [
     {
