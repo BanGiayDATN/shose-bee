@@ -78,7 +78,9 @@ function PayMentSuccessful() {
       
     })
   }, []);
-  console.log(status);
+  setTimeout(() => {
+    window.open('http://localhost:3000/sale-counter', "_self");
+  }, 10000);
   return (
     <div>
       {status == "00" ? (
