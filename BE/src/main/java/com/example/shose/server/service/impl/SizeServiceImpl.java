@@ -9,8 +9,10 @@ import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.service.SizeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import java.util.Optional;
  * @author Nguyễn Vinh
  */
 @Service
+@Validated
 public class SizeServiceImpl implements SizeService {
 
     @Autowired
@@ -36,7 +39,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public Size create(CreateSizeRequest req) {
+    public Size create(@Valid CreateSizeRequest req) {
         Size checkName = sizeRepository.getOneByName(req.getName());
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
@@ -48,10 +51,14 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public Size update(UpdateSizeRequest req) {
+    public Size update(@Valid UpdateSizeRequest req) {
         Optional<Size> optional = sizeRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Size existence = sizeRepository.getByNameExistence(req.getName(), req.getId());
+        if (existence != null) {
+            throw new RestApiException(Message.NAME_EXISTS);
         }
         Size update = optional.get();
         update.setName(req.getName());

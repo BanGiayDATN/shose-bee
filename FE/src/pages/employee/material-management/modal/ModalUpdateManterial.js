@@ -34,29 +34,34 @@ const ModalUpdateMaterial = ({ visible, id, onCancel }) => {
     form
       .validateFields()
       .then((values) => {
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+          acc[key] =
+            typeof values[key] === "string" ? values[key].trim() : values[key];
+          return acc;
+        }, {});
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có đồng ý cập nhật không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
-            onOk: () => resolve(values),
+            onOk: () => resolve(trimmedValues),
             onCancel: () => reject(),
           });
         });
       })
-      .then((values) => {
-        form.resetFields();
-        MaterialApi.update(id, values).then((res) => {
-          dispatch(UpdateMaterail(res.data.data));
-          toast.success("Cập nhật thành công");
-          onCancel();
-        });
-        form.resetFields();
-      })
-      .catch((error) => {
-        toast.error("Cập nhật thất bại");
-        console.log("Validation failed:", error);
+      .then((trimmedValues) => {
+        MaterialApi.update(id, trimmedValues)
+          .then((res) => {
+            dispatch(UpdateMaterail(res.data.data));
+            toast.success("Cập nhật thành công");
+            onCancel();
+            form.resetFields();
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+            console.log("Validation failed:", error);
+          });
       });
   };
 
@@ -86,6 +91,14 @@ const ModalUpdateMaterial = ({ visible, id, onCancel }) => {
           rules={[
             { required: true, message: "Vui lòng nhập tên thể loại" },
             { max: 50, message: "Tên thể loại tối đa 50 ký tự" },
+            {
+              validator: (_, value) => {
+                if (value && value.trim() === "") {
+                  return Promise.reject("Không được chỉ nhập khoảng trắng");
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input placeholder="Tên thể loại" />

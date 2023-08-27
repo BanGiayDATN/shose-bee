@@ -5,7 +5,7 @@ import com.example.shose.server.dto.request.category.FindCategoryRequest;
 import com.example.shose.server.dto.request.category.UpdateCategoryRequest;
 import com.example.shose.server.dto.response.CategoryResponse;
 import com.example.shose.server.entity.Category;
-import com.example.shose.server.infrastructure.common.PageableObject;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -15,13 +15,13 @@ import java.util.List;
 public interface CategoryService {
     List<Category> getAll();
 
-    List<CategoryResponse> getList (FindCategoryRequest req);
+    List<CategoryResponse> getList(FindCategoryRequest req);
 
-    Category create (final CreateCategoryRequest req);
+    Category create(@Valid final CreateCategoryRequest req);
 
-    Category update (final UpdateCategoryRequest req);
+    Category update(@Valid final UpdateCategoryRequest req);
 
-    Boolean delete (String id);
+    Boolean delete(String id);
 
-    Category getOneById (String id);
+    Category getOneById(String id);
 }

@@ -237,20 +237,27 @@ const CreateProductManagment = () => {
     form
       .validateFields()
       .then((values) => {
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+          acc[key] =
+            typeof values[key] === "string" ? values[key].trim() : values[key];
+          return acc;
+        }, {});
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có đồng ý thêm không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
-            onOk: () => resolve(values),
+            onOk: () => resolve(trimmedValues),
             onCancel: () => reject(),
           });
         });
       })
-      .then((values) => {
-        console.log(tableData);
-        console.log(listColorAndFileData);
+      .then((trimmedValues) => {
+        const updatedTableData = tableData.map((record) => ({
+          ...record,
+          ...trimmedValues,
+        }));
 
         if (!listSizeAdd || listSizeAdd.length === 0) {
           toast.error("Bạn cần thêm kích thước cho sản phẩm");
@@ -282,7 +289,7 @@ const CreateProductManagment = () => {
             formData.append(`${color}-${index}`, file.originFileObj);
           });
         });
-        formData.append("data", JSON.stringify(tableData));
+        formData.append("data", JSON.stringify(updatedTableData));
         axios
           .post("http://localhost:8080/admin/product-detail", formData)
           .then((response) => {
@@ -570,6 +577,7 @@ const CreateProductManagment = () => {
   };
 
   // gen dữ liệu
+  const [selectedProduct, setSelectedProduct] = useState("");
   const [isProductNameValid, setProductNameValid] = useState(false);
   const handleProductNameChange = (value) => {
     setProductNameValid(value.trim() !== "");
@@ -641,17 +649,36 @@ const CreateProductManagment = () => {
                 style={{ fontWeight: "bold" }}
                 rules={[
                   { required: true, message: "Vui lòng nhập tên sản phẩm" },
+                  {
+                    validator: (_, value) => {
+                      if (value && value.trim() === "") {
+                        return Promise.reject(
+                          "Không được chỉ nhập khoảng trắng"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
                 <AutoComplete
                   options={renderOptions(listProduct)}
                   placeholder="Nhập tên sản phẩm"
                   onSearch={handleSearch}
+                  onSelect={(value) => {
+                    setSelectedProduct(value);
+                    setProductNameValid(true);
+                    form.validateFields(["productId"]);
+                  }}
+                  value={selectedProduct}
                 >
                   <Input
                     className="form-input"
                     style={{ fontWeight: "bold" }}
-                    onChange={(e) => handleProductNameChange(e.target.value)}
+                    onChange={(e) => {
+                      handleProductNameChange(e.target.value);
+                      setSelectedProduct(e.target.value);
+                    }}
                   />
                 </AutoComplete>
               </Form.Item>
@@ -662,12 +689,22 @@ const CreateProductManagment = () => {
                 style={{ fontWeight: "bold" }}
                 rules={[
                   { required: true, message: "Vui lòng nhập mô tả sản phẩm" },
+                  {
+                    validator: (_, value) => {
+                      if (value && value.trim() === "") {
+                        return Promise.reject(
+                          "Không được chỉ nhập khoảng trắng"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
                 <Input.TextArea
                   rows={7}
                   placeholder="Nhập mô tả sản phẩm"
-                  className="form-textarea"
+                  className="form-textarea-product "
                 />
               </Form.Item>
               <br />

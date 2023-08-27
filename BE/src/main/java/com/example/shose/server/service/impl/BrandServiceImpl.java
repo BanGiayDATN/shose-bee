@@ -9,8 +9,10 @@ import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.BrandRepository;
 import com.example.shose.server.service.BrandService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import java.util.Optional;
  * @author Nguyễn Vinh
  */
 @Service
+@Validated
 public class BrandServiceImpl implements BrandService {
 
     @Autowired
@@ -30,7 +33,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public Brand create(CreateBrandRequest req) {
+    public Brand create(@Valid CreateBrandRequest req) {
         Brand checkName = brandRepository.getOneByName(req.getName());
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
@@ -42,10 +45,14 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public Brand update(UpdateBrandRequest req) {
+    public Brand update(@Valid UpdateBrandRequest req) {
         Optional<Brand> optional = brandRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Brand existence =  brandRepository.getByNameExistence(req.getName(),req.getId());
+        if(existence != null){
+            throw new RestApiException(Message.NAME_EXISTS);
         }
         Brand update = optional.get();
         update.setName(req.getName());

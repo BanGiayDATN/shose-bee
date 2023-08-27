@@ -9,8 +9,10 @@ import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.SoleService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.Optional;
  * @author Nguyễn Vinh
  */
 @Service
+@Validated
 public class SoleServiceImpl implements SoleService {
 
     @Autowired
@@ -32,7 +35,7 @@ public class SoleServiceImpl implements SoleService {
     }
 
     @Override
-    public Sole create(CreateSoleRequest req) {
+    public Sole create(@Valid CreateSoleRequest req) {
         Sole checkName = soleRepository.getByName(req.getName());
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
@@ -44,7 +47,7 @@ public class SoleServiceImpl implements SoleService {
     }
 
     @Override
-    public Sole update(UpdateSoleRequest req) {
+    public Sole update(@Valid UpdateSoleRequest req) {
         Optional<Sole> optional = soleRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);

@@ -22,19 +22,24 @@ const ModalCreateSole = ({ visible, onCancel }) => {
     form
       .validateFields()
       .then((values) => {
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+          acc[key] =
+            typeof values[key] === "string" ? values[key].trim() : values[key];
+          return acc;
+        }, {});
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có đồng ý thêm không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
-            onOk: () => resolve(values),
+            onOk: () => resolve(trimmedValues),
             onCancel: () => reject(),
           });
         });
       })
-      .then((values) => {
-        SoleApi.create(values)
+      .then((trimmedValues) => {
+        SoleApi.create(trimmedValues)
           .then((res) => {
             dispatch(CreateSole(res.data.data));
             toast.success("Thêm thành công");
@@ -42,7 +47,7 @@ const ModalCreateSole = ({ visible, onCancel }) => {
             onCancel();
           })
           .catch((error) => {
-            toast.error("Thêm thất bại");
+            toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
       })
@@ -77,6 +82,14 @@ const ModalCreateSole = ({ visible, onCancel }) => {
           rules={[
             { required: true, message: "Vui lòng nhập tên đế giày" },
             { max: 50, message: "Tên đế giày tối đa 50 ký tự" },
+            {
+              validator: (_, value) => {
+                if (value && value.trim() === "") {
+                  return Promise.reject("Không được chỉ nhập khoảng trắng");
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input placeholder="Tên đế giày" />

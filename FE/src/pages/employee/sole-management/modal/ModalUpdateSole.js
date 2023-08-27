@@ -10,11 +10,9 @@ const { Option } = Select;
 
 const ModalUpdateSole = ({ visible, id, onCancel }) => {
   const [form] = Form.useForm();
-  const [sole, setSole] = useState({});
   const dispatch = useAppDispatch();
   const getOne = () => {
     SoleApi.getOne(id).then((res) => {
-      setSole(res.data.data);
       form.setFieldsValue(res.data.data);
     });
   };
@@ -25,7 +23,6 @@ const ModalUpdateSole = ({ visible, id, onCancel }) => {
     }
     form.resetFields();
     return () => {
-      setSole(null);
       id = null;
     };
   }, [id, visible]);
@@ -34,29 +31,34 @@ const ModalUpdateSole = ({ visible, id, onCancel }) => {
     form
       .validateFields()
       .then((values) => {
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+          acc[key] =
+            typeof values[key] === "string" ? values[key].trim() : values[key];
+          return acc;
+        }, {});
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có đồng ý thêm không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
-            onOk: () => resolve(values),
+            onOk: () => resolve(trimmedValues),
             onCancel: () => reject(),
           });
         });
       })
-      .then((values) => {
-        form.resetFields();
-        SoleApi.update(id, values).then((res) => {
-          dispatch(UpdateSole(res.data.data));
-          toast.success("Cập nhật thành công");
-          onCancel();
-        });
-        form.resetFields();
-      })
-      .catch((error) => {
-        toast.error("Cập nhật thất bại");
-        console.log("Validation failed:", error);
+      .then((trimmedValues) => {
+        SoleApi.update(id, trimmedValues)
+          .then((res) => {
+            dispatch(UpdateSole(res.data.data));
+            toast.success("Cập nhật thành công");
+            onCancel();
+            form.resetFields();
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+            console.log("Validation failed:", error);
+          });
       });
   };
 
@@ -86,6 +88,14 @@ const ModalUpdateSole = ({ visible, id, onCancel }) => {
           rules={[
             { required: true, message: "Vui lòng nhập tên thương hiệu" },
             { max: 50, message: "Tên thương hiệu tối đa 50 ký tự" },
+            {
+              validator: (_, value) => {
+                if (value && value.trim() === "") {
+                  return Promise.reject("Không được chỉ nhập khoảng trắng");
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input placeholder="Tên thương hiệu" />
