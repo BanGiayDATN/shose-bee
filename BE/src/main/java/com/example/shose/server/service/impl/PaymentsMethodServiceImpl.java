@@ -173,9 +173,11 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
             paymentsMethod.setDescription(response.getVnp_OrderInfo());
+            paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount()));
             paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
             paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
             paymentsMethod.setEmployees(account.get());
+            paymentsMethodRepository.save(paymentsMethod);
             return true;
         }
         return false;

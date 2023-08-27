@@ -150,27 +150,27 @@ function Sale() {
     }
   };
 
-  const ref = useRef();
-  function handleClickOutside(event) {
-    // Kiểm tra xem người dùng có đang chạm vào component hay không
-    if (!ref.current.contains(event.target)) {
-      // Người dùng không đang chạm vào component
-      // Thực hiện hành động khi người dùng click ra ngoài component
-    }
-  }
+  // const ref = useRef();
+  // function handleClickOutside(event) {
+  //   // Kiểm tra xem người dùng có đang chạm vào component hay không
+  //   if (!ref.current.contains(event.target)) {
+  //     // Người dùng không đang chạm vào component
+  //     // Thực hiện hành động khi người dùng click ra ngoài component
+  //   }
+  // }
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!ref?.current?.contains(event.target)) {
-        dispatch(updateKeyBillAtCounter("200000"))
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-  }, [ref]);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (!ref?.current?.contains(event.target)) {
+  //       dispatch(updateKeyBillAtCounter("200000"))
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  // }, [ref]);
 
   return (
     <div>
-      <Row style={{ background: "white", width: "100%" }} ref={ref}>
+      <Row style={{ background: "white", width: "100%" }}>
         <Row style={{ width: "100%", marginTop: "10px" }}>
           <Col span={12}></Col>
           <Col span={12} align={"end"}>

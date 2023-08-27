@@ -3,6 +3,7 @@ package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.bill.*;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
+import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
@@ -137,6 +138,15 @@ public class BillServiceImpl implements BillService {
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
 
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+        billDetailResponse.parallelStream().forEach(item ->{
+            Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
+            if (!productDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+            productDetailRepository.save(productDetail.get());
+        });
         billDetailRepository.deleteAllByIdBill(optional.get().getId());
         billHistoryRepository.deleteAllByIdBill(optional.get().getId());
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
@@ -250,6 +260,16 @@ public class BillServiceImpl implements BillService {
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
         billRepository.save(optional.get());
+
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+        billDetailResponse.forEach(item ->{
+            Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
+            if (!productDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+            productDetailRepository.save(productDetail.get());
+        });
         billDetailRepository.deleteAllByIdBill(optional.get().getId());
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
@@ -267,17 +287,20 @@ public class BillServiceImpl implements BillService {
              optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(optional.get());
         request.getPaymentsMethodRequests().forEach(item -> {
-            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN){
-                PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                        .method(item.getMethod())
-                        .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                        .employees(optional.get().getEmployees())
-                        .totalMoney(item.getTotalMoney())
-                        .description(item.getActionDescription())
-                        .bill(optional.get())
-                        .build();
-                paymentsMethodRepository.save(paymentsMethod);
+            if( item!= null){
+                if(item.getMethod() != StatusMethod.CHUYEN_KHOAN ){
+                    PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                            .method(item.getMethod())
+                            .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                            .employees(optional.get().getEmployees())
+                            .totalMoney(item.getTotalMoney())
+                            .description(item.getActionDescription())
+                            .bill(optional.get())
+                            .build();
+                    paymentsMethodRepository.save(paymentsMethod);
+                }
             }
+
         });
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {
