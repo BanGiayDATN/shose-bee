@@ -31,7 +31,7 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,S
     @Modifying
     @Query(value = """
              DELETE FROM  payments_method
-                   WHERE id_bill = :id
+             WHERE id_bill = :id AND method NOT IN ('CHUYEN_KHOAN')
             """, nativeQuery = true)
     int deleteAllByIdBill(@Param("id") String idBill);
 

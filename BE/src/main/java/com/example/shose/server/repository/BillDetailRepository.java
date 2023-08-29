@@ -80,4 +80,5 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
                    WHERE id_bill = :id
             """, nativeQuery = true)
     int deleteAllByIdBill(@Param("id") String idBill);
+
 }

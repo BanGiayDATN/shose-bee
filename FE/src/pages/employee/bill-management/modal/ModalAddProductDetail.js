@@ -33,6 +33,7 @@ import {
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import { size } from "lodash";
 import { ProductApi } from "../../../../api/employee/product/product.api";
+import { useSelector } from "react-redux";
 
 function ModalAddProductDetail({
   handleCancelProduct,
@@ -173,6 +174,7 @@ function ModalAddProductDetail({
 
   // Xử lý logic chỉnh sửa
   const navigate = useNavigate();
+  const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const handleViewDetail = (id) => {
     navigate(`/detail-product-management/${id}`);
   };
@@ -185,7 +187,7 @@ function ModalAddProductDetail({
     setIsSubmitted(true);
     getList();
     loadData();
-  }, [selectedValues]);
+  }, [selectedValues, keyTab]);
 
   const getPromotionStyle = (promotion) => {
     return promotion >= 50 ? { color: "white" } : { color: "#000000" };
