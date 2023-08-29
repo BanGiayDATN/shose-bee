@@ -79,8 +79,6 @@ public class ProductDetailRestController {
             dto.setFiles(file);
             dtoList.add(dto);
         }
-        dtoList.stream().forEach(a-> System.out.println(a));
-        listData.stream().forEach(a-> System.out.println(a));
         return new ResponseObject(productDetailService.create(listData,dtoList));
     }
 

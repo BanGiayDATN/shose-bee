@@ -30,7 +30,6 @@ import { ColorApi } from "../../../api/employee/color/Color.api";
 import { Option } from "antd/es/mentions";
 
 const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
-  console.log(id);
 
   // Bộ lọc
   const [listMaterial, setListMaterial] = useState([]);
@@ -127,7 +126,6 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
   }, [id, visible]);
 
   useEffect(() => {
-    console.log(selectedValues);
     if (id != null && id !== "") {
       getList();
       loadData();
@@ -206,7 +204,7 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
               <span
                 style={{
                   position: "absolute",
-                  top: "60%", // Để "Giảm" nằm chính giữa biểu tượng
+                  top: "60%", 
                   left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
                   transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
                   fontSize: "0.8em",
@@ -435,10 +433,10 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
               >
                 <Option value="">Tất cả</Option>
                 {listColor.map((color, index) => (
-                  <Option key={index} value={color}>
+                  <Option key={index} value={color.code}>
                     <div
                       style={{
-                        backgroundColor: color,
+                        backgroundColor: color.code,
                         width: "100%",
                         height: "100%",
                         borderRadius: "5px",

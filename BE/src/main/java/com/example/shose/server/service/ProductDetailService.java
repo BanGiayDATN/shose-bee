@@ -12,6 +12,7 @@ import com.example.shose.server.dto.response.productdetail.GetDetailProductOfCli
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.entity.ProductDetail;
+import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public interface ProductDetailService {
 
     List<ProductDetailReponse> getAll(FindProductDetailRequest findProductDetailRequest);
 
-    List<ProductDetailDTO> create(List<CreateProductDetailRequest> listData,
+    List<ProductDetailDTO> create(@Valid List<CreateProductDetailRequest> listData,
                                   List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException;
 
     ProductDetailDTO update(final UpdateProductDetailRequest req,

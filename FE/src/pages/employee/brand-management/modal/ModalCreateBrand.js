@@ -21,19 +21,24 @@ const ModalCreateBrand = ({ visible, onCancel }) => {
     form
       .validateFields()
       .then((values) => {
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+          acc[key] =
+            typeof values[key] === "string" ? values[key].trim() : values[key];
+          return acc;
+        }, {});
         return new Promise((resolve, reject) => {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có đồng ý thêm không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
-            onOk: () => resolve(values),
+            onOk: () => resolve(trimmedValues),
             onCancel: () => reject(),
           });
         });
       })
-      .then((values) => {
-        BrandApi.create(values)
+      .then((trimmedValues) => {
+        BrandApi.create(trimmedValues)
           .then((res) => {
             dispatch(CreateBrand(res.data.data));
             toast.success("Thêm thành công");
