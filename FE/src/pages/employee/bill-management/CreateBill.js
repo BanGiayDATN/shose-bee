@@ -736,8 +736,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     setIsOpenDelivery(!isOpenDelivery);
   };
   const orderBill = (e) => {
-    console.log("them thanh cong")
-                  removePane(targetKey, invoiceNumber);
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
