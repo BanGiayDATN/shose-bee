@@ -33,13 +33,11 @@ function Sale() {
 
   useEffect(() => {
     BillApi.fetchAllBillAtCounter().then((res) => {
-      setInvoiceNumber(res.data.data.length);
-
-      if (res.data.data.length == 0) {
-        console.log(123);
+        if (res.data.data.length == 0) {
         BillApi.getCodeBill().then((res) => {
           const newActiveKey = `${newTabIndex.current}`;
           setActiveKey(newActiveKey);
+          setInvoiceNumber(1);
           setItems([
             ...items,
             {
@@ -49,10 +47,10 @@ function Sale() {
                   code={res.data.data.code}
                   key={changeTab}
                   id={res.data.data.id}
-                  invoiceNumber={invoiceNumber}
                   style={{ width: "100%" }}
+                  invoiceNumber={1}
                   removePane={remove}
-                  targetKey={newTabIndex}
+                  targetKey={newActiveKey}
                 />
               ),
               key: newActiveKey,
@@ -62,6 +60,7 @@ function Sale() {
           setInvoiceNumber(invoiceNumber + 1);
         });
       } else {
+        setInvoiceNumber(res.data.data.length);
         const defaultPanes = res.data.data.map((item, index) => {
           const id = String(index + 1);
           const newActiveKey = `${newTabIndex.current}`;
@@ -72,10 +71,10 @@ function Sale() {
                 code={item.code}
                 id={item.id}
                 key={changeTab}
-                invoiceNumber={invoiceNumber}
+                invoiceNumber={res.data.data.length}
                 style={{ width: "100%" }}
                 removePane={remove}
-                targetKey={newTabIndex}
+                targetKey={newActiveKey}
               />
             ),
             key: newActiveKey,
@@ -88,11 +87,59 @@ function Sale() {
     });
   }, []);
 
+  
   const add = (e) => {
     if (invoiceNumber >= 5) {
       toast.warning(`Không thể tạo thêm hóa đơn`);
     } else {
        
+      BillApi.getCodeBill().then((res) => {
+        const newActiveKey = `${newTabIndex.current}`;
+        setItems([
+          ...items,
+          {
+            label: `Hóa đơn ${newTabIndex.current++}`,
+            children: (
+              <CreateBill
+                code={res.data.data.code}
+                key={changeTab}
+                id={res.data.data.id}
+                invoiceNumber={invoiceNumber}
+                style={{ width: "100%" }}
+                removePane={remove}
+                targetKey={newActiveKey}
+              />
+            ),
+            key: newActiveKey,
+          },
+        ]);
+        dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`));
+        setActiveKey(newActiveKey);
+        setChangTab(newActiveKey);
+        setInvoiceNumber(invoiceNumber + 1);
+        dispatch(updateKeyBillAtCounter(newActiveKey))
+      });
+    }
+  };
+
+  const remove = (targetKey, invoiceNumber) => {
+    if(invoiceNumber > 1){
+      const targetIndex = items.findIndex((pane) => pane.key === targetKey);
+      const newPanes = items.filter((pane) => pane.key !== targetKey);
+      if (newPanes.length && targetKey === activeKey) {
+        const { key } =
+          newPanes[
+            targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
+          ];
+        setActiveKey(key);
+        setChangTab(key);
+        dispatch(updateKeyBillAtCounter(key))
+      }
+      console.log(newPanes)
+      setItems(newPanes);
+      console.log();
+      setInvoiceNumber(invoiceNumber - 1);
+    }else{
       BillApi.getCodeBill().then((res) => {
         const newActiveKey = `${newTabIndex.current}`;
         setItems([
@@ -120,53 +167,16 @@ function Sale() {
         dispatch(updateKeyBillAtCounter(newActiveKey))
       });
     }
-  };
-
-  const remove = (targetKey) => {
-    
-    if (invoiceNumber > 1) {
-      const targetIndex = items.findIndex((pane) => pane.key === targetKey);
-      const newPanes = items.filter((pane) => pane.key !== targetKey);
-      if (newPanes.length && targetKey === activeKey) {
-        const { key } =
-          newPanes[
-            targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
-          ];
-        setActiveKey(key);
-        setChangTab(key);
-        dispatch(updateKeyBillAtCounter(key))
-      }
-      setItems(newPanes);
       
-      setInvoiceNumber(invoiceNumber - 1);
-    } else {
-    }
   };
   const onEdit = (targetKey, action) => {
     if (action === "add") {
       // add();
     } else {
-      remove(targetKey);
+      remove(targetKey,invoiceNumber);
     }
   };
 
-  // const ref = useRef();
-  // function handleClickOutside(event) {
-  //   // Kiểm tra xem người dùng có đang chạm vào component hay không
-  //   if (!ref.current.contains(event.target)) {
-  //     // Người dùng không đang chạm vào component
-  //     // Thực hiện hành động khi người dùng click ra ngoài component
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (!ref?.current?.contains(event.target)) {
-  //       dispatch(updateKeyBillAtCounter("200000"))
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  // }, [ref]);
 
   return (
     <div>
