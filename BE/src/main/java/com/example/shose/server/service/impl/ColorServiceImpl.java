@@ -9,8 +9,10 @@ import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.service.ColorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import java.util.Optional;
  * @author Nguyễn Vinh
  */
 @Service
+@Validated
 public class ColorServiceImpl implements ColorService {
 
     @Autowired
@@ -30,7 +33,7 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public Color create(CreateColorRequest req) {
+    public Color create(@Valid CreateColorRequest req) {
         Color checkName = colorRepository.getOneByCode(req.getName());
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
@@ -43,10 +46,14 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public Color update(UpdateColorRequest req) {
+    public Color update(@Valid UpdateColorRequest req) {
         Optional<Color> optional = colorRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Color existence = colorRepository.getByNameExistence(req.getName(), req.getId());
+        if (existence != null) {
+            throw new RestApiException(Message.NAME_EXISTS);
         }
         Color update = optional.get();
         update.setCode(req.getCode());

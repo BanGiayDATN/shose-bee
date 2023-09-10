@@ -653,10 +653,10 @@ const UpdateProductDetailManagment = () => {
               >
                 <Option value="">Tất cả</Option>
                 {listColor.map((color, index) => (
-                  <Option key={index} value={color}>
+                  <Option key={index} value={color.code}>
                     <div
                       style={{
-                        backgroundColor: color,
+                        backgroundColor: color.code,
                         width: "100%",
                         height: "100%",
                         borderRadius: "5px",

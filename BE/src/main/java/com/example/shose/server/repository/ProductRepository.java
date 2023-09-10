@@ -24,7 +24,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query(value = """
             SELECT
-                ROW_NUMBER() OVER (ORDER BY p.last_modified_date DESC) AS stt,
+                ROW_NUMBER() OVER (ORDER BY GREATEST(p.last_modified_date, MAX(pd.last_modified_date)) DESC) AS stt,
+                p.id AS id,
                 p.id AS id,
                 p.code AS code,
                 p.name AS nameProduct,
@@ -41,7 +42,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             AND  ( :#{#req.minQuantity} IS NULL OR pd.quantity >= :#{#req.minQuantity} ) 
             AND  ( :#{#req.maxQuantity} IS NULL OR pd.quantity <= :#{#req.maxQuantity} )
             GROUP BY  p.id, p.status
-            ORDER BY p.last_modified_date DESC  
+            ORDER BY GREATEST(p.last_modified_date, MAX(pd.last_modified_date)) DESC 
             """, nativeQuery = true)
     List<ProductResponse> getAll(@Param("req") FindProductRequest req);
 

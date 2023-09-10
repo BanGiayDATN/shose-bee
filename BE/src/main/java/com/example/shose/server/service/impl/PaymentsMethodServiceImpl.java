@@ -7,10 +7,7 @@ import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
-import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.StatusBill;
-import com.example.shose.server.infrastructure.constant.StatusPayMents;
-import com.example.shose.server.infrastructure.constant.VnPayConstant;
+import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
@@ -167,8 +164,21 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public boolean paymentSuccess(PayMentVnpayResponse response) {
+    public boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response) {
+        Optional<Account> account = accountRepository.findById(idEmployees);
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
         if(response.getVnp_ResponseCode().equals("00")){
+            Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef());
+            PaymentsMethod paymentsMethod = new PaymentsMethod();
+            paymentsMethod.setBill(bill.get());
+            paymentsMethod.setDescription(response.getVnp_OrderInfo());
+            paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount()));
+            paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
+            paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
+            paymentsMethod.setEmployees(account.get());
+            paymentsMethodRepository.save(paymentsMethod);
             return true;
         }
         return false;

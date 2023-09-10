@@ -11,11 +11,13 @@ import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.CategoryRepository;
 import com.example.shose.server.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,7 @@ import java.util.Optional;
  * @author Nguyễn Vinh
  */
 @Service
+@Validated
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
@@ -40,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category create(CreateCategoryRequest req) {
+    public Category create( @Valid CreateCategoryRequest req) {
         Category checkName = categoryRepository.getOneByName(req.getName());
         if (checkName != null) {
             throw new RestApiException(Message.NAME_EXISTS);
@@ -52,10 +55,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category update(UpdateCategoryRequest req) {
+    public Category update(@Valid UpdateCategoryRequest req) {
         Optional<Category> optional = categoryRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Category existence = categoryRepository.getByNameExistence(req.getName(),req.getId());
+        if(existence != null){
+            throw new RestApiException(Message.NAME_EXISTS);
         }
         Category update = optional.get();
         update.setName(req.getName());

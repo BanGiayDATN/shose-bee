@@ -68,7 +68,7 @@ public class PaymentsMethodRestController {
 
     @GetMapping("/payment-success")
     public ResponseObject pay(final PayMentVnpayResponse response){
-    return new ResponseObject(paymentsMethodService.paymentSuccess(response)) ;
+    return new ResponseObject(paymentsMethodService.paymentSuccess(userId, response)) ;
     }
 
 

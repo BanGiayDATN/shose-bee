@@ -43,8 +43,10 @@ import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.RandomNumberGenerator;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -61,6 +63,7 @@ import java.util.stream.IntStream;
  * @author Nguyễn Vinh
  */
 @Service
+@Validated
 public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
@@ -108,7 +111,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     @Transactional
-    public List<ProductDetailDTO> create(List<CreateProductDetailRequest> listData,
+    public List<ProductDetailDTO> create(@Valid List<CreateProductDetailRequest> listData,
                                          List<ImageColorFilerequestDTO> listFileImage) throws IOException, ExecutionException, InterruptedException {
 
         CompletableFuture<List<CloudinaryResult>> uploadFuture = imageToCloudinary.uploadImagesAsync(listFileImage);
@@ -139,7 +142,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             return add;
         }).collect(Collectors.toList());
         productDetailRepository.saveAll(listDetail);
-
 
         listDetail.parallelStream().forEach(a -> a.setMaQR(qrCodeAndCloudinary.generateAndUploadQRCode(a.getId())));
 

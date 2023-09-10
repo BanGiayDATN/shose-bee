@@ -81,7 +81,6 @@ function DetailBill() {
 
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-      console.log(res);
       dispatch(getProductInBillDetail(res.data.data));
     });
     BillApi.fetchDetailBill(id).then((res) => {

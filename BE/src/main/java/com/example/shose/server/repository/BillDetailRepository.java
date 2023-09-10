@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterReque
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.BillDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -73,9 +74,11 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             """, nativeQuery = true)
     List<BillDetailResponse> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
 
+    @Modifying
     @Query(value = """
              DELETE FROM  bill_detail
                    WHERE id_bill = :id
             """, nativeQuery = true)
-    boolean deleteAllByIdBill(@Param("id") String idBill);
+    int deleteAllByIdBill(@Param("id") String idBill);
+
 }

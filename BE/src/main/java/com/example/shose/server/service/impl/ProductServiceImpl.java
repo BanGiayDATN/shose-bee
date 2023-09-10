@@ -14,8 +14,10 @@ import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ProductRepository;
 import com.example.shose.server.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,7 @@ import java.util.Optional;
  * @author Nguyễn Vinh
  */
 @Service
+@Validated
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
@@ -41,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product create(CreateProductRequest req) {
+    public Product create(@Valid CreateProductRequest req) {
         Product checkCode = productRepository.getOneByCode(req.getCode());
         if (checkCode != null) {
             throw new RestApiException(Message.CODE_EXISTS);
@@ -54,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product update(UpdateProductRequest req) {
+    public Product update(@Valid UpdateProductRequest req) {
         Optional<Product> optional = productRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);

@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.sole.UpdateSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.common.PageableObject;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -16,9 +17,9 @@ public interface SoleService {
 
     List<SoleResponse> findAll (final FindSoleRequest req);
 
-    Sole create (final CreateSoleRequest req);
+    Sole create (@Valid final CreateSoleRequest req);
 
-    Sole update (final UpdateSoleRequest req);
+    Sole update (@Valid final UpdateSoleRequest req);
 
     Boolean delete (String id);
 

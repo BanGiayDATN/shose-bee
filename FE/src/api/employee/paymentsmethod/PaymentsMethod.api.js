@@ -23,10 +23,11 @@ export class PaymentsMethodApi {
     });
   };
 
-  static checkPaymentVnPay = ( ) => {
+  static checkPaymentVnPay = (param) => {
     return request({
       method: "GET",
-      url: `/admin/payment/payment-success` ,
+      url: `/admin/payment/payment-success`  ,
+      params: param
     });
   };
 

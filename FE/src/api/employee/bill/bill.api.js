@@ -7,10 +7,10 @@ export class BillApi {
     });
   };
 
-  static fetchAllBillAtCounter = (value) => {
+  static fetchAllBillAtCounter = () => {
     return request({
       method: "GET",
-      url: `/admin/bill/details-invoices-counter?key=`+ value ,
+      url: `/admin/bill/details-invoices-counter` ,
     });
   };
 
@@ -57,6 +57,15 @@ export class BillApi {
         data: data,
       });
     };
+
+    static updateBillWait = ( data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/update-bill-wait`,
+        data: data,
+      });
+    };
+
 
     static changeCancelStatusBill = (id, data) => {
       return request({

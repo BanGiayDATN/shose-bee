@@ -13,6 +13,7 @@ import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomer
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
+import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.Bill;
@@ -171,68 +172,111 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(new BigDecimal(request.getTotalMoney()))
                 .moneyShip(new BigDecimal(request.getMoneyShip())).build();
         if (request.getIdUser() != null) {
-            Optional<Account> user = accountRepository.findById(request.getIdUser());
-            if (user.isPresent()) {
-                bill.setAccount(user.get());
-            }
-        }
-        if (!request.getDeliveryDate().isEmpty()) {
-            bill.setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
-        }
-        if (TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE || !request.isOpenDelivery()) {
-            bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
-            billRepository.save(bill);
-            billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-        } else {
-            bill.setStatusBill(StatusBill.TAO_HOA_DON);
-            billRepository.save(bill);
-            billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
-
-        }
-
-        request.getPaymentsMethodRequests().forEach(item -> {
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                    .method(item.getMethod())
-                    .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                    .employees(account.get())
-                    .totalMoney(item.getTotalMoney())
-                    .description(item.getActionDescription())
-                    .bill(bill)
-                    .build();
-            paymentsMethodRepository.save(paymentsMethod);
-        });
-
-        request.getBillDetailRequests().forEach(billDetailRequest -> {
-            Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
-            if (!productDetail.isPresent()) {
-                throw new RestApiException(Message.NOT_EXISTS);
-            }
-            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
-            }
-            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
-            billDetailRepository.save(billDetail);
-            productDetail.get().setQuantity(productDetail.get().getQuantity() - billDetailRequest.getQuantity());
-            productDetailRepository.save(productDetail.get());
-        });
-        request.getVouchers().forEach(voucher -> {
-            Optional<Voucher> optional = voucherRepository.findById(voucher.getIdVoucher());
+            Optional<Bill> optional = billRepository.findByCode(request.getCode());
             if (!optional.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-            if (optional.get().getQuantity() <= 0 && optional.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
-                throw new RestApiException(Message.VOUCHER_NOT_USE);
+            optional.get().setNote(request.getNote());
+            optional.get().setUserName(request.getUserName());
+            optional.get().setAddress(request.getAddress());
+            optional.get().setPhoneNumber(request.getPhoneNumber());
+            optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
+            optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
+            optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
+
+            List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+            billDetailResponse.parallelStream().forEach(item -> {
+                Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
+                if (!productDetail.isPresent()) {
+                    throw new RestApiException(Message.NOT_EXISTS);
+                }
+                productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+                productDetailRepository.save(productDetail.get());
+            });
+            billDetailRepository.deleteAllByIdBill(optional.get().getId());
+            billHistoryRepository.deleteAllByIdBill(optional.get().getId());
+            paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
+            voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
+
+            if (request.getIdUser() != null) {
+                Optional<Account> user = accountRepository.findById(request.getIdUser());
+
+                if (user.isPresent()) {
+                    optional.get().setAccount(user.get());
+                }
             }
-            optional.get().setQuantity(optional.get().getQuantity() - 1);
-            voucherRepository.save(optional.get());
+            if (!request.getDeliveryDate().isEmpty()) {
+                bill.setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+            }
+            if (TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE || !request.isOpenDelivery()) {
+                bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
+                billRepository.save(bill);
+                billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+            } else {
+                bill.setStatusBill(StatusBill.TAO_HOA_DON);
+                billRepository.save(bill);
+                billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(account.get()).build());
+                if (!request.getDeliveryDate().isEmpty()) {
+                    optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+                }
+                if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
+                    optional.get().setStatusBill(StatusBill.KHONG_TRA_HANG);
+                    billRepository.save(optional.get());
+                    billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
+                } else {
+                    optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
+                    billRepository.save(optional.get());
+                    billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
-            VoucherDetail voucherDetail = VoucherDetail.builder().voucher(optional.get()).bill(bill).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
-            voucherDetailRepository.save(voucherDetail);
-        });
+                }
 
+                request.getPaymentsMethodRequests().forEach(item -> {
+                    if (item.getMethod() != StatusMethod.CHUYEN_KHOAN) {
+                        PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                                .method(item.getMethod())
+                                .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                                .employees(optional.get().getEmployees())
+                                .totalMoney(item.getTotalMoney())
+                                .description(item.getActionDescription())
+                                .bill(optional.get())
+                                .build();
+                        paymentsMethodRepository.save(paymentsMethod);
+                    }
+                });
+
+                request.getBillDetailRequests().forEach(billDetailRequest -> {
+                    Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
+                    if (!productDetail.isPresent()) {
+                        throw new RestApiException(Message.NOT_EXISTS);
+                    }
+                    if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
+                        throw new RestApiException(Message.ERROR_QUANTITY);
+                    }
+                    BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+                    billDetailRepository.save(billDetail);
+                    productDetail.get().setQuantity(productDetail.get().getQuantity() - billDetailRequest.getQuantity());
+                    productDetailRepository.save(productDetail.get());
+                });
+                request.getVouchers().forEach(voucher -> {
+                    Optional<Voucher> Voucher = voucherRepository.findById(voucher.getIdVoucher());
+                    if (!Voucher.isPresent()) {
+                        throw new RestApiException(Message.NOT_EXISTS);
+                    }
+                    if (Voucher.get().getQuantity() <= 0 && Voucher.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
+                        throw new RestApiException(Message.VOUCHER_NOT_USE);
+                    }
+                    Voucher.get().setQuantity(Voucher.get().getQuantity() - 1);
+                    voucherRepository.save(Voucher.get());
+
+                    VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
+                    voucherDetailRepository.save(voucherDetail);
+                });
+
+
+            }
+        }
         return bill;
     }
-
     @Override
     public Bill saveOnline(CreateBillRequest request) {
         Optional<Account> account = accountRepository.findById(request.getIdUser());
@@ -245,8 +289,109 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public String CreateCodeBill() {
-        return "HD" + RandomStringUtils.randomNumeric(6);
+    public Bill CreateCodeBill(String idEmployees) {
+        Optional<Account> account = accountRepository.findById(idEmployees);
+//        if (account.get().getRoles() == Roles.USER) {
+//        }
+        Bill bill = Bill.builder()
+                .employees(account.get())
+                .typeBill(TypeBill.OFFLINE)
+                .statusBill(StatusBill.TAO_HOA_DON)
+                .code("HD" + RandomStringUtils.randomNumeric(6))
+                .itemDiscount(new BigDecimal("0"))
+                .totalMoney(new BigDecimal("0"))
+                .moneyShip(new BigDecimal("0")).build();
+        billRepository.save(bill) ;
+        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(bill.getEmployees()).build());
+        return bill;
+    }
+
+    @Override
+    public boolean updateBillWait(CreateBillOfflineRequest request) {
+        Optional<Bill> optional = billRepository.findByCode(request.getCode());
+        if (!optional.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        optional.get().setNote(request.getNote());
+        optional.get().setUserName(request.getUserName());
+        optional.get().setAddress(request.getAddress());
+        optional.get().setPhoneNumber(request.getPhoneNumber());
+        optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
+        optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
+        optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
+        billRepository.save(optional.get());
+
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+        billDetailResponse.forEach(item ->{
+            Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
+            if (!productDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+            productDetailRepository.save(productDetail.get());
+        });
+        billDetailRepository.deleteAllByIdBill(optional.get().getId());
+        paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
+        voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
+
+
+        if(request.getIdUser() != null){
+            Optional<Account> user  = accountRepository.findById(request.getIdUser());
+            if (user.isPresent()) {
+                optional.get().setAccount(user.get());
+            }
+        }
+        if(!request.getDeliveryDate().isEmpty()){
+            optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+        }
+             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
+            billRepository.save(optional.get());
+        request.getPaymentsMethodRequests().forEach(item -> {
+            if( item!= null){
+                if(item.getMethod() != StatusMethod.CHUYEN_KHOAN ){
+                    PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                            .method(item.getMethod())
+                            .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                            .employees(optional.get().getEmployees())
+                            .totalMoney(item.getTotalMoney())
+                            .description(item.getActionDescription())
+                            .bill(optional.get())
+                            .build();
+                    paymentsMethodRepository.save(paymentsMethod);
+                }
+            }
+
+        });
+
+        request.getBillDetailRequests().forEach(billDetailRequest -> {
+            Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
+            if (!productDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+            billDetailRepository.save(billDetail);
+            productDetail.get().setQuantity( productDetail.get().getQuantity() - billDetailRequest.getQuantity());
+            productDetailRepository.save(productDetail.get());
+        });
+        request.getVouchers().forEach(voucher -> {
+            Optional<Voucher> Voucher = voucherRepository.findById(voucher.getIdVoucher());
+            if (!Voucher.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            if (Voucher.get().getQuantity() <= 0 && Voucher.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
+                throw new RestApiException(Message.VOUCHER_NOT_USE);
+            }
+            Voucher.get().setQuantity(Voucher.get().getQuantity() - 1);
+            voucherRepository.save(Voucher.get());
+
+            VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
+            voucherDetailRepository.save(voucherDetail);
+        });
+
+        return true;
     }
 
     @Override
