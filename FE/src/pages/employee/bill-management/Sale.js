@@ -33,7 +33,7 @@ function Sale() {
   const onChange = (key) => {
     setActiveKey(key);
     setChangTab(key);
-    // dispatch(updateKeyBillAtCounter(key))
+    dispatch(updateKeyBillAtCounter(key))
   };
 
   useEffect(() => {

@@ -53,6 +53,8 @@ import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { Navigate } from "react-router-dom";
+import { AccountApi } from "../../../api/employee/account/account.api";
+import { VoucherDetailApi } from "../../../api/employee/voucherDetail/VoucherDetail.api";
 
 function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -117,6 +119,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }, [keyTab]);
 
   const updateBill = () =>{
+    console.log("update");
+    console.log(voucher);
+    console.log(accountuser);
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -132,7 +137,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }, 0);
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
-    }, 0);
+    }, 0) - voucher.discountPrice;
     var addressuser = "";
     if (!checkNotEmptyAddress() && isOpenDelivery) {
       addressuser =
@@ -146,6 +151,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var idAccount = "";
     if (accountuser != null) {
+      console.log(accountuser);
       idAccount = accountuser.idAccount;
     }
     var typeBill = "OFFLINE";
@@ -172,6 +178,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       openDelivery: isOpenDelivery,
     };
     BillApi.updateBillWait(data).then((res) => {
+      console.log(data)
     });
   }
 
@@ -326,6 +333,21 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       })
       setDataPayMent(data)
     });
+    AccountApi.getAccountUserByIdBill(id).then((res) => {
+      console.log(res);
+      setAccountUser(res.data.data)
+    })
+    VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
+      console.log("VoucherDetailApi");
+      console.log(res);
+      setVoucher({
+        idVoucher: res.data.data?.id,
+        beforPrice: res.data.data?.beforPrice,
+        afterPrice: res.data.data?.afterPrice,
+        discountPrice: res.data.data?.discountPrice,
+      })
+      setCodeVoucher(res.data.data?.name)
+    })
   }, []);
 
 

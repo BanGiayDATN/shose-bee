@@ -1,7 +1,13 @@
 package com.example.shose.server.service.impl;
 
 
-import com.example.shose.server.dto.request.bill.*;
+import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
+import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
+import com.example.shose.server.dto.request.bill.CreateBillRequest;
+import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
@@ -10,10 +16,13 @@ import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
-import com.example.shose.server.infrastructure.constant.*;
+import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.StatusBill;
+import com.example.shose.server.infrastructure.constant.StatusMethod;
+import com.example.shose.server.infrastructure.constant.StatusPayMents;
+import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -29,7 +38,6 @@ import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.FormUtils;
-import jakarta.transaction.Transaction;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -259,22 +267,6 @@ public class BillServiceImpl implements BillService {
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
-        billRepository.save(optional.get());
-
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
-        billDetailResponse.forEach(item ->{
-            Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
-            if (!productDetail.isPresent()) {
-                throw new RestApiException(Message.NOT_EXISTS);
-            }
-            productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
-            productDetailRepository.save(productDetail.get());
-        });
-        billDetailRepository.deleteAllByIdBill(optional.get().getId());
-        paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
-        voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
-
-
         if(request.getIdUser() != null){
             Optional<Account> user  = accountRepository.findById(request.getIdUser());
             if (user.isPresent()) {
@@ -284,8 +276,8 @@ public class BillServiceImpl implements BillService {
         if(!request.getDeliveryDate().isEmpty()){
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
-             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
-            billRepository.save(optional.get());
+        optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
+        billRepository.save(optional.get());
         request.getPaymentsMethodRequests().forEach(item -> {
             if( item!= null){
                 if(item.getMethod() != StatusMethod.CHUYEN_KHOAN ){
@@ -302,6 +294,20 @@ public class BillServiceImpl implements BillService {
             }
 
         });
+        billRepository.save(optional.get());
+
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+        billDetailResponse.forEach(item ->{
+            Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
+            if (!productDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+            productDetailRepository.save(productDetail.get());
+        });
+        billDetailRepository.deleteAllByIdBill(optional.get().getId());
+        paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
+        voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
         request.getBillDetailRequests().forEach(billDetailRequest -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
