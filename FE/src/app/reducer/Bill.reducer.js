@@ -14,6 +14,9 @@ const billSlice = createSlice({
       users: [],
       employees: [],
     },
+    billWaits: {
+      value: [],
+    },
     billWaitProduct: {
       value: [],
       user: null,
@@ -91,12 +94,23 @@ const billSlice = createSlice({
     addBillHistory: (state, action) => {
       state.bill.billHistory.push(action.payload);
     },
+    addBillWait: (state, action) => {
+      state.billWaits.value.push(action.payload);
+    },
+    getAllBillWait: (state, action) => {
+      state.billWaits.value = [...action.payload];
+    },
+    deleteBillWait: (state, action) => {
+      state.billWaits.value.splice(action.payload, 1);
+    },
   },
 });
 
 export const {
-  getAllBill,
+  addBillWait,
   getAllBillWait,
+  deleteBillWait,
+  getAllBill,
   getUsers,
   getEmployees,
   getProductInBillDetail,

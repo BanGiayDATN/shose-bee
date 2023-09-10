@@ -54,7 +54,7 @@ import { ProducDetailtApi } from "../../../api/employee/product-detail/productDe
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { Navigate } from "react-router-dom";
 
-function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
+function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
@@ -841,7 +841,7 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
                   //   setCodeVoucher(false);
                   //   setIdaData("");
                   // } else {
-                    removePane(targetKey);
+                    removePane(targetKey, invoiceNumber);
                     form.resetFields();
                   // }
                 });
@@ -867,7 +867,7 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
             cancelText: "Hủy",
             onOk: async () => {
               await BillApi.createBillWait(data).then((res) => {
-                // if (targetKey == undefined) {
+                // if (invoiceNumber == undefined) {
                 //   setProducts([]);
                 //   setBillRequest({
                 //     phoneNumber: "",
@@ -901,7 +901,10 @@ function CreateBill({ removePane, targetKey, code, invoiceNumber, key, id }) {
                 //   setCodeVoucher(false);
                 //   setIdaData("");
                 // } else {
-                  removePane(targetKey);
+                  console.log("them thanh cong")
+                  console.log(data)
+                  console.log(invoiceNumber)
+                  removePane(targetKey, invoiceNumber);
                 // }
               });
             },

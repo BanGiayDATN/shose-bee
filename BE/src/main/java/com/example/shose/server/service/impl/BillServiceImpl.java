@@ -161,12 +161,12 @@ public class BillServiceImpl implements BillService {
         if(!request.getDeliveryDate().isEmpty()){
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
-        if(TypeBill.valueOf(request.getTypeBill()) == TypeBill.OFFLINE || !request.isOpenDelivery()){
+        if(TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()){
             optional.get().setStatusBill(StatusBill.KHONG_TRA_HANG);
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         }else{
-            optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
+            optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
