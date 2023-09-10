@@ -12,8 +12,6 @@ import java.math.BigDecimal;
 
 @Projection(types = Voucher.class)
 public interface VoucherRespone extends BaseResponse {
-    @Value("#{target.stt}")
-    Integer getSTT();
 
     @Value("#{target.id}")
     String getId();

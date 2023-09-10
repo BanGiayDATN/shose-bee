@@ -2,12 +2,14 @@ package com.example.shose.server.service;
 
 
 import com.example.shose.server.dto.request.bill.*;
+import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
-import com.example.shose.server.dto.response.bill.CustomDetalBillResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -36,4 +38,5 @@ public interface BillService {
     boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, String idEmployees);
 
     Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request);
+    String createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
 }

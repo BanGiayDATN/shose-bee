@@ -11,7 +11,6 @@ import {
   Popconfirm,
   DatePicker,
 } from "antd";
-import { Link } from "react-router-dom";
 import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import {
   CreateVoucher,
@@ -19,13 +18,15 @@ import {
   SetVoucher,
   UpdateVoucher,
 } from "../../../app/reducer/Voucher.reducer";
+import CreateVoucherManagement from "./modal/CreateVoucherManagement";
+import UpdateVoucherManagement from "./modal/UpdateVoucherManagement";
+import DetailVoucherManagement from"./modal/DetailVoucherManagement";
 import {
   faEdit,
   faEye,
   faFilter,
   faKaaba,
   faListAlt,
-  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
@@ -37,48 +38,44 @@ dayjs.extend(utc);
 const VoucherManagement = () => {
   const dispatch = useAppDispatch();
   const [list, setList] = useState([]);
+  const [modalCreate,setModalCreate] = useState(false);
+  const [modalUpdate,setModalUpdate] = useState(false);
+  const [modalDetail,setModalDetail] = useState(false);
+  const [id, setId] = useState("");
+  const [formDataSearch, setFormDataSearch] = useState({});
+
+
   const [showDetail, setShowDetail] = useState(false);
   const [modal, setModal] = useState(false);
   const [formData, setFormData] = useState({});
-  const [formDataSearch, setFormDataSearch] = useState({});
+
   const [showData, setShowData] = useState(true);
-  const [id, setId] = useState("");
+
   const [adding, setAdding] = useState(false);
   const [formErrors, setFormErrors] = useState({});
-  const data = useAppSelector(GetVoucher);
   const [form] = Form.useForm();
+  const data = useAppSelector(GetVoucher);
   useEffect(() => {
     if (data != null) {
       setList(data);
     }
   }, [data]);
+  useEffect(() => {
+  }, [list]);
 
   useEffect(() => {
     loadData();
   }, [showData, formDataSearch]);
-
-  const closeModal = () => {
-    setModal(false);
-    setShowDetail(false);
-    setId("");
-    setFormData([]);
-    setFormErrors([]);
-  };
-
+  const updatedList = list.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
+  
   const resetFormSearch = () => {
     setFormDataSearch({});
     loadData();
   };
-  const convertToLong = () => {
-    const convertedFormData = { ...formData };
-    if (formData.startDate) {
-      convertedFormData.startDate = dayjs(formData.startDate).unix() * 1000;
-    }
-    if (formData.endDate) {
-      convertedFormData.endDate = dayjs(formData.endDate).unix() * 1000;
-    }
-    return convertedFormData;
-  };
+
   const convertToLongSearch = () => {
     const convertedFormDataSearch = { ...formDataSearch };
     if (formDataSearch.startDate) {
@@ -97,132 +94,27 @@ const VoucherManagement = () => {
       (res) => {
         setList(res.data.data);
         dispatch(SetVoucher(res.data.data));
-        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
       }
     );
   };
-  const handleSubmit = (id) => {
-    console.log(formData);
-    const isFormValid =
-      formData.name &&
-      formData.value &&
-      formData.quantity &&
-      formData.startDate &&
-      formData.endDate &&
-      // formData.status &&
-      formData.startDate < formData.endDate;
-
-    if (!isFormValid) {
-      const errors = {
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-        // status: !formData.status ? "Vui lòng chọn trạng thái" : "",
-      };
-      setFormErrors(errors);
-      return;
-    }
-
-    if (!id) {
-      VoucherApi.create(convertToLong())
-        .then((res) => {
-          console.log(res.data.message);
-          dispatch(UpdateVoucher(res.data.data));
-          toast.success("Thêm thành công!", {
-            autoClose: 5000,
-          });
-          setModal(false);
-          setShowData(true);
-          setFormData([]);
-          setFormErrors([]);
-        })
-        .catch((error) => {
-          if (error.response.data.message === "BS-400") {
-             toast.success("Vui lòng nhập đầy đủ!", {
-              autoClose: 5000,
-            });
-            return;
-          }
-        });
-    } else {
-      VoucherApi.update(id, convertToLong()).then((res) => {
-        dispatch(UpdateVoucher(res.data.data));
-        setShowData(false);
-
-        toast.success("Cập nhập thành công!", {
-          autoClose: 5000,
-        });
-        setModal(false);
-        setShowData(true);
-        setFormData([]);
-        setFormErrors([]);
-      }).catch((error) => {
-        if (error.response.data.message === "BS-400") {
-           toast.success("Vui lòng nhập đầy đủ!", {
-            autoClose: 5000,
-          });
-          return;
-        }
-      });
-    }
-   
-    console.log(showData);
-  };
-
-  const detailVoucher = (id) => {
-    setId(id);
-    VoucherApi.getOne(id).then(
-      (res) => {
-        const voucherData = res.data.data;
-        setFormData({
-          code: voucherData.code,
-          name: voucherData.name,
-          value: voucherData.value,
-          quantity: voucherData.quantity,
-          startDate: dayjs(voucherData.startDate),
-          endDate: dayjs(voucherData.endDate),
-          status: voucherData.status,
-          createdDate: dayjs(voucherData.createdDate),
-        });
-      },
-      (err) => console.log(err)
-    );
-    console.log(formData);
-  };
 
   const handleInputChangeSearch = (name, value) => {
     setFormDataSearch({ ...formDataSearch, [name]: value });
   };
-  const handleInputChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-    setFormErrors({ ...formErrors, [name]: "" });
-  };
+
   const openUpdate = (id) => {
-    setModal(true);
-    detailVoucher(id);
-    setShowDetail(false);
-    setAdding(false);
-    console.log(id);
+   setModalUpdate(true);
+   setId(id)
   };
   const openAdd = () => {
-    setAdding(true);
-    setModal(true);
-    console.log(id);
+   setModalCreate(true)
   };
   const openDetail = (id) => {
-    setModal(true);
-    detailVoucher(id);
-    setShowDetail(true);
-    console.log(id);
+    setModalDetail(true);
+    setId(id);
   };
 
   const columns = [
@@ -286,7 +178,7 @@ const VoucherManagement = () => {
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang sử dụng " : "Không sử dụng"}
+            {text === "DANG_SU_DUNG" ? "Còn hạn" : "Hết hạn"}
           </button>
         );
       },
@@ -319,72 +211,6 @@ const VoucherManagement = () => {
   ];
 
   const { Option } = Select;
-  const fields = [
-    {
-      name: "code",
-      type: "text",
-      label: "Mã khuyễn mãi",
-      text: "mã khuyễn mãi",
-      hidden: true,
-      class: "input-form",
-    },
-    {
-      name: "name",
-      type: "text",
-      label: "Tên khuyễn mãi",
-      text: "tên khuyễn mãi",
-      class: "input-form",
-    },
-
-    {
-      name: "value",
-      type: "number",
-      label: "Giá trị giảm",
-      text: "giá trị giảm",
-      class: "input-form",
-    },
-    {
-      name: "quantity",
-      type: "number",
-      label: "Số lượng tồn",
-      text: "số lượng tồn",
-      class: "input-form",
-    },
-    {
-      name: "startDate",
-      type: "date",
-      label: "Ngày bắt đầu",
-      text: "ngày bắt đầu",
-      class: "input-form",
-    },
-    {
-      name: "endDate",
-      type: "date",
-      label: "Ngày kết thúc",
-      text: "ngày kết thúc",
-      class: "input-form",
-    },
-    {
-      name: "status",
-      type: "select",
-      label: "Trạng thái",
-      options: [
-        { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-        { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
-      ],
-      text: "trạng thái",
-      class: "input-form",
-    },
-    {
-      name: "createdDate",
-      type: "date",
-      label: "Ngày tạo",
-      text: "ngày tạo",
-      hidden: true,
-      class: "input-form",
-    },
-  ];
-
   const fieldsSearch = [
     {
       name: "code",
@@ -547,7 +373,7 @@ const VoucherManagement = () => {
 
         <div className="promotion-table">
           <Table
-            dataSource={list}
+            dataSource={updatedList}
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 5 }}
@@ -559,155 +385,9 @@ const VoucherManagement = () => {
       </div>
 
       {/* modal */}
-      <Modal
-        title={
-          showDetail === true
-            ? "Chi tiết khuyễn mãi"
-            : id
-            ? "Cập nhập khuyến mãi"
-            : " Thêm khuyến mãi"
-        }
-        visible={modal}
-        onCancel={closeModal}
-        okButtonProps={{ style: { display: "none" } }}
-        cancelButtonProps={{ style: { display: "none" } }}
-      >
-        <hr></hr>
-        <br></br>
-        <Form form={form} layout="vertical">
-          {fields.map((field, index) => {
-            return (
-              <div key={index}>
-                <Form.Item
-                  label={
-                    adding && field.label === "Trạng thái" ? "" : field.label
-                  }
-                  validateStatus={formErrors[field.name] ? "error" : ""}
-                  help={formErrors[field.name] || ""}
-                  style={{
-                    display: field.hidden && !showDetail ? "none" : "block",
-                  }}
-                  rules={[{ required: true }]}
-                >
-                  {field.type === "number" && (
-                    <InputNumber
-                      className={field.class}
-                      name={field.name}
-                      placeholder={field.label}
-                      value={formData[field.name] || ""}
-                      onChange={(value) => {
-                        if (!showDetail) {
-                          handleInputChange(field.name, value);
-                        }
-                      }}
-                      min="1"
-                      required
-                    />
-                  )}
-                  {field.type === "date" &&
-                    (showDetail ? (
-                      <Input
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.label}
-                        value={dayjs(formData[field.name]).format("DD-MM-YYYY")}
-                      />
-                    ) : (
-                      <DatePicker
-                        showTime
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.label}
-                        value={formData[field.name]}
-                        onChange={(value) => {
-                          handleInputChange(field.name, value);
-                        }}
-                      />
-                    ))}
-                  {field.type === "select" &&
-                    (showDetail ? (
-                      <Input
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.label}
-                        value={
-                          formData[field.name] === "DANG_SU_DUNG"
-                            ? "Đang sử dụng"
-                            : "Không sử dụng"
-                        }
-                      />
-                    ) : (
-                      !adding && (
-                        <Select
-                          className={field.class}
-                          name={field.name}
-                          placeholder={field.label}
-                          value={formData[field.name] || ""}
-                          onChange={(value) => {
-                            if (!showDetail) {
-                              handleInputChange(field.name, value);
-                            }
-                          }}
-                        >
-                          {field.options.map((option, optionIndex) => (
-                            <Option key={optionIndex} value={option.value}>
-                              {option.label}
-                            </Option>
-                          ))}
-                        </Select>
-                      )
-                    ))}
-
-                  {field.type !== "date" &&
-                    field.type !== "select" &&
-                    field.type !== "number" && (
-                      <Input
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.label}
-                        value={formData[field.name] || ""}
-                        onChange={(e) => {
-                          if (!showDetail) {
-                            handleInputChange(field.name, e.target.value);
-                          }
-                        }}
-                      />
-                    )}
-                </Form.Item>
-              </div>
-            );
-          })}
-
-          <Form.Item label=" ">
-            <Button onClick={closeModal}>Hủy</Button>
-            {showDetail === false ? (
-              <Popconfirm
-                title="Thông báo"
-                description={
-                  id
-                    ? "Bạn có chắc chắn muốn cập nhập không ?"
-                    : "Bạn có chắc chắn muốn thêm không ?"
-                }
-                onConfirm={() => {
-                  handleSubmit(id);
-                }}
-                okText="Có"
-                cancelText="Không"
-              >
-                <Button
-                  className="button-submit"
-                  key="submit"
-                  title={id ? " Cập nhập" : "Thêm"}
-                >
-                  {id ? " Cập nhập" : "Thêm"}
-                </Button>
-              </Popconfirm>
-            ) : (
-              ""
-            )}
-          </Form.Item>
-        </Form>
-      </Modal>
+      <CreateVoucherManagement modalCreate={modalCreate} setModalCreate={setModalCreate}/>
+      <UpdateVoucherManagement modalUpdate={modalUpdate} setModalUpdate={setModalUpdate} id={id}/>
+      <DetailVoucherManagement modalDetail={modalDetail} setModalDetail={setModalDetail} id={id}/>
     </div>
   );
 };

@@ -38,7 +38,7 @@ public interface CartRepository extends JpaRepository<Cart,String> {
                         ORDER BY  cd.created_date desc
             """,nativeQuery = true)
     List<ListCart> getListCart(@Param("idAccount") String idAccount);
-    @Query(value = "select count(cd.id) from Cart cart" +
+    @Query(value = "select sum(cd.quantity) from Cart cart" +
             " JOIN Account a on a.id = cart.account.id" +
             " JOIN CartDetail cd on cd.cart.id = cart.id" +
             " WHERE a.id = :idAccount")

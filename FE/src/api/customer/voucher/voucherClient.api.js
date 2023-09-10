@@ -7,6 +7,13 @@ export class VoucherClientApi {
           url: `/client/voucher/${code}`
         });
       };
+      static getListVoucherByAccount = (idAccount) => {
+        return request({
+          method: "GET",
+          url: `/client/voucher/account/${idAccount}`
+        });
+      };
+    
     
      
    

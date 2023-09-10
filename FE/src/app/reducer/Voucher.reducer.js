@@ -10,11 +10,13 @@ const voucherSlice = createSlice({
     },
     CreateVoucher: (state, action) => {
       state.unshift(action.payload);
+      state.forEach((item, index) => {
+        item.stt = index + 1;
+      });
     },
     UpdateVoucher: (state, action) => {
         const updatedVoucher = action.payload;
         const index = state.findIndex((voucher) => voucher.id === updatedVoucher.id);
-        console.log(index);
         if (index !== -1) {
           state[index] = updatedVoucher;
         }
@@ -22,7 +24,6 @@ const voucherSlice = createSlice({
   },
 });
 
-export const { SetVoucher, CreateVoucher, UpdateVoucher } =
-voucherSlice.actions;
+export const { SetVoucher, CreateVoucher, UpdateVoucher } = voucherSlice.actions;
 export default voucherSlice.reducer;
 export const GetVoucher = (state) => state.voucher;

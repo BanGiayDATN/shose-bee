@@ -20,8 +20,6 @@ import java.util.List;
 public interface VoucherRepository extends JpaRepository<Voucher,String> {
     @Query(value = """ 
             select 
-            ROW_NUMBER() OVER (ORDER BY vo.last_modified_date DESC ) as stt,
-                        
             vo.id as id,
             vo.code as code,
             vo.name as name,
@@ -72,4 +70,9 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
     List<Voucher> findExpiredVouchers(@Param("currentDate") Long currentDate);
     @Query("SELECT vo FROM Voucher vo WHERE vo.startDate = :currentDate")
     List<Voucher> findStartVouchers(@Param("currentDate") Long currentDate);
+    @Query("select vc from Voucher vc" +
+            " JOIN AccountVoucher avc on vc.id = avc.voucher.id" +
+            " JOIN Account  ac on ac.id = avc.account.id" +
+            " WHERE ac.id = :idAccount")
+    List<Voucher> getVoucherByIdAccount(@Param("idAccount") String idAccount);
 }

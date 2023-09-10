@@ -1,10 +1,12 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.product.FindProductRequest;
+import com.example.shose.server.dto.request.product.FindProductUseRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.CustomProductRespone;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.ProductResponse;
+import com.example.shose.server.dto.response.product.ProductUseRespone;
 import com.example.shose.server.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -51,9 +53,21 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT s FROM Product s WHERE s.code =:code AND s.id <> :id")
     Product getByNameExistence(@Param("code") String code, @Param("id") String id);
-
-    @Query("SELECT p FROM Product p where p.status = 'DANG_SU_DUNG'")
-    List<Product> getProductUse();
+    @Query(value = """
+            SELECT
+                p.id AS id,
+                p.name AS nameProduct,
+                p.code AS code,
+                p.status AS status
+            FROM product p            
+            WHERE (
+                  :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''
+                  OR p.code LIKE %:#{#req.keyword}% 
+                  OR p.name LIKE %:#{#req.keyword}%
+              ) and p.status = 'DANG_SU_DUNG'
+            ORDER BY p.last_modified_date DESC  
+            """, nativeQuery = true)
+    List<ProductUseRespone> getProductUse(@Param("req") FindProductUseRequest req);
 
     @Query(value = """ 
         SELECT p.name FROM product p WHERE ( :name IS NULL   OR :name LIKE '' OR p.name LIKE %:name% )

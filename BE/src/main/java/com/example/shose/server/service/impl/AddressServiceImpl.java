@@ -3,6 +3,7 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.FindAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
+import com.example.shose.server.dto.response.address.AddressAccountResponse;
 import com.example.shose.server.dto.response.address.AddressResponse;
 import com.example.shose.server.dto.response.address.AddressUserReponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
@@ -126,6 +127,16 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address getAddressByUserIdAndStatus(String id, Status status) {
         return addressRepository.getAddressByUserIdAndStatus(id, Status.DANG_SU_DUNG);
+    }
+
+    @Override
+    public AddressAccountResponse getAddressByAccountIdAndStatus(String idAccount) {
+        return addressRepository.getAddressByAccountIdAndStatus(idAccount);
+    }
+
+    @Override
+    public List<AddressAccountResponse> getListAddressByAcountId(String idAccount) {
+        return addressRepository.getListAddressByAcountId(idAccount);
     }
 
 }

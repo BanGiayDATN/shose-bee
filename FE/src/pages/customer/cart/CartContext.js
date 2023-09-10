@@ -15,7 +15,8 @@ const idAccount = localStorage.getItem("idAccount")
     if(idAccount!== null){
       getQuantityInCart(idAccount)
     }else{
-      setTotalQuantity(quantityInCartLocal.length)
+      const total = quantityInCartLocal.reduce((acc, item) => acc + item.quantity, 0);
+      setTotalQuantity(total)
     }
   },[])
 

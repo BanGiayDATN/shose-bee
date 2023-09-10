@@ -38,10 +38,11 @@ export class ProductApi {
       url: `/admin/product/${id}`,
     });
   };
-  static getProductUse = () => {
+  static getProductUse = (filter) => {
     return request({
       method: "GET",
       url: `/admin/product/use`,
+      params: filter,
     });
   };
 

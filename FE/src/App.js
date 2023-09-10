@@ -10,6 +10,7 @@ import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import Cart from "./pages/customer/cart/Cart";
 import Payment from "./pages/customer/payment/Payment";
+import PaymentAccount from "./pages/customer/payment/PaymentAccount";
 import { CartProvider }  from "./pages/customer/cart/CartContext";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
@@ -40,6 +41,7 @@ import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 import loading from "./../src/assets/images/s_discount_icon.png";
 import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
+import PayMentSuccess from "./pages/customer/payment/PaymentSuccess";
 import LoginManagement from "./pages/employee/login-management/LoginManagement";
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -118,6 +120,29 @@ function App() {
               </GuestGuard>
             }
           />
+           <Route
+            path="/payment-acc"
+            element={
+              <GuestGuard>
+                 <CartProvider>
+                <DashBoardCustomer>
+                  <PaymentAccount/>
+                </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+            <Route
+            path="/client/payment/payment-success"
+            element={
+              <GuestGuard>
+             
+                  <PayMentSuccess/>
+             
+              </GuestGuard>
+            }
+          />
+          
           <Route
             path="/login-management"
             element={

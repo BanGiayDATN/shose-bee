@@ -155,7 +155,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
              i.name as image,
              p.name as nameProduct,
              pd.price as price,
-             po.value as valuePromotion
+             sum(po.value) as valuePromotion
              
              from product_detail pd
              JOIN image i on i.id_product_detail = pd.id
@@ -165,8 +165,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
              JOIN color c on c.id = pd.id_color
               JOIN size s on s.id = pd.id_size
             JOIN category ca on ca.id = pd.id_category
-            where ca.id = :id
-
+            where ca.id = :id and (ppd.status ='DANG_SU_DUNG' OR ppd.status IS NULL)
+            group by pd.id
             """, nativeQuery = true)
     List<GetProductDetailByCategory> getProductDetailByCategory(@Param("id") String id);
 

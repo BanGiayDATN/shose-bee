@@ -24,4 +24,8 @@ public class VoucherClientRestController {
     public ResponseObject getByCode(@PathVariable("code") String code) {
         return new ResponseObject(voucherService.getByCode(code));
     }
+    @GetMapping("/account/{idAccount}")
+    public ResponseObject getVoucherByIdAccount(@PathVariable("idAccount") String idAccount) {
+        return new ResponseObject(voucherService.getVoucherByIdAccount(idAccount));
+    }
 }

@@ -144,7 +144,7 @@ function CardItem({
   return (
     <>
       <div>
-        <Card
+        <div
           to="/detail"
           className="card-item"
           onMouseEnter={() => setHovered(true)}
@@ -165,7 +165,7 @@ function CardItem({
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
           </Link>
-        </Card>
+        </div>
 
         <p
           className={`button-buy-now ${hovered ? "visible" : "hidden"}`}

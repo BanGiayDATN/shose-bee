@@ -58,5 +58,4 @@ public class VoucherRestController {
     public ResponseObject delete(@PathVariable("id") String id) {
         return new ResponseObject(voucherService.delete(id));
     }
-
 }
