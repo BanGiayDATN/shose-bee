@@ -9,6 +9,7 @@ import com.example.shose.server.dto.request.voucher.UpdateVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.common.PageableObject;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -22,4 +23,7 @@ public interface VoucherService {
     Voucher getById(String id);
     List<Voucher> expiredVoucher();
     List<Voucher> startVoucher();
+    Voucher getByCode(String code);
+
+    List<Voucher> getVoucherByIdAccount(String idAccount);
 }

@@ -25,7 +25,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -101,7 +100,7 @@
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>1.6.7</version> <!-- or the latest version available -->
+        <version>1.6.7</version> <!-- or the latest version available -->
         </dependency>
 
         <!-- Jakarta Activation Framework (required for JavaMail) -->

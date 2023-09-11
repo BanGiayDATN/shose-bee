@@ -1,6 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.address.FindAddressRequest;
+import com.example.shose.server.dto.response.address.AddressAccountResponse;
 import com.example.shose.server.dto.response.address.AddressResponse;
 import com.example.shose.server.dto.response.address.AddressUserReponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
@@ -102,6 +103,48 @@ public interface AddressRepository extends JpaRepository<Address, String> {
             nativeQuery = true
     )
     List<AddressUserReponse> findAddressByUserId(@Param("idUser") String idUser);
+
+    @Query(value = """
+            SELECT 
+                a.id AS id,
+                a.line AS line,
+                a.district AS district,
+                a.province AS province,
+                a.ward AS ward,
+                a.status AS status,
+                a.ward_code AS wardCode,
+                u.full_name AS fullName,
+                u.phone_number AS phoneNumber
+            FROM address a
+            JOIN user u on a.id_user = u.id
+            JOIN account acc on u.id = acc.id_user
+            WHERE acc.id = :idAccount and a.status = 'DANG_SU_DUNG'
+            
+                  """,
+            nativeQuery = true
+    )
+    AddressAccountResponse getAddressByAccountIdAndStatus(@Param("idAccount") String idAccount);
+    @Query(value = """
+            SELECT 
+                a.id AS id,
+                a.line AS line,
+                a.district AS district,
+                a.province AS province,
+                a.ward AS ward,
+                a.status AS status,
+                a.ward_code AS wardCode,
+                u.full_name AS fullName,
+                u.phone_number AS phoneNumber
+            FROM address a
+            JOIN user u on a.id_user = u.id
+            JOIN account acc on u.id = acc.id_user
+            WHERE acc.id = :idAccount
+            
+                  """,
+            nativeQuery = true
+    )
+    List<AddressAccountResponse> getListAddressByAcountId(@Param("idAccount") String idAccount);
+
 //    Address getOneAddressByStatus(@Param("status") Status status,@Param("idUser") String idUser);
 
 }

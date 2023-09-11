@@ -2,6 +2,7 @@ package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.product.CreateProductRequest;
 import com.example.shose.server.dto.request.product.FindProductRequest;
+import com.example.shose.server.dto.request.product.FindProductUseRequest;
 import com.example.shose.server.dto.request.product.UpdateProductRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.service.ProductService;
@@ -63,8 +64,8 @@ public class ProductRestController {
     }
 
     @GetMapping("/use")
-    public ResponseObject getProductUse(){
-        return  new ResponseObject(productService.getProductUse());
+    public ResponseObject getProductUse(@ModelAttribute final FindProductUseRequest request){
+        return  new ResponseObject(productService.getProductUse(request));
     }
 
     @GetMapping("/all-product")

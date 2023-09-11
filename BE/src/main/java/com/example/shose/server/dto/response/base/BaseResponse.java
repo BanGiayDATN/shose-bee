@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public interface BaseResponse {
 
-    @Value("#{target.stt}")
-    Integer getSTT();
 
     @Value("#{target.id}")
     String getId();

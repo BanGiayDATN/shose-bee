@@ -40,6 +40,7 @@ function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
   const [formErrors, setFormErrors] = useState({});
   const [formData, setFormData] = useState({});
+  const [formSearch, setFormSearch] = useState({});
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRowKeysDetail, setSelectedRowKeysDetail] = useState([]);
   const [detailProduct, setDetailProduct] = useState(false);
@@ -63,7 +64,7 @@ function CreateVoucherManagement() {
   useEffect(() => {
     loadDataProduct();
     console.log(loadDataProduct());
-  }, []);
+  }, [formSearch]);
 
   useEffect(() => {
     console.log(listProductDetail);
@@ -74,12 +75,10 @@ function CreateVoucherManagement() {
   }, [selectedRowKeysDetail]);
 
   useEffect(() => {
-    
-      for (const key of selectedRowKeys) {
-        getProdutDetailByproduct(key);
-      }
-      setListProductDetail(updatedListProductDetail);
-    
+    for (const key of selectedRowKeys) {
+      getProdutDetailByproduct(key);
+    }
+    setListProductDetail(updatedListProductDetail);
 
     console.log(selectedRowKeys);
   }, [selectedRowKeys]);
@@ -89,7 +88,7 @@ function CreateVoucherManagement() {
   );
 
   const loadDataProduct = () => {
-    ProductApi.getProductUse().then(
+    ProductApi.getProductUse(formSearch).then(
       (res) => {
         setList(res.data.data);
       },
@@ -115,7 +114,6 @@ function CreateVoucherManagement() {
   };
 
   const onSelectChange = (newSelectedRowKeys) => {
-    // setDetailProduct(true);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -135,6 +133,9 @@ function CreateVoucherManagement() {
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
     setFormErrors({ ...formErrors, [name]: "" });
+  };
+  const handleInputChangeSearch = (name, value) => {
+    setFormSearch({ ...formSearch, [name]: value });
   };
 
   const convertToLong = () => {
@@ -163,7 +164,7 @@ function CreateVoucherManagement() {
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
         value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-      
+
         endDate: !formData.endDate
           ? "Vui lòng chọn ngày kết thúc"
           : formData.startDate >= formData.endDate
@@ -208,7 +209,6 @@ function CreateVoucherManagement() {
       }
     );
     setModal(true);
-
   };
   const fields = [
     {
@@ -216,14 +216,14 @@ function CreateVoucherManagement() {
       type: "text",
       label: "Tên khuyễn mại",
       text: "tên khuyễn mại",
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "value",
       type: "number",
       label: "Giá trị giảm",
       text: "giá trị giảm",
-      class: "input-form",
+      class: "input-form-promotion",
       formatter: (value) => `${value}%`,
     },
     {
@@ -231,16 +231,15 @@ function CreateVoucherManagement() {
       type: "date",
       label: "Ngày bắt đầu",
       text: "ngày bắt đầu",
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "endDate",
       type: "date",
       label: "Ngày kết thúc",
       text: "ngày kết thúc",
-      class: "input-form",
+      class: "input-form-promotion",
     },
-
   ];
 
   const columns = [
@@ -318,15 +317,13 @@ function CreateVoucherManagement() {
       title: "Màu",
       dataIndex: "codeColor",
       key: "codeColor",
-      render: (text,record) => {
-        return(
+      render: (text, record) => {
+        return (
           <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            style={{ backgroundColor: record.codeColor }}
-        />
-        </div>
-        )
-        }
+            <Button style={{ backgroundColor: record.codeColor }} />
+          </div>
+        );
+      },
     },
 
     {
@@ -411,7 +408,6 @@ function CreateVoucherManagement() {
       render: (text) => {
         const genderClass =
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
-
 
         return (
           <button className={`gender ${genderClass}`}>
@@ -550,27 +546,39 @@ function CreateVoucherManagement() {
         </Col>
 
         <Col className="get-product" lg={{ span: 16, offset: 0 }}>
-          <Col>
+          <Col >
             <br></br>
             <br></br>
+            <h1>Sản phẩm</h1>
+
+            <div style={{ display: "flex", margin: 20,justifyContent:"center",alignItems:"center" }}>
+              <p>Tìm kiếm</p>{" "}
+              <Input
+                placeholder="Mã hoặc tên sản phẩm"
+                style={{ width: 400,height:40, marginLeft: 20 }}
+                onChange={(e) =>
+                  handleInputChangeSearch("keyword", e.target.value)
+                }
+              />
+            </div>
             <Table
               rowKey="id"
               columns={columns}
               rowSelection={rowSelection}
               dataSource={updatedList}
               pagination={{ pageSize: 5 }}
-              onRow={(record) => ({
-                onClick: () => {
-                  const newSelectedRowKeys = [...selectedRowKeys];
-                  if (newSelectedRowKeys.includes(record.id)) {
-                    const index = newSelectedRowKeys.indexOf(record.id);
-                    newSelectedRowKeys.splice(index, 1);
-                  } else {
-                    newSelectedRowKeys.push(record.id);
-                  }
-                  setSelectedRowKeys(newSelectedRowKeys);
-                },
-              })}
+              // onRow={(record) => ({
+              //   onClick: () => {
+              //     const newSelectedRowKeys = [...selectedRowKeys];
+              //     if (newSelectedRowKeys.includes(record.id)) {
+              //       const index = newSelectedRowKeys.indexOf(record.id);
+              //       newSelectedRowKeys.splice(index, 1);
+              //     } else {
+              //       newSelectedRowKeys.push(record.id);
+              //     }
+              //     setSelectedRowKeys(newSelectedRowKeys);
+              //   },
+              // })}
             />
           </Col>
           <Col>

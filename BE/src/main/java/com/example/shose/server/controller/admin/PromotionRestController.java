@@ -34,7 +34,6 @@ public class PromotionRestController {
 
     @PostMapping
     public ResponseObject add(@RequestBody CreatePromotionRequest request) {
-        System.out.println( request.getIdProductDetails());
         return new ResponseObject(promotionService.add(request));
     }
 
