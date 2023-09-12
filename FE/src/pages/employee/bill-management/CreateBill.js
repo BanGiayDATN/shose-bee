@@ -340,13 +340,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
       console.log("VoucherDetailApi");
       console.log(res);
+      if(res.data.data != null){
+        setVoucher({
+          idVoucher: res.data.data?.id,
+          beforPrice: res.data.data?.beforPrice,
+          afterPrice: res.data.data?.afterPrice,
+          discountPrice: res.data.data?.discountPrice,
+        })
+        setCodeVoucher(res.data.data?.name)
+      }
       setVoucher({
-        idVoucher: res.data.data?.id,
-        beforPrice: res.data.data?.beforPrice,
-        afterPrice: res.data.data?.afterPrice,
-        discountPrice: res.data.data?.discountPrice,
+        idVoucher: "",
+        beforPrice: 0,
+        afterPrice: 0,
+        discountPrice: 0,
       })
-      setCodeVoucher(res.data.data?.name)
+      
     })
   }, []);
 
