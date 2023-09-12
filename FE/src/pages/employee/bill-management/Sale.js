@@ -178,9 +178,10 @@ function Sale() {
   const onEdit = (targetKey, action) => {
     if (action === "add") {
       // add();
-    } else {
-      remove(targetKey,invoiceNumber);
-    }
+    } 
+    // else {
+    //   remove(targetKey,invoiceNumber);
+    // }
   };
 
 
