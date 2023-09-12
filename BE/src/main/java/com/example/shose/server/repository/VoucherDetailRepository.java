@@ -22,7 +22,7 @@ public interface VoucherDetailRepository extends JpaRepository<VoucherDetail,Str
     int deleteAllByIdBill(@Param("id") String idBill);
 
     @Query(value = """
-          SELECT  vode.id_voucher, vode.after_price, vode.befor_price, vode.discount_price, vo.code + ' - ' + vo.name AS name   FROM voucher_detail vode
+          SELECT  vode.id_voucher, vode.after_price, vode.befor_price, vode.discount_price, CONCAT(vo.code , ' - ' , vo.name)  AS name   FROM voucher_detail vode
                            LEFT JOIN bill bi ON bi.id = vode.id_bill
                            LEFT JOIN voucher vo ON vo.id = vode.id_voucher
                            WHERE bi.id  = :id
