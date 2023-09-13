@@ -836,7 +836,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     };
 
     if (isOpenDelivery) {
-      if ( !checkNotEmptyBill()) {
+      if (  !checkNotEmptyAddress) {
         if (totalBill > 0) {
           if (totaPayMent >= totalBill) {
             Modal.confirm({
