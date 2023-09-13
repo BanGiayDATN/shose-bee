@@ -8,16 +8,13 @@ import {
   Table,
   Modal,
   InputNumber,
-  Popconfirm,
   DatePicker,
 } from "antd";
 import { Link } from "react-router-dom";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
 import {
-  CreatePromotion,
   GetPromotion,
   SetPromotion,
-  UpdatePromotion,
 } from "../../../app/reducer/Promotion.reducer";
 import {
   faEdit,
@@ -25,7 +22,6 @@ import {
   faFilter,
   faKaaba,
   faListAlt,
-  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
@@ -431,7 +427,7 @@ const PromotionManagement = () => {
 
       <h3>
         {" "}
-        <FontAwesomeIcon icon={faListAlt} /> Danh sách khuyến mãi{" "}
+        <FontAwesomeIcon icon={faListAlt} /> Danh sách khuyến mại{" "}
       </h3>
       <hr></hr>
       <div className="manager-promotion">

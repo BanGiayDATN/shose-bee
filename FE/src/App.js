@@ -9,6 +9,9 @@ import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
 import Cart from "./pages/customer/cart/Cart";
+import Payment from "./pages/customer/payment/Payment";
+import PaymentAccount from "./pages/customer/payment/PaymentAccount";
+import { CartProvider }  from "./pages/customer/cart/CartContext";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
@@ -38,6 +41,7 @@ import Sale from "./pages/employee/bill-management/Sale";
 import UpdateProductDetailManagment from "./pages/employee/product-management/UpdateProductDetailManagment";
 import loading from "./../src/assets/images/s_discount_icon.png";
 import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
+import PayMentSuccess from "./pages/customer/payment/PaymentSuccess";
 import LoginManagement from "./pages/employee/login-management/LoginManagement";
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +49,17 @@ function App() {
   useEffect(() => {
     setIsLoading(false); // Giả sử trang đã tải xong sau khi component hiển thị
   }, []);
+
+//   window.addEventListener('beforeunload', function() {
+//     // Xóa dữ liệu trong localStorage
+//     localStorage.removeItem('data');
+// });
+
+// Bắt đầu lắng nghe sự kiện unload (trang bị đóng)
+// window.addEventListener('unload', function() {
+//     // Xóa dữ liệu trong localStorage
+//     localStorage.removeItem('idAccount');
+// });
   return (
     <div className="App">
       {isLoading && (
@@ -73,9 +88,11 @@ function App() {
             path="/home"
             element={
               <GuestGuard>
+                  <CartProvider>
                 <DashBoardCustomer>
                   <Home />
                 </DashBoardCustomer>
+                </CartProvider>
               </GuestGuard>
             }
           />
@@ -83,12 +100,49 @@ function App() {
             path="/cart"
             element={
               <GuestGuard>
+                 <CartProvider>
                 <DashBoardCustomer>
                   <Cart />
                 </DashBoardCustomer>
+                </CartProvider>
               </GuestGuard>
             }
           />
+           <Route
+            path="/payment"
+            element={
+              <GuestGuard>
+                 <CartProvider>
+                <DashBoardCustomer>
+                  <Payment/>
+                </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+           <Route
+            path="/payment-acc"
+            element={
+              <GuestGuard>
+                 <CartProvider>
+                <DashBoardCustomer>
+                  <PaymentAccount/>
+                </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+            <Route
+            path="/client/payment/payment-success"
+            element={
+              <GuestGuard>
+             
+                  <PayMentSuccess/>
+             
+              </GuestGuard>
+            }
+          />
+          
           <Route
             path="/login-management"
             element={

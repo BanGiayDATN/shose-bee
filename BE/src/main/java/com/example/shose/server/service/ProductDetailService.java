@@ -8,6 +8,7 @@ import com.example.shose.server.dto.request.productdetail.UpdateProductDetailReq
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
 import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
+import com.example.shose.server.dto.response.cart.ListSizeOfItemCart;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
@@ -50,5 +51,5 @@ public interface ProductDetailService {
     GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor, String nameSize);
 
 //    GetProductDetailInCart getProductDetailInCart()
-List<ProductDetail> listSizeByProductAndColor(String idProduct,String codeColor);
+List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);
 }

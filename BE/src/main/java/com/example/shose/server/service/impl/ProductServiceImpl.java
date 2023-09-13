@@ -2,11 +2,13 @@ package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.product.CreateProductRequest;
 import com.example.shose.server.dto.request.product.FindProductRequest;
+import com.example.shose.server.dto.request.product.FindProductUseRequest;
 import com.example.shose.server.dto.request.product.UpdateProductRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.CustomProductRespone;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.ProductResponse;
+import com.example.shose.server.dto.response.product.ProductUseRespone;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -91,8 +93,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getProductUse() {
-        return productRepository.getProductUse();
+    public List<ProductUseRespone> getProductUse(FindProductUseRequest request) {
+        return productRepository.getProductUse(request);
     }
 
     @Override

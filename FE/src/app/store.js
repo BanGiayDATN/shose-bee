@@ -11,6 +11,7 @@ import CustomerReducer from "./reducer/Customer.reducer";
 import AddressReducer from "./reducer/Address.reducer";
 import ProductDetailReducer from "./reducer/ProductDetail.reducer";
 import ColorReducer from "./reducer/Color.reducer";
+import VoucherReducer from "./reducer/Voucher.reducer";
 export const store = configureStore({
   reducer: {
     category: CategoryReducer,
@@ -25,6 +26,7 @@ export const store = configureStore({
     promotion: PromotionReducer,
     productDetail: ProductDetailReducer,
     color: ColorReducer,
+    voucher: VoucherReducer,
   },
 });
 

@@ -8,10 +8,16 @@ export class ProductDetailClientApi {
         });
       };
     
-      static getDetailProductOfClient = (id,idColor,nameSize)=>{
+      static getDetailProductOfClient = (id,codeColor,nameSize)=>{
         return request({
           method: "GET",
-          url: `/client/product-detail/${id}&&${idColor}&&${nameSize}`
+          url: `/client/product-detail/${id}&&${codeColor}&&${nameSize}`
+        });
+      };
+      static getListSizeCart = (id,codeColor)=>{
+        return request({
+          method: "GET",
+          url: `/client/product-detail/listSizeCart/${id}&&${codeColor}`
         });
       }
    

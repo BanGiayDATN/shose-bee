@@ -31,6 +31,7 @@
     margin-right:50px;
     padding:0;
     color:black;
+    border: #f6f1f1 1px solid;
 }
 .button-buy-now:hover {
     background-color: #ff4400;
@@ -42,8 +43,8 @@
     color:#ff4400;
 }
 .image-product{
-    width: 265px;
-    height: 280px;        
+    width: 330px;
+    height: 330px;        
 }
 .name-product{
     margin-top:10px;
@@ -58,6 +59,8 @@
     font-size: 12px;
     color: white;
     z-index: 1;
+    margin-top: 10px;
+    margin-left: -10px;
 }
 
 .price-product{

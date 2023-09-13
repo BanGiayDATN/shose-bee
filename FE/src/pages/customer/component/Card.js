@@ -41,7 +41,7 @@ function CardItem({
 
 
   const addToCard = () => {
-    if (!idAccountLocal) {
+    if (idAccountLocal===null) {
       const newCartItem = {
         idProductDetail: detailProduct.idProductDetail,
         name: detailProduct.nameProduct,
@@ -49,7 +49,8 @@ function CardItem({
         price: detailProduct.price,
         quantity: quantity,
         idProduct:detailProduct.idProduct,
-        codeColor:detailProduct.codeColor
+        codeColor:detailProduct.codeColor,
+        nameSize:detailProduct.nameSize
       };
       
      
@@ -75,8 +76,6 @@ function CardItem({
       });  
      
     } else {
-
-      
       const newCartItem = {
         idAccount:idAccountLocal,
         idProductDetail: detailProduct.idProductDetail,
@@ -145,7 +144,7 @@ function CardItem({
   return (
     <>
       <div>
-        <Card
+        <div
           to="/detail"
           className="card-item"
           onMouseEnter={() => setHovered(true)}
@@ -166,7 +165,7 @@ function CardItem({
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
           </Link>
-        </Card>
+        </div>
 
         <p
           className={`button-buy-now ${hovered ? "visible" : "hidden"}`}

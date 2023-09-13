@@ -39,6 +39,7 @@ const CategoryManagement = () => {
     if (data != null) {
       setListcategory(data);
     }
+    console.log(data);
   }, [data]);
 
   // seach  category

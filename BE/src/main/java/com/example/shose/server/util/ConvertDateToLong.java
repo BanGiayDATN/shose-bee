@@ -51,4 +51,7 @@ public class ConvertDateToLong {
         return now;
     }
 
+    public static void main(String[] args) {
+        System.out.println(new ConvertDateToLong().dateToLong(String.valueOf(new Date())));
+    }
 }

@@ -4,6 +4,8 @@ package com.example.shose.server.dto.request.voucher;
  */
 
 import com.example.shose.server.infrastructure.constant.Status;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;

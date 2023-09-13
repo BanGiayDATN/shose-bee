@@ -9,7 +9,7 @@ const DashBoardCustomer = ({ children }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 300) {
+      if (window.scrollY > 110) {
         setShowHeaderMenu(true);
       } else {
         setShowHeaderMenu(false);
@@ -25,14 +25,14 @@ const DashBoardCustomer = ({ children }) => {
     };
   }, []);
   return (
-    <div>
+    <div className="dashboard-customer">
       <div>
         <SalesHeader />
       </div>
-<div>
-<HeaderMenu />
-</div>
-      <div className={`header-menu ${showHeaderMenu ? 'visible' : 'hidden'}`}>
+      <div>
+        <HeaderMenu />
+      </div>
+      <div className={`header-menu ${showHeaderMenu ? "visible" : "hidden"}`}>
         <HeaderMenu />
       </div>
       <div>{children}</div>
