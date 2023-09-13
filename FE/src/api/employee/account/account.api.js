@@ -51,4 +51,11 @@ export class AccountApi {
       url: `/account/simple-employess`
     });
   };
+
+  static getAccountUserByIdBill = (idBill) => {
+    return request({
+      method: "GET",
+      url: `/account/detail-account/${idBill}`
+    });
+  };
 }

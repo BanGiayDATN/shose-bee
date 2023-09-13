@@ -1,6 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.response.LoginResponse;
+import com.example.shose.server.dto.response.account.AccountResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
 import com.example.shose.server.entity.User;
@@ -32,4 +33,10 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email AND ac.user.phoneNumber =:phoneNumber")
     Account resetPassword(@Param("email") String email , @Param("phoneNumber") String phoneNumber);
 
+    @Query(value = "SELECT ac.id, us.full_name AS fullName, us.phone_number AS phoneNumber,  us.email AS email" +
+            " FROM account ac\n" +
+            "LEFT JOIN user us ON us.id = ac.id_user\n" +
+            "LEFT JOIN bill bi ON bi.id_account = ac.id\n" +
+            "WHERE bi.id  = :idBill", nativeQuery = true)
+    AccountResponse getAccountUserByIdBill(@Param("idBill") String idBill );
 }
