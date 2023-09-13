@@ -138,10 +138,10 @@ public class BillServiceImpl implements BillService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        optional.get().setNote(request.getNote());
-        optional.get().setUserName(request.getUserName());
-        optional.get().setAddress(request.getAddress());
-        optional.get().setPhoneNumber(request.getPhoneNumber());
+        optional.get().setNote(request.getNote().trim());
+        optional.get().setUserName(request.getUserName().trim());
+        optional.get().setAddress(request.getAddress().trim());
+        optional.get().setPhoneNumber(request.getPhoneNumber().trim());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
@@ -260,10 +260,10 @@ public class BillServiceImpl implements BillService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        optional.get().setNote(request.getNote());
-        optional.get().setUserName(request.getUserName());
-        optional.get().setAddress(request.getAddress());
-        optional.get().setPhoneNumber(request.getPhoneNumber());
+        optional.get().setNote(request.getNote().trim());
+        optional.get().setUserName(request.getUserName().trim());
+        optional.get().setAddress(request.getAddress().trim());
+        optional.get().setPhoneNumber(request.getPhoneNumber().trim());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
