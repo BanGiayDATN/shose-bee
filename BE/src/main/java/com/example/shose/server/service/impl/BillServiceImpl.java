@@ -347,10 +347,10 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         updateBill.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
-        updateBill.get().setAddress(request.getAddress());
-        updateBill.get().setUserName(request.getName());
-        updateBill.get().setPhoneNumber(request.getPhoneNumber());
-        updateBill.get().setNote(request.getNote());
+        updateBill.get().setAddress(request.getAddress().trim());
+        updateBill.get().setUserName(request.getName().trim());
+        updateBill.get().setPhoneNumber(request.getPhoneNumber().trim());
+        updateBill.get().setNote(request.getNote().trim());
         return billRepository.save(updateBill.get());
     }
 
