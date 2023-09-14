@@ -179,7 +179,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setPhoneNumber(request.getPhoneNumber().trim());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
-        optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
+        optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
 
         List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
         billDetailResponse.parallelStream().forEach(item ->{
@@ -312,7 +312,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setPhoneNumber(request.getPhoneNumber().trim());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
-        optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
+        optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
         if(request.getIdUser() != null){
             Optional<Account> user  = accountRepository.findById(request.getIdUser());
             if (user.isPresent()) {
