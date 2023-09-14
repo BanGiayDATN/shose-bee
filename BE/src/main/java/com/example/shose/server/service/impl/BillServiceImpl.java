@@ -173,10 +173,10 @@ public class BillServiceImpl implements BillService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        optional.get().setNote(request.getNote().trim());
-        optional.get().setUserName(request.getUserName().trim());
-        optional.get().setAddress(request.getAddress().trim());
-        optional.get().setPhoneNumber(request.getPhoneNumber().trim());
+        optional.get().setNote(request.getNote());
+        optional.get().setUserName(request.getUserName());
+        optional.get().setAddress(request.getAddress());
+        optional.get().setPhoneNumber(request.getPhoneNumber());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
@@ -187,13 +187,15 @@ public class BillServiceImpl implements BillService {
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
+
             productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
             productDetailRepository.save(productDetail.get());
         });
-        billDetailRepository.deleteAllByIdBill(optional.get().getId());
         billHistoryRepository.deleteAllByIdBill(optional.get().getId());
+        billDetailRepository.deleteAllByIdBill(optional.get().getId());
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
+
 
         if(request.getIdUser() != null){
             Optional<Account> user  = accountRepository.findById(request.getIdUser());
@@ -306,10 +308,10 @@ public class BillServiceImpl implements BillService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        optional.get().setNote(request.getNote().trim());
-        optional.get().setUserName(request.getUserName().trim());
-        optional.get().setAddress(request.getAddress().trim());
-        optional.get().setPhoneNumber(request.getPhoneNumber().trim());
+        optional.get().setNote(request.getNote());
+        optional.get().setUserName(request.getUserName());
+        optional.get().setAddress(request.getAddress());
+        optional.get().setPhoneNumber(request.getPhoneNumber());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
@@ -383,6 +385,19 @@ public class BillServiceImpl implements BillService {
             voucherDetailRepository.save(voucherDetail);
         });
 
+        request.getPaymentsMethodRequests().forEach(item -> {
+            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN){
+                PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                        .method(item.getMethod())
+                        .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                        .employees(optional.get().getEmployees())
+                        .totalMoney(item.getTotalMoney())
+                        .description(item.getActionDescription())
+                        .bill(optional.get())
+                        .build();
+                paymentsMethodRepository.save(paymentsMethod);
+            }
+        });
         return true;
     }
 

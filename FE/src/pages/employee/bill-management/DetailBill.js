@@ -1062,7 +1062,7 @@ function DetailBill() {
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
             ? "Chuyển khoản"
-            : "Chuyển khoản và tiền mặt"}
+            : "Thẻ"}
         </span>
       ),
     },
