@@ -835,8 +835,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       openDelivery: isOpenDelivery,
     };
 
+    console.log(billRequest);
+    console.log(address);
+    console.log(billRequest.userName != "");
     if (isOpenDelivery) {
-      if (  !checkNotEmptyAddress) {
+      if (  !checkNotEmptyAddress() && billRequest.phoneNumber != "" && billRequest.userName != "") {
         if (totalBill > 0) {
           if (totaPayMent >= totalBill) {
             Modal.confirm({
