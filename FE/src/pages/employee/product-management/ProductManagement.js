@@ -20,7 +20,6 @@ import { Option } from "antd/es/mentions";
 
 const ProductManagement = () => {
   const [listProduct, setListProduct] = useState([]);
-  const dispatch = useAppDispatch();
   const [modaleDetail, setModalDetail] = useState(false);
 
   const handleSubmitSearch = (event) => {

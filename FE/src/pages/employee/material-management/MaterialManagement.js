@@ -115,6 +115,11 @@ const MaterialManagement = () => {
     loadData();
   }, []);
 
+  const listMaterailWithStt = listMaterail.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
+
   const columns = [
     {
       title: "STT",
@@ -254,7 +259,7 @@ const MaterialManagement = () => {
         </div>
         <div style={{ marginTop: "25px" }}>
           <Table
-            dataSource={listMaterail}
+            dataSource={listMaterailWithStt}
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 3 }}

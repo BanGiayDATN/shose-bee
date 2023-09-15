@@ -257,7 +257,7 @@ const UpdateProductDetailManagment = () => {
               value={record.price}
               onChange={(value) => handlePriceChange(record.id, value)}
               style={{ width: "100%" }}
-              min={0}
+              min={100000}
               step={1000}
               formatter={(value) => `${formatCurrency(value)}`}
               parser={(value) => value.replace(/\D/g, "")}
@@ -699,8 +699,8 @@ const UpdateProductDetailManagment = () => {
                 defaultValue=""
               >
                 <Option value="">Tất cả</Option>
-                <Option value="DANG_SU_DUNG">Đang sử dung</Option>
-                <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+                <Option value="DANG_SU_DUNG">Đang kinh doanh</Option>
+                <Option value="KHONG_SU_DUNG">Không kinh doanh</Option>
               </Select>
             </Col>
             <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
