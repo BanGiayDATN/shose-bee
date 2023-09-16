@@ -164,8 +164,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    LEFT JOIN (
               SELECT
                   pd.id as pd_id,
-                  SUM(po.value) as valuePromotion,
-                  ppd.status as status
+                  SUM(po.value) as valuePromotion
               FROM product_detail pd
                        LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                        LEFT JOIN promotion po ON po.id = ppd.id_promotion
@@ -177,7 +176,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    JOIN size s ON s.id = pd.id_size
                    LEFT JOIN image i ON i.id_product_detail = pd.id
                    JOIN category ca on ca.id = pd.id_category
-          where ca.id = :id and (promotion_summary.status ='DANG_SU_DUNG' OR promotion_summary.status IS NULL)
+          where ca.id = :id 
           group by pd.id
                  """, nativeQuery = true)
     List<GetProductDetailByCategory> getProductDetailByCategory(@Param("id") String id);
@@ -204,7 +203,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                          LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                          LEFT JOIN promotion po ON po.id = ppd.id_promotion
             
-                GROUP BY pd.id
+                GROUP BY pd.id , ppd.status
             ) promotion_summary ON pd.id = promotion_summary.pd_id
             
                      JOIN product p ON pd.id_product = p.id
@@ -310,6 +309,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
              JOIN color c on c.id = pd.id_color
              JOIN size s on s.id = pd.id_size
             where p.id = :id and c.code = :codeColor and s.name =:nameSize
+            GROUP BY p.id, pd.id, p.name, pd.price, pd.quantity, REPLACE(c.code, '#','%23'), s.name
             """, nativeQuery = true)
 
     GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor,@Param("nameSize") String nameSize);
