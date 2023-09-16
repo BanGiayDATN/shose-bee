@@ -18,7 +18,6 @@ import { useAppDispatch, useAppSelector } from "../../../../app/hook";
 dayjs.extend(utc);
 function UpdateVoucherManagement({ modalDetail, setModalDetail, id }) {
   const [formData, setFormData] = useState({});
-  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     if (id !== "") {

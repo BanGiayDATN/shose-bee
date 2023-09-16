@@ -1,40 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import {
-  Row,
-  Col,
-  Form,
-  InputNumber,
-  Select,
-  DatePicker,
-  Input,
-  Popconfirm,
-  Button,
-  Table,
-  Modal,
-} from "antd";
-import {
-  faEdit,
-  faEye,
-  faFilter,
-  faKaaba,
-  faListAlt,
-  faPlus,
+  faBookmark,
+  faEye
 } from "@fortawesome/free-solid-svg-icons";
-import { LeftOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Row,
+  Select,
+  Table,
+} from "antd";
+import React, { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { ProductApi } from "../../../api/employee/product/product.api";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { ProductApi } from "../../../api/employee/product/product.api";
+import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import {
   GetProductDetail,
   SetProductDetail,
 } from "../../../app/reducer/ProductDetail.reducer";
+import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
 
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
@@ -287,12 +281,45 @@ function CreateVoucherManagement() {
       title: "Ảnh sản phẩm",
       dataIndex: "image",
       key: "image",
-      render: (text) => (
-        <img
-          src={text}
-          alt="Ảnh sản phẩm"
-          style={{ width: "70px", borderRadius: "5px" }}
-        />
+      render: (text, record) => (
+        <div style={{ width: "90px", height: "90px" }}>
+          <div
+            style={{
+              backgroundImage: `url(${text})`,
+              width: "100%",
+              height: "100%",
+              backgroundSize: "cover", // Đặt kích thước để hình ảnh bao phủ toàn bộ phần tử
+              backgroundPosition: "center", // Đặt vị trí của hình ảnh là trung tâm
+              borderRadius: "5px",
+            }}
+          >
+            {record.value !== null && (
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "3em",
+                    color: "#ffcc00",
+                    marginTop: -10,
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: -10,
+                    left: 0,
+                    fontSize: "11px",
+                    color: "black", // Màu của văn bản
+                    zIndex: 1, // Đặt độ sâu trên cùng
+                    textAlign: "center",
+                  }}
+                >
+                  Giảm {record.value}%
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       ),
     },
     {
@@ -546,16 +573,23 @@ function CreateVoucherManagement() {
         </Col>
 
         <Col className="get-product" lg={{ span: 16, offset: 0 }}>
-          <Col >
+          <Col>
             <br></br>
             <br></br>
             <h1>Sản phẩm</h1>
 
-            <div style={{ display: "flex", margin: 20,justifyContent:"center",alignItems:"center" }}>
+            <div
+              style={{
+                display: "flex",
+                margin: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <p>Tìm kiếm</p>{" "}
               <Input
                 placeholder="Mã hoặc tên sản phẩm"
-                style={{ width: 400,height:40, marginLeft: 20 }}
+                style={{ width: 400, height: 40, marginLeft: 20 }}
                 onChange={(e) =>
                   handleInputChangeSearch("keyword", e.target.value)
                 }
