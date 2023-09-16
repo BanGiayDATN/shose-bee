@@ -56,6 +56,23 @@ import { Navigate } from "react-router-dom";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { VoucherDetailApi } from "../../../api/employee/voucherDetail/VoucherDetail.api";
 
+function generateUniqueRandomNumber(length) {
+  const numbers = new Set();
+  while (numbers.size < length) {
+    const number = generateRandomNumber(length);
+    numbers.add(number);
+  }
+  return numbers.values().next().value;
+}
+
+function generateRandomNumber(length) {
+  const digits = Array(length).fill('0');
+  for (let i = 0; i < length; i++) {
+    digits[i] = String.fromCharCode(Math.floor(Math.random() * 10) + '0');
+  }
+  return digits.join('');
+}
+
 function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
@@ -1584,7 +1601,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const submitCodeTransactionNext = (e) =>{
     const data = {
         vnp_Ammount: totalMoneyPayMent,
-        vnp_TxnRef: billRequest.code,
+        vnp_TxnRef: billRequest.code + "-" + generateUniqueRandomNumber(1),
       };
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
          setPayMentVnPay(true);
@@ -2702,7 +2719,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         height: "37px",
                       }}
                       customInput={Input}
-                      value={totalMoneyPayMent}
+                      defaultValue={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
@@ -2726,10 +2743,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     width: "98%",
                     alignItems: "center",
                   }}
-
                   disabled={item.value != "TIEN_MAT" ? 
-                  (item.value != "TIEN_MAT" && totalMoneyPayMent <= 1000 ? true : false) : 
-                  (item.value == "TIEN_MAT" && totalMoneyPayMent <= 100 ? true : false)}
+                  (item.value != "TIEN_MAT" && (totalMoneyPayMent < 1000 || totalMoneyPayMent == "") ? true : false) : 
+                  (item.value == "TIEN_MAT" && (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")  ? true : false)}
                 >
                   {item.label}
                 </Button>

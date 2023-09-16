@@ -987,20 +987,20 @@ function DetailBill() {
       key: "statusBill",
       render: (statusBill) => (
         <span>
-          {statusBill == "TAO_HOA_DON"
-            ? "Tạo Hóa đơn"
-            : statusBill == "CHO_XAC_NHAN"
+          { statusBill === "TAO_HOA_DON"
             ? "Chờ xác nhận"
+            : statusBill === "CHO_XAC_NHAN"
+            ? "Xác nhận"
             : statusBill === "CHO_VAN_CHUYEN"
             ? "Chờ vận chuyển"
             : statusBill === "VAN_CHUYEN"
             ? "Đang vận chuyển"
             : statusBill === "DA_THANH_TOAN"
             ? "Đã thanh toán"
-            : statusBill === "KHONG_TRA_HANG"
-            ? "Thành công"
             : statusBill === "TRA_HANG"
             ? "Trả hàng"
+            : statusBill === "KHONG_TRA_HANG"
+            ? "Thành công"
             : "Đã hủy"}
         </span>
       ),
