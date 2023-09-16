@@ -74,8 +74,7 @@ function Payment() {
     setTotalBillToPay(totalBill);
     formBillChange("afterPrice",totalBill)
     const updatedListproductOfBill = listproductOfBill.map((item) => {
-      // Tạo một bản sao của phần tử item bằng cách bỏ trường nameProduct và nameSize
-      const { nameProduct, nameSize, ...rest } = item;
+      const { nameProduct, nameSize,image, ...rest } = item;
       return rest;
     });
     setFormBill((prevFormBill) => ({
@@ -307,7 +306,6 @@ function Payment() {
           <Row>
             <Col
               lg={{ span: 16, offset: 4 }}
-              // style={{ height: "1000px" }}
               className="bill-content"
             >
               <div className="info-shipping">
@@ -511,7 +509,8 @@ function Payment() {
                 </div>
               </div>
               <div className="info-bill-payment">
-                <div className="title-bill-payment">ĐƠN HÀNG</div>
+              <div className="content-info-bill-payment">
+              <div className="title-bill-payment">ĐƠN HÀNG</div>
                 <div
                   style={{
                     borderBottom: "1px solid #c5bdbd",
@@ -624,7 +623,7 @@ function Payment() {
                   </p>
                 </div>
 
-                <div style={{ display: "flex", marginBottom: "30px" }}>
+                <div style={{ display: "flex", marginBottom: "50px" }}>
                   <p style={{ fontSize: "20px", fontWeight: "500" }}>
                     TỔNG CỘNG
                   </p>{" "}
@@ -643,6 +642,7 @@ function Payment() {
                 <div className="button-submit-buy" onClick={payment}>
                   ĐẶT HÀNG
                 </div>
+              </div>
               </div>
             </Col>
           </Row>

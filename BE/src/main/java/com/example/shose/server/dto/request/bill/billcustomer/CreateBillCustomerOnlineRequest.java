@@ -31,7 +31,7 @@ public class CreateBillCustomerOnlineRequest {
     private BigDecimal totalMoney;
     private String paymentMethod;
 
-    private List<BillDetailCustomerOnline> billDetail;
+    private List<BillDetailOnline> billDetail;
     private BigDecimal afterPrice;
 
     private String idVoucher;

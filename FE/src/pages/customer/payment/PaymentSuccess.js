@@ -6,8 +6,7 @@ import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import { faSquareCheck,faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 function PayMentSuccess() {
-  
-
+  const idAccount = localStorage.getItem("idAccount");
 const urlObject = new URL(window.location.href);
 const vnp_ResponseCode = urlObject.searchParams.get("vnp_ResponseCode");
 const vnp_Amount = urlObject.searchParams.get("vnp_Amount");
@@ -26,12 +25,24 @@ const formatMoney = (price) => {
     );
   };
   const onPayment =(formBill) => {
-    BillClientApi.createBillOnline(formBill).then(
-      (res) => {},
-      (err) => {
-        console.log(err);
-      }
-    )
+    if(idAccount!== null){
+      BillClientApi.createBillAccountOnline(formBill).then(
+        (res) => {},
+        (err) => {
+          console.log(err);
+        }
+      )
+    }else{
+      BillClientApi.createBillOnline(formBill).then(
+        (res) => {},
+        (err) => {
+          console.log(err);
+        }
+      )
+    }
+   
+   
+    
   }
     return ( <>
 

@@ -20,5 +20,23 @@ export class ProductDetailClientApi {
           url: `/client/product-detail/listSizeCart/${id}&&${codeColor}`
         });
       }
+      static getDetailProductHavePromotion = (pageNo) => {
+        return request({
+          method: "GET",
+          url: `/client/product-detail/have-promotion?page=${pageNo}&size=12`
+        });
+      };
+      static getDetailProductNew = (pageNo) => {
+        return request({
+          method: "GET",
+          url: `/client/product-detail/new?page=${pageNo}&size=12`
+        });
+      };
+      static getDetailProductSellMany = (pageNo) => {
+        return request({
+          method: "GET",
+          url: `/client/product-detail/sell-many?page=${pageNo}&size=12`
+        });
+      };
    
 }

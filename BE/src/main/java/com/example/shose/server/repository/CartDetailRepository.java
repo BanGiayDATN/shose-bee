@@ -16,4 +16,5 @@ public interface CartDetailRepository extends JpaRepository<CartDetail,String> {
 
     List<CartDetail> getCartDetailByCart_Id(String idCart);
 
+    List<CartDetail> getCartDetailByCart_IdAndProductDetail_Id(String idCart,String idProductDeatail);
 }

@@ -30,8 +30,9 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
     setFormData({ ...formData, [name]: value });
   };
   useEffect(() => {
+    console.log(id);
     if (id !== "") {
-      detailVoucher();
+      detailVoucher(id);
     }
   }, [id]);
   useEffect(() => {
@@ -93,7 +94,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
       });
   };
 
-  const detailVoucher = () => {
+  const detailVoucher = (id) => {
     VoucherApi.getOne(id).then(
       (res) => {
         const voucherData = res.data.data;
@@ -113,7 +114,6 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
   };
   const closeModal = () => {
     setModalUpdate(false);
-    setFormData([]);
     setFormErrors([]);
   };
 

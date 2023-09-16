@@ -1,5 +1,6 @@
 package com.example.shose.server.controller.client;
 
+import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
@@ -27,5 +28,10 @@ public class BillClientRestController {
     public ResponseObject create(@RequestBody CreateBillCustomerOnlineRequest request)  {
         return new ResponseObject(billService.createBillCustomerOnlineRequest(request));
     }
+    @PostMapping("/account")
+    public ResponseObject create(@RequestBody CreateBillAccountOnlineRequest request)  {
+        return new ResponseObject(billService.createBillAccountOnlineRequest(request));
+    }
+
 
 }

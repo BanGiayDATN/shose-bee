@@ -3,7 +3,6 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.ProductDetailDTO;
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
-import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
@@ -11,9 +10,9 @@ import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.cart.ListSizeOfItemCart;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
+import com.example.shose.server.dto.response.productdetail.GetProductDetail;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.dto.response.productdetail.GetProductDetailInCart;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.entity.Category;
 import com.example.shose.server.entity.Color;
@@ -45,6 +44,9 @@ import com.example.shose.server.util.RandomNumberGenerator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
@@ -304,12 +306,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.findAllByIdProduct(id);
     }
 
-
-//    @Override
-//    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
-//        return productDetailRepository.getAllProductDetail(req);
-//    }
-
     @Override
     public GetDetailProductOfClient getDetailProductOfClient(String id, String codeColor, String nameSize) {
         return productDetailRepository.getDetailProductOfClient(id, codeColor,nameSize);
@@ -326,6 +322,21 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public List<GetProductDetailByCategory> GetProductDetailByCategory(String id) {
         return productDetailRepository.getProductDetailByCategory(id);
+    }
+
+    @Override
+    public Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable) {
+        return productDetailRepository.getProductDetailHavePromotion(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+    }
+
+    @Override
+    public Page<GetProductDetail> getProductDetailNew(Pageable pageable) {
+        return productDetailRepository.getProductDetailNew(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+    }
+
+    @Override
+    public Page<GetProductDetail> getProductDetailSellMany(Pageable pageable) {
+        return productDetailRepository.getProductDetailSellMany(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
     }
 
 
