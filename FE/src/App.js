@@ -8,6 +8,7 @@ import AuthGuard from "./guard/AuthGuard";
 import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
+import Products from "./pages/customer/products/Products";
 import Cart from "./pages/customer/cart/Cart";
 import Payment from "./pages/customer/payment/Payment";
 import PaymentAccount from "./pages/customer/payment/PaymentAccount";
@@ -91,6 +92,18 @@ function App() {
                   <CartProvider>
                 <DashBoardCustomer>
                   <Home />
+                </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+           <Route
+            path="/products"
+            element={
+              <GuestGuard>
+                  <CartProvider>
+                <DashBoardCustomer>
+                  <Products/>
                 </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>

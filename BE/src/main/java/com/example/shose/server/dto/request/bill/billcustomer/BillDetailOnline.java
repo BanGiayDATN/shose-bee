@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 @Getter
 @Setter
-public class BillDetailCustomerOnline {
+public class BillDetailOnline {
     private String  idProductDetail;
     private BigDecimal price;
     private Integer quantity;
