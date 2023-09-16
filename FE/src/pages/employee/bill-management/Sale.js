@@ -18,6 +18,7 @@ import {
 import moment from "moment";
 import CreateBill from "./CreateBill";
 import { toast } from "react-toastify";
+import './sale.css'
 
 function Sale() {
   const [invoiceNumber, setInvoiceNumber] = useState(0);
@@ -131,10 +132,11 @@ function Sale() {
   };
 
   const remove = (targetKey, invoiceNumbers, items) => {
-    console.log(invoiceNumbers);
-    if(invoiceNumbers > 1){
+    console.log(invoiceNumber);
+    if(invoiceNumber > 1){
       const targetIndex = items.findIndex((pane) => pane.key === targetKey);
       const newPanes = items.filter((pane) => pane.key !== targetKey);
+      console.log(newPanes)
       if (newPanes.length > 0 && targetIndex >= 0) {
         const { key } =
             newPanes[
@@ -149,19 +151,7 @@ function Sale() {
       console.log();
       setInvoiceNumber(invoiceNumber - 1);
     }else{
-      const targetIndex = items.findIndex((pane) => pane.key === targetKey);
-      const newPanes = items.filter((pane) => pane.key !== targetKey);
-      if (newPanes.length > 0 && targetIndex >= 0) {
-        const { key } =
-            newPanes[
-                targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
-                ];
-        setActiveKey(key);
-        setChangTab(key);
-        dispatch(updateKeyBillAtCounter(key))
-        dispatch(getAllBillWait(newPanes));
-      }
-      
+      dispatch(getAllBillWait([]));
       
       BillApi.getCodeBill().then((res) => {
         const newActiveKey = `${newTabIndex.current}`;

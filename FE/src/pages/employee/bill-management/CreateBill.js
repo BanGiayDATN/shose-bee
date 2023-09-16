@@ -182,8 +182,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     });
   }
 
-  const updateBillWhenSavePayMent = (dataPayment) =>{
-    var newProduct = products.map((product) => ({
+  const updateBillWhenSavePayMent = (dataPaymentRequest) =>{
+
+    if(dataPaymentRequest != [undefined]){
+      var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
@@ -227,7 +229,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       typeBill: typeBill,
       moneyShip: shipFee,
       billDetailRequests: newProduct,
-      paymentsMethodRequests: dataPayment,
+      paymentsMethodRequests: dataPaymentRequest,
       vouchers: newVoucher,
       idUser: idAccount,
       deliveryDate: dayShip,
@@ -236,6 +238,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     };
     BillApi.updateBillWait(data).then((res) => {
     });
+    }
+    
   }
 
   const ChangeBillRequest = (filleName, value) => {
@@ -323,6 +327,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       )
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
+      console.log("datapayment")
+    console.log(res)
+
       const data = res.data.data.map((item) => {
         return {
           actionDescription: "",
@@ -339,22 +346,31 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     })
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
       console.log("VoucherDetailApi");
-      console.log(res);
+      console.log(res.data.data);
       if(res.data.data != null){
         setVoucher({
-          idVoucher: res.data.data?.id,
-          beforPrice: res.data.data?.beforPrice,
-          afterPrice: res.data.data?.afterPrice,
-          discountPrice: res.data.data?.discountPrice,
+          idVoucher: res.data.data.id,
+          beforPrice: res.data.data.beforPrice,
+          afterPrice: res.data.data.afterPrice,
+          discountPrice: res.data.data.discountPrice,
         })
+        console.log({
+          idVoucher: res.data.data.id,
+          beforPrice: res.data.data.beforPrice,
+          afterPrice: res.data.data.afterPrice,
+          discountPrice: res.data.data.discountPrice
+          ,
+        });
         setCodeVoucher(res.data.data?.name)
+      }else{
+        setVoucher({
+          idVoucher: "",
+          beforPrice: 0,
+          afterPrice: 0,
+          discountPrice: 0,
+        })
       }
-      setVoucher({
-        idVoucher: "",
-        beforPrice: 0,
-        afterPrice: 0,
-        discountPrice: 0,
-      })
+     
       
     })
   }, []);
@@ -695,7 +711,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         window.open(res.data.data, "_self");
        
       });
-      updateBillWhenSavePayMent(dataPayment)
+      updateBillWhenSavePayMent([...dataPayment, {
+        actionDescription: "",
+        method: method,
+        totalMoney: totalMoneyPayMent,
+        status: "THANH_TOAN",
+      }])
     } else if (method != "CHUYEN_KHOAN" &&  totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -835,8 +856,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       openDelivery: isOpenDelivery,
     };
 
+    console.log(billRequest);
+    console.log(address);
+    console.log(billRequest.userName != "");
     if (isOpenDelivery) {
-      if (  !checkNotEmptyAddress() &&  billRequest.userName != "" && billRequest.phoneNumber != "") {
+      if (  !checkNotEmptyAddress() && billRequest.phoneNumber != "" && billRequest.userName != "") {
         if (totalBill > 0) {
           if (totaPayMent >= totalBill) {
             Modal.confirm({
@@ -2736,17 +2760,17 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       }, 0)
                   )
                 : formatCurrency(
-                    dataPayment.reduce((accumulator, currentValue) => {
-                      return accumulator + currentValue.totalMoney;
-                    }, 0) -
-                      products.reduce((accumulator, currentValue) => {
-                        return (
-                          accumulator +
-                          currentValue.price * currentValue.quantity
-                        );
-                      }, 0) +
-                      shipFee -
-                      voucher.discountPrice
+                  dataPayment.reduce((accumulator, currentValue) => {
+                    return accumulator + currentValue.totalMoney;
+                  }, 0) - 
+                  (
+                    (products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator +
+                        currentValue.price * currentValue.quantity
+                      );
+                    }, 0) + shipFee)  - voucher.discountPrice
+                  )
                   )}
             </Col>
           </Row>
