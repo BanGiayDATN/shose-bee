@@ -138,14 +138,13 @@ const CustomerManagement = () => {
     });
     setStartDate(initialStartDate);
     setEndDate(initialEndDate);
-    filterByDateOfBirthRange(initialStartDate, initialEndDate);
     setListaccount(
       initialCustomerList.map((customer, index) => ({
         ...customer,
         stt: index + 1,
       }))
     );
-    loadData();
+    setAgeRange([0, 100]);
   };
   const filterByAgeRange = (minAge, maxAge) => {
     if (minAge === 0 && maxAge === 100) {
