@@ -29,6 +29,7 @@ function Home() {
     if (firstCategoryId !== null) {
       getProductDetailByCategory(firstCategoryId);
     }
+    
   }, [firstCategoryId]);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ function Home() {
     getCategory();
     console.log(listCategory);
     setKeyTab("1");
+    console.log(firstCategoryId);
   }, []);
   useEffect(() => {
     getDetailProduct(keyTab);
@@ -140,15 +142,15 @@ function Home() {
 
   const itemsPerPage = 3;
   const [currentIndex, setCurrentIndex] = useState(0);
-  useEffect(() => {
-    // Thiết lập một interval để tự động chuyển ảnh sau một khoảng thời gian
-    const intervalId = setInterval(() => {
-      next();
-    }, 4000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
+  // useEffect(() => {
+  //   // Thiết lập một interval để tự động chuyển ảnh sau một khoảng thời gian
+  //   const intervalId = setInterval(() => {
+  //     next();
+  //   }, 10000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
 
-    // Xóa interval khi component unmount để tránh lỗi memory leak
-    return () => clearInterval(intervalId);
-  }, [currentIndex]);
+  //   // Xóa interval khi component unmount để tránh lỗi memory leak
+  //   return () => clearInterval(intervalId);
+  // }, [currentIndex]);
   const totalPages = Math.ceil(
     listProductDetailByCategory.length / itemsPerPage
   );

@@ -129,6 +129,7 @@ function Cart() {
     CartClientApi.listCart(id).then(
       (res) => {
         const respone = res.data.data;
+        console.log(respone);
         setCart(respone);
       },
       (err) => {
@@ -538,7 +539,7 @@ function Cart() {
                                 marginRight: 50,
                                 marginLeft: 60,
                               }}
-                              src={item.image}
+                              src={item.image.split(",")[0]}
                               alt="..."
                             />
                           </div>

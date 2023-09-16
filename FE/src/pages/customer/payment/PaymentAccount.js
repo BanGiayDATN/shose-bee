@@ -262,7 +262,7 @@ function PaymentAccount() {
                   >
                     <img
                       className="img-product-bill-acc"
-                      src={item.image}
+                      src={item.image.split(",")[0]}
                       alt="..."
                     />
                     <span style={{ marginLeft: "5%" }}>{item.nameProduct}</span>

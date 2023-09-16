@@ -216,35 +216,36 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 """, nativeQuery = true)
     Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable);
     @Query(value = """
-            SELECT
-                p.id as idProduct,
-                pd.id as idProductDetail,
-                REPLACE(c.code, '#', '%23') as codeColor,
-                s.name as nameSize,
-                GROUP_CONCAT(i.name) as image,
-                p.name as nameProduct,
-                pd.price as price,
-                promotion_summary.valuePromotion as valuePromotion,
-                pd.created_date as createdDate
-                    
-            FROM product_detail pd
-                     LEFT JOIN (
-                SELECT
-                    pd.id as pd_id,
-                    SUM(po.value) as valuePromotion
-                FROM product_detail pd
-                         LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
-                         LEFT JOIN promotion po ON po.id = ppd.id_promotion
-                WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
-                GROUP BY pd.id
-            ) promotion_summary ON pd.id = promotion_summary.pd_id
-                    
-                     JOIN product p ON pd.id_product = p.id
-                     JOIN color c ON c.id = pd.id_color
-                     JOIN size s ON s.id = pd.id_size
-                     LEFT JOIN image i ON i.id_product_detail = pd.id
-            WHERE DATE_FORMAT(FROM_UNIXTIME(pd.created_date / 1000), '%Y-%m-%d %H:%i:%s') >= DATE_SUB(NOW(), INTERVAL 5 DAY)
-            GROUP BY pd.id
+          SELECT
+              p.id as idProduct,
+              pd.id as idProductDetail,
+              REPLACE(c.code, '#', '%23') as codeColor,
+              s.name as nameSize,
+              GROUP_CONCAT(i.name) as image,
+              p.name as nameProduct,
+              pd.price as price,
+              promotion_summary.valuePromotion as valuePromotion,
+              pd.created_date as createdDate
+          
+          FROM product_detail pd
+                   LEFT JOIN (
+              SELECT
+                  pd.id as pd_id,
+                  SUM(po.value) as valuePromotion
+              FROM product_detail pd
+                       LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                       LEFT JOIN promotion po ON po.id = ppd.id_promotion
+              WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+              GROUP BY pd.id
+          ) promotion_summary ON pd.id = promotion_summary.pd_id
+          
+                   JOIN product p ON pd.id_product = p.id
+                   JOIN color c ON c.id = pd.id_color
+                   JOIN size s ON s.id = pd.id_size
+                   LEFT JOIN image i ON i.id_product_detail = pd.id
+          WHERE DATE_FORMAT(FROM_UNIXTIME(pd.created_date / 1000), '%Y-%m-%d %H:%i:%s') between DATE_SUB(NOW(), INTERVAL 15 DAY)  and  NOW()
+          GROUP BY pd.id
+          
                 """, nativeQuery = true)
     Page<GetProductDetail> getProductDetailNew(Pageable pageable);
 

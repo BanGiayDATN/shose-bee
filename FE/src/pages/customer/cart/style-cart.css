@@ -130,11 +130,13 @@
   color: #7c7876;
   font-size: 15px;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-  margin-bottom: 35px;
+  /* margin-bottom: 35px; */
 }
 .info-product-detail {
   width: 300px;
   margin-right: 5%;
+  display: flex;
+  flex-wrap: wrap;
 }
 /* .form-status-cart{
     margin-left: 15%;
@@ -180,7 +182,7 @@
 }
 .form-quantity-size {
   display: flex;
-  margin-top: 30px;
+  margin-top: auto;
 }
 .input-quantity-cart {
   border-radius: 0;

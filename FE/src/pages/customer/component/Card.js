@@ -36,9 +36,8 @@ function CardItem({ item, index }) {
     localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
   }, [cartLocal]);
   useEffect(() => {
-    
-    console.log(item.createdDate)
-    console.log(dayjs.unix(item.createdDate/1000).format("HH:mm:ss DD-MM-YYYY"), now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY"));
+    console.log( now.format("HH:mm:ss DD-MM-YYYY"));
+    console.log(now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY"),dayjs.unix(item.createdDate/1000).format("HH:mm:ss DD-MM-YYYY"),  now.format("HH:mm:ss DD-MM-YYYY") );
   }, []);
 
   const addToCard = () => {
@@ -100,7 +99,8 @@ function CardItem({ item, index }) {
   };
 
   const getDetailProduct = (idProduct, idColor, nameSize) => {
-    // console.log(detailProduct);
+    console.log(idProduct, idColor, nameSize);
+    console.log(detailProduct);
     ProductDetailClientApi.getDetailProductOfClient(
       idProduct,
       idColor,
@@ -117,8 +117,9 @@ function CardItem({ item, index }) {
     setModal(true);
   };
   const handleSizeClick = (index, idProduct, codeColor, nameSize) => {
-    getDetailProduct(idProduct, codeColor, nameSize);
     setClickedIndex(index);
+    getDetailProduct(idProduct, codeColor, nameSize);
+   
   };
 
   const handleClickDetail = (idProduct, codeColor, nameSize) => {
@@ -132,7 +133,7 @@ function CardItem({ item, index }) {
   };
 
   const formatMoney = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
+    return price+" VNĐ";
   };
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -163,6 +164,9 @@ function CardItem({ item, index }) {
       setCurrentImageIndex(currentImageIndex + 1);
     }
   };
+  const nowTimestamp = now.format("HH:mm:ss DD-MM-YYYY");
+const itemTimestamp = dayjs.unix(item.createdDate / 1000).format("HH:mm:ss DD-MM-YYYY");
+const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY");
   return (
     <>
       <div
@@ -185,7 +189,7 @@ function CardItem({ item, index }) {
                     Giảm {parseInt(item.valuePromotion)}%
                   </div>
                 )}
-                {dayjs.unix(item.createdDate/1000).format("HH:mm:ss DD-MM-YYYY") >= now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY") &&(
+                {(nowTimestampReduce <= itemTimestamp || itemTimestamp <= nowTimestamp) && (
                   <div className="new-product">
                     Mới
                   </div>
