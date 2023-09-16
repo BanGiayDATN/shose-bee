@@ -45,7 +45,7 @@ import {
 } from "../../../app/reducer/Category.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
 import { toast } from "react-toastify";
@@ -150,7 +150,6 @@ const CreateProductManagment = () => {
           `Kích cỡ ${selectedSizeData.size} đã tồn tại trong danh sách!`
         );
       } else {
-        // Nếu kích thước chưa tồn tại, thêm vào listSizeAdd
         setListSizeAdd((prevList) => [
           ...prevList,
           {
@@ -360,6 +359,7 @@ const CreateProductManagment = () => {
       width: "15%",
       render: (_, record) => (
         <Input
+          min={100000}
           value={formatCurrency(record.price)}
           onChange={(e) =>
             handlePriceChange(e.target.value.replace(/\D/g, ""), record.key)
@@ -414,6 +414,7 @@ const CreateProductManagment = () => {
                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                 listType="picture-card"
                 fileList={colorFileData}
+                accept="image/*"
                 onPreview={handlePreview}
                 onChange={(info) => handleUploadImages(info, record)}
                 beforeUpload={(file) => {
@@ -455,8 +456,7 @@ const CreateProductManagment = () => {
             children: (
               <td
                 style={{
-                  // border: "1px solid blue", // Màu viền
-                  borderRadius: "15px", //
+                  borderRadius: "15px",
                 }}
                 rowSpan={rowsWithSameColor.length}
               >
@@ -476,6 +476,9 @@ const CreateProductManagment = () => {
 
   // cập nhập số lượng
   const handleQuantityChange = (value, key) => {
+    if (value <= 0) {
+      value = 1;
+    }
     setTableData((prevTableData) =>
       prevTableData.map((item) =>
         item.key === key ? { ...item, quantity: value } : item
@@ -484,6 +487,9 @@ const CreateProductManagment = () => {
   };
   // cập nhập giá tiền
   const handlePriceChange = (value, key) => {
+    if (value <= 0) {
+      value = 100000;
+    }
     setTableData((prevTableData) =>
       prevTableData.map((item) =>
         item.key === key ? { ...item, price: value } : item
@@ -592,9 +598,9 @@ const CreateProductManagment = () => {
       listSizeAdd.forEach((sizeItem) => {
         const newRecord = {
           key: `${colorItem.color}-${sizeItem.nameSize}`,
-          ...formData, // Copy existing formData properties
-          color: colorItem.color, // Add color property
-          size: sizeItem.nameSize, // Add size property
+          ...formData,
+          color: colorItem.color,
+          size: sizeItem.nameSize,
           quantity: 1,
           price: "1000000",
           stt: stt++,
@@ -608,6 +614,10 @@ const CreateProductManagment = () => {
   useEffect(() => {
     dataDetail();
   }, [listColorAdd, listSizeAdd]);
+
+  const handleUploadTableData = () => {
+    dataDetail();
+  };
 
   return (
     <>
@@ -630,19 +640,6 @@ const CreateProductManagment = () => {
         <div style={{ marginTop: "1%" }}>
           <div className="content">
             <Form form={form} initialValues={initialValues}>
-              <Form.Item>
-                <Tooltip title="Thêm sản phẩm chi tiết">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="form-submit-btn"
-                    onClick={handleUpload}
-                    disabled={isSubmitting}
-                  >
-                    Hoàn Tất
-                  </Button>
-                </Tooltip>
-              </Form.Item>
               <Form.Item
                 label="Tên sản phẩm"
                 name="productId"
@@ -678,6 +675,7 @@ const CreateProductManagment = () => {
                     onChange={(e) => {
                       handleProductNameChange(e.target.value);
                       setSelectedProduct(e.target.value);
+                      handleUploadTableData();
                     }}
                   />
                 </AutoComplete>
@@ -1073,6 +1071,19 @@ const CreateProductManagment = () => {
             Chi tiết sản phẩm
           </span>
         </div>
+        <Form.Item>
+          <Tooltip title="Thêm sản phẩm chi tiết">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="form-submit-btn"
+              onClick={handleUpload}
+              disabled={isSubmitting}
+            >
+              Hoàn Tất
+            </Button>
+          </Tooltip>
+        </Form.Item>
         <Table
           rowKey="id"
           columns={columns}

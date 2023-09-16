@@ -17,8 +17,6 @@ import {
   Row,
   Select,
   Slider,
-  Space,
-  Spin,
   Table,
   Tooltip,
 } from "antd";
@@ -55,8 +53,8 @@ const UpdateProductDetailManagment = () => {
     ProducDetailtApi.getOne(data).then((res) => {
       setScannedQRCode(res.data.data);
     });
-    setModalVisible(false); // C
-    setModalVisible(false); // Close the modal after scanning
+    setModalVisible(false); 
+    setModalVisible(false); 
   };
 
   const listSize = [];
@@ -117,7 +115,6 @@ const UpdateProductDetailManagment = () => {
       product: search,
     }).then((res) => {
       setListProductDetails(res.data.data);
-      // Restore the selected rows using temporarySelectedRowKeys
       setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
@@ -129,7 +126,6 @@ const UpdateProductDetailManagment = () => {
       product: "",
     }).then((res) => {
       setListProductDetails(res.data.data);
-      // Restore the selected rows using temporarySelectedRowKeys
       setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
@@ -289,7 +285,7 @@ const UpdateProductDetailManagment = () => {
             borderRadius: "6px",
             width: "60px",
             height: "25px",
-            pointerEvents: "none", // Ngăn chặn sự kiện click
+            pointerEvents: "none", 
           }}
         />
       ),
