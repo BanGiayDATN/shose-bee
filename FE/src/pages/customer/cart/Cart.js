@@ -52,7 +52,7 @@ function Cart() {
   const handleRadioChange = (item) => {
     setSelectedItem((prev) => ({
       ...prev,
-      id: item.id,
+      idVoucher: item.id,
       value: item.value,
     }));
   };
@@ -102,9 +102,6 @@ function Cart() {
   useEffect(() => {
     console.log(formSearch);
   }, [formSearch]);
-  // useEffect(() => {
-  //   console.log(voucher);
-  // }, [voucher]);
   useEffect(() => {
     setTotalBill(totalPrice - voucher.value);
   }, [totalPrice]);
@@ -132,6 +129,7 @@ function Cart() {
     CartClientApi.listCart(id).then(
       (res) => {
         const respone = res.data.data;
+        console.log(respone);
         setCart(respone);
       },
       (err) => {
@@ -147,11 +145,12 @@ function Cart() {
     } else {
       // Nếu checkbox "Select All" chưa được chọn, chọn tất cả các sản phẩm
       const allItems = cart.map((item) => ({
-        nameProduct: item.name,
+        nameProduct: item.nameProduct,
         idProductDetail: item.idProductDetail,
         price: item.price,
         quantity: item.quantity,
         nameSize: item.nameSize,
+        image: item.image,
       }));
       setChooseItemCart(allItems);
       const totalPrice = cart.reduce(
@@ -388,11 +387,12 @@ function Cart() {
   };
   const chooseCartForBill = (item, value) => {
     const itemDetail = {
-      nameProduct: item.name,
+      nameProduct: item.nameProduct,
       idProductDetail: item.idProductDetail,
       price: item.price,
       quantity: item.quantity,
       nameSize: item.nameSize,
+      image: item.image,
     };
     if (value) {
       setChooseItemCart([...chooseItemCart, itemDetail]);
@@ -433,7 +433,7 @@ function Cart() {
                 autoClose: 3000,
               });
             } else {
-              setModalVoucher(false)
+              setModalVoucher(false);
               setVoucher((prev) => ({
                 ...prev,
                 value: res.data.data.value,
@@ -539,12 +539,12 @@ function Cart() {
                                 marginRight: 50,
                                 marginLeft: 60,
                               }}
-                              src={item.image}
+                              src={item.image.split(",")[0]}
                               alt="..."
                             />
                           </div>
                           <div className="info-product-detail">
-                            <div className="cart-name"> {item.name}</div>
+                            <div className="cart-name"> {item.nameProduct}</div>
                             <div className="cart-price">
                               Giá: {formatMoney(item.price)}
                             </div>
@@ -653,15 +653,17 @@ function Cart() {
                         }}
                         onClick={() => openListVoucher(idAccountLocal)}
                       >
-                        Chọn mã giảm giá
+                        {voucher.value !== 0
+                          ? "Chọn lại mã giảm giá"
+                          : " Chọn mã giảm giá"}
                       </span>
                     </div>
                   )}
 
-                  <div 
-                  className={`value-bill-of-cart ${
-                    idAccountLocal !== null ? "acc" : ""
-                  }`}
+                  <div
+                    className={`value-bill-of-cart ${
+                      idAccountLocal !== null ? "acc" : ""
+                    }`}
                   >
                     <div style={{ display: "flex" }}>
                       <div style={{ color: "#21201f", fontFamily: "700" }}>
@@ -784,7 +786,7 @@ function Cart() {
                 <div style={{ marginLeft: "auto", paddingRight: 30 }}>
                   <Radio.Group
                     name="radiogroup"
-                    value={selectedItem.id}
+                    value={selectedItem.idVoucher}
                     onChange={() => handleRadioChange(item)}
                   >
                     <Radio value={item.id}></Radio>

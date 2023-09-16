@@ -35,7 +35,8 @@
   text-align: center;
 }
 .get-product{
-  margin-left: 30px;
+    max-height: 850px; /* Đặt chiều cao tối đa cho danh sách */
+    overflow-y: auto; /* Hiển thị thanh cuộn dọc khi danh sách quá cao */
 }
   .button-submit{
     margin-left: 20px;

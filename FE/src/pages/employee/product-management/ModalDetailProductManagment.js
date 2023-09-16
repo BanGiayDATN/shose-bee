@@ -121,7 +121,7 @@ const ModalDetailProductManagment = ({ id, visible, onCancel }) => {
   useEffect(() => {
     setSelectedValues((prevValues) => ({
       ...prevValues,
-      idProduct: id, // Cập nhật giá trị idProduct mỗi khi id thay đổi
+      idProduct: id, 
     }));
   }, [id, visible]);
 

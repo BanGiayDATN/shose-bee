@@ -7,6 +7,13 @@ export class BillClientApi {
         data:data
       });
   };
+  static createBillAccountOnline = (data) => {
+    return request({
+        method: "POST",
+        url: `/client/bill/account`,
+        data:data
+      });
+  };
 
 
 }
