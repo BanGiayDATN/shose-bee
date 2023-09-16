@@ -5,6 +5,7 @@ import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,11 @@ public class AccountRestController {
     @GetMapping("/simple-employess")
     public ResponseObject getAllSimpleEntityEmployess() {
         return new ResponseObject(accountService.getAllSimpleEntityEmployess());
+    }
+
+    @GetMapping("/detail-account/{idBill}")
+    public ResponseObject getAccountUserByIdBill(@PathVariable("idBill") String idBill) {
+        return new ResponseObject(accountService.getAccountUserByIdBill(idBill));
     }
 
 }

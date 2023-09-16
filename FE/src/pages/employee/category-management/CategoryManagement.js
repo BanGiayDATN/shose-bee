@@ -118,6 +118,11 @@ const CategoryManagement = () => {
     loadData();
   }, []);
 
+  const listCategoryWithStt = listCategory.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
+
   const columns = [
     {
       title: "STT",
@@ -257,7 +262,7 @@ const CategoryManagement = () => {
         </div>
         <div style={{ marginTop: "25px" }}>
           <Table
-            dataSource={listCategory}
+            dataSource={listCategoryWithStt}
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 3 }}

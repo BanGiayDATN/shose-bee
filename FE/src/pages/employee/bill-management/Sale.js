@@ -24,7 +24,9 @@ function Sale() {
 
   const [activeKey, setActiveKey] = useState(0);
   const [changeTab, setChangTab] = useState();
+  const [dataKey, setDataKey] = useState([]);
   const items= useSelector((state) => state.bill.billWaits.value);
+  // console.log(items);
   const newTabIndex = useRef(1);
   const dispatch = useAppDispatch();
 
@@ -61,11 +63,13 @@ function Sale() {
           ]));
           dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`));
           setInvoiceNumber(invoiceNumber + 1);
+          setDataKey([...dataKey, res.data.data.code])
         });
       } else {
         setInvoiceNumber(res.data.data.length);
         const defaultPanes = res.data.data.map((item, index) => {
           const id = String(index + 1);
+          setDataKey([...dataKey, item.code])
           const newActiveKey = `${newTabIndex.current}`;
           return {
             label: `Hóa đơn ${newTabIndex.current++}`,
@@ -83,6 +87,7 @@ function Sale() {
             key: newActiveKey,
           };
         });
+       
         console.log(defaultPanes);
         dispatch(getAllBillWait(defaultPanes));
         setActiveKey('1');
@@ -97,6 +102,7 @@ function Sale() {
     } else {
 
       BillApi.getCodeBill().then((res) => {
+        setDataKey([...dataKey, res.data.data.code])
         const newActiveKey = `${newTabIndex.current}`;
         dispatch(addBillWait( {
           label: `Hóa đơn ${newTabIndex.current++}`,
@@ -124,11 +130,12 @@ function Sale() {
     }
   };
 
-  const remove = (targetKey, invoiceNumber) => {
-    if(invoiceNumber > 1){
+  const remove = (targetKey, invoiceNumbers, items) => {
+    console.log(invoiceNumbers);
+    if(invoiceNumbers > 1){
       const targetIndex = items.findIndex((pane) => pane.key === targetKey);
       const newPanes = items.filter((pane) => pane.key !== targetKey);
-      if (newPanes.length && targetKey === activeKey) {
+      if (newPanes.length > 0 && targetIndex >= 0) {
         const { key } =
             newPanes[
                 targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
@@ -138,10 +145,24 @@ function Sale() {
         dispatch(updateKeyBillAtCounter(key))
         dispatch(getAllBillWait(newPanes));
       }
-      dispatch(deleteBillWait(targetIndex));
+      // dispatch(deleteBillWait(targetIndex));
       console.log();
       setInvoiceNumber(invoiceNumber - 1);
     }else{
+      const targetIndex = items.findIndex((pane) => pane.key === targetKey);
+      const newPanes = items.filter((pane) => pane.key !== targetKey);
+      if (newPanes.length > 0 && targetIndex >= 0) {
+        const { key } =
+            newPanes[
+                targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
+                ];
+        setActiveKey(key);
+        setChangTab(key);
+        dispatch(updateKeyBillAtCounter(key))
+        dispatch(getAllBillWait(newPanes));
+      }
+      
+      
       BillApi.getCodeBill().then((res) => {
         const newActiveKey = `${newTabIndex.current}`;
         dispatch(addBillWait( {
@@ -151,7 +172,7 @@ function Sale() {
                   code={res.data.data.code}
                   key={changeTab}
                   id={res.data.data.id}
-                  invoiceNumber={invoiceNumber}
+                  invoiceNumber={1}
                   style={{ width: "100%" }}
                   removePane={remove}
                   targetKey={newActiveKey}
@@ -170,9 +191,10 @@ function Sale() {
   };
   const onEdit = (targetKey, action) => {
     if (action === "add") {
-      // add();
-    } else {
-      remove(targetKey,invoiceNumber);
+      add();
+    } 
+    else {
+      remove(activeKey,invoiceNumber, items);
     }
   };
 

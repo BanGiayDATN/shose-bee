@@ -1,5 +1,6 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.response.account.AccountResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -32,6 +33,11 @@ public class AccountServiceImpl implements AccountService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return account;
+    }
+
+    @Override
+    public AccountResponse getAccountUserByIdBill(String idBill) {
+        return accountRepository.getAccountUserByIdBill(idBill);
     }
 
     @Override
