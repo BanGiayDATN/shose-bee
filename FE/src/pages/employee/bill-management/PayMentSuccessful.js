@@ -21,6 +21,7 @@ const saveToLocalStorage = (parameters) => {
   localStorage.setItem("parameters", JSON.stringify(parameters));
 };
 
+
 const fetchData = () => {
   const parameters = getUrlVars();
   saveToLocalStorage(parameters);
@@ -50,6 +51,7 @@ const getAmount = () => {
 
 function PayMentSuccessful() {
   getUrlVars();
+  console.log( new URLSearchParams(window.location.search));
   const [status, setStatus] = useState();
   const [amount, setAmount] = useState();
   const formatCurrency = (value) => {

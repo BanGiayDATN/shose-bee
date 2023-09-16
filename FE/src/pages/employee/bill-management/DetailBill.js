@@ -156,7 +156,6 @@ function DetailBill() {
     });
   };
 
-  console.log(bill);
 
   const [form] = Form.useForm();
 
@@ -376,7 +375,7 @@ function DetailBill() {
   };
   const checkNotEmptyBill = () => {
     return Object.keys(billRequest)
-      .filter((key) => key !== "note")
+      .filter((key) => key !== "note" && key !== "address")
       .every((key) => billRequest[key] !== "");
   };
   const checkNotEmptyAddress = () => {
@@ -398,15 +397,14 @@ function DetailBill() {
         address.city;
     }
     setBillRequest({ ...billRequest, address: addressuser });
-    if (!checkNotEmptyBill()) {
-      setIsModalBillOpen(false);
+    if (checkNotEmptyBill()) {
+      
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có xác nhận thay đổi không?",
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          console.log(billRequest);
           await BillApi.updateBill(id, billRequest).then((res) => {
             dispatch(getBill(res.data.data));
             var index = listStatus.findIndex(
@@ -440,6 +438,7 @@ function DetailBill() {
         wards: "",
         detail: "",
       });
+      setIsModalBillOpen(false);
     }
   };
   const handleCancelBill = () => {
@@ -1038,6 +1037,7 @@ function DetailBill() {
         </span>
       ),
     },
+    
     {
       title: <div className="title-product">Loại giao dịch</div>,
       dataIndex: "status",
@@ -1049,6 +1049,16 @@ function DetailBill() {
             : status == "TRA_SAU"
             ? "Trả sau"
             : "Hoàn tiền"}
+        </span>
+      ),
+    },
+    {
+      title: <div className="title-product">Mã giao dịch</div>,
+      dataIndex: "vnp_TransactionNo",
+      key: "vnp_TransactionNo",
+      render: (vnp_TransactionNo) => (
+        <span >
+          {vnp_TransactionNo}
         </span>
       ),
     },
