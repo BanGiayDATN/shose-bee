@@ -13,4 +13,5 @@ public class PayMentVnpayResponse {
     private String vnp_ResponseCode;
     public String vnp_TxnRef;
     public String vnp_OrderInfo;
+    private String vnp_TransactionNo;
 }
