@@ -34,7 +34,7 @@ public interface CartRepository extends JpaRepository<Cart,String> {
                         JOIN image i on pd.id = i.id_product_detail
                         JOIN color c on pd.id_color = c.id
                         JOIN size s on pd.id_size = s.id
-               WHERE a.id = 'd62508de-8648-43b8-aef7-22bd9df59101'
+               WHERE a.id = :idAccount
                group by pd.id
                ORDER BY  cd.created_date desc
             """,nativeQuery = true)

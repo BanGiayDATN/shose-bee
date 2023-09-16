@@ -28,7 +28,6 @@ function PaymentAccount() {
   const [formBill, setFormBill] = useState({
     address: "",
     billDetail: [],
-  
     itemDiscount: 0,
     paymentMethod: "paymentReceive",
     phoneNumber: "",
