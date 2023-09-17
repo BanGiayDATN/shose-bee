@@ -209,32 +209,23 @@ public class BillServiceImpl implements BillService {
         }else{
             optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
-            if (!request.getDeliveryDate().isEmpty()) {
-                optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
-            }
-            if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
-                optional.get().setStatusBill(StatusBill.KHONG_TRA_HANG);
-                billRepository.save(optional.get());
-                billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
-            } else {
-                optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
-                billRepository.save(optional.get());
-                billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
-            }
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).employees(optional.get().getEmployees()).build());
+
         }
 
         request.getPaymentsMethodRequests().forEach(item -> {
-            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN){
-                PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                        .method(item.getMethod())
-                        .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                        .employees(optional.get().getEmployees())
-                        .totalMoney(item.getTotalMoney())
-                        .description(item.getActionDescription())
-                        .bill(optional.get())
-                        .build();
-                paymentsMethodRepository.save(paymentsMethod);
+            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null){
+                if(item.getTotalMoney().signum() != 0) {
+                    PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                            .method(item.getMethod())
+                            .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                            .employees(optional.get().getEmployees())
+                            .totalMoney(item.getTotalMoney())
+                            .description(item.getActionDescription())
+                            .bill(optional.get())
+                            .build();
+                    paymentsMethodRepository.save(paymentsMethod);
+                }
             }
         });
 
@@ -398,16 +389,18 @@ public class BillServiceImpl implements BillService {
         });
 
         request.getPaymentsMethodRequests().forEach(item -> {
-            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN){
-                PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                        .method(item.getMethod())
-                        .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                        .employees(optional.get().getEmployees())
-                        .totalMoney(item.getTotalMoney())
-                        .description(item.getActionDescription())
-                        .bill(optional.get())
-                        .build();
-                paymentsMethodRepository.save(paymentsMethod);
+            if(item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null){
+               if(item.getTotalMoney().signum() != 0){
+                   PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                           .method(item.getMethod())
+                           .status(StatusPayMents.valueOf(request.getStatusPayMents()))
+                           .employees(optional.get().getEmployees())
+                           .totalMoney(item.getTotalMoney())
+                           .description(item.getActionDescription())
+                           .bill(optional.get())
+                           .build();
+                   paymentsMethodRepository.save(paymentsMethod);
+               }
             }
         });
         return true;
