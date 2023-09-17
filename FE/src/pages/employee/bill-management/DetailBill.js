@@ -2461,7 +2461,7 @@ function DetailBill() {
                   {" "}
                   <InputNumber
                     min={1}
-                    max={detaiProduct.maxQuantity}
+                    max={detaiProduct.maxQuantity + detaiProduct.quantity}
                     value={quantity}
                     style={{ marginLeft: "4px" }}
                     onChange={(value) => {
