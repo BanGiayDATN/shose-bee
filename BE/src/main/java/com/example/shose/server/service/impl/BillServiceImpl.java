@@ -213,18 +213,7 @@ public class BillServiceImpl implements BillService {
         }else{
             optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
             billRepository.save(optional.get());
-            if (!request.getDeliveryDate().isEmpty()) {
-                optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
-            }
-            if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
-                optional.get().setStatusBill(StatusBill.KHONG_TRA_HANG);
-                billRepository.save(optional.get());
-            } else {
-                optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
-                billRepository.save(optional.get());
-            }
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).employees(optional.get().getEmployees()).build());
-            billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
         }
 
