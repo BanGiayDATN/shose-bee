@@ -121,6 +121,7 @@ function DetailBill() {
   //load data quận/huyện khi chọn tỉnh
   const handleProvinceChange = (value, valueProvince) => {
     // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    console.log( valueProvince);
     setAddress({ ...address, city: valueProvince.value });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
@@ -1993,6 +1994,7 @@ function DetailBill() {
                 <Input
                   onChange={(e) => onChangeBill("name", e.target.value)}
                   placeholder="Nhập tên khách hàng"
+                  defaultValue={bill.userName}
                   style={{ width: "98%", position: "relative", height: "40px" }}
                 />
               </Form.Item>
@@ -2025,6 +2027,7 @@ function DetailBill() {
                 <Input
                   onChange={(e) => onChangeBill("phoneNumber", e.target.value)}
                   placeholder="Nhập số điện thoại"
+                  defaultValue={bill.phoneNumber}
                   style={{ width: "98%", position: "relative", height: "40px" }}
                 />
               </Form.Item>
@@ -2059,7 +2062,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("city", v)}
                           onChange={handleProvinceChange}
-                          defaultValue={address.city}
+                          defaultValue={bill.address?.split(",")[3]}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2111,7 +2114,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("district", v)}
                           onChange={handleDistrictChange}
-                          defaultValue={address.district}
+                          defaultValue={bill.address?.split(",")[2]}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2162,7 +2165,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("wards", v)}
                           onChange={handleWardChange}
-                          defaultValue={address.wards}
+                          defaultValue={bill.address?.split(",")[1]}
                           style={{ width: "94%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2211,7 +2214,7 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                   defaultValue={address.detail}
+                   defaultValue={bill.address?.split(",")[0]}
                   onChange={(e) => onChangeAddress("detail", e.target.value)}
                   placeholder="Nhập địa chỉ"
                   style={{ width: "98%", position: "relative", height: "40px" }}
