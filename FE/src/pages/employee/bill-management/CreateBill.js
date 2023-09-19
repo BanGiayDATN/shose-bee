@@ -721,6 +721,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000) {
       showModal(e)
     } else if (method != "CHUYEN_KHOAN" &&  totalMoneyPayMent >= 1000) {
+
       var data = {
         actionDescription: "",
         method: method,
@@ -728,10 +729,21 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         status: "THANH_TOAN",
         vnp_TransactionNo: ""
       };
-      setDataPayMent([...dataPayment, data]);
-      updateBillWhenSavePayMent([...dataPayment, data])
-      setTotalMoneyPayment("");
-      form.resetFields();
+
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          setDataPayMent([...dataPayment, data]);
+          updateBillWhenSavePayMent([...dataPayment, data])
+          setTotalMoneyPayment("");
+          form.resetFields();
+        },
+        onCancel: () => {
+        },
+      });
     }
   };
   const deletePayMent = (e, index) => {
@@ -827,7 +839,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       return accumulator + currentValue.totalMoney;
     }, 0);
     var addressuser = "";
-    if (!checkNotEmptyAddress() && isOpenDelivery) {
+    console.log("address")
+    console.log(address.detail != "" && address.wards != "" && address.district != "" && address.city!= "" )
+    console.log(address)
+    if (address.detail != "" && address.wards != "" && address.district != "" && address.city!= "" && isOpenDelivery) {
       addressuser =
         address.detail +
         ", " +
@@ -868,11 +883,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       openDelivery: isOpenDelivery,
     };
 
-    console.log(billRequest);
-    console.log(address);
-    console.log(billRequest.userName != "");
     if (isOpenDelivery) {
-      if (  !checkNotEmptyAddress() && billRequest.phoneNumber != "" && billRequest.userName != "") {
+      if (  address.detail != "" && address.wards != "" && address.district != "" && address.city!= "" && billRequest.phoneNumber != "" && billRequest.userName != "") {
         if (totalBill > 0) {
           if (totaPayMent >= totalBill) {
             Modal.confirm({
@@ -882,46 +894,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
-                  // if (targetKey == undefined || invoiceNumber == 1) {
-                  //   setProducts([]);
-                  //   form.resetFields();
-                  //   setBillRequest({
-                  //     phoneNumber: "",
-                  //     address: "",
-                  //     userName: "",
-                  //     idUser: "",
-                  //     itemDiscount: 0,
-                  //     totalMoney: 0,
-                  //     note: "",
-                  //     moneyShip: 0,
-                  //     billDetailRequests: [],
-                  //     vouchers: [],
-                  //     code: "",
-                  //   });
-                  //   setAddress({
-                  //     city: "",
-                  //     district: "",
-                  //     wards: "",
-                  //     detail: "",
-                  //   });
-                  //   setShipFee(0);
-                  //   setSearchCustomer({
-                  //     keyword: "",
-                  //     status: "",
-                  //   });
-                  //   dispatch(addUserBillWait(null));
-                  //   setDataPayMent([]);
-                  //   setIsModalPayMentOpen(false);
-                  //   setTotalMoneyPayment(0);
-                  //   setTraSau(false);
-                  //   setKeyVoucher("");
-                  //   setCodeVoucher(false);
-                  //   setIdaData("");
-                  // } else {
                     removePane(targetKey, invoiceNumber,items);
-
                     form.resetFields();
-                  // }
                 });
               },
               onCancel: () => {},
@@ -1587,10 +1561,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     vnp_TransactionNo: vnp_TransactionNo
   }
   var createDataPayment =  [...dataPayment, data]
-  PaymentsMethodApi.checkPaymentVnPay(dataPaymentVnPay).then((res) => {
-  })
-  updateBillWhenSavePayMent(createDataPayment)
-  setDataPayMent([...dataPayment, data])
+  Modal.confirm({
+    title: "Xác nhận",
+    content: "Bạn có xác nhận không?",
+    okText: "Đồng ý",
+    cancelText: "Hủy",
+    onOk: async () => {
+      PaymentsMethodApi.checkPaymentVnPay(dataPaymentVnPay).then((res) => {
+      })
+      updateBillWhenSavePayMent(createDataPayment)
+      setDataPayMent([...dataPayment, data])
+    },
+    onCancel: () => {
+    },
+  });
+  
+
   handleCancel()
   setTotalMoneyPayment("");
   form.resetFields();
@@ -1599,6 +1585,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }
 
   const submitCodeTransactionNext = (e) =>{
+    
     const data = {
         vnp_Ammount: totalMoneyPayMent,
         vnp_TxnRef: billRequest.code + "-" + generateUniqueRandomNumber(1),
@@ -1608,7 +1595,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
          window.open(res.data.data, "_self");
         
        });
-       updateBillWhenSavePayMent([...dataPayment, data])
+       updateBillWhenSavePayMent([...dataPayment])
        setTotalMoneyPayment("");
        form.resetFields();
        setVnp_TransactionNo("")

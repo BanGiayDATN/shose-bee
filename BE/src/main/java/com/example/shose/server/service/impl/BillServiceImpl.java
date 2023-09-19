@@ -493,24 +493,30 @@ public class BillServiceImpl implements BillService {
             if (!account.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-
+            if(bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN){
+                BillHistory billHistory = new BillHistory();
+                billHistory.setBill(bill.get());
+                billHistory.setStatusBill(StatusBill.CHO_XAC_NHAN);
+                billHistory.setEmployees(account.get());
+                billHistoryRepository.save(billHistory);
+            }
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
 //            billHistoryPayMent.setActionDescription(request.getActionDescription());
             billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
-
+//            if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+//                bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+//                BillHistory billHistoryPayMent = new BillHistory();
+//                billHistoryPayMent.setBill(bill.get());
+//                billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+////                billHistoryPayMent.setActionDescription(request.getActionDescription());
+//                billHistoryPayMent.setEmployees(account.get());
+//                billHistoryRepository.save(billHistoryPayMent);
+//            }
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
-            if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
-                bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-                BillHistory billHistoryPayMent = new BillHistory();
-                billHistoryPayMent.setBill(bill.get());
-                billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
-//                billHistoryPayMent.setActionDescription(request.getActionDescription());
-                billHistoryPayMent.setEmployees(account.get());
-                billHistoryRepository.save(billHistoryPayMent);
-            }
+
             billRepository.save(bill.get());
         });
         return true;

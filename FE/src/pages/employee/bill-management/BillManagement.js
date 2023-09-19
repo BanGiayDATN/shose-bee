@@ -155,7 +155,7 @@ function BillManagement() {
       : key === "VAN_CHUYEN"
       ? "Vận chuyển"
       : key === "DA_THANH_TOAN"
-      ? "Thanh toán"
+      ? "thanh toán"
       : key === "KHONG_TRA_HANG"
       ? "Hoàn thành"
       : "Hủy";
