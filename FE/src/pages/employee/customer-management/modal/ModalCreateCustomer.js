@@ -328,15 +328,32 @@ const ModalCreateCustomer = () => {
               </Row>
               <Row gutter={[24, 8]}>
                 <Col span={10} style={{ marginLeft: "6%" }}>
-                  <Form.Item
-                    label="Tên khách hàng"
+                <Form.Item
+                    label="Tên nhân viên"
                     name="fullName"
-                    rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập tên" },
+                      {
+                        validator: (_, value) => {
+                          if (value && value.trim() === "") {
+                            return Promise.reject(
+                              "Tên không được nhập khoảng trắng"
+                            );
+                          }
+                          if (value.length > 50) {
+                            return Promise.reject(
+                              "Tên nhân viên tối đa 50 ký tự"
+                            );
+                          }
+                          if (/\d/.test(value)) {
+                            return Promise.reject("Tên không được chứa số");
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
                   >
-                    <Input
-                      className="input-item"
-                      placeholder="Tên khách hàng"
-                    />
+                    <Input className="input-item" placeholder="Tên nhân viên" />
                   </Form.Item>
                   <Form.Item
                     label="Căn cước công dân"

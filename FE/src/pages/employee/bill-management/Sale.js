@@ -98,7 +98,7 @@ function Sale() {
 
 
   const add = (e) => {
-    if (invoiceNumber >= 5) {
+    if (items.length >= 5) {
       toast.warning(`Không thể tạo thêm hóa đơn`);
     } else {
 
@@ -132,8 +132,7 @@ function Sale() {
   };
 
   const remove = (targetKey, invoiceNumbers, items) => {
-    console.log(invoiceNumber);
-    if(invoiceNumber > 1){
+    if(items.length > 1){
       const targetIndex = items.findIndex((pane) => pane.key === targetKey);
       const newPanes = items.filter((pane) => pane.key !== targetKey);
       console.log(newPanes)

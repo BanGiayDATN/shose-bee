@@ -44,7 +44,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
-import { set } from "lodash";
+import { set, values } from "lodash";
 import { Center, useInterval } from "@chakra-ui/react";
 import NumberFormat from "react-number-format";
 import { MdOutlinePayment } from "react-icons/md";
@@ -55,6 +55,23 @@ import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/Payments
 import { Navigate } from "react-router-dom";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { VoucherDetailApi } from "../../../api/employee/voucherDetail/VoucherDetail.api";
+
+function generateUniqueRandomNumber(length) {
+  const numbers = new Set();
+  while (numbers.size < length) {
+    const number = generateRandomNumber(length);
+    numbers.add(number);
+  }
+  return numbers.values().next().value;
+}
+
+function generateRandomNumber(length) {
+  const digits = Array(length).fill('0');
+  for (let i = 0; i < length; i++) {
+    digits[i] = String.fromCharCode(Math.floor(Math.random() * 10) + '0');
+  }
+  return digits.join('');
+}
 
 function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -100,6 +117,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   });
 
   const [form] = Form.useForm();
+  const [formCheckCodeVnPay] = Form.useForm();
   const [formAddUser] = Form.useForm();
 
   const onChangeAddress = (fileName, value) => {
@@ -701,36 +719,32 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const addPayMent = (e, method) => {
     if (method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000) {
-     
-      const data = {
-        vnp_Ammount: totalMoneyPayMent,
-        vnp_TxnRef: billRequest.code,
-      };
-      PaymentsMethodApi.paymentVnpay(data).then((res) => {
-        setPayMentVnPay(true);
-        window.open(res.data.data, "_self");
-       
-      });
-      updateBillWhenSavePayMent([...dataPayment, {
-        actionDescription: "",
-        method: method,
-        totalMoney: totalMoneyPayMent,
-        status: "THANH_TOAN",
-      }])
+      showModal(e)
     } else if (method != "CHUYEN_KHOAN" &&  totalMoneyPayMent >= 1000) {
+
       var data = {
         actionDescription: "",
         method: method,
         totalMoney: totalMoneyPayMent,
         status: "THANH_TOAN",
+        vnp_TransactionNo: ""
       };
-      setDataPayMent([...dataPayment, data]);
-      
+
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          setDataPayMent([...dataPayment, data]);
+          updateBillWhenSavePayMent([...dataPayment, data])
+          setTotalMoneyPayment("");
+          form.resetFields();
+        },
+        onCancel: () => {
+        },
+      });
     }
-    setTotalMoneyPayment("");
-      form.resetFields();
-    updateBillWhenSavePayMent([...dataPayment, data])
-   
   };
   const deletePayMent = (e, index) => {
     const newDataPayment = [...dataPayment];
@@ -744,6 +758,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       dataIndex: "totalMoney",
       key: "totalMoney",
       render: (totalMoney) => <span>{formatCurrency(totalMoney)}</span>,
+    },
+    {
+      title: <div className="title-product">Mã giao dịch</div>,
+      dataIndex: "vnp_TransactionNo",
+      key: "vnp_TransactionNo",
+      render: (vnp_TransactionNo) => (
+        <span >
+          {vnp_TransactionNo}
+        </span>
+      ),
     },
     {
       title: <div className="title-product">Phương thức</div>,
@@ -815,7 +839,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       return accumulator + currentValue.totalMoney;
     }, 0);
     var addressuser = "";
-    if (!checkNotEmptyAddress() && isOpenDelivery) {
+    console.log("address")
+    console.log(address.detail != "" && address.wards != "" && address.district != "" && address.city!= "" )
+    console.log(address)
+    if (address.detail != "" && address.wards != "" && address.district != "" && address.city!= "" && isOpenDelivery) {
       addressuser =
         address.detail +
         ", " +
@@ -856,11 +883,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       openDelivery: isOpenDelivery,
     };
 
-    console.log(billRequest);
-    console.log(address);
-    console.log(billRequest.userName != "");
     if (isOpenDelivery) {
-      if (  !checkNotEmptyAddress() && billRequest.phoneNumber != "" && billRequest.userName != "") {
+      if (  address.detail != "" && address.wards != "" && address.district != "" && address.city!= "" && billRequest.phoneNumber != "" && billRequest.userName != "") {
         if (totalBill > 0) {
           if (totaPayMent >= totalBill) {
             Modal.confirm({
@@ -870,46 +894,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
-                  // if (targetKey == undefined || invoiceNumber == 1) {
-                  //   setProducts([]);
-                  //   form.resetFields();
-                  //   setBillRequest({
-                  //     phoneNumber: "",
-                  //     address: "",
-                  //     userName: "",
-                  //     idUser: "",
-                  //     itemDiscount: 0,
-                  //     totalMoney: 0,
-                  //     note: "",
-                  //     moneyShip: 0,
-                  //     billDetailRequests: [],
-                  //     vouchers: [],
-                  //     code: "",
-                  //   });
-                  //   setAddress({
-                  //     city: "",
-                  //     district: "",
-                  //     wards: "",
-                  //     detail: "",
-                  //   });
-                  //   setShipFee(0);
-                  //   setSearchCustomer({
-                  //     keyword: "",
-                  //     status: "",
-                  //   });
-                  //   dispatch(addUserBillWait(null));
-                  //   setDataPayMent([]);
-                  //   setIsModalPayMentOpen(false);
-                  //   setTotalMoneyPayment(0);
-                  //   setTraSau(false);
-                  //   setKeyVoucher("");
-                  //   setCodeVoucher(false);
-                  //   setIdaData("");
-                  // } else {
                     removePane(targetKey, invoiceNumber,items);
-
                     form.resetFields();
-                  // }
                 });
               },
               onCancel: () => {},
@@ -1543,6 +1529,80 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     return formatter.format(value);
   };
 
+  //  open modal when payment vnpay
+  const [isModalOpenVnpay, setIsModalOpenVnpay] = useState(false);
+  const showModal = (e) => {
+    setIsModalOpenVnpay(true);
+  };
+  const handleOk = () => {
+    setIsModalOpenVnpay(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpenVnpay(false);
+  };
+  const [vnp_TransactionNo, setVnp_TransactionNo] = useState("")
+  const changeVnp_TransactionNo = (e, value) =>{
+    setVnp_TransactionNo(value)
+  }
+
+  const submitCodeTransaction = async(e) =>{
+  var data = {
+    actionDescription: "",
+    method: 'CHUYEN_KHOAN',
+    totalMoney: totalMoneyPayMent,
+    status: "THANH_TOAN",
+    vnp_TransactionNo: vnp_TransactionNo
+    };
+  var dataPaymentVnPay = {
+    vnp_Amount: totalMoneyPayMent,
+    vnp_ResponseCode: "00",
+    vnp_TxnRef: billRequest.code,
+    vnp_OrderInfo: "thanh toan",
+    vnp_TransactionNo: vnp_TransactionNo
+  }
+  var createDataPayment =  [...dataPayment, data]
+  Modal.confirm({
+    title: "Xác nhận",
+    content: "Bạn có xác nhận không?",
+    okText: "Đồng ý",
+    cancelText: "Hủy",
+    onOk: async () => {
+      PaymentsMethodApi.checkPaymentVnPay(dataPaymentVnPay).then((res) => {
+      })
+      updateBillWhenSavePayMent(createDataPayment)
+      setDataPayMent([...dataPayment, data])
+    },
+    onCancel: () => {
+    },
+  });
+  
+
+  handleCancel()
+  setTotalMoneyPayment("");
+  form.resetFields();
+  setVnp_TransactionNo("")
+  formCheckCodeVnPay.resetFields();
+  }
+
+  const submitCodeTransactionNext = (e) =>{
+    
+    const data = {
+        vnp_Ammount: totalMoneyPayMent,
+        vnp_TxnRef: billRequest.code + "-" + generateUniqueRandomNumber(1),
+      };
+    PaymentsMethodApi.paymentVnpay(data).then((res) => {
+         setPayMentVnPay(true);
+         window.open(res.data.data, "_self");
+        
+       });
+       updateBillWhenSavePayMent([...dataPayment])
+       setTotalMoneyPayment("");
+       form.resetFields();
+       setVnp_TransactionNo("")
+       formCheckCodeVnPay.resetFields();
+   }
+
+  // open modal when payment vnpay
   return (
     <div style={{ width: "100%" }}>
       <Row justify="space-between">
@@ -2646,7 +2706,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         height: "37px",
                       }}
                       customInput={Input}
-                      value={totalMoneyPayMent}
+                      defaultValue={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
@@ -2662,6 +2722,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             {optionsPayMent.map((item) => (
               <Col span={8} style={{ marginTop: "10px" }}>
                 <Button
+                 type="primary"
                   onClick={(e) => addPayMent(e, item.value)}
                   style={{
                     margin: "0 5px",
@@ -2669,7 +2730,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     width: "98%",
                     alignItems: "center",
                   }}
-                  disabled={item.value != "TIEN_MAT" && traSau}
+                  disabled={item.value != "TIEN_MAT" ? 
+                  (item.value != "TIEN_MAT" && (totalMoneyPayMent < 1000 || totalMoneyPayMent == "") ? true : false) : 
+                  (item.value == "TIEN_MAT" && (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")  ? true : false)}
                 >
                   {item.label}
                 </Button>
@@ -2776,6 +2839,45 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           </Row>
         </Form>
       </Modal>
+
+      {/* begin modal input code payment when vnpay */}
+      <Modal title="Basic Modal" open={isModalOpenVnpay} onOk={handleOk} onCancel={handleCancel} footer={null}>
+        <Row style={{width:"100%"}}>
+        <Form style={{width:"100%"}} form={formCheckCodeVnPay} ref={formRef} >
+        <Col span={24}>
+                  {" "}
+                  <Form.Item
+                    label=""
+                    name="price"
+                    style={{ marginBottom: "20px" }}
+                  >
+                    <Input
+                      thousandSeparator={true}
+                      placeholder="nhập mã giao dịch"
+                      style={{
+                        width: "100%",
+                        position: "relative",
+                        height: "37px",
+                      }}
+                      defaultValue={vnp_TransactionNo}
+                      onChange={(e) => {
+                        changeVnp_TransactionNo(
+                          e, e.target.value
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+          </Form>
+        </Row>
+        <Row style={{width:"100%"}}>
+          <Col span={10}></Col>
+          <Col span={6}><Button type="primary"  onClick={(e) => submitCodeTransactionNext(e)} >Chuyển hướng</Button></Col>
+          <Col span={2}></Col>
+          <Col span={6}><Button type="primary" disabled={vnp_TransactionNo.length == 0} onClick={(e) => submitCodeTransaction(e)}>Xác nhận</Button></Col>
+        </Row>
+      </Modal>
+      {/* end modal input code payment when vnpay */}
 
       {/* end modal payment  */}
 

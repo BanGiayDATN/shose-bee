@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Input,
-  Button,
-  Select,
-  Table,
-  Slider,
-  Image,
-  Row,
-  Col,
-  Tooltip,
-} from "antd";
+import { Input, Button, Select, Table, Slider, Row, Col, Tooltip } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-staff.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
@@ -28,7 +18,6 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
-
 
 const { Option } = Select;
 
@@ -63,8 +52,8 @@ const AccountManagement = () => {
       ...prevSearchAccount,
       [name]: value,
     }));
+    // handleSubmitSearch(value);
   };
-
   const handleKeywordChange = (event) => {
     const { value } = event.target;
     handleInputChangeSearch("keyword", value);
@@ -80,7 +69,6 @@ const AccountManagement = () => {
       const filteredAccounts = res.data.data.filter(
         (account) =>
           account.fullName.includes(keyword) ||
-          account.email.includes(keyword) ||
           account.phoneNumber.includes(keyword)
       );
       setListaccount(filteredAccounts);
@@ -88,18 +76,19 @@ const AccountManagement = () => {
     });
   }, [searchAccount.status]);
 
-  const handleSubmitSearch = (event) => {
-    event.preventDefault();
+  const handleSubmitSearch = (value) => {
     const { keyword, status } = searchAccount;
 
     AccountApi.fetchAll({ status }).then((res) => {
       const filteredAccounts = res.data.data
-        .filter(
-          (account) =>
-            account.fullName.toLowerCase().includes(keyword) ||
-            account.email.includes(keyword) ||
+        .filter((account) => {
+          const toKeyword = keyword.toLowerCase();
+          const fullName = account.fullName.toLowerCase();
+          return (
+            fullName.includes(toKeyword) ||
             account.phoneNumber.includes(keyword)
-        )
+          );
+        })
         .map((account, index) => ({
           ...account,
           stt: index + 1,
@@ -176,7 +165,6 @@ const AccountManagement = () => {
           stt: index + 1,
         }));
         setListaccount(res.data.data);
-        // setListAddress(res.data.data);
         setInitialAccountList(accounts);
         setInitialStartDate(null);
         setInitialEndDate(null);
@@ -338,7 +326,7 @@ const AccountManagement = () => {
                     marginLeft: "19px",
                     marginBottom: "20px",
                   }}
-                  placeholder="Tìm kiếm tên / email / sđt... "
+                  placeholder="Tìm kiếm tên và sđt... "
                   type="text"
                   name="keyword"
                   value={searchAccount.keyword}

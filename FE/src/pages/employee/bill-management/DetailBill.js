@@ -121,6 +121,7 @@ function DetailBill() {
   //load data quận/huyện khi chọn tỉnh
   const handleProvinceChange = (value, valueProvince) => {
     // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
+    console.log( valueProvince);
     setAddress({ ...address, city: valueProvince.value });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
@@ -156,7 +157,6 @@ function DetailBill() {
     });
   };
 
-  console.log(bill);
 
   const [form] = Form.useForm();
 
@@ -376,7 +376,7 @@ function DetailBill() {
   };
   const checkNotEmptyBill = () => {
     return Object.keys(billRequest)
-      .filter((key) => key !== "note")
+      .filter((key) => key !== "note" && key !== "address")
       .every((key) => billRequest[key] !== "");
   };
   const checkNotEmptyAddress = () => {
@@ -398,15 +398,14 @@ function DetailBill() {
         address.city;
     }
     setBillRequest({ ...billRequest, address: addressuser });
-    if (!checkNotEmptyBill()) {
-      setIsModalBillOpen(false);
+    if (checkNotEmptyBill()) {
+      
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có xác nhận thay đổi không?",
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          console.log(billRequest);
           await BillApi.updateBill(id, billRequest).then((res) => {
             dispatch(getBill(res.data.data));
             var index = listStatus.findIndex(
@@ -440,6 +439,7 @@ function DetailBill() {
         wards: "",
         detail: "",
       });
+      setIsModalBillOpen(false);
     }
   };
   const handleCancelBill = () => {
@@ -988,20 +988,20 @@ function DetailBill() {
       key: "statusBill",
       render: (statusBill) => (
         <span>
-          {statusBill == "TAO_HOA_DON"
-            ? "Tạo Hóa đơn"
-            : statusBill == "CHO_XAC_NHAN"
+          { statusBill === "TAO_HOA_DON"
             ? "Chờ xác nhận"
+            : statusBill === "CHO_XAC_NHAN"
+            ? "Xác nhận"
             : statusBill === "CHO_VAN_CHUYEN"
             ? "Chờ vận chuyển"
             : statusBill === "VAN_CHUYEN"
             ? "Đang vận chuyển"
             : statusBill === "DA_THANH_TOAN"
             ? "Đã thanh toán"
-            : statusBill === "KHONG_TRA_HANG"
-            ? "Thành công"
             : statusBill === "TRA_HANG"
             ? "Trả hàng"
+            : statusBill === "KHONG_TRA_HANG"
+            ? "Thành công"
             : "Đã hủy"}
         </span>
       ),
@@ -1038,6 +1038,7 @@ function DetailBill() {
         </span>
       ),
     },
+    
     {
       title: <div className="title-product">Loại giao dịch</div>,
       dataIndex: "status",
@@ -1049,6 +1050,16 @@ function DetailBill() {
             : status == "TRA_SAU"
             ? "Trả sau"
             : "Hoàn tiền"}
+        </span>
+      ),
+    },
+    {
+      title: <div className="title-product">Mã giao dịch</div>,
+      dataIndex: "vnp_TransactionNo",
+      key: "vnp_TransactionNo",
+      render: (vnp_TransactionNo) => (
+        <span >
+          {vnp_TransactionNo}
         </span>
       ),
     },
@@ -1983,6 +1994,7 @@ function DetailBill() {
                 <Input
                   onChange={(e) => onChangeBill("name", e.target.value)}
                   placeholder="Nhập tên khách hàng"
+                  defaultValue={bill.userName}
                   style={{ width: "98%", position: "relative", height: "40px" }}
                 />
               </Form.Item>
@@ -2015,6 +2027,7 @@ function DetailBill() {
                 <Input
                   onChange={(e) => onChangeBill("phoneNumber", e.target.value)}
                   placeholder="Nhập số điện thoại"
+                  defaultValue={bill.phoneNumber}
                   style={{ width: "98%", position: "relative", height: "40px" }}
                 />
               </Form.Item>
@@ -2049,7 +2062,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("city", v)}
                           onChange={handleProvinceChange}
-                          defaultValue={address.city}
+                          defaultValue={bill.address?.split(",")[3]}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2101,7 +2114,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("district", v)}
                           onChange={handleDistrictChange}
-                          defaultValue={address.district}
+                          defaultValue={bill.address?.split(",")[2]}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2152,7 +2165,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("wards", v)}
                           onChange={handleWardChange}
-                          defaultValue={address.wards}
+                          defaultValue={bill.address?.split(",")[1]}
                           style={{ width: "94%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2201,7 +2214,7 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                   defaultValue={address.detail}
+                   defaultValue={bill.address?.split(",")[0]}
                   onChange={(e) => onChangeAddress("detail", e.target.value)}
                   placeholder="Nhập địa chỉ"
                   style={{ width: "98%", position: "relative", height: "40px" }}
@@ -2451,8 +2464,8 @@ function DetailBill() {
                   {" "}
                   <InputNumber
                     min={1}
-                    max={detaiProduct.maxQuantity}
-                    defaultValue={quantity}
+                    max={detaiProduct.maxQuantity + detaiProduct.quantity}
+                    value={quantity}
                     style={{ marginLeft: "4px" }}
                     onChange={(value) => {
                       if (

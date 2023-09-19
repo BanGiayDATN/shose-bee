@@ -38,6 +38,8 @@ public class PaymentsMethod extends PrimaryEntity {
 
     private String description;
 
+    private String vnp_TransactionNo;
+
     @Column(name = "total_money")
     private BigDecimal totalMoney;
 
