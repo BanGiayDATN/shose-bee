@@ -53,8 +53,8 @@ const UpdateProductDetailManagment = () => {
     ProducDetailtApi.getOne(data).then((res) => {
       setScannedQRCode(res.data.data);
     });
-    setModalVisible(false); 
-    setModalVisible(false); 
+    setModalVisible(false);
+    setModalVisible(false);
   };
 
   const listSize = [];
@@ -285,7 +285,7 @@ const UpdateProductDetailManagment = () => {
             borderRadius: "6px",
             width: "60px",
             height: "25px",
-            pointerEvents: "none", 
+            pointerEvents: "none",
           }}
         />
       ),
@@ -332,6 +332,10 @@ const UpdateProductDetailManagment = () => {
       return;
     }
 
+    if (value === null || value === undefined || isNaN(value) || value <= 0) {
+      return;
+    }
+
     const updatedRow = {
       ...listProductDetails.find((detail) => detail.id === id),
       quantity: value,
@@ -352,6 +356,10 @@ const UpdateProductDetailManagment = () => {
   const handlePriceChange = (id, value) => {
     if (!temporarySelectedRowKeys.includes(id)) {
       toast.warning("Vui lòng chọn hàng để chỉnh sửa trước.");
+      return;
+    }
+
+    if (value === null || value === undefined || isNaN(value) || value <= 0) {
       return;
     }
 
@@ -380,7 +388,7 @@ const UpdateProductDetailManagment = () => {
       cancelText: "Hủy",
       onOk: () => {
         console.log(updatedDetails);
-        if (updatedDetails.length == 0) {
+        if (updatedDetails.length === 0) {
           toast.warning("Bạn chưa có sản phẩm để chỉnh sửa");
           return;
         }

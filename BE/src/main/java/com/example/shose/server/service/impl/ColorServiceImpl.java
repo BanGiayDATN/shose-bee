@@ -34,9 +34,9 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     public Color create(@Valid CreateColorRequest req) {
-        Color checkName = colorRepository.getOneByCode(req.getName());
+        Color checkName = colorRepository.getOneByCode(req.getCode());
         if (checkName != null) {
-            throw new RestApiException(Message.NAME_EXISTS);
+            throw new RestApiException(Message.COLOR_NAME_EXISTS);
         }
         Color add = new Color();
         add.setName(req.getName());

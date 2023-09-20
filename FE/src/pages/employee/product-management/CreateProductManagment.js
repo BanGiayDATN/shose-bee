@@ -8,7 +8,6 @@ import {
   Input,
   InputNumber,
   Modal,
-  Popconfirm,
   Row,
   Select,
   Space,
@@ -27,7 +26,6 @@ import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
-import { ColorApi } from "../../../api/employee/color/Color.api";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
@@ -47,10 +45,10 @@ import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
-import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
 import { toast } from "react-toastify";
-import AddColorModal from "./modal/ModalAddColor";
 import convert from "color-convert";
+import ModalAddListSizeProduct from "./modal/ModalAddListSizeProduct";
+import AddColorModal from "./modal/ModalAddListColor";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -411,12 +409,14 @@ const CreateProductManagment = () => {
           const uploadColumn = (
             <>
               <Upload
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                 listType="picture-card"
                 fileList={colorFileData}
                 accept="image/*"
                 onPreview={handlePreview}
                 onChange={(info) => handleUploadImages(info, record)}
+                customRequest={({ file, onSuccess }) => {
+                  onSuccess(file);
+                }}
                 beforeUpload={(file) => {
                   // Kiểm tra xem tệp có phải là hình ảnh hay không
                   const isImage = file.type.startsWith("image/");
@@ -519,7 +519,11 @@ const CreateProductManagment = () => {
         const updatedTableData = tableData.filter(
           (item) => item.key !== recordToDelete.key
         );
-        setTableData(updatedTableData);
+        const updatedTableDataWithSTT = updatedTableData.map((item, index) => ({
+          ...item,
+          stt: index + 1,
+        }));
+        setTableData(updatedTableDataWithSTT);
       },
     });
   };
@@ -942,7 +946,7 @@ const CreateProductManagment = () => {
             gutter={16}
             style={{ marginTop: "50px", marginBottom: "80px" }}
           >
-            <Col span={3} style={{ marginLeft: "25px" }}>
+            <Col span={3} style={{ flex: 1 }}>
               <h2>Kích Cỡ : </h2>
             </Col>
             <Col span={16}>
@@ -961,10 +965,10 @@ const CreateProductManagment = () => {
                     />
                   </Button>
                 ))}
-                <Col span={5}>
+                <Col span={16}>
                   <Tooltip title="Thêm kích cỡ">
                     <Button
-                      style={{ height: "40px", marginLeft: "20%" }}
+                      style={{ height: "40px", marginLeft: "3%" }}
                       type="primary"
                       onClick={() => {
                         if (isProductNameValid) {
@@ -979,7 +983,7 @@ const CreateProductManagment = () => {
                       <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Tooltip>
-                  <ModalAddSizeProduct
+                  <ModalAddListSizeProduct
                     visible={modalAddSize}
                     onCancel={handleCancel}
                     onSaveData={handleSaveData}
@@ -994,7 +998,7 @@ const CreateProductManagment = () => {
             gutter={16}
             style={{ marginTop: "80px", marginBottom: "80px" }}
           >
-            <Col span={3} style={{ marginLeft: "25px" }}>
+            <Col span={3} style={{ flex: 1 }}>
               <h2>Màu Sắc : </h2>
             </Col>
             <Col span={16}>
@@ -1014,17 +1018,10 @@ const CreateProductManagment = () => {
                     />
                   </Button>
                 ))}
-                <Col
-                  span={5}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
+                <Col span={16}>
                   <Tooltip title="Thêm màu sắc">
                     <Button
-                      style={{ height: "40px", marginRight: "50%" }}
+                      style={{ height: "40px", marginLeft: "3%" }}
                       type="primary"
                       onClick={() => {
                         if (isProductNameValid) {
