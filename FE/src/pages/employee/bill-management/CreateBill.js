@@ -2880,21 +2880,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       {/* end modal input code payment when vnpay */}
 
       {/* end modal payment  */}
-
-      <ToastContainer
-        position="top-right"
-        autoClose={100}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      {/* Same as */}
-      <ToastContainer />
     </div>
   );
 }
