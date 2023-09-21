@@ -178,6 +178,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
             paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
             paymentsMethod.setEmployees(account.get());
+            paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
             paymentsMethodRepository.save(paymentsMethod);
             return true;
         }

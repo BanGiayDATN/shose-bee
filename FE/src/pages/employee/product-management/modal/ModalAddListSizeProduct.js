@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button, InputNumber, Row, Col, Input } from "antd";
+import { Modal, Button, Row, Col, Input } from "antd";
 import "./style-addSize.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,7 @@ import { SetSize } from "../../../../app/reducer/Size.reducer";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
-const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
+const ModalAddListSizeProduct = ({ visible, onCancel, onSaveData }) => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const dispatch = useAppDispatch();
   const [listSize, setListSize] = useState([]);
@@ -47,6 +47,10 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
   };
 
   const handleChange = (e) => {
+    if (e.target.value > 100) {
+      toast.warning("Vui lòng nhập kích cỡ không quá 100");
+      return;
+    }
     setInputValue(e.target.value);
   };
 
@@ -75,7 +79,6 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
     setInputValue("");
     onCancel();
   };
-
 
   return (
     <>
@@ -132,4 +135,4 @@ const ModalAddSizeProduct = ({ visible, onCancel, onSaveData }) => {
   );
 };
 
-export default ModalAddSizeProduct;
+export default ModalAddListSizeProduct;

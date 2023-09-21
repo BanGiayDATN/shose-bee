@@ -20,6 +20,9 @@ function TimeLine({ listStatus, data, statusPresent }) {
     }
     else if(statusBill === "VAN_CHUYEN"){
       return BiSolidTruck
+    } 
+    else if(statusBill === "CHO_VAN_CHUYEN"){
+      return BiSolidTruck
     } else if(statusBill === "DA_THANH_TOAN"){
       return MdPayment
     }else if(statusBill === "KHONG_TRA_HANG"){

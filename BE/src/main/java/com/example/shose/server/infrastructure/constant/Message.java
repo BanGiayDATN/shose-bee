@@ -10,6 +10,8 @@ public enum Message {
     NOT_EXISTS("Không tồn tại"),
 
     NAME_EXISTS("Tên đã tồn tại"),
+
+    COLOR_NAME_EXISTS("Màu sắc đã tồn tại"),
     CODE_EXISTS("Mã đã tồn tại"),
     CHANGED_STATUS_ERROR("không thể xác nhận hóa đơn"),
 

@@ -319,7 +319,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    detail.price AS price,
                    c2.id AS idCode,
                    s2.id AS idSize,
-                   detail.maqr AS QRCode
+                   detail.maqr AS QRCode,
+                   p2.value AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -335,21 +336,23 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
+                LEFT JOIN promotion_product_detail ppd ON detail.id = ppd.id_product_detail
+                LEFT JOIN promotion p2 ON ppd.id_promotion = p2.id
                 WHERE  detail.id = :id
             """, nativeQuery = true)
 
     ProductDetailDTOResponse getOneById(@Param("id") String id);
     @Query(value = """
-SELECT
-    s.name as nameSize,
-    p.id as idProduct,
-    REPLACE(c.code, '#','%23') as codeColor
-FROM product_detail detail
-join product p on detail.id_product = p.id
-join size s on detail.id_size = s.id
-join color c on detail.id_color = c.id
-where p.id = :idProduct and c.code = :codeColor
-""",nativeQuery = true)
+                SELECT
+                    s.name as nameSize,
+                    p.id as idProduct,
+                    REPLACE(c.code, '#','%23') as codeColor
+                FROM product_detail detail
+                join product p on detail.id_product = p.id
+                join size s on detail.id_size = s.id
+                join color c on detail.id_color = c.id
+                where p.id = :idProduct and c.code = :codeColor
+            """,nativeQuery = true)
     List<ListSizeOfItemCart> listSizeByProductAndColor(@Param("idProduct") String idProduct, @Param("codeColor") String codeColor);
 
 }

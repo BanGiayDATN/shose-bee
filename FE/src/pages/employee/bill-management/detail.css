@@ -21,6 +21,7 @@
     border-radius: 15px;
     height: 2pc;
     padding:  5px 19px;
+    pointer-events: none;
     /* margin-left: 10px */
   
   }
@@ -118,4 +119,8 @@
   border-radius: 15px;
   height: 2pc;
   padding:  5px 19px;
+}
+.title-product{
+  font-size: 16px;
+  font-weight: bold;
 }

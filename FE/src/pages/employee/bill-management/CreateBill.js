@@ -44,7 +44,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import dayjs from "dayjs";
 import { AddressApi } from "../../../api/customer/address/address.api";
-import { set } from "lodash";
+import { set, values } from "lodash";
 import { Center, useInterval } from "@chakra-ui/react";
 import NumberFormat from "react-number-format";
 import { MdOutlinePayment } from "react-icons/md";
@@ -56,13 +56,30 @@ import { Navigate } from "react-router-dom";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { VoucherDetailApi } from "../../../api/employee/voucherDetail/VoucherDetail.api";
 
+function generateUniqueRandomNumber(length) {
+  const numbers = new Set();
+  while (numbers.size < length) {
+    const number = generateRandomNumber(length);
+    numbers.add(number);
+  }
+  return numbers.values().next().value;
+}
+
+function generateRandomNumber(length) {
+  const digits = Array(length).fill("0");
+  for (let i = 0; i < length; i++) {
+    digits[i] = String.fromCharCode(Math.floor(Math.random() * 10) + "0");
+  }
+  return digits.join("");
+}
+
 function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
   const [dataPayment, setDataPayMent] = useState([]);
-  const[accountuser, setAccountUser] = useState(null);
+  const [accountuser, setAccountUser] = useState(null);
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -100,6 +117,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   });
 
   const [form] = Form.useForm();
+  const [formCheckCodeVnPay] = Form.useForm();
   const [formAddUser] = Form.useForm();
 
   const onChangeAddress = (fileName, value) => {
@@ -111,14 +129,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const initialValues = {
     status: "DANG_SU_DUNG",
   };
- 
+
   useEffect(() => {
-    if(keyTab != '-1'){
-      updateBill()
+    if (keyTab != "-1") {
+      updateBill();
     }
   }, [keyTab]);
 
-  const updateBill = () =>{
+  const updateBill = () => {
     console.log("update");
     console.log(voucher);
     console.log(accountuser);
@@ -135,9 +153,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var totalBill = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.totalMoney;
-    }, 0) - voucher.discountPrice;
+    var totaPayMent =
+      dataPayment.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.totalMoney;
+      }, 0) - voucher.discountPrice;
     var addressuser = "";
     if (!checkNotEmptyAddress() && isOpenDelivery) {
       addressuser =
@@ -178,69 +197,66 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       openDelivery: isOpenDelivery,
     };
     BillApi.updateBillWait(data).then((res) => {
-      console.log(data)
+      console.log(data);
     });
-  }
+  };
 
-  const updateBillWhenSavePayMent = (dataPaymentRequest) =>{
-
-    if(dataPaymentRequest != [undefined]){
+  const updateBillWhenSavePayMent = (dataPaymentRequest) => {
+    if (dataPaymentRequest != [undefined]) {
       var newProduct = products.map((product) => ({
-      idProduct: product.idProduct,
-      size: product.nameSize,
-      quantity: product.quantity,
-      price: product.price,
-    }));
-    var newVoucher = [];
-    if (voucher.idVoucher != "") {
-      newVoucher.push(voucher);
+        idProduct: product.idProduct,
+        size: product.nameSize,
+        quantity: product.quantity,
+        price: product.price,
+      }));
+      var newVoucher = [];
+      if (voucher.idVoucher != "") {
+        newVoucher.push(voucher);
+      }
+      var totalBill = products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0);
+      var addressuser = "";
+      if (!checkNotEmptyAddress() && isOpenDelivery) {
+        addressuser =
+          address.detail +
+          ", " +
+          address.wards +
+          ", " +
+          address.district +
+          ", " +
+          address.city;
+      }
+      var idAccount = "";
+      if (accountuser != null) {
+        idAccount = accountuser.idAccount;
+      }
+      var typeBill = "OFFLINE";
+      var statusPayMents = "THANH_TOAN";
+      if (traSau) {
+        statusPayMents = "TRA_SAU";
+      }
+      var data = {
+        phoneNumber: billRequest.phoneNumber,
+        address: addressuser,
+        userName: billRequest.userName,
+        itemDiscount: voucher.discountPrice,
+        totalMoney: totalBill,
+        note: billRequest.note,
+        statusPayMents: statusPayMents,
+        typeBill: typeBill,
+        moneyShip: shipFee,
+        billDetailRequests: newProduct,
+        paymentsMethodRequests: dataPaymentRequest,
+        vouchers: newVoucher,
+        idUser: idAccount,
+        deliveryDate: dayShip,
+        code: code,
+        openDelivery: isOpenDelivery,
+      };
+      BillApi.updateBillWait(data).then((res) => {});
     }
-    var totalBill = products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
-    }, 0);
-    var addressuser = "";
-    if (!checkNotEmptyAddress() && isOpenDelivery) {
-      addressuser =
-        address.detail +
-        ", " +
-        address.wards +
-        ", " +
-        address.district +
-        ", " +
-        address.city;
-    }
-    var idAccount = "";
-    if (accountuser != null) {
-      idAccount = accountuser.idAccount;
-    }
-    var typeBill = "OFFLINE";
-    var statusPayMents = "THANH_TOAN";
-    if (traSau) {
-      statusPayMents = "TRA_SAU";
-    }
-    var data = {
-      phoneNumber: billRequest.phoneNumber,
-      address: addressuser,
-      userName: billRequest.userName,
-      itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
-      note: billRequest.note,
-      statusPayMents: statusPayMents,
-      typeBill: typeBill,
-      moneyShip: shipFee,
-      billDetailRequests: newProduct,
-      paymentsMethodRequests: dataPaymentRequest,
-      vouchers: newVoucher,
-      idUser: idAccount,
-      deliveryDate: dayShip,
-      code: code,
-      openDelivery: isOpenDelivery,
-    };
-    BillApi.updateBillWait(data).then((res) => {
-    });
-    }
-    
-  }
+  };
 
   const ChangeBillRequest = (filleName, value) => {
     setBillRequest({ ...billRequest, [filleName]: value });
@@ -273,7 +289,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   });
   // const dispatch = useAppDispatch();
   // const data = useAppSelector(GetCustomer);
-  const [data, setDataCustom] = useState(null)
+  const [data, setDataCustom] = useState(null);
   useEffect(() => {
     if (data != null) {
       setListaccount(data);
@@ -283,7 +299,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     loadData();
     loadDataProvince();
     // dispatch(addUserBillWait(null));
-    setAccountUser(null)
+    setAccountUser(null);
     setBillRequest({ ...billRequest, code: code });
     setDataPayMentVnpay({
       vnp_TransactionStatus: "00",
@@ -295,40 +311,38 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     });
     // });
     BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-       const data = res.data.data.map((item) => {
+      const data = res.data.data.map((item) => {
         return {
           image: item.image,
           productName: item.productName,
           nameSize: item.nameSize,
           idProduct: item.idProduct,
           quantity: item.quantity,
-          price: item.price ,
+          price: item.price,
           idSizeProduct: item.idProduct,
           maxQuantity: item.maxQuantity,
         };
-       })
-       setProducts(data)
+      });
+      setProducts(data);
     });
     BillApi.fetchDetailBill(id).then((res) => {
-      setBillRequest(
-        {
-          phoneNumber: res.data.data.phoneNumber,
-          address: res.data.data.address,
-          userName: res.data.data.userName,
-          idUser: res.data.data.account?.id,
-          itemDiscount: res.data.data.itemDiscount,
-          totalMoney: res.data.data.totalMoney,
-          note: res.data.data.note,
-          moneyShip: res.data.data.moneyShip,
-          billDetailRequests: [],
-          vouchers: [],
-          code: res.data.data.code,
-        }
-      )
+      setBillRequest({
+        phoneNumber: res.data.data.phoneNumber,
+        address: res.data.data.address,
+        userName: res.data.data.userName,
+        idUser: res.data.data.account?.id,
+        itemDiscount: res.data.data.itemDiscount,
+        totalMoney: res.data.data.totalMoney,
+        note: res.data.data.note,
+        moneyShip: res.data.data.moneyShip,
+        billDetailRequests: [],
+        vouchers: [],
+        code: res.data.data.code,
+      });
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
-      console.log("datapayment")
-    console.log(res)
+      console.log("datapayment");
+      console.log(res);
 
       const data = res.data.data.map((item) => {
         return {
@@ -336,45 +350,41 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           method: item.method,
           totalMoney: item.totalMoney,
           status: "THANH_TOAN",
-        }
-      })
-      setDataPayMent(data)
+        };
+      });
+      setDataPayMent(data);
     });
     AccountApi.getAccountUserByIdBill(id).then((res) => {
       console.log(res);
-      setAccountUser(res.data.data)
-    })
+      setAccountUser(res.data.data);
+    });
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
       console.log("VoucherDetailApi");
       console.log(res.data.data);
-      if(res.data.data != null){
+      if (res.data.data != null) {
         setVoucher({
           idVoucher: res.data.data.id,
           beforPrice: res.data.data.beforPrice,
           afterPrice: res.data.data.afterPrice,
           discountPrice: res.data.data.discountPrice,
-        })
+        });
         console.log({
           idVoucher: res.data.data.id,
           beforPrice: res.data.data.beforPrice,
           afterPrice: res.data.data.afterPrice,
-          discountPrice: res.data.data.discountPrice
-          ,
+          discountPrice: res.data.data.discountPrice,
         });
-        setCodeVoucher(res.data.data?.name)
-      }else{
+        setCodeVoucher(res.data.data?.name);
+      } else {
         setVoucher({
           idVoucher: "",
           beforPrice: 0,
           afterPrice: 0,
           discountPrice: 0,
-        })
+        });
       }
-     
-      
-    })
+    });
   }, []);
-
 
   const loadData = () => {
     CustomerApi.fetchAll().then(
@@ -386,10 +396,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         setListaccount(res.data.data);
         setInitialCustomerList(accounts);
         // dispatch(SetCustomer(res.data.data));
-        setDataCustom(res.data.data)
+        setDataCustom(res.data.data);
       },
-      (err) => {
-      }
+      (err) => {}
     );
     VoucherApi.fetchAll().then(
       (res) => {
@@ -404,10 +413,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           }
         });
         // dispatch(SetPromotion(data));
-        setDataVoucher(data)
+        setDataVoucher(data);
       },
-      (err) => {
-      }
+      (err) => {}
     );
   };
   //load data tỉnh
@@ -416,8 +424,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       (res) => {
         setListProvince(res.data.data);
       },
-      (err) => {
-      }
+      (err) => {}
     );
   };
   //load data quận/huyện khi chọn tỉnh
@@ -511,7 +518,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         }));
       setListaccount(filteredCustomers);
       // dispatch(SetCustomer(filteredCustomers));
-      setDataCustom(filteredCustomers)
+      setDataCustom(filteredCustomers);
     });
   };
   const columnsAccount = [
@@ -584,7 +591,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     setShipFee(0);
     form.resetFields();
     // dispatch(addUserBillWait(record));
-    setAccountUser(record)
+    setAccountUser(record);
     setIsModalAccountOpen(true);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
@@ -624,7 +631,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       idUser: record.id,
     });
     // dispatch(addUserBillWait(record));
-    setAccountUser(record)
+    setAccountUser(record);
     setIsModalAccountOpen(false);
   };
   // end khách hàng
@@ -661,7 +668,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   };
 
   // begin modal thanh toán
- 
+
   const [payMentVnPay, setPayMentVnPay] = useState(false);
   const [dataPaymentVnpay, setDataPayMentVnpay] = useState({});
   const [dataPaymentVnpayError, setDataPayMentVnpayError] = useState({});
@@ -701,44 +708,48 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const addPayMent = (e, method) => {
     if (method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000) {
-     
-      const data = {
-        vnp_Ammount: totalMoneyPayMent,
-        vnp_TxnRef: billRequest.code,
-      };
-      PaymentsMethodApi.paymentVnpay(data).then((res) => {
-        setPayMentVnPay(true);
-        window.open(res.data.data, "_self");
-       
-      });
-      updateBillWhenSavePayMent([...dataPayment, {
-        actionDescription: "",
-        method: method,
-        totalMoney: totalMoneyPayMent,
-        status: "THANH_TOAN",
-      }])
-    } else if (method != "CHUYEN_KHOAN" &&  totalMoneyPayMent >= 1000) {
+      showModal(e);
+    } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
         method: method,
         totalMoney: totalMoneyPayMent,
         status: "THANH_TOAN",
+        vnp_TransactionNo: "",
       };
-      setDataPayMent([...dataPayment, data]);
-      
+
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có xác nhận không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          setDataPayMent([...dataPayment, data]);
+          updateBillWhenSavePayMent([...dataPayment, data]);
+          setTotalMoneyPayment("");
+          form.resetFields();
+        },
+        onCancel: () => {},
+      });
     }
-    setTotalMoneyPayment("");
-      form.resetFields();
-    updateBillWhenSavePayMent([...dataPayment, data])
-   
   };
   const deletePayMent = (e, index) => {
     const newDataPayment = [...dataPayment];
     newDataPayment.splice(index, 1);
     setDataPayMent(newDataPayment);
-
   };
   const columnsPayments = [
+    {
+      title: <div className="title-product">STT</div>,
+      dataIndex: "stt",
+      key: "stt",
+    },
+    {
+      title: <div className="title-product">Mã giao dịch</div>,
+      dataIndex: "vnp_TransactionNo",
+      key: "vnp_TransactionNo",
+      render: (vnp_TransactionNo) => <span>{vnp_TransactionNo}</span>,
+    },
     {
       title: <div className="title-product">Số tiền</div>,
       dataIndex: "totalMoney",
@@ -750,13 +761,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       dataIndex: "method",
       key: "method",
       render: (method) => (
-        <span className={method}>
+        <Button
+          className={method}
+          style={{ pointerEvents: "none", width: "120px" }}
+        >
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
             ? "Chuyển khoản"
             : "Thẻ"}
-        </span>
+        </Button>
       ),
     },
     {
@@ -769,7 +783,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           style={{ border: "none" }}
           onClick={(e) => deletePayMent(e, index)}
         >
-          <BsFillTrash3Fill />
+          <BsFillTrash3Fill style={{ fontSize: "20px", color: "red" }} />
         </Button>
       ),
     },
@@ -796,7 +810,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     setShipFee(0);
     setIsOpenDelivery(!isOpenDelivery);
   };
-  const items= useSelector((state) => state.bill.billWaits.value);
+  const items = useSelector((state) => state.bill.billWaits.value);
   const orderBill = (e) => {
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
@@ -808,14 +822,29 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (voucher.idVoucher != "") {
       newVoucher.push(voucher);
     }
-    var totalBill = products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
-    }, 0) - voucher.discountPrice;
+    var totalBill =
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) - voucher.discountPrice;
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
     var addressuser = "";
-    if (!checkNotEmptyAddress() && isOpenDelivery) {
+    console.log("address");
+    console.log(
+      address.detail != "" &&
+        address.wards != "" &&
+        address.district != "" &&
+        address.city != ""
+    );
+    console.log(address);
+    if (
+      address.detail != "" &&
+      address.wards != "" &&
+      address.district != "" &&
+      address.city != "" &&
+      isOpenDelivery
+    ) {
       addressuser =
         address.detail +
         ", " +
@@ -856,11 +885,15 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       openDelivery: isOpenDelivery,
     };
 
-    console.log(billRequest);
-    console.log(address);
-    console.log(billRequest.userName != "");
     if (isOpenDelivery) {
-      if (  !checkNotEmptyAddress() && billRequest.phoneNumber != "" && billRequest.userName != "") {
+      if (
+        address.detail != "" &&
+        address.wards != "" &&
+        address.district != "" &&
+        address.city != "" &&
+        billRequest.phoneNumber != "" &&
+        billRequest.userName != ""
+      ) {
         if (totalBill > 0) {
           if (totaPayMent >= totalBill) {
             Modal.confirm({
@@ -870,46 +903,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
-                  // if (targetKey == undefined || invoiceNumber == 1) {
-                  //   setProducts([]);
-                  //   form.resetFields();
-                  //   setBillRequest({
-                  //     phoneNumber: "",
-                  //     address: "",
-                  //     userName: "",
-                  //     idUser: "",
-                  //     itemDiscount: 0,
-                  //     totalMoney: 0,
-                  //     note: "",
-                  //     moneyShip: 0,
-                  //     billDetailRequests: [],
-                  //     vouchers: [],
-                  //     code: "",
-                  //   });
-                  //   setAddress({
-                  //     city: "",
-                  //     district: "",
-                  //     wards: "",
-                  //     detail: "",
-                  //   });
-                  //   setShipFee(0);
-                  //   setSearchCustomer({
-                  //     keyword: "",
-                  //     status: "",
-                  //   });
-                  //   dispatch(addUserBillWait(null));
-                  //   setDataPayMent([]);
-                  //   setIsModalPayMentOpen(false);
-                  //   setTotalMoneyPayment(0);
-                  //   setTraSau(false);
-                  //   setKeyVoucher("");
-                  //   setCodeVoucher(false);
-                  //   setIdaData("");
-                  // } else {
-                    removePane(targetKey, invoiceNumber,items);
-
-                    form.resetFields();
-                  // }
+                  removePane(targetKey, invoiceNumber, items);
+                  form.resetFields();
                 });
               },
               onCancel: () => {},
@@ -933,8 +928,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             cancelText: "Hủy",
             onOk: async () => {
               await BillApi.createBillWait(data).then((res) => {
-                removePane(targetKey, invoiceNumber,items);
-
+                removePane(targetKey, invoiceNumber, items);
               });
             },
             onCancel: () => {},
@@ -982,14 +976,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           }
         });
         // dispatch(SetPromotion(data));
-        setDataVoucher(data)
+        setDataVoucher(data);
       },
-      (err) => {
-      }
+      (err) => {}
     );
   };
   // const dataVoucher = useAppSelector(GetPromotion);
-  const [dataVoucher, setDataVoucher] = useState([])
+  const [dataVoucher, setDataVoucher] = useState([]);
   useEffect(() => {
     if (data != null) {
       setListVoucher(dataVoucher);
@@ -1180,6 +1173,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     } else if (!existingProduct) {
       ProducDetailtApi.getOne(data)
         .then((res) => {
+          console.log(res.data.data);
           const newProduct = {
             image: res.data.data.image,
             productName: res.data.data.nameProduct,
@@ -1212,150 +1206,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       setIdaData("");
     }
   }, [idData]);
-
-  const columns = [
-    {
-      title: (
-        <div className="title-product" style={{ width: "70%" }}>
-          {" "}
-          sản phẩm
-        </div>
-      ),
-      dataIndex: "productName",
-      key: "productName",
-      render: (productName, record) => {
-        return (
-          <Row style={{ marginTop: "10px" }}>
-            <Col span={5}>
-              <img
-                src={record.image}
-                alt="Ảnh sản phẩm"
-                style={{
-                  width: "170px",
-                  borderRadius: "10%",
-                  height: "140px",
-                  marginLeft: "5px",
-                }}
-              />
-            </Col>
-            <Col span={19}>
-              <Row>
-                {" "}
-                <span
-                  style={{
-                    fontSize: "19",
-                    fontWeight: "500",
-                    marginTop: "10px",
-                  }}
-                >
-                  {record.productName}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ color: "red", fontWeight: "500" }}>
-                  {record.price >= 1000
-                    ? record.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : record.price + " đ"}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12", marginTop: "10px" }}>
-                  Size: {record.nameSize}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12" }}>x {record.quantity}</span>{" "}
-              </Row>
-            </Col>
-          </Row>
-        );
-      },
-    },
-    {
-      title: <div className="title-product">Số lượng </div>,
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (quantity) => (
-        <div style={{ marginTop: 16 }}>
-          <label>Số lượng:</label>
-          <Button style={{ margin: "0 4px 0 10px" }}>-</Button>
-          <InputNumber
-            min={1}
-            value={quantity}
-            // onChange={(value) => setQuantity(value)}
-          />
-          <Button style={{ margin: "0 4px 0 4px" }}>+</Button>
-        </div>
-      ),
-    },
-    {
-      title: <div className="title-product">Giá</div>,
-      dataIndex: "price",
-      key: "price",
-      render: (price) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span
-            style={{
-              color: "red",
-              fontWeight: "bold",
-              marginBottom: "30px",
-            }}
-          >
-            {price >= 1000
-              ? price.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })
-              : price + " đ"}
-          </span>{" "}
-        </div>
-      ),
-    },
-    {
-      title: <div className="title-product">Tổng</div>,
-      dataIndex: "sum",
-      key: "sum",
-      render: (sum) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span
-            style={{
-              color: "red",
-              fontWeight: "bold",
-              marginBottom: "30px",
-            }}
-          >
-            {sum >= 1000
-              ? sum.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })
-              : sum + " đ"}
-          </span>{" "}
-        </div>
-      ),
-    },
-
-    {
-      title: <div className="title-product">Thao tác</div>,
-      render: () => (
-        <Button
-          style={{
-            color: "#eb5a36",
-            marginLeft: "20px",
-            fontWeight: "500",
-            marginBottom: "30px",
-            border: "1px solid #eb5a36",
-            borderRadius: "10px",
-          }}
-        >
-          Xóa khỏi hàng
-        </Button>
-      ),
-    },
-  ];
 
   const columnsAddress = [
     {
@@ -1515,7 +1365,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               idUser: values.id,
             });
             // dispatch(addUserBillWait(values));
-            setAccountUser(values)
+            setAccountUser(values);
             loadData();
             setIsModalAddUserOpen(false);
             setIsModalAccountOpen(true);
@@ -1543,6 +1393,75 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     return formatter.format(value);
   };
 
+  //  open modal when payment vnpay
+  const [isModalOpenVnpay, setIsModalOpenVnpay] = useState(false);
+  const showModal = (e) => {
+    setIsModalOpenVnpay(true);
+  };
+  const handleOk = () => {
+    setIsModalOpenVnpay(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpenVnpay(false);
+  };
+  const [vnp_TransactionNo, setVnp_TransactionNo] = useState("");
+  const changeVnp_TransactionNo = (e, value) => {
+    setVnp_TransactionNo(value);
+  };
+
+  const submitCodeTransaction = async (e) => {
+    var data = {
+      actionDescription: "",
+      method: "CHUYEN_KHOAN",
+      totalMoney: totalMoneyPayMent,
+      status: "THANH_TOAN",
+      vnp_TransactionNo: vnp_TransactionNo,
+    };
+    var dataPaymentVnPay = {
+      vnp_Amount: totalMoneyPayMent,
+      vnp_ResponseCode: "00",
+      vnp_TxnRef: billRequest.code,
+      vnp_OrderInfo: "thanh toan",
+      vnp_TransactionNo: vnp_TransactionNo,
+    };
+    var createDataPayment = [...dataPayment, data];
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có xác nhận không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async () => {
+        PaymentsMethodApi.checkPaymentVnPay(dataPaymentVnPay).then((res) => {});
+        updateBillWhenSavePayMent(createDataPayment);
+        setDataPayMent([...dataPayment, data]);
+      },
+      onCancel: () => {},
+    });
+
+    handleCancel();
+    setTotalMoneyPayment("");
+    form.resetFields();
+    setVnp_TransactionNo("");
+    formCheckCodeVnPay.resetFields();
+  };
+
+  const submitCodeTransactionNext = (e) => {
+    const data = {
+      vnp_Ammount: totalMoneyPayMent,
+      vnp_TxnRef: billRequest.code + "-" + generateUniqueRandomNumber(1),
+    };
+    PaymentsMethodApi.paymentVnpay(data).then((res) => {
+      setPayMentVnPay(true);
+      window.open(res.data.data, "_self");
+    });
+    updateBillWhenSavePayMent([...dataPayment]);
+    setTotalMoneyPayment("");
+    form.resetFields();
+    setVnp_TransactionNo("");
+    formCheckCodeVnPay.resetFields();
+  };
+
+  // open modal when payment vnpay
   return (
     <div style={{ width: "100%" }}>
       <Row justify="space-between">
@@ -1599,7 +1518,18 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 padding: "5px",
               }}
             >
-              <Col span={13} align={"center"}>
+              <Col span={2} align={"center"}>
+                <span
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "3px",
+                  }}
+                >
+                  STT
+                </span>
+              </Col>
+              <Col span={10} align={"center"}>
                 <span
                   style={{
                     fontSize: "16px",
@@ -1668,19 +1598,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           {products.map((item) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
+                <Col span={2}>
+                 
+                </Col>
                 <Col span={4}>
                   <img
                     src={item.image}
                     alt="Ảnh sản phẩm"
                     style={{
-                      width: "170px",
+                      width: "120px",
                       borderRadius: "10%",
-                      height: "140px",
+                      height: "110px",
                       marginLeft: "10px",
                     }}
                   />
                 </Col>
-                <Col span={9}>
+                <Col span={6}>
                   <Row>
                     {" "}
                     <span
@@ -2219,8 +2152,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               <Col span={16}>
                 <Input
                   style={{ width: "100%", backgroundColor: "white" }}
-                  disabled
                   value={codeVoucher}
+                  readOnly
                 />
               </Col>
               <Col span={1}></Col>
@@ -2612,9 +2545,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       {/* begin modal payment  */}
       <Modal
         title="Thanh toán"
+        style={{ fontWeight: "bold" }}
         open={isModalPayMentOpen}
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
+        width={650}
       >
         <Form form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2646,7 +2581,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         height: "37px",
                       }}
                       customInput={Input}
-                      value={totalMoneyPayMent}
+                      defaultValue={totalMoneyPayMent}
                       onChange={(e) => {
                         setTotalMoneyPayment(
                           parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
@@ -2662,6 +2597,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             {optionsPayMent.map((item) => (
               <Col span={8} style={{ marginTop: "10px" }}>
                 <Button
+                  type="primary"
                   onClick={(e) => addPayMent(e, item.value)}
                   style={{
                     margin: "0 5px",
@@ -2669,7 +2605,17 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     width: "98%",
                     alignItems: "center",
                   }}
-                  disabled={item.value != "TIEN_MAT" && traSau}
+                  disabled={
+                    item.value != "TIEN_MAT"
+                      ? item.value != "TIEN_MAT" &&
+                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
+                        ? true
+                        : false
+                      : item.value == "TIEN_MAT" &&
+                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
+                      ? true
+                      : false
+                  }
                 >
                   {item.label}
                 </Button>
@@ -2677,13 +2623,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             ))}
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
-              Khách cần trả
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+              Khách cần trả :
             </Col>
             <Col
               span={16}
               align={"end"}
-              style={{ fontSize: "18px", fontWeight: "bold", color: "#00d6f4" }}
+              style={{ fontSize: "18px", fontWeight: "bold", color: "red" }}
             >
               {formatCurrency(
                 products.reduce((accumulator, currentValue) => {
@@ -2706,13 +2652,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             />
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
-              Khách thanh toán
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+              Khách thanh toán :
             </Col>
             <Col
               span={16}
               align={"end"}
-              style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
+              style={{ fontSize: "18px", fontWeight: "600", color: "red" }}
             >
               {formatCurrency(
                 dataPayment.reduce((accumulator, currentValue) => {
@@ -2722,7 +2668,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Col>
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
               }, 0) <
@@ -2737,7 +2683,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             <Col
               span={16}
               align={"end"}
-              style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
+              style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
             >
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
@@ -2760,39 +2706,82 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       }, 0)
                   )
                 : formatCurrency(
-                  dataPayment.reduce((accumulator, currentValue) => {
-                    return accumulator + currentValue.totalMoney;
-                  }, 0) - 
-                  (
-                    (products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator +
-                        currentValue.price * currentValue.quantity
-                      );
-                    }, 0) + shipFee)  - voucher.discountPrice
-                  )
+                    dataPayment.reduce((accumulator, currentValue) => {
+                      return accumulator + currentValue.totalMoney;
+                    }, 0) -
+                      (products.reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0) +
+                        shipFee -
+                        voucher.discountPrice)
                   )}
             </Col>
           </Row>
         </Form>
       </Modal>
 
-      {/* end modal payment  */}
+      {/* begin modal input code payment when vnpay */}
+      <Modal
+        title="Basic Modal"
+        open={isModalOpenVnpay}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Row style={{ width: "100%" }}>
+          <Form
+            style={{ width: "100%" }}
+            form={formCheckCodeVnPay}
+            ref={formRef}
+          >
+            <Col span={24}>
+              {" "}
+              <Form.Item label="" name="price" style={{ marginBottom: "20px" }}>
+                <Input
+                  thousandSeparator={true}
+                  placeholder="nhập mã giao dịch"
+                  style={{
+                    width: "100%",
+                    position: "relative",
+                    height: "37px",
+                  }}
+                  defaultValue={vnp_TransactionNo}
+                  onChange={(e) => {
+                    changeVnp_TransactionNo(e, e.target.value);
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Form>
+        </Row>
+        <Row style={{ width: "100%" }}>
+          <Col span={10}></Col>
+          <Col span={6}>
+            <Button
+              type="primary"
+              onClick={(e) => submitCodeTransactionNext(e)}
+            >
+              Chuyển hướng
+            </Button>
+          </Col>
+          <Col span={2}></Col>
+          <Col span={6}>
+            <Button
+              type="primary"
+              disabled={vnp_TransactionNo.length == 0}
+              onClick={(e) => submitCodeTransaction(e)}
+            >
+              Xác nhận
+            </Button>
+          </Col>
+        </Row>
+      </Modal>
+      {/* end modal input code payment when vnpay */}
 
-      <ToastContainer
-        position="top-right"
-        autoClose={100}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      {/* Same as */}
-      <ToastContainer />
+      {/* end modal payment  */}
     </div>
   );
 }
