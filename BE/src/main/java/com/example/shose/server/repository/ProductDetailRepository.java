@@ -106,7 +106,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                     LEFT JOIN image i ON max_images.max_image_id = i.id
                     JOIN color co on co.id = detail.id_color
                     JOIN size s on s.id = detail.id_size
-           where p.id = '3e730115-70b6-42f6-b4db-a76ad3598425'
+           where p.id = :id
            group by detail.id
             """, nativeQuery = true)
     List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
@@ -164,8 +164,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    LEFT JOIN (
               SELECT
                   pd.id as pd_id,
-                  SUM(po.value) as valuePromotion,
-                  ppd.status as status
+                  SUM(po.value) as valuePromotion
               FROM product_detail pd
                        LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                        LEFT JOIN promotion po ON po.id = ppd.id_promotion
@@ -177,7 +176,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    JOIN size s ON s.id = pd.id_size
                    LEFT JOIN image i ON i.id_product_detail = pd.id
                    JOIN category ca on ca.id = pd.id_category
-          where ca.id = :id and (promotion_summary.status ='DANG_SU_DUNG' OR promotion_summary.status IS NULL)
+          where ca.id = :id 
           group by pd.id
                  """, nativeQuery = true)
     List<GetProductDetailByCategory> getProductDetailByCategory(@Param("id") String id);
@@ -204,7 +203,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                          LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                          LEFT JOIN promotion po ON po.id = ppd.id_promotion
             
-                GROUP BY pd.id
+                GROUP BY pd.id , ppd.status
             ) promotion_summary ON pd.id = promotion_summary.pd_id
             
                      JOIN product p ON pd.id_product = p.id
@@ -285,34 +284,22 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     @Query( value = """
-
-            SELECT
-            p.id as idProduct,
-            pd.id as idProductDetail,
-            GROUP_CONCAT(i.name)as image,
-             p.name as nameProduct,
-             pd.price as price,
-             pd.quantity as quantity,
-             REPLACE(c.code, '#','%23') as codeColor,
-             s.name as nameSize,
-             (select GROUP_CONCAT(s.name) FROM size s WHERE s.name in( 
-               SELECT s2.name
-                FROM color c3 
-                JOIN product_detail pd3 ON c3.id =  pd3.id_color 
-                 JOIN product p3 ON p3.id = pd3.id_product  
-                JOIN size s2 ON s2.id = pd3.id_size
-                WHERE c3.code = c.code AND p3.id = p.id
-                ))
-              as listNameSize
-             from product_detail pd
-             left JOIN image i on i.id_product_detail = pd.id
-             JOIN product p on pd.id_product = p.id
-             JOIN color c on c.id = pd.id_color
-             JOIN size s on s.id = pd.id_size
-            where p.id = :id and c.code = :codeColor and s.name =:nameSize
+       SELECT
+           pd.id as idProductDetail,
+           GROUP_CONCAT(i.name)as image,
+           p.name as nameProduct,
+           pd.price as price,
+           pd.quantity as quantity,
+           c.code as codeColor,
+           s.name as nameSize
+       from product_detail pd
+                left JOIN image i on i.id_product_detail = pd.id
+                JOIN product p on pd.id_product = p.id
+                JOIN color c on c.id = pd.id_color
+                JOIN size s on s.id = pd.id_size
+       where pd.id = :id
             """, nativeQuery = true)
-
-    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor,@Param("nameSize") String nameSize);
+    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id);
 
 
 

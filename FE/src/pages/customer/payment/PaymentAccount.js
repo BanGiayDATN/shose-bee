@@ -17,8 +17,10 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
+import { useCart } from "../cart/CartContext";
 dayjs.extend(utc);
 function PaymentAccount() {
+  const { updateTotalQuantity } = useCart();
   const { Option } = Select;
   const idAccount = localStorage.getItem("idAccount");
   const [listCity, setListCity] = useState([]);
@@ -137,7 +139,15 @@ function PaymentAccount() {
     } else {
       BillClientApi.createBillAccountOnline(formBill).then(
         (res) => {
-          console.log("thanh toán khi nhận hàng!");
+          // console.log("thanh toán khi nhận hàng!");
+          // const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
+          // const updatelist = cartLocal.filter((item) => {
+          //   // Kiểm tra xem item.idProductDetail có tồn tại trong formBill.billDetail hay không
+          //   return !formBill.billDetail.some((itemBill) => item.idProductDetail === itemBill.idProductDetail);
+          // });
+          // const total = updatelist.reduce((acc, item) => acc + item.quantity, 0);
+          // updateTotalQuantity(total);
+          // localStorage.setItem("cartLocal", JSON.stringify(updatelist));
         },
         (err) => {
           console.log(err);

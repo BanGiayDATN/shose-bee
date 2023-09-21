@@ -121,7 +121,6 @@ public interface AddressRepository extends JpaRepository<Address, String> {
             JOIN user u on a.id_user = u.id
             JOIN account acc on u.id = acc.id_user
             WHERE acc.id = :idAccount and a.status = 'DANG_SU_DUNG'
-            
                   """,
             nativeQuery = true
     )

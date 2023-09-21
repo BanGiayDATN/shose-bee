@@ -10,7 +10,6 @@ import {
   Row,
   Input,
   Upload,
-  QRCode,
 } from "antd";
 import { useEffect } from "react";
 import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
@@ -26,7 +25,6 @@ import {
 } from "../../../../app/reducer/Materail.reducer";
 import { GetBrand, SetBrand } from "../../../../app/reducer/Brand.reducer";
 import { GetSize, SetSize } from "../../../../app/reducer/Size.reducer";
-import { ProductApi } from "../../../../api/employee/product/product.api";
 import { MaterialApi } from "../../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../../api/employee/category/category.api";
 import { SoleApi } from "../../../../api/employee/sole/sole.api";
@@ -325,7 +323,6 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
               .then((response) => {
                 console.log(response.data);
                 toast.success("Cập nhật thành công");
-                // Tải lại trang hiện tại
                 window.location.reload();
               })
               .catch((error) => {
@@ -358,8 +355,8 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
           Chỉnh sửa
         </Button>,
       ]}
-      mask={false} // Disable the dark backdrop
-      maskClosable={false} // Disable closing the modal by clicking on the backdrop
+      mask={false} 
+      maskClosable={false} 
     >
       <div className="filter">
         <div

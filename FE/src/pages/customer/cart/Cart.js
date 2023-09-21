@@ -544,39 +544,37 @@ function Cart() {
                             />
                           </div>
                           <div className="info-product-detail">
-                            <div className="cart-name"> {item.nameProduct}</div>
+                            <div className="cart-name">
+                              {" "}
+                              {item.nameProduct} - [{item.nameSize}]
+                            </div>
                             <div className="cart-price">
                               Giá: {formatMoney(item.price)}
                             </div>
-                            <div className="form-quantity-size">
-                              <div>
-                                <p style={{ fontWeight: "bold" }}>Số lượng</p>
-                                <InputNumber
-                                  className="input-quantity-cart"
-                                  name="quantity"
-                                  type="number"
-                                  //  value={item.quantity}
-                                  defaultValue={item.quantity}
-                                  min="1"
-                                  onChange={(value) =>
-                                    changeQuantity(item, value)
-                                  }
-                                ></InputNumber>
-                              </div>
-                              <div style={{ marginLeft: "30px" }}>
-                                <p style={{ fontWeight: "bold" }}>Size</p>
-                                <div
-                                  className="select-size-cart"
-                                  onClick={() => {
-                                    openListSize(item);
-                                  }}
-                                >
-                                  {item.nameSize}{" "}
-                                  <DownOutlined
-                                    style={{ marginLeft: "10px" }}
-                                  />
-                                </div>
-                              </div>
+
+                            <div
+                              style={{
+                                marginTop: "auto",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <p
+                                style={{ fontWeight: "bold", marginRight: 10 }}
+                              >
+                                Số lượng
+                              </p>
+                              <InputNumber
+                                className="input-quantity-cart"
+                                name="quantity"
+                                type="number"
+                                //  value={item.quantity}
+                                defaultValue={item.quantity}
+                                min="1"
+                                onChange={(value) =>
+                                  changeQuantity(item, value)
+                                }
+                              ></InputNumber>
                             </div>
                           </div>
                           <div className="form-status-cart">
@@ -593,11 +591,11 @@ function Cart() {
 
                             <div
                               className="button-delete-cart"
-                              onClick={() => {
-                                deleteItemCart(item);
-                              }}
+                           
                             >
-                              <DeleteOutlined className="icon-button-delete-cart" />
+                              <DeleteOutlined className="icon-button-delete-cart"   onClick={() => {
+                                deleteItemCart(item);
+                              }}/>
                             </div>
                           </div>
                         </div>
