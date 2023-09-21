@@ -11,7 +11,7 @@ import {
 } from "antd";
 import TimeLine from "./TimeLine";
 import {
-  addPaymentsMethod, showModalBill,
+  addPaymentsMethod,
   addStatusPresent,
   getBill,
   getBillHistory,
@@ -156,7 +156,6 @@ function DetailBill() {
       // setDayShip(formattedDate);
     });
   };
-
 
   const [form] = Form.useForm();
 
@@ -403,7 +402,6 @@ function DetailBill() {
     }
     setBillRequest({ ...billRequest, address: addressuser });
     if (checkNotEmptyBill()) {
-
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có xác nhận thay đổi không?",
@@ -929,13 +927,8 @@ function DetailBill() {
       title: <div className="title-product">Giá</div>,
       dataIndex: "price",
       key: "price",
-      render: (price) => (
-        <span>
-          {
-            formatCurrency(price)
-          }
-        </span>
-      ),
+      render: (price) => <span>{formatCurrency(price)}</span>,
+
     },
     {
       title: <div className="title-product">Số lượng </div>,
@@ -1033,53 +1026,16 @@ function DetailBill() {
 
   const columnsPayments = [
     {
-      title: <div className="title-product">Số tiền</div>,
-      dataIndex: "totalMoney",
-      key: "totalMoney",
-      render: (totalMoney) => (
-        <span>
-          {formatCurrency(totalMoney)}
-        </span>
-      ),
-    },
-
-    {
-      title: <div className="title-product">Loại giao dịch</div>,
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <span className={status}>
-          {status == "THANH_TOAN"
-            ? "Thanh toán"
-            : status == "TRA_SAU"
-              ? "Trả sau"
-              : "Hoàn tiền"}
-        </span>
-      ),
-    },
-    {
       title: <div className="title-product">Mã giao dịch</div>,
       dataIndex: "vnp_TransactionNo",
       key: "vnp_TransactionNo",
-      render: (vnp_TransactionNo) => (
-        <span >
-          {vnp_TransactionNo}
-        </span>
-      ),
+      render: (vnp_TransactionNo) => <span>{vnp_TransactionNo}</span>,
     },
     {
-      title: <div className="title-product">Phương thức thanh toán</div>,
-      dataIndex: "method",
-      key: "method",
-      render: (method) => (
-        <span className={method}>
-          {method == "TIEN_MAT"
-            ? "Tiền mặt"
-            : method == "CHUYEN_KHOAN"
-              ? "Chuyển khoản"
-              : "Thẻ"}
-        </span>
-      ),
+      title: <div className="title-product">Số tiền</div>,
+      dataIndex: "totalMoney",
+      key: "totalMoney",
+      render: (totalMoney) => <span>{formatCurrency(totalMoney)}</span>,
     },
     {
       title: <div className="title-product">Trạng thái</div>,
@@ -1096,13 +1052,47 @@ function DetailBill() {
       ),
     },
     {
-      title: <div className="title-product">thời gian</div>,
+      title: <div className="title-product">Thời gian</div>,
       dataIndex: "createdDate",
       key: "createdDate",
       render: (text) => {
         const formattedDate = moment(text).format("DD-MM-YYYY"); // Định dạng ngày
         return formattedDate;
       },
+    },
+    {
+      title: <div className="title-product">Loại giao dịch</div>,
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Button
+          style={{ width: "130px", pointerEvents: "none" }}
+          className={status}
+        >
+          {status == "THANH_TOAN"
+            ? "Thanh toán"
+            : status == "TRA_SAU"
+            ? "Trả sau"
+            : "Hoàn tiền"}
+        </Button>
+      ),
+    },
+    {
+      title: <div className="title-product">Phương thức thanh toán</div>,
+      dataIndex: "method",
+      key: "method",
+      render: (method) => (
+        <Button
+          style={{ width: "130px", pointerEvents: "none" }}
+          className={method}
+        >
+          {method == "TIEN_MAT"
+            ? "Tiền mặt"
+            : method == "CHUYEN_KHOAN"
+            ? "Chuyển khoản"
+            : "Thẻ"}
+        </Button>
+      ),
     },
     {
       title: <div className="title-product">Ghi chú</div>,
@@ -1252,7 +1242,12 @@ function DetailBill() {
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}
             >
-              <Form onFinish={onFinish} ref={formRef} form={form} initialValues={initialValues}>
+              <Form
+                onFinish={onFinish}
+                ref={formRef}
+                form={form}
+                initialValues={initialValues}
+              >
                 {bill.statusBill === "VAN_CHUYEN" ? (
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -1375,7 +1370,12 @@ function DetailBill() {
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
               >
-                <Form onFinish={onFinish} ref={formRef} form={form} initialValues={initialValues}>
+                <Form
+                  onFinish={onFinish}
+                  ref={formRef}
+                  form={form}
+                  initialValues={initialValues}
+                >
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
 
@@ -1523,31 +1523,35 @@ function DetailBill() {
           <Row style={{ width: "100%" }}>
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px" }}>
-                <Col span={8}>Trạng thái:</Col>
+                <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Trạng thái :
+                </Col>
                 <Col span={16}>
-                  <span
+                  <Button
                     className={`trangThai ${" status_" + bill.statusBill} `}
                   >
                     {bill.statusBill == "TAO_HOA_DON"
                       ? "Tạo Hóa đơn"
                       : bill.statusBill == "CHO_XAC_NHAN"
-                        ? "Chờ xác nhận"
-                        : bill.statusBill === "VAN_CHUYEN"
-                          ? "Đang vận chuyển"
-                          : bill.statusBill === "DA_THANH_TOAN"
-                            ? "Đã thanh toán"
-                            : bill.statusBill === "KHONG_TRA_HANG"
-                              ? "Thành công"
-                              : bill.statusBill === "TRA_HANG"
-                                ? "Trả hàng"
-                                : "Đã hủy"}
-                  </span>
+                      ? "Chờ xác nhận"
+                      : bill.statusBill === "VAN_CHUYEN"
+                      ? "Đang vận chuyển"
+                      : bill.statusBill === "DA_THANH_TOAN"
+                      ? "Đã thanh toán"
+                      : bill.statusBill === "KHONG_TRA_HANG"
+                      ? "Thành công"
+                      : bill.statusBill === "TRA_HANG"
+                      ? "Trả hàng"
+                      : "Đã hủy"}
+                  </Button>
                 </Col>
               </Row>
             </Col>
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={8}>Tên khách hàng:</Col>
+                <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Tên khách hàng:
+                </Col>
                 <Col span={16}>
                   {bill.userName == "" ? (
                     <span
@@ -1558,6 +1562,7 @@ function DetailBill() {
                         borderRadius: "15px",
                         padding: " 5px 19px",
                         marginLeft: "10px",
+                        fontWeight: "bold",
                       }}
                     >
                       Khách lẻ
@@ -1570,25 +1575,31 @@ function DetailBill() {
             </Col>
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={8}>Loại:</Col>
+                <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Loại:
+                </Col>
                 <Col span={16}>
-                  <span
+                  <Button
                     style={{
                       backgroundColor: "#6633FF",
                       color: "white",
-                      width: "300px",
+                      width: "180px",
                       borderRadius: "15px",
                       padding: " 5px 38px",
+                      pointerEvents: "none",
                     }}
                   >
                     {bill.typeBill}
-                  </span>
+                  </Button>
                 </Col>
               </Row>
             </Col>
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={8}> Số điện thoại:</Col>
+                <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  {" "}
+                  Số điện thoại:
+                </Col>
                 <Col span={16}>
                   <span style={{ color: "black" }}>{bill.phoneNumber}</span>
                 </Col>
@@ -1600,7 +1611,9 @@ function DetailBill() {
             </Col> */}
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={8}>Địa chỉ:</Col>
+                <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Địa chỉ:
+                </Col>
                 <Col span={16}>
                   <span style={{ color: "black" }}>{bill.address}</span>
                 </Col>
@@ -1614,7 +1627,9 @@ function DetailBill() {
                   marginBottom: "20px",
                 }}
               >
-                <Col span={8}>ghi chú:</Col>
+                <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Ghi chú:
+                </Col>
                 <Col span={16}>
                   <span>{bill.note}</span>
                 </Col>
@@ -1785,50 +1800,67 @@ function DetailBill() {
           <Col span={10}>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
-              <Col span={6}>Tiền hàng:</Col>
+              <Col span={6} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                Tiền hàng :
+              </Col>
               <Col span={10} align={"end"}>
-                <span>
+                <span style={{ fontSize: "16px" }}>
                   {formatCurrency(bill.totalMoney)}
                 </span>
               </Col>
             </Row>
-            {
-              bill.moneyShip == undefined || bill.moneyShip == "" ? (
-                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                  <Col span={7}></Col>
-                  <Col span={6}>Phí vận chuyển:</Col>
-                  <Col span={10} align={"end"}>
-                    <span>
-                      {formatCurrency(bill.moneyShip)}
-                    </span>
-                  </Col>
-                </Row>
-              ) : (<Row></Row>)
-            }
+            {bill.moneyShip == undefined || bill.moneyShip == "" ? (
+              <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                <Col span={7}></Col>
+                <Col span={6} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Phí vận chuyển :
+                </Col>
+                <Col span={10} align={"end"}>
+                  <span style={{ fontSize: "16px" }}>
+                    {formatCurrency(bill.moneyShip)}
+                  </span>
+                </Col>
+              </Row>
+            ) : (
+              <Row></Row>
+            )}
 
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
-              <Col span={6}>Tiền giảm: </Col>
+              <Col span={6} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                Tiền giảm :{" "}
+              </Col>
               <Col span={10} align={"end"}>
-                <span>
+                <span style={{ fontSize: "16px" }}>
                   {formatCurrency(bill.itemDiscount)}
                 </span>
               </Col>
             </Row>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
-              <Col span={6} style={{ marginBottom: "40px" }}>
+              <Col
+                span={6}
+                style={{
+                  marginBottom: "40px",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                }}
+              >
                 Tổng tiền:{" "}
               </Col>
               <Col span={10} align={"end"}>
-                <span style={{ color: "red", fontWeight: "bold" }}>
-                  {formatCurrency(detailProductInBill.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0) +
-                    bill.moneyShip -
-                    bill.itemDiscount)}
+                <span
+                  style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+                >
+                  {formatCurrency(
+                    detailProductInBill.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
+                      bill.moneyShip -
+                      bill.itemDiscount
+                  )}
                 </span>
               </Col>
             </Row>
@@ -1842,7 +1874,7 @@ function DetailBill() {
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
       >
-        <Form form={form} ref={formRef} >
+        <Form form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
               <label className="label-bill" style={{ top: "-14px" }}>
@@ -1973,7 +2005,7 @@ function DetailBill() {
         onOk={handleOkBill}
         onCancel={handleCancelBill}
       >
-        <Form initialValues={initialValues} form={form} ref={formRef} >
+        <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}></Row>
 
           <Row style={{ width: "100%" }}>
@@ -2306,8 +2338,7 @@ function DetailBill() {
                   marginBottom: "30px",
                 }}
               >
-                {formatCurrency(detaiProduct.price * detaiProduct.quantity)
-                }
+                {formatCurrency(detaiProduct.price * detaiProduct.quantity)}
               </span>{" "}
             </Col>
           </Row>
@@ -2379,7 +2410,7 @@ function DetailBill() {
         onCancel={handleCancelUpdateProduct}
         style={{ width: "800px" }}
       >
-        <Form initialValues={initialValues} form={form} ref={formRef} >
+        <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}></Col>
           </Row>

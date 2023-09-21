@@ -371,6 +371,9 @@ public class BillServiceImpl implements BillService {
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity(productDetail.get().getQuantity() - billDetailRequest.getQuantity());
+            if(productDetail.get().getQuantity() == 0){
+                productDetail.get().setStatus(Status.HET_SAN_PHAM);
+            }
             productDetailRepository.save(productDetail.get());
         });
         request.getVouchers().forEach(voucher -> {
