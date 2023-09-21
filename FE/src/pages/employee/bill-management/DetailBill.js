@@ -684,11 +684,11 @@ function DetailBill() {
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
 
-  const handleQuantityDecrease = (record) => {};
+  const handleQuantityDecrease = (record) => { };
 
-  const handleQuantityChange = (value, record) => {};
+  const handleQuantityChange = (value, record) => { };
 
-  const handleQuantityIncrease = (record) => {};
+  const handleQuantityIncrease = (record) => { };
 
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
@@ -928,6 +928,7 @@ function DetailBill() {
       dataIndex: "price",
       key: "price",
       render: (price) => <span>{formatCurrency(price)}</span>,
+
     },
     {
       title: <div className="title-product">Số lượng </div>,
@@ -937,7 +938,7 @@ function DetailBill() {
     {
       title:
         bill.statusBill == "DA_THANH_TOAN" ||
-        bill.statusBill == "TAO_HOA_DON" ? (
+          bill.statusBill == "TAO_HOA_DON" ? (
           <div className="title-product">hành động</div>
         ) : (
           <div></div>
@@ -951,7 +952,7 @@ function DetailBill() {
               type="primary"
               title="Hủy"
               style={{ backgroundColor: "red" }}
-              // onClick={() => handleViewDetail(record.id)}
+            // onClick={() => handleViewDetail(record.id)}
             >
               Thay đổi
             </Button>
@@ -960,7 +961,7 @@ function DetailBill() {
               type="primary"
               title="Hủy"
               style={{ backgroundColor: "red" }}
-              // onClick={() => handleViewDetail(record.id)}
+            // onClick={() => handleViewDetail(record.id)}
             >
               Hủy
             </Button>
@@ -987,18 +988,18 @@ function DetailBill() {
           {statusBill === "TAO_HOA_DON"
             ? "Chờ xác nhận"
             : statusBill === "CHO_XAC_NHAN"
-            ? "Xác nhận"
-            : statusBill === "CHO_VAN_CHUYEN"
-            ? "Chờ vận chuyển"
-            : statusBill === "VAN_CHUYEN"
-            ? "Đang vận chuyển"
-            : statusBill === "DA_THANH_TOAN"
-            ? "Đã thanh toán"
-            : statusBill === "TRA_HANG"
-            ? "Trả hàng"
-            : statusBill === "KHONG_TRA_HANG"
-            ? "Thành công"
-            : "Đã hủy"}
+              ? "Xác nhận"
+              : statusBill === "CHO_VAN_CHUYEN"
+                ? "Chờ vận chuyển"
+                : statusBill === "VAN_CHUYEN"
+                  ? "Đang vận chuyển"
+                  : statusBill === "DA_THANH_TOAN"
+                    ? "Đã thanh toán"
+                    : statusBill === "TRA_HANG"
+                      ? "Trả hàng"
+                      : statusBill === "KHONG_TRA_HANG"
+                        ? "Thành công"
+                        : "Đã hủy"}
         </span>
       ),
     },
@@ -1045,8 +1046,8 @@ function DetailBill() {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-            ? "Chuyển khoản"
-            : "Tiền mặt và chuyển khoản"}
+              ? "Chuyển khoản"
+              : "Tiền mặt và chuyển khoản"}
         </span>
       ),
     },
@@ -1147,7 +1148,7 @@ function DetailBill() {
           dispatch(getBillHistory(res.data.data));
         });
       },
-      onCancel: () => {},
+      onCancel: () => { },
     });
   };
   // end delete product
@@ -1713,9 +1714,9 @@ function DetailBill() {
                   >
                     {item.price * item.quantity >= 1000
                       ? (item.price * item.quantity).toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
+                        style: "currency",
+                        currency: "VND",
+                      })
                       : item.price * item.quantity + " đ"}
                   </span>{" "}
                 </Col>
@@ -1723,7 +1724,7 @@ function DetailBill() {
                   <Row>
                     <Col span={12}>
                       {bill.statusBill == "TAO_HOA_DON" ||
-                      bill.statusBill == "CHO_XAC_NHAN" ? (
+                        bill.statusBill == "CHO_XAC_NHAN" ? (
                         <Button
                           type=""
                           style={{
@@ -1742,7 +1743,7 @@ function DetailBill() {
                       )}
                     </Col>
                     {bill.statusBill == "TAO_HOA_DON" ||
-                    bill.statusBill == "CHO_XAC_NHAN" ? (
+                      bill.statusBill == "CHO_XAC_NHAN" ? (
                       <Col span={12}>
                         <Button
                           type=""
@@ -1765,8 +1766,8 @@ function DetailBill() {
                       <div></div>
                     )}
                     {bill.statusBill == "DA_THANH_TOAN" ||
-                    bill.statusBill == "KHONG_TRA_HANG" ||
-                    bill.statusBill == "TRA_HANG" ? (
+                      bill.statusBill == "KHONG_TRA_HANG" ||
+                      bill.statusBill == "TRA_HANG" ? (
                       <Col span={12}>
                         <Button
                           type=""
@@ -2104,7 +2105,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          // options={[]}
+                        // options={[]}
                         >
                           {listProvince?.map((item) => {
                             return (
@@ -2156,7 +2157,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          // options={[]}
+                        // options={[]}
                         >
                           {listDistricts?.map((item) => {
                             return (
@@ -2207,7 +2208,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          // options={[]}
+                        // options={[]}
                         >
                           {listWard?.map((item) => {
                             return (
@@ -2444,9 +2445,9 @@ function DetailBill() {
                 <span style={{ color: "red", fontWeight: "500" }}>
                   {detaiProduct.price >= 1000
                     ? detaiProduct.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
+                      style: "currency",
+                      currency: "VND",
+                    })
                     : detaiProduct.price + " đ"}
                 </span>{" "}
               </Row>
@@ -2471,12 +2472,12 @@ function DetailBill() {
               >
                 {detaiProduct.price * detaiProduct.quantity >= 1000
                   ? (detaiProduct.price * detaiProduct.quantity).toLocaleString(
-                      "vi-VN",
-                      {
-                        style: "currency",
-                        currency: "VND",
-                      }
-                    )
+                    "vi-VN",
+                    {
+                      style: "currency",
+                      currency: "VND",
+                    }
+                  )
                   : detaiProduct.price * detaiProduct.quantity + " đ"}
               </span>{" "}
             </Col>
@@ -2504,7 +2505,7 @@ function DetailBill() {
                     onChange={(value) => {
                       if (
                         value <=
-                          detaiProduct.maxQuantity + detaiProduct.quantity &&
+                        detaiProduct.maxQuantity + detaiProduct.quantity &&
                         value > 0 &&
                         value != undefined
                       ) {

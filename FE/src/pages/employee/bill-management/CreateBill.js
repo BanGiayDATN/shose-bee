@@ -740,10 +740,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   };
   const columnsPayments = [
     {
-      title: <div className="title-product">Số tiền</div>,
-      dataIndex: "totalMoney",
-      key: "totalMoney",
-      render: (totalMoney) => <span>{formatCurrency(totalMoney)}</span>,
+      title: <div className="title-product">STT</div>,
+      dataIndex: "stt",
+      key: "stt",
     },
     {
       title: <div className="title-product">Mã giao dịch</div>,
@@ -752,17 +751,26 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       render: (vnp_TransactionNo) => <span>{vnp_TransactionNo}</span>,
     },
     {
+      title: <div className="title-product">Số tiền</div>,
+      dataIndex: "totalMoney",
+      key: "totalMoney",
+      render: (totalMoney) => <span>{formatCurrency(totalMoney)}</span>,
+    },
+    {
       title: <div className="title-product">Phương thức</div>,
       dataIndex: "method",
       key: "method",
       render: (method) => (
-        <span className={method}>
+        <Button
+          className={method}
+          style={{ pointerEvents: "none", width: "120px" }}
+        >
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
             ? "Chuyển khoản"
             : "Thẻ"}
-        </span>
+        </Button>
       ),
     },
     {
@@ -775,7 +783,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           style={{ border: "none" }}
           onClick={(e) => deletePayMent(e, index)}
         >
-          <BsFillTrash3Fill />
+          <BsFillTrash3Fill style={{ fontSize: "20px", color: "red" }} />
         </Button>
       ),
     },
@@ -1199,150 +1207,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
   }, [idData]);
 
-  const columns = [
-    {
-      title: (
-        <div className="title-product" style={{ width: "70%" }}>
-          {" "}
-          sản phẩm
-        </div>
-      ),
-      dataIndex: "productName",
-      key: "productName",
-      render: (productName, record) => {
-        return (
-          <Row style={{ marginTop: "10px" }}>
-            <Col span={5}>
-              <img
-                src={record.image}
-                alt="Ảnh sản phẩm"
-                style={{
-                  width: "170px",
-                  borderRadius: "10%",
-                  height: "140px",
-                  marginLeft: "5px",
-                }}
-              />
-            </Col>
-            <Col span={19}>
-              <Row>
-                {" "}
-                <span
-                  style={{
-                    fontSize: "19",
-                    fontWeight: "500",
-                    marginTop: "10px",
-                  }}
-                >
-                  {record.productName}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ color: "red", fontWeight: "500" }}>
-                  {record.price >= 1000
-                    ? record.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : record.price + " đ"}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12", marginTop: "10px" }}>
-                  Size: {record.nameSize}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12" }}>x {record.quantity}</span>{" "}
-              </Row>
-            </Col>
-          </Row>
-        );
-      },
-    },
-    {
-      title: <div className="title-product">Số lượng </div>,
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (quantity) => (
-        <div style={{ marginTop: 16 }}>
-          <label>Số lượng:</label>
-          <Button style={{ margin: "0 4px 0 10px" }}>-</Button>
-          <InputNumber
-            min={1}
-            value={quantity}
-            // onChange={(value) => setQuantity(value)}
-          />
-          <Button style={{ margin: "0 4px 0 4px" }}>+</Button>
-        </div>
-      ),
-    },
-    {
-      title: <div className="title-product">Giá</div>,
-      dataIndex: "price",
-      key: "price",
-      render: (price) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span
-            style={{
-              color: "red",
-              fontWeight: "bold",
-              marginBottom: "30px",
-            }}
-          >
-            {price >= 1000
-              ? price.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })
-              : price + " đ"}
-          </span>{" "}
-        </div>
-      ),
-    },
-    {
-      title: <div className="title-product">Tổng</div>,
-      dataIndex: "sum",
-      key: "sum",
-      render: (sum) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span
-            style={{
-              color: "red",
-              fontWeight: "bold",
-              marginBottom: "30px",
-            }}
-          >
-            {sum >= 1000
-              ? sum.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })
-              : sum + " đ"}
-          </span>{" "}
-        </div>
-      ),
-    },
-
-    {
-      title: <div className="title-product">Thao tác</div>,
-      render: () => (
-        <Button
-          style={{
-            color: "#eb5a36",
-            marginLeft: "20px",
-            fontWeight: "500",
-            marginBottom: "30px",
-            border: "1px solid #eb5a36",
-            borderRadius: "10px",
-          }}
-        >
-          Xóa khỏi hàng
-        </Button>
-      ),
-    },
-  ];
-
   const columnsAddress = [
     {
       title: "STT",
@@ -1654,7 +1518,18 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 padding: "5px",
               }}
             >
-              <Col span={13} align={"center"}>
+              <Col span={2} align={"center"}>
+                <span
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "3px",
+                  }}
+                >
+                  STT
+                </span>
+              </Col>
+              <Col span={10} align={"center"}>
                 <span
                   style={{
                     fontSize: "16px",
@@ -1723,19 +1598,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           {products.map((item) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
+                <Col span={2}>
+                 
+                </Col>
                 <Col span={4}>
                   <img
                     src={item.image}
                     alt="Ảnh sản phẩm"
                     style={{
-                      width: "170px",
+                      width: "120px",
                       borderRadius: "10%",
-                      height: "140px",
+                      height: "110px",
                       marginLeft: "10px",
                     }}
                   />
                 </Col>
-                <Col span={9}>
+                <Col span={6}>
                   <Row>
                     {" "}
                     <span
@@ -2274,8 +2152,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               <Col span={16}>
                 <Input
                   style={{ width: "100%", backgroundColor: "white" }}
-                  disabled
                   value={codeVoucher}
+                  readOnly
                 />
               </Col>
               <Col span={1}></Col>
@@ -2667,9 +2545,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       {/* begin modal payment  */}
       <Modal
         title="Thanh toán"
+        style={{ fontWeight: "bold" }}
         open={isModalPayMentOpen}
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
+        width={650}
       >
         <Form form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2743,13 +2623,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             ))}
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
-              Khách cần trả
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+              Khách cần trả :
             </Col>
             <Col
               span={16}
               align={"end"}
-              style={{ fontSize: "18px", fontWeight: "bold", color: "#00d6f4" }}
+              style={{ fontSize: "18px", fontWeight: "bold", color: "red" }}
             >
               {formatCurrency(
                 products.reduce((accumulator, currentValue) => {
@@ -2772,13 +2652,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             />
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
-              Khách thanh toán
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+              Khách thanh toán :
             </Col>
             <Col
               span={16}
               align={"end"}
-              style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
+              style={{ fontSize: "18px", fontWeight: "600", color: "red" }}
             >
               {formatCurrency(
                 dataPayment.reduce((accumulator, currentValue) => {
@@ -2788,7 +2668,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Col>
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "600" }}>
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
               }, 0) <
@@ -2803,7 +2683,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             <Col
               span={16}
               align={"end"}
-              style={{ fontSize: "18px", fontWeight: "600", color: "#00d6f4" }}
+              style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
             >
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
