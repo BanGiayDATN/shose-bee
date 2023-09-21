@@ -170,7 +170,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         if(response.getVnp_ResponseCode().equals("00")){
-            Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef());
+            Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
             paymentsMethod.setDescription(response.getVnp_OrderInfo());

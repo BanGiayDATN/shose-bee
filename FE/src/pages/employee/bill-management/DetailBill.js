@@ -11,7 +11,7 @@ import {
 } from "antd";
 import TimeLine from "./TimeLine";
 import {
-  addPaymentsMethod,showModalBill
+  addPaymentsMethod,showModalBill,
   addStatusPresent,
   getBill,
   getBillHistory,
