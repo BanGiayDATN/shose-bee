@@ -11,7 +11,7 @@ import {
 } from "antd";
 import TimeLine from "./TimeLine";
 import {
-  addPaymentsMethod,
+  addPaymentsMethod,showModalBill
   addStatusPresent,
   getBill,
   getBillHistory,
@@ -373,6 +373,10 @@ function DetailBill() {
   const [isModaBillOpen, setIsModalBillOpen] = useState(false);
   const showModalBill = (e) => {
     setIsModalBillOpen(true);
+      setAddress({ ...address, wards: bill.address?.split(",")[1]});
+     setAddress({ ...address, district: bill.address?.split(",")[2] });
+     setAddress({ ...address, city: bill.address?.split(",")[3] });
+    setAddress({ ...address, detail: bill.address?.split(",")[0] });
   };
   const checkNotEmptyBill = () => {
     return Object.keys(billRequest)
