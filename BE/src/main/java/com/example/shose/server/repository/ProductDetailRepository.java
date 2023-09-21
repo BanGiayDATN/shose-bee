@@ -332,7 +332,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    detail.price AS price,
                    c2.id AS idCode,
                    s2.id AS idSize,
-                   detail.maqr AS QRCode
+                   detail.maqr AS QRCode,
+                   p2.value AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -348,6 +349,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
+                LEFT JOIN promotion_product_detail ppd ON detail.id = ppd.id_product_detail
+                LEFT JOIN promotion p2 ON ppd.id_promotion = p2.id
                 WHERE  detail.id = :id
             """, nativeQuery = true)
 

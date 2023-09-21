@@ -51,4 +51,7 @@ public interface ProductDetailDTOResponse {
     @Value("#{target.QRCode}")
     String getQRCode();
 
+    @Value("#{target.promotion}")
+    Double getPromotion();
+
 }

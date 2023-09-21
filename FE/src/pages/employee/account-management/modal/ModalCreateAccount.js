@@ -241,11 +241,13 @@ const ModalCreateAccount = () => {
             <Col span={12}>
               <div className="image-preview" style={{ marginLeft: "20%" }}>
                 <Upload
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-circle"
                   fileList={uploadedFile ? [uploadedFile] : []}
                   onPreview={handlePreview}
                   onChange={handleChange}
+                  customRequest={({ file, onSuccess }) => {
+                    onSuccess(file);
+                  }}
                   showUploadList={{
                     showPreviewIcon: true,
                     showRemoveIcon: true,

@@ -296,10 +296,18 @@ const UpdateProductDetailManagment = () => {
       key: "status",
       render: (text) => {
         const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+          text === "DANG_SU_DUNG"
+            ? "trangthai-sd"
+            : text === "KHONG_SU_DUNG"
+            ? "trangthai-ksd"
+            : "trangthai-hethang";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Không kinh doanh"}
+            {text === "DANG_SU_DUNG"
+              ? "Đang kinh doanh "
+              : text === "KHONG_SU_DUNG"
+              ? "Không kinh doanh"
+              : "Hết sản phẩm "}
           </button>
         );
       },

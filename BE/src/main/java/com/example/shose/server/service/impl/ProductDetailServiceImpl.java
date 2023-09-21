@@ -99,8 +99,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Autowired
     private UploadImageToCloudinary imageToCloudinary;
 
-    @Autowired
-    private PromotionRepository promotionRepository;
 
     @Autowired
     private QRCodeAndCloudinary qrCodeAndCloudinary;
