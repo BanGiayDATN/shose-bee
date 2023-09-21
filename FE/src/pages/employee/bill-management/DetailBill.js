@@ -11,7 +11,7 @@ import {
 } from "antd";
 import TimeLine from "./TimeLine";
 import {
-  addPaymentsMethod,showModalBill
+  addPaymentsMethod, showModalBill,
   addStatusPresent,
   getBill,
   getBillHistory,
@@ -121,7 +121,7 @@ function DetailBill() {
   //load data quận/huyện khi chọn tỉnh
   const handleProvinceChange = (value, valueProvince) => {
     // form.setFieldsValue({ provinceId: valueProvince.valueProvince });
-    console.log( valueProvince);
+    console.log(valueProvince);
     setAddress({ ...address, city: valueProvince.value });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
       (res) => {
@@ -373,9 +373,9 @@ function DetailBill() {
   const [isModaBillOpen, setIsModalBillOpen] = useState(false);
   const showModalBill = (e) => {
     setIsModalBillOpen(true);
-      setAddress({ ...address, wards: bill.address?.split(",")[1]});
-     setAddress({ ...address, district: bill.address?.split(",")[2] });
-     setAddress({ ...address, city: bill.address?.split(",")[3] });
+    setAddress({ ...address, wards: bill.address?.split(",")[1] });
+    setAddress({ ...address, district: bill.address?.split(",")[2] });
+    setAddress({ ...address, city: bill.address?.split(",")[3] });
     setAddress({ ...address, detail: bill.address?.split(",")[0] });
   };
   const checkNotEmptyBill = () => {
@@ -403,7 +403,7 @@ function DetailBill() {
     }
     setBillRequest({ ...billRequest, address: addressuser });
     if (checkNotEmptyBill()) {
-      
+
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có xác nhận thay đổi không?",
@@ -686,11 +686,11 @@ function DetailBill() {
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
 
-  const handleQuantityDecrease = (record) => {};
+  const handleQuantityDecrease = (record) => { };
 
-  const handleQuantityChange = (value, record) => {};
+  const handleQuantityChange = (value, record) => { };
 
-  const handleQuantityIncrease = (record) => {};
+  const handleQuantityIncrease = (record) => { };
 
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
@@ -932,7 +932,7 @@ function DetailBill() {
       render: (price) => (
         <span>
           {
-          formatCurrency(price)
+            formatCurrency(price)
           }
         </span>
       ),
@@ -945,7 +945,7 @@ function DetailBill() {
     {
       title:
         bill.statusBill == "DA_THANH_TOAN" ||
-        bill.statusBill == "TAO_HOA_DON" ? (
+          bill.statusBill == "TAO_HOA_DON" ? (
           <div className="title-product">hành động</div>
         ) : (
           <div></div>
@@ -959,7 +959,7 @@ function DetailBill() {
               type="primary"
               title="Hủy"
               style={{ backgroundColor: "red" }}
-              // onClick={() => handleViewDetail(record.id)}
+            // onClick={() => handleViewDetail(record.id)}
             >
               Thay đổi
             </Button>
@@ -968,7 +968,7 @@ function DetailBill() {
               type="primary"
               title="Hủy"
               style={{ backgroundColor: "red" }}
-              // onClick={() => handleViewDetail(record.id)}
+            // onClick={() => handleViewDetail(record.id)}
             >
               Hủy
             </Button>
@@ -992,21 +992,21 @@ function DetailBill() {
       key: "statusBill",
       render: (statusBill) => (
         <span>
-          { statusBill === "TAO_HOA_DON"
+          {statusBill === "TAO_HOA_DON"
             ? "Chờ xác nhận"
             : statusBill === "CHO_XAC_NHAN"
-            ? "Xác nhận"
-            : statusBill === "CHO_VAN_CHUYEN"
-            ? "Chờ vận chuyển"
-            : statusBill === "VAN_CHUYEN"
-            ? "Đang vận chuyển"
-            : statusBill === "DA_THANH_TOAN"
-            ? "Đã thanh toán"
-            : statusBill === "TRA_HANG"
-            ? "Trả hàng"
-            : statusBill === "KHONG_TRA_HANG"
-            ? "Thành công"
-            : "Đã hủy"}
+              ? "Xác nhận"
+              : statusBill === "CHO_VAN_CHUYEN"
+                ? "Chờ vận chuyển"
+                : statusBill === "VAN_CHUYEN"
+                  ? "Đang vận chuyển"
+                  : statusBill === "DA_THANH_TOAN"
+                    ? "Đã thanh toán"
+                    : statusBill === "TRA_HANG"
+                      ? "Trả hàng"
+                      : statusBill === "KHONG_TRA_HANG"
+                        ? "Thành công"
+                        : "Đã hủy"}
         </span>
       ),
     },
@@ -1042,7 +1042,7 @@ function DetailBill() {
         </span>
       ),
     },
-    
+
     {
       title: <div className="title-product">Loại giao dịch</div>,
       dataIndex: "status",
@@ -1052,8 +1052,8 @@ function DetailBill() {
           {status == "THANH_TOAN"
             ? "Thanh toán"
             : status == "TRA_SAU"
-            ? "Trả sau"
-            : "Hoàn tiền"}
+              ? "Trả sau"
+              : "Hoàn tiền"}
         </span>
       ),
     },
@@ -1076,8 +1076,8 @@ function DetailBill() {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-            ? "Chuyển khoản"
-            : "Thẻ"}
+              ? "Chuyển khoản"
+              : "Thẻ"}
         </span>
       ),
     },
@@ -1090,8 +1090,8 @@ function DetailBill() {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-            ? "Chuyển khoản"
-            : "Tiền mặt và chuyển khoản"}
+              ? "Chuyển khoản"
+              : "Tiền mặt và chuyển khoản"}
         </span>
       ),
     },
@@ -1158,7 +1158,7 @@ function DetailBill() {
           dispatch(getBillHistory(res.data.data));
         });
       },
-      onCancel: () => {},
+      onCancel: () => { },
     });
   };
   // end delete product
@@ -1375,7 +1375,7 @@ function DetailBill() {
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
               >
-                <Form onFinish={onFinish}  ref={formRef}  form={form} initialValues={initialValues}>
+                <Form onFinish={onFinish} ref={formRef} form={form} initialValues={initialValues}>
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
 
@@ -1531,16 +1531,16 @@ function DetailBill() {
                     {bill.statusBill == "TAO_HOA_DON"
                       ? "Tạo Hóa đơn"
                       : bill.statusBill == "CHO_XAC_NHAN"
-                      ? "Chờ xác nhận"
-                      : bill.statusBill === "VAN_CHUYEN"
-                      ? "Đang vận chuyển"
-                      : bill.statusBill === "DA_THANH_TOAN"
-                      ? "Đã thanh toán"
-                      : bill.statusBill === "KHONG_TRA_HANG"
-                      ? "Thành công"
-                      : bill.statusBill === "TRA_HANG"
-                      ? "Trả hàng"
-                      : "Đã hủy"}
+                        ? "Chờ xác nhận"
+                        : bill.statusBill === "VAN_CHUYEN"
+                          ? "Đang vận chuyển"
+                          : bill.statusBill === "DA_THANH_TOAN"
+                            ? "Đã thanh toán"
+                            : bill.statusBill === "KHONG_TRA_HANG"
+                              ? "Thành công"
+                              : bill.statusBill === "TRA_HANG"
+                                ? "Trả hàng"
+                                : "Đã hủy"}
                   </span>
                 </Col>
               </Row>
@@ -1677,7 +1677,7 @@ function DetailBill() {
                   </Row>
                   <Row>
                     <span style={{ color: "red", fontWeight: "500" }}>
-                      {formatCurrency(item.price )}
+                      {formatCurrency(item.price)}
                     </span>{" "}
                   </Row>
                   <Row>
@@ -1699,9 +1699,9 @@ function DetailBill() {
                   >
                     {item.price * item.quantity >= 1000
                       ? (item.price * item.quantity).toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
+                        style: "currency",
+                        currency: "VND",
+                      })
                       : item.price * item.quantity + " đ"}
                   </span>{" "}
                 </Col>
@@ -1709,7 +1709,7 @@ function DetailBill() {
                   <Row>
                     <Col span={12}>
                       {bill.statusBill == "TAO_HOA_DON" ||
-                      bill.statusBill == "CHO_XAC_NHAN" ? (
+                        bill.statusBill == "CHO_XAC_NHAN" ? (
                         <Button
                           type=""
                           style={{
@@ -1728,7 +1728,7 @@ function DetailBill() {
                       )}
                     </Col>
                     {bill.statusBill == "TAO_HOA_DON" ||
-                    bill.statusBill == "CHO_XAC_NHAN" ? (
+                      bill.statusBill == "CHO_XAC_NHAN" ? (
                       <Col span={12}>
                         <Button
                           type=""
@@ -1751,8 +1751,8 @@ function DetailBill() {
                       <div></div>
                     )}
                     {bill.statusBill == "DA_THANH_TOAN" ||
-                    bill.statusBill == "KHONG_TRA_HANG" ||
-                    bill.statusBill == "TRA_HANG" ? (
+                      bill.statusBill == "KHONG_TRA_HANG" ||
+                      bill.statusBill == "TRA_HANG" ? (
                       <Col span={12}>
                         <Button
                           type=""
@@ -1788,13 +1788,13 @@ function DetailBill() {
               <Col span={6}>Tiền hàng:</Col>
               <Col span={10} align={"end"}>
                 <span>
-                  {formatCurrency(bill.totalMoney) }
+                  {formatCurrency(bill.totalMoney)}
                 </span>
               </Col>
             </Row>
-              {
-                bill.moneyShip == undefined || bill.moneyShip == "" ? (
-                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+            {
+              bill.moneyShip == undefined || bill.moneyShip == "" ? (
+                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                   <Col span={7}></Col>
                   <Col span={6}>Phí vận chuyển:</Col>
                   <Col span={10} align={"end"}>
@@ -1803,15 +1803,15 @@ function DetailBill() {
                     </span>
                   </Col>
                 </Row>
-                ) :(<Row></Row>)
-              }
-           
+              ) : (<Row></Row>)
+            }
+
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
               <Col span={7}></Col>
               <Col span={6}>Tiền giảm: </Col>
               <Col span={10} align={"end"}>
                 <span>
-                  {formatCurrency(bill.itemDiscount) }
+                  {formatCurrency(bill.itemDiscount)}
                 </span>
               </Col>
             </Row>
@@ -1822,13 +1822,13 @@ function DetailBill() {
               </Col>
               <Col span={10} align={"end"}>
                 <span style={{ color: "red", fontWeight: "bold" }}>
-                  { formatCurrency(detailProductInBill.reduce((accumulator, currentValue) => {
+                  {formatCurrency(detailProductInBill.reduce((accumulator, currentValue) => {
                     return (
                       accumulator + currentValue.price * currentValue.quantity
                     );
                   }, 0) +
                     bill.moneyShip -
-                    bill.itemDiscount)  }
+                    bill.itemDiscount)}
                 </span>
               </Col>
             </Row>
@@ -2073,7 +2073,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          // options={[]}
+                        // options={[]}
                         >
                           {listProvince?.map((item) => {
                             return (
@@ -2125,7 +2125,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          // options={[]}
+                        // options={[]}
                         >
                           {listDistricts?.map((item) => {
                             return (
@@ -2176,7 +2176,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          // options={[]}
+                        // options={[]}
                         >
                           {listWard?.map((item) => {
                             return (
@@ -2218,7 +2218,7 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                   defaultValue={bill.address?.split(",")[0]}
+                  defaultValue={bill.address?.split(",")[0]}
                   onChange={(e) => onChangeAddress("detail", e.target.value)}
                   placeholder="Nhập địa chỉ"
                   style={{ width: "98%", position: "relative", height: "40px" }}
@@ -2251,7 +2251,7 @@ function DetailBill() {
         onCancel={handleCancelRefundProduct}
         style={{ width: "800px" }}
       >
-        <Form initialValues={initialValues} ref={formRef}  form={form}>
+        <Form initialValues={initialValues} ref={formRef} form={form}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
             <Col span={24} style={{ marginTop: "10px" }}></Col>
           </Row>
@@ -2284,7 +2284,7 @@ function DetailBill() {
               </Row>
               <Row>
                 <span style={{ color: "red", fontWeight: "500" }}>
-                  { formatCurrency(detaiProduct.price) }
+                  {formatCurrency(detaiProduct.price)}
                 </span>{" "}
               </Row>
               <Row>
@@ -2306,8 +2306,8 @@ function DetailBill() {
                   marginBottom: "30px",
                 }}
               >
-                 { formatCurrency(detaiProduct.price * detaiProduct.quantity )
-               }
+                {formatCurrency(detaiProduct.price * detaiProduct.quantity)
+                }
               </span>{" "}
             </Col>
           </Row>
@@ -2414,9 +2414,9 @@ function DetailBill() {
                 <span style={{ color: "red", fontWeight: "500" }}>
                   {detaiProduct.price >= 1000
                     ? detaiProduct.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
+                      style: "currency",
+                      currency: "VND",
+                    })
                     : detaiProduct.price + " đ"}
                 </span>{" "}
               </Row>
@@ -2441,12 +2441,12 @@ function DetailBill() {
               >
                 {detaiProduct.price * detaiProduct.quantity >= 1000
                   ? (detaiProduct.price * detaiProduct.quantity).toLocaleString(
-                      "vi-VN",
-                      {
-                        style: "currency",
-                        currency: "VND",
-                      }
-                    )
+                    "vi-VN",
+                    {
+                      style: "currency",
+                      currency: "VND",
+                    }
+                  )
                   : detaiProduct.price * detaiProduct.quantity + " đ"}
               </span>{" "}
             </Col>
@@ -2474,7 +2474,7 @@ function DetailBill() {
                     onChange={(value) => {
                       if (
                         value <=
-                          detaiProduct.maxQuantity + detaiProduct.quantity &&
+                        detaiProduct.maxQuantity + detaiProduct.quantity &&
                         value > 0 &&
                         value != undefined
                       ) {
