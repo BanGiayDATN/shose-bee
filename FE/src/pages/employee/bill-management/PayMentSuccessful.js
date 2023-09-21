@@ -98,7 +98,7 @@ function PayMentSuccessful() {
       <div className="content-payment-success">
     <FontAwesomeIcon className="icon-payment-success" icon={faSquareCheck} />
         <h1>Thanh toán thành công</h1>
-        <div style={{marginTop:"5%"}}>Tổng thanh toán:  {formatCurrency(vnp_Amount)}</div>
+        <div style={{marginTop:"5%"}}>Tổng thanh toán:  {formatCurrency(amount)}</div>
     <Link to="/sale">Tiếp tục mua</Link>
         </div>
         ):(
