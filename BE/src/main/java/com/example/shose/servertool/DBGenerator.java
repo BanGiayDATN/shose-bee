@@ -393,24 +393,24 @@ public class DBGenerator implements CommandLineRunner {
 
         Bill bill1 = Bill.builder().code("HD0001")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("11/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("11/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account2).account(account3)
                 .build();
 
         Bill bill2 = Bill.builder().code("HD0002")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill3 = Bill.builder().code("HD0003")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill4 = Bill.builder().code("HD0004")
@@ -443,17 +443,17 @@ public class DBGenerator implements CommandLineRunner {
                 .build();
         Bill bill8 = Bill.builder().code("HD0008")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account2).account(account3)
                 .build();
 
         Bill bill9 = Bill.builder().code("HD0009")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill10 = Bill.builder().code("HD0010")
@@ -465,28 +465,28 @@ public class DBGenerator implements CommandLineRunner {
                 .build();
         Bill bill11 = Bill.builder().code("HD0011")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill12 = Bill.builder().code("HD0012")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill13 = Bill.builder().code("HD0013")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
                 .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("18/08/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.KHONG_TRA_HANG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill14 = Bill.builder().code("HD0014")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("19/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("19/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
                 .employees(account1).customer(customer1)
@@ -506,27 +506,27 @@ public class DBGenerator implements CommandLineRunner {
         billRepository.save(bill13);
         billRepository.save(bill14);
 
-        BillDetail billDetail = BillDetail.builder().bill(bill1).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
-        BillDetail billDetail1 = BillDetail.builder().bill(bill1).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
-        BillDetail billDetail2 = BillDetail.builder().bill(bill1).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail9).quantity(2).price(productDetail9.getPrice()).build();
-        BillDetail billDetail3 = BillDetail.builder().bill(bill2).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
-        BillDetail billDetail4 = BillDetail.builder().bill(bill2).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
-        BillDetail billDetail5 = BillDetail.builder().bill(bill3).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(2).price(productDetail1.getPrice()).build();
+        BillDetail billDetail = BillDetail.builder().bill(bill1).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
+        BillDetail billDetail1 = BillDetail.builder().bill(bill1).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
+        BillDetail billDetail2 = BillDetail.builder().bill(bill1).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail9).quantity(2).price(productDetail9.getPrice()).build();
+        BillDetail billDetail3 = BillDetail.builder().bill(bill2).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail4 = BillDetail.builder().bill(bill2).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail5 = BillDetail.builder().bill(bill3).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail1).quantity(2).price(productDetail1.getPrice()).build();
         BillDetail billDetail6 = BillDetail.builder().bill(bill4).statusBill(StatusBill.VAN_CHUYEN).productDetail(productDetail3).quantity(3).price(productDetail3.getPrice()).build();
         BillDetail billDetail7 = BillDetail.builder().bill(bill5).statusBill(StatusBill.CHO_VAN_CHUYEN).productDetail(productDetail9).quantity(3).price(productDetail9.getPrice()).build();
         BillDetail billDetail8 = BillDetail.builder().bill(bill6).statusBill(StatusBill.DA_HUY).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
         BillDetail billDetail9 = BillDetail.builder().bill(bill7).statusBill(StatusBill.CHO_XAC_NHAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
 
-        BillDetail billDetail10 = BillDetail.builder().bill(bill8).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(3).price(productDetail1.getPrice()).build();
-        BillDetail billDetail11 = BillDetail.builder().bill(bill9).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
-        BillDetail billDetail12 = BillDetail.builder().bill(bill10).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail9).quantity(2).price(productDetail9.getPrice()).build();
-        BillDetail billDetail13 = BillDetail.builder().bill(bill11).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(4).price(productDetail2.getPrice()).build();
-        BillDetail billDetail14 = BillDetail.builder().bill(bill12).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
-        BillDetail billDetail15 = BillDetail.builder().bill(bill13).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
-        BillDetail billDetail16 = BillDetail.builder().bill(bill14).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
-        BillDetail billDetail17 = BillDetail.builder().bill(bill13).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail9).quantity(3).price(productDetail9.getPrice()).build();
-        BillDetail billDetail18 = BillDetail.builder().bill(bill14).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
-        BillDetail billDetail19 = BillDetail.builder().bill(bill12).statusBill(StatusBill.DA_THANH_TOAN).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail10 = BillDetail.builder().bill(bill8).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail1).quantity(3).price(productDetail1.getPrice()).build();
+        BillDetail billDetail11 = BillDetail.builder().bill(bill9).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
+        BillDetail billDetail12 = BillDetail.builder().bill(bill10).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail9).quantity(2).price(productDetail9.getPrice()).build();
+        BillDetail billDetail13 = BillDetail.builder().bill(bill11).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail2).quantity(4).price(productDetail2.getPrice()).build();
+        BillDetail billDetail14 = BillDetail.builder().bill(bill12).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
+        BillDetail billDetail15 = BillDetail.builder().bill(bill13).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
+        BillDetail billDetail16 = BillDetail.builder().bill(bill14).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
+        BillDetail billDetail17 = BillDetail.builder().bill(bill13).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail9).quantity(3).price(productDetail9.getPrice()).build();
+        BillDetail billDetail18 = BillDetail.builder().bill(bill14).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
+        BillDetail billDetail19 = BillDetail.builder().bill(bill12).statusBill(StatusBill.KHONG_TRA_HANG).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
         billDetailRepository.save(billDetail);
         billDetailRepository.save(billDetail1);
         billDetailRepository.save(billDetail2);
