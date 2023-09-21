@@ -149,7 +149,9 @@ function App() {
             path="/client/payment/payment-success"
             element={
               <GuestGuard>
+               <CartProvider>
                 <PayMentSuccess />
+                </CartProvider>
               </GuestGuard>
             }
           />

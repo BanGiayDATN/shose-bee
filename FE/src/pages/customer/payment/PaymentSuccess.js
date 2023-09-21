@@ -30,6 +30,15 @@ const formatMoney = (price) => {
     if(idAccount!== null){
       BillClientApi.createBillAccountOnline(formBill).then(
         (res) => {
+       
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
+    }else{
+      BillClientApi.createBillOnline(formBill).then(
+        (res) => {
           console.log("thanh toán khi nhận hàng!");
           const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
           const updatelist = cartLocal.filter((item) => {
@@ -41,13 +50,6 @@ const formatMoney = (price) => {
           localStorage.setItem("cartLocal", JSON.stringify(updatelist));
 
         },
-        (err) => {
-          console.log(err);
-        }
-      )
-    }else{
-      BillClientApi.createBillOnline(formBill).then(
-        (res) => {},
         (err) => {
           console.log(err);
         }
