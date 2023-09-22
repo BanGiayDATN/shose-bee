@@ -1026,6 +1026,11 @@ function DetailBill() {
   ];
 
   const columnsPayments = [
+     {
+    title: 'RowHead',
+    dataIndex: 'key',
+    rowScope: 'row',
+  },
     {
       title: <div className="title-product">Mã giao dịch</div>,
       dataIndex: "vnp_TransactionNo",
