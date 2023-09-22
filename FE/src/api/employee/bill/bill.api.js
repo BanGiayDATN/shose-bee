@@ -14,6 +14,13 @@ export class BillApi {
     });
   };
 
+  static fetchCountPayMentPostpaidByIdBill= (id) => {
+    return request({
+      method: "GET",
+      url: `/admin/bill/count-paymet-post-paid/${id}` ,
+    });
+  };
+
     static fetchDataUsers = () => {
       return request({
         method: "GET",

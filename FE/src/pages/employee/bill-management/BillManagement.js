@@ -49,6 +49,7 @@ function BillManagement() {
   const { Option } = Select;
 
   useEffect(() => {
+    console.log(fillter);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
@@ -64,7 +65,9 @@ function BillManagement() {
 
   const handleSubmitSearch = (e) => {
     var data = fillter;
-    data.status = status;
+    if(status.length != 0){
+      data.status = status;
+    }
     setFillter(data);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
@@ -116,7 +119,14 @@ function BillManagement() {
       type: "",
       page: 0,
     });
-    setStatus([]);
+    setStatus([ "CHO_XAC_NHAN",
+    "CHO_VAN_CHUYEN",
+    "VAN_CHUYEN",
+    "DA_THANH_TOAN",
+    "THANH_CONG",
+    "TRA_HANG",
+    "DA_HUY"]);
+    console.log(fillter);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });

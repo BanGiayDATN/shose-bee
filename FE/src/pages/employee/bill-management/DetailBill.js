@@ -68,6 +68,7 @@ function DetailBill() {
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
   const [payMentNo, setPayMentNo] = useState(false);
+  const [paymentPostpaid, setPaymentPostPaid] = useState(0);
   const { Option } = Select;
 
   const formatCurrency = (value) => {
@@ -78,6 +79,7 @@ function DetailBill() {
     });
     return formatter.format(value);
   };
+
 
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
@@ -99,6 +101,9 @@ function DetailBill() {
     BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
       dispatch(getBillHistory(res.data.data));
       console.log(res.data.data);
+    });
+    BillApi.fetchCountPayMentPostpaidByIdBill(id).then((res) => {
+      setPaymentPostPaid(res.data.data)
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
       setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
@@ -732,7 +737,7 @@ function DetailBill() {
     } else {
       if (
         statusBill.totalMoney < bill.totalMoney &&
-        bill.statusBill == "VAN_CHUYEN"
+        bill.statusBill == "VAN_CHUYEN" && paymentPostpaid != 0
       ) {
         toast.error("Số tiền thanh toán không đủ");
       } else {
@@ -1027,9 +1032,9 @@ function DetailBill() {
 
   const columnsPayments = [
      {
-    title: 'STT',
-    dataIndex: 'key',
-    rowScope: 'row',
+      title:<div className="title-product">STT</div>,
+      key:"index",
+      render: ((value, item, index) =>   index + 1)
   },
     {
       title: <div className="title-product">Mã giao dịch</div>,
@@ -1189,7 +1194,7 @@ function DetailBill() {
                     style={{ width: "100%" }}
                     span={statusPresent < 5 ? 7 : 0}
                   >
-                    {statusPresent < 6  ? (
+                    {statusPresent < 5  ? (
                       <Button
                         type="primary"
                         className="btn btn-primary"
@@ -1254,7 +1259,7 @@ function DetailBill() {
                 form={form}
                 initialValues={initialValues}
               >
-                {bill.statusBill === "VAN_CHUYEN" ? (
+                {bill.statusBill === "VAN_CHUYEN" && paymentPostpaid != 0? (
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
                       <Col span={24} style={{ marginTop: "10px" }}>
@@ -1668,9 +1673,18 @@ function DetailBill() {
             padding: "12px",
           }}
         >
-          {detailProductInBill.map((item) => {
+          {detailProductInBill.map((item, index) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
+                <Col span={1} style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    fontSize: "21px",
+                    fontFamily: "500",
+                    margin: "auto",
+                  }}>
+                  {index + 1}
+                </Col>
                 <Col span={5}>
                   <img
                     src={item.image}
@@ -1683,7 +1697,7 @@ function DetailBill() {
                     }}
                   />
                 </Col>
-                <Col span={11}>
+                <Col span={10}>
                   <Row>
                     {" "}
                     <span
