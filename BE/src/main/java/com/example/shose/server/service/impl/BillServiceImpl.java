@@ -209,7 +209,7 @@ public class BillServiceImpl implements BillService {
         }else{
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
         }
 
@@ -460,8 +460,12 @@ public class BillServiceImpl implements BillService {
 //            if(bill.get().getTotalMoney().compareTo(new BigDecimal(request.getTotalMoney())) > 0){
 //                throw new RestApiException(Message.ERROR_TOTALMONEY);
 //            }
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
-            paymentsMethodRepository.save(paymentsMethod);
+            int checkPayMent = paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
+            if(checkPayMent == 0){
+                PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
+                paymentsMethodRepository.save(paymentsMethod);
+            }
+
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
@@ -483,6 +487,11 @@ public class BillServiceImpl implements BillService {
 //            billHistoryRepository.save(billHistoryPayMent);
 //        }
         return billRepository.save(bill.get());
+    }
+
+    @Override
+    public int countPayMentPostpaidByIdBill(String id) {
+        return paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
     }
 
     @Override
