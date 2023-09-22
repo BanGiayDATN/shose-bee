@@ -203,11 +203,11 @@ public class BillServiceImpl implements BillService {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if(TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()){
-            optional.get().setStatusBill(StatusBill.KHONG_TRA_HANG);
+            optional.get().setStatusBill(StatusBill.THANH_CONG);
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         }else{
-            optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
+            optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
@@ -371,6 +371,9 @@ public class BillServiceImpl implements BillService {
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity(productDetail.get().getQuantity() - billDetailRequest.getQuantity());
+            if(productDetail.get().getQuantity() == 0){
+                productDetail.get().setStatus(Status.HET_SAN_PHAM);
+            }
             productDetailRepository.save(productDetail.get());
         });
         request.getVouchers().forEach(voucher -> {
@@ -459,7 +462,7 @@ public class BillServiceImpl implements BillService {
 //            }
             PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
             paymentsMethodRepository.save(paymentsMethod);
-        } else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
+        } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
 
@@ -470,15 +473,15 @@ public class BillServiceImpl implements BillService {
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
 
-        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
-            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-            BillHistory billHistoryPayMent = new BillHistory();
-            billHistoryPayMent.setBill(bill.get());
-            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
-            billHistoryPayMent.setActionDescription(request.getActionDescription());
-            billHistoryPayMent.setEmployees(account.get());
-            billHistoryRepository.save(billHistoryPayMent);
-        }
+//        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+//            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+//            BillHistory billHistoryPayMent = new BillHistory();
+//            billHistoryPayMent.setBill(bill.get());
+//            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+//            billHistoryPayMent.setActionDescription(request.getActionDescription());
+//            billHistoryPayMent.setEmployees(account.get());
+//            billHistoryRepository.save(billHistoryPayMent);
+//        }
         return billRepository.save(bill.get());
     }
 
@@ -493,24 +496,30 @@ public class BillServiceImpl implements BillService {
             if (!account.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-
+            if(bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN){
+                BillHistory billHistory = new BillHistory();
+                billHistory.setBill(bill.get());
+                billHistory.setStatusBill(StatusBill.CHO_XAC_NHAN);
+                billHistory.setEmployees(account.get());
+                billHistoryRepository.save(billHistory);
+            }
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
 //            billHistoryPayMent.setActionDescription(request.getActionDescription());
             billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
-
+//            if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+//                bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+//                BillHistory billHistoryPayMent = new BillHistory();
+//                billHistoryPayMent.setBill(bill.get());
+//                billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+////                billHistoryPayMent.setActionDescription(request.getActionDescription());
+//                billHistoryPayMent.setEmployees(account.get());
+//                billHistoryRepository.save(billHistoryPayMent);
+//            }
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
-            if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
-                bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-                BillHistory billHistoryPayMent = new BillHistory();
-                billHistoryPayMent.setBill(bill.get());
-                billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
-//                billHistoryPayMent.setActionDescription(request.getActionDescription());
-                billHistoryPayMent.setEmployees(account.get());
-                billHistoryRepository.save(billHistoryPayMent);
-            }
+
             billRepository.save(bill.get());
         });
         return true;
@@ -602,16 +611,19 @@ public class BillServiceImpl implements BillService {
 
         paymentsMethodRepository.save(paymentsMethod);
 
-        Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
+        if(!request.getIdVoucher().isEmpty()){
+            Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
-        VoucherDetail voucherDetail = VoucherDetail.builder()
-                .voucher(voucher)
-                .bill(bill)
-                .beforPrice(request.getTotalMoney())
-                .afterPrice(request.getAfterPrice())
-                .discountPrice(request.getItemDiscount())
-                .build();
-        voucherDetailRepository.save(voucherDetail);
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforPrice(request.getTotalMoney())
+                    .afterPrice(request.getAfterPrice())
+                    .discountPrice(request.getItemDiscount())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        }
+
 
         return "thanh toán ok";
     }
@@ -657,16 +669,7 @@ public class BillServiceImpl implements BillService {
 
         paymentsMethodRepository.save(paymentsMethod);
 
-        if(request.getIdVoucher().equals("")){
-            VoucherDetail voucherDetail = VoucherDetail.builder()
-                    .voucher(null)
-                    .bill(bill)
-                    .beforPrice(request.getTotalMoney())
-                    .afterPrice(request.getAfterPrice())
-                    .discountPrice(request.getItemDiscount())
-                    .build();
-            voucherDetailRepository.save(voucherDetail);
-        }else{
+        if(!request.getIdVoucher().isEmpty()){
             Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()

@@ -39,9 +39,9 @@ const AddColorModal = ({ visible, onCancel, onSaveData }) => {
     const colorName = convert.rgb.keyword(rgb);
 
     if (colorName === null) {
-      return "Unknown"; // Trường hợp không tìm thấy tên màu
+      return "Unknown";
     } else {
-      return colorName; // Trả về tên màu
+      return colorName;
     }
   };
 
@@ -64,8 +64,6 @@ const AddColorModal = ({ visible, onCancel, onSaveData }) => {
     getList();
   }, []);
 
-  // Trong hàm handleOk, chúng ta gọi form.validateFields() để kiểm tra và lấy giá trị
-  // hàm onCreate để xử lý dữ liệu
   const handleOk = () => {
     onSaveData(selected);
     setSelected([]);

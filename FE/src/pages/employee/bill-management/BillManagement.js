@@ -43,7 +43,7 @@ function BillManagement() {
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);
-  var [quantityNotify, setQuantityNotify] = useState([ ])
+  var [quantityNotify, setQuantityNotify] = useState([]);
 
   const dispatch = useAppDispatch();
   const { Option } = Select;
@@ -114,12 +114,18 @@ function BillManagement() {
     });
   };
 
-  
-
   const [fillter, setFillter] = useState({
     startTimeString: "",
     endTimeString: "",
-    status: [],
+    status: [
+      "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+    ],
     endDeliveryDateString: "",
     startDeliveryDateString: "",
     key: "",
@@ -130,9 +136,8 @@ function BillManagement() {
     page: 0,
   });
 
-
   const onChange = (key) => {
-    setQuantityNotify(quantityNotify.filter(item => item.status !== key))
+    setQuantityNotify(quantityNotify.filter((item) => item.status !== key));
   };
 
   const listtab = [
@@ -141,7 +146,7 @@ function BillManagement() {
     "CHO_VAN_CHUYEN",
     "VAN_CHUYEN",
     "DA_THANH_TOAN",
-    "KHONG_TRA_HANG",
+    "THANH_CONG",
     "DA_HUY",
   ];
 
@@ -155,33 +160,31 @@ function BillManagement() {
       : key === "VAN_CHUYEN"
       ? "Vận chuyển"
       : key === "DA_THANH_TOAN"
-      ? "Thanh toán"
-      : key === "KHONG_TRA_HANG"
+      ? "thanh toán"
+      : key === "THANH_CONG"
       ? "Hoàn thành"
       : "Hủy";
   };
   const checkNotifyNew = (key) => {
-   var index =  quantityNotify.findIndex((item) => item.name == key)
-   if(index == -1){
-    return false
-   }else{
-    return true
-   }
-  }
+    var index = quantityNotify.findIndex((item) => item.name == key);
+    if (index == -1) {
+      return false;
+    } else {
+      return true;
+    }
+  };
 
   const showQuantityBillNotify = (key) => {
     var index = quantityNotify.findIndex((item) => item.status == key);
-    if(index != -1){
-      return quantityNotify[index].quantity
+    if (index != -1) {
+      return quantityNotify[index].quantity;
     }
-    return null
-   }
+    return null;
+  };
 
-  const addNotify = (notify) =>{
-    setQuantityNotify([...quantityNotify, notify])
-  }
-
-  
+  const addNotify = (notify) => {
+    setQuantityNotify([...quantityNotify, notify]);
+  };
 
   return (
     <div>
@@ -235,13 +238,17 @@ function BillManagement() {
               return {
                 label: (
                   <Badge count={showQuantityBillNotify(item)}>
-                    <span >
-                      {convertString(item)}
-                    </span>
+                    <span>{convertString(item)}</span>
                   </Badge>
                 ),
                 key: item,
-                children: <TabBills statusBill={item} dataFillter={fillter} addNotify={addNotify}/>,
+                children: (
+                  <TabBills
+                    statusBill={item}
+                    dataFillter={fillter}
+                    addNotify={addNotify}
+                  />
+                ),
               };
             })}
           />

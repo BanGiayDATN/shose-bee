@@ -106,7 +106,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                     LEFT JOIN image i ON max_images.max_image_id = i.id
                     JOIN color co on co.id = detail.id_color
                     JOIN size s on s.id = detail.id_size
-           where p.id = '3e730115-70b6-42f6-b4db-a76ad3598425'
+           where p.id = :id
            group by detail.id
             """, nativeQuery = true)
     List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
@@ -284,35 +284,22 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     @Query( value = """
-
-            SELECT
-            p.id as idProduct,
-            pd.id as idProductDetail,
-            GROUP_CONCAT(i.name)as image,
-             p.name as nameProduct,
-             pd.price as price,
-             pd.quantity as quantity,
-             REPLACE(c.code, '#','%23') as codeColor,
-             s.name as nameSize,
-             (select GROUP_CONCAT(s.name) FROM size s WHERE s.name in( 
-               SELECT s2.name
-                FROM color c3 
-                JOIN product_detail pd3 ON c3.id =  pd3.id_color 
-                 JOIN product p3 ON p3.id = pd3.id_product  
-                JOIN size s2 ON s2.id = pd3.id_size
-                WHERE c3.code = c.code AND p3.id = p.id
-                ))
-              as listNameSize
-             from product_detail pd
-             left JOIN image i on i.id_product_detail = pd.id
-             JOIN product p on pd.id_product = p.id
-             JOIN color c on c.id = pd.id_color
-             JOIN size s on s.id = pd.id_size
-            where p.id = :id and c.code = :codeColor and s.name =:nameSize
-            GROUP BY p.id, pd.id, p.name, pd.price, pd.quantity, REPLACE(c.code, '#','%23'), s.name
+       SELECT
+           pd.id as idProductDetail,
+           GROUP_CONCAT(i.name)as image,
+           p.name as nameProduct,
+           pd.price as price,
+           pd.quantity as quantity,
+           c.code as codeColor,
+           s.name as nameSize
+       from product_detail pd
+                left JOIN image i on i.id_product_detail = pd.id
+                JOIN product p on pd.id_product = p.id
+                JOIN color c on c.id = pd.id_color
+                JOIN size s on s.id = pd.id_size
+       where pd.id = :id
             """, nativeQuery = true)
-
-    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor,@Param("nameSize") String nameSize);
+    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id);
 
 
 
@@ -332,7 +319,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    detail.price AS price,
                    c2.id AS idCode,
                    s2.id AS idSize,
-                   detail.maqr AS QRCode
+                   detail.maqr AS QRCode,
+                   p2.value AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -348,21 +336,23 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
+                LEFT JOIN promotion_product_detail ppd ON detail.id = ppd.id_product_detail
+                LEFT JOIN promotion p2 ON ppd.id_promotion = p2.id
                 WHERE  detail.id = :id
             """, nativeQuery = true)
 
     ProductDetailDTOResponse getOneById(@Param("id") String id);
     @Query(value = """
-SELECT
-    s.name as nameSize,
-    p.id as idProduct,
-    REPLACE(c.code, '#','%23') as codeColor
-FROM product_detail detail
-join product p on detail.id_product = p.id
-join size s on detail.id_size = s.id
-join color c on detail.id_color = c.id
-where p.id = :idProduct and c.code = :codeColor
-""",nativeQuery = true)
+                SELECT
+                    s.name as nameSize,
+                    p.id as idProduct,
+                    REPLACE(c.code, '#','%23') as codeColor
+                FROM product_detail detail
+                join product p on detail.id_product = p.id
+                join size s on detail.id_size = s.id
+                join color c on detail.id_color = c.id
+                where p.id = :idProduct and c.code = :codeColor
+            """,nativeQuery = true)
     List<ListSizeOfItemCart> listSizeByProductAndColor(@Param("idProduct") String idProduct, @Param("codeColor") String codeColor);
 
 }

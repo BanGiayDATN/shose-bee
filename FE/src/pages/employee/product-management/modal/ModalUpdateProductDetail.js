@@ -43,6 +43,8 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { SizeApi } from "../../../../api/employee/size/Size.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
+import ModalCreateColor from "./ModalCreateColor";
+import { GetColor, SetColor } from "../../../../app/reducer/Color.reducer";
 
 const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
   const [form] = Form.useForm();
@@ -104,94 +106,59 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
   const [modalAddCategopry, setModalAddCategory] = useState(false);
   const [modalAddMaterial, setModalAddMaterial] = useState(false);
   const [modalAddBrand, setModalAddBrand] = useState(false);
+  const [modalAddColor, setModalAddColor] = useState(false);
 
   const dataSole = useAppSelector(GetSole);
   const dataCategory = useAppSelector(GetCategory);
   const dataMaterial = useAppSelector(GetMaterail);
   const dataBrand = useAppSelector(GetBrand);
   const dataSize = useAppSelector(GetSize);
+  const dataColor = useAppSelector(GetColor);
 
   const handleCancel = () => {
     setModalAddSole(false);
     setModalAddBrand(false);
     setModalAddMaterial(false);
     setModalAddCategory(false);
+    setModalAddColor(false);
   };
-
-  const [listMaterial, setListMaterial] = useState([]);
-  const [listCategory, setListCategory] = useState([]);
-  const [listBrand, setListBrand] = useState([]);
-  const [listSole, setListSole] = useState([]);
-  const [listSize, setListSize] = useState([]);
-  const [listColor, setListColor] = useState([]);
 
   const getList = () => {
     MaterialApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListMaterial(res.data.data);
       dispatch(SetMaterial(res.data.data));
     });
     CategoryApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListCategory(res.data.data);
       dispatch(SetCategory(res.data.data));
     });
     SoleApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListSole(res.data.data);
       dispatch(SetSole(res.data.data));
     });
     BrandApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListBrand(res.data.data);
       dispatch(SetBrand(res.data.data));
     });
     SizeApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListSize(res.data.data);
       dispatch(SetSize(res.data.data));
     });
     ColorApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListColor(res.data.data);
-      // dispatch(Set(res.data.data));
+      dispatch(SetColor(res.data.data));
     });
   };
 
   useEffect(() => {
     getList();
   }, []);
-
-  useEffect(() => {
-    if (
-      dataSole != null ||
-      dataBrand != null ||
-      dataCategory != null ||
-      dataMaterial != null ||
-      dataSize != null
-    ) {
-      setListSole(dataSole);
-      setListCategory(dataCategory);
-      setListMaterial(dataMaterial);
-      setListBrand(dataBrand);
-    }
-  }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
-
-  // format tiền
-  const formatCurrency = (value) => {
-    const formatter = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      currencyDisplay: "code",
-    });
-    return formatter.format(value);
-  };
 
   // ảnh
   const getBase64 = (file) =>
@@ -250,14 +217,6 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
       </div>
     </div>
   );
-
-  const customItemRender = (originNode, file) => {
-    const isUploadedFile = fileList.some((item) => item.uid === file.uid);
-    if (isUploadedFile) {
-      return <div style={{ width: "100%", height: "100%" }}>{originNode}</div>;
-    }
-    return originNode;
-  };
 
   const handleUpdate = () => {
     form
@@ -355,8 +314,8 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
           Chỉnh sửa
         </Button>,
       ]}
-      mask={false} 
-      maskClosable={false} 
+      mask={false}
+      maskClosable={false}
     >
       <div className="filter">
         <div
@@ -411,7 +370,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                 ]}
               >
                 <Select placeholder="Chọn thương hiệu">
-                  {listBrand.map((brand, index) => (
+                  {dataBrand.map((brand, index) => (
                     <Option key={index} value={brand.id}>
                       <span style={{ fontWeight: "bold" }}>{brand.name}</span>
                     </Option>
@@ -475,7 +434,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                 ]}
               >
                 <Select placeholder="Chọn chất liệu">
-                  {listMaterial.map((material, index) => (
+                  {dataMaterial.map((material, index) => (
                     <Option key={index} value={material.id}>
                       <span style={{ fontWeight: "bold" }}>
                         {material.name}
@@ -505,7 +464,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                 rules={[{ required: true, message: "Vui lòng chọn thể loại" }]}
               >
                 <Select placeholder="Chọn đế giày">
-                  {listSole.map((sole, index) => (
+                  {dataSole.map((sole, index) => (
                     <Option key={index} value={sole.id}>
                       <span style={{ fontWeight: "bold" }}>{sole.name}</span>
                     </Option>
@@ -569,7 +528,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                 rules={[{ required: true, message: "Vui lòng chọn thể loại" }]}
               >
                 <Select placeholder="Chọn thể loại">
-                  {listCategory.map((category, index) => (
+                  {dataCategory.map((category, index) => (
                     <Option key={index} value={category.id}>
                       <span style={{ fontWeight: "bold" }}>
                         {category.name}
@@ -602,7 +561,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                 rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
               >
                 <Select placeholder="Chọn màu sắc">
-                  {listColor.map((color, index) => (
+                  {dataColor.map((color, index) => (
                     <Option key={index} value={color.id}>
                       <div
                         style={{
@@ -624,6 +583,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                     type="primary"
                     icon={<FontAwesomeIcon icon={faPlus} />}
                     style={{ height: 30 }}
+                    onClick={() => setModalAddColor(true)}
                   />
                 </Tooltip>
               </Form.Item>
@@ -638,7 +598,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                 ]}
               >
                 <Select placeholder="Chọn kích cỡ">
-                  {listSize.map((size, index) => (
+                  {dataSize.map((size, index) => (
                     <Option key={index} value={size.id}>
                       <span style={{ fontWeight: "bold" }}>{size.name}</span>
                     </Option>
@@ -733,6 +693,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
           visible={modalAddMaterial}
           onCancel={handleCancel}
         />
+        <ModalCreateColor visible={modalAddColor} onCancel={handleCancel} />
       </div>
       <div className="filter">
         <div
@@ -743,23 +704,20 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
             justifyContent: "center",
           }}
         >
-          <span
-            style={{ fontSize: "20px", fontWeight: "bold", marginTop: "1%" }}
-          >
+          <span style={{ fontSize: "20px", fontWeight: "bold" }}>
             Ảnh Sản Phẩm
           </span>
         </div>
 
         <div style={{ marginTop: "25px" }}>
           <Upload
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
             listType="picture-card"
             fileList={fileList}
             onChange={handleChange}
             onPreview={handlePreview}
-            itemRender={(originNode, file, currIndex) =>
-              customItemRender(originNode, file, currIndex)
-            }
+            customRequest={({ file, onSuccess }) => {
+              onSuccess(file);
+            }}
             beforeUpload={(file) => {
               // Kiểm tra xem tệp có phải là hình ảnh hay không
               const isImage = file.type.startsWith("image/");

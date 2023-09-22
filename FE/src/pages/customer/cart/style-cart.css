@@ -130,13 +130,13 @@
   color: #7c7876;
   font-size: 15px;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-  /* margin-bottom: 35px; */
+  margin-top: auto;
 }
 .info-product-detail {
   width: 300px;
   margin-right: 5%;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 /* .form-status-cart{
     margin-left: 15%;
@@ -145,14 +145,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgb(34, 32, 32);
+  background-color: rgb(255, 255, 255);
   width: 130px;
   height: 40px;
-  cursor: pointer;
+
 }
 .icon-button-delete-cart {
-  color: white;
+  color: rgb(0, 0, 0);
   font-size: 25px;
+  cursor: pointer;
 }
 
 .box-cart-img {
@@ -180,10 +181,7 @@
   align-items: center;
   margin-left: 60%;
 }
-.form-quantity-size {
-  display: flex;
-  margin-top: auto;
-}
+
 .input-quantity-cart {
   border-radius: 0;
   height: 50px;

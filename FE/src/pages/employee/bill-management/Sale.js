@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useAppDispatch } from "../../../app/hook";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   addBillAtCounTer,
   addBillWait,
@@ -17,7 +19,6 @@ import {
 } from "../../../app/reducer/Bill.reducer";
 import moment from "moment";
 import CreateBill from "./CreateBill";
-import { toast } from "react-toastify";
 import './sale.css'
 
 function Sale() {
@@ -217,6 +218,20 @@ function Sale() {
             />
           </Row>
         </Row>
+        <ToastContainer
+        position="top-right"
+        autoClose={100}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {/* Same as */}
+      <ToastContainer />
       </div>
   );
 }

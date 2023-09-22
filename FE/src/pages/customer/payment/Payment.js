@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./style-payment.css";
-import { Row, Col, InputNumber, Input, Select, Form } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
-import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
-import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
-import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
 import { faCarRear } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Col, Form, Input, Row, Select } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { useEffect, useState } from "react";
+import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
+import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
+import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
+import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
+import "./style-payment.css";
+import { useCart } from "../cart/CartContext";
 dayjs.extend(utc);
 function Payment() {
+  const { updateTotalQuantity } = useCart();
   const { Option } = Select;
   const idAccount = localStorage.getItem("idAccount");
   const [listCity, setListCity] = useState([]);
@@ -179,8 +179,21 @@ function Payment() {
         }
       );
     } else {
+    
+      
+    
       BillClientApi.createBillOnline(formBill).then(
-        (res) => {},
+        (res) => {
+          console.log("thanh toán khi nhận hàng!");
+          const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
+          const updatelist = cartLocal.filter((item) => {
+            // Kiểm tra xem item.idProductDetail có tồn tại trong formBill.billDetail hay không
+            return !formBill.billDetail.some((itemBill) => item.idProductDetail === itemBill.idProductDetail);
+          });
+          const total = updatelist.reduce((acc, item) => acc + item.quantity, 0);
+          updateTotalQuantity(total);
+          localStorage.setItem("cartLocal", JSON.stringify(updatelist));
+        },
         (err) => {
           console.log(err);
         }

@@ -4,7 +4,7 @@ import { QrReader } from "react-qr-reader";
 
 const QRScannerModal = ({ visible, onCancel, onQRCodeScanned }) => {
   const [qrCode, setQRCode] = useState(null);
-  const qrReaderRef = useRef(null); // Thêm useRef để tham chiếu đến thư viện quét mã QR
+  const qrReaderRef = useRef(null); 
 
   const handleScan = (data) => {
     if (data) {

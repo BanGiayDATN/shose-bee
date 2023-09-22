@@ -135,20 +135,20 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     : key === "CHO_VAN_CHUYEN"
     ? "Vận chuyển"
     : key === "VAN_CHUYEN"
-    ? "Đã Vận chuyển"
-    : key === "KHONG_TRA_HANG"
+    ? "Xác nhận thanh Toán"
+    : key === "DA_THANH_TOAN" 
+    ? "Hoàn thành" 
+    : key === "THANH_CONG"
     ? "Hoàn thành"
-    : key === "DA_THANH_TOAN"
-    ? "Thanh Toán"
     : "Hủy"
   }
 
   const nextStatusBill = () => {
-    return statusBill == "CHO_XAC_NHAN" ? 
+    return  statusBill == "CHO_XAC_NHAN" ? 
     "CHO_VAN_CHUYEN" : statusBill == "CHO_VAN_CHUYEN" ? 
-    "VAN_CHUYEN" : statusBill == "VAN_CHUYEN" ? 
-    "DA_THANH_TOAN" :  statusBill == "DA_THANH_TOAN" ? "KHONG_TRA_HANG" :
-    "DA_HUY" 
+    "VAN_CHUYEN" :  statusBill == "VAN_CHUYEN" ? "DA_THANH_TOAN" :
+    statusBill == "DA_THANH_TOAN" ?
+    "THANH_CONG" : "HUY"
   }
   const changeStatusBill = (e) => {
     Modal.confirm({
@@ -213,7 +213,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
           className="bill-table"
         />
       </Row>
-      {statusBill != "" && statusBill != 'DA_HUY' && statusBill != 'KHONG_TRA_HANG'? (
+      {statusBill != "" && statusBill != 'DA_HUY' && statusBill != 'THANH_CONG'? (
         <Row style={{ width: "100%", marginTop: "15px" }} justify={"end"}>
           <Col span={3} style={{ marginRight: "10px" }}>
             <Button onClick={(e) => changeStatusBill(e)}>{convertString(statusBill)}</Button>

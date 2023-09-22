@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./style-card.css";
-import { Card, Modal, Row, Col, Button, InputNumber } from "antd";
-import { toast } from "react-toastify";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { Col, InputNumber, Modal, Row } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
-import dayjs from "dayjs";
+import "./style-card.css";
 
 function CardItem({ item, index }) {
   const now = dayjs();
@@ -15,11 +15,9 @@ function CardItem({ item, index }) {
 
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
-    idProduct: "",
     idProductDetail: "",
     image: "",
     nameSize: "",
-    listNameSize: "",
     nameProduct: "",
     price: 0,
     quantity: 0,
@@ -44,11 +42,10 @@ function CardItem({ item, index }) {
     if (idAccountLocal === null) {
       const newCartItem = {
         idProductDetail: detailProduct.idProductDetail,
-        nameProduct: detailProduct.nameProduct,
         image: detailProduct.image,
         price: detailProduct.price,
         quantity: quantity,
-        idProduct: detailProduct.idProduct,
+        nameProduct: detailProduct.nameProduct,
         codeColor: detailProduct.codeColor,
         nameSize: detailProduct.nameSize,
       };
@@ -98,13 +95,11 @@ function CardItem({ item, index }) {
     }
   };
 
-  const getDetailProduct = (idProduct, idColor, nameSize) => {
-    console.log(idProduct, idColor, nameSize);
+  const getDetailProduct = (idProductDetail) => {
+    console.log(idProductDetail);
     console.log(detailProduct);
     ProductDetailClientApi.getDetailProductOfClient(
-      idProduct,
-      idColor,
-      nameSize
+      idProductDetail
     ).then(
       (res) => {
         console.log(res.data.data);
@@ -116,15 +111,10 @@ function CardItem({ item, index }) {
     );
     setModal(true);
   };
-  const handleSizeClick = (index, idProduct, codeColor, nameSize) => {
-    setClickedIndex(index);
-    getDetailProduct(idProduct, codeColor, nameSize);
-   
-  };
 
-  const handleClickDetail = (idProduct, codeColor, nameSize) => {
+  const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
-    getDetailProduct(idProduct, codeColor, nameSize);
+    getDetailProduct(idProductDetail);
   };
   const closeModal = () => {
     setModal(false);
@@ -133,7 +123,11 @@ function CardItem({ item, index }) {
   };
 
   const formatMoney = (price) => {
-    return price+" VNĐ";
+    return (
+      parseInt(price)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
+    );
   };
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -197,7 +191,7 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
               </div>
             </div>
             <div>
-              <p className="name-product">{item.nameProduct}</p>
+              <p className="name-product">{item.nameProduct} - [{item.nameSize}]</p>
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
           </Link>
@@ -205,7 +199,7 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
         <div
           className="button-buy-now"
           onClick={() => {
-            handleClickDetail(item.idProduct, item.codeColor, item.nameSize);
+            handleClickDetail(item.idProductDetail);
           }}
         >
           Mua ngay
@@ -257,10 +251,7 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
                     className="color-product"
                     key={index}
                     style={{
-                      backgroundColor: detailProduct.codeColor.replace(
-                        "%23",
-                        "#"
-                      ),
+                      backgroundColor: detailProduct.codeColor
                     }}
                   ></div>
                 </div>
@@ -272,33 +263,19 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
               <div>
                 <div>Size:</div>
                 <div className="list-size-product" tabIndex="0">
-                  {detailProduct.listNameSize
-                    .split(",")
-                    .sort()
-                    .map((nameSize, index) => (
+        
                       <div
-                        className={`size-product ${
-                          clickedIndex === index ? "clicked" : ""
-                        }`}
+                        className="size-product "
                         key={index}
                         tabIndex="0"
-                        onClick={() =>
-                          handleSizeClick(
-                            index,
-                            item.idProduct,
-                            item.codeColor,
-                            nameSize
-                          )
-                        }
+                    
                         style={
-                          nameSize !== detailProduct.nameSize
-                            ? {}
-                            : { border: "1px solid black" }
+                        { border: "1px solid black" }
                         }
                       >
-                        {nameSize}
+                        {detailProduct.nameSize}
                       </div>
-                    ))}
+                    
                 </div>
               </div>
               <div className="add-to-card">

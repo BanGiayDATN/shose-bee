@@ -20,9 +20,12 @@ function TimeLine({ listStatus, data, statusPresent }) {
     }
     else if(statusBill === "VAN_CHUYEN"){
       return BiSolidTruck
+    } 
+    else if(statusBill === "CHO_VAN_CHUYEN"){
+      return BiSolidTruck
     } else if(statusBill === "DA_THANH_TOAN"){
       return MdPayment
-    }else if(statusBill === "KHONG_TRA_HANG"){
+    }else if(statusBill === "THANH_CONG"){
       return AiFillCarryOut
     }else if(statusBill === "TRA_HANG"){
       return GiReturnArrow
@@ -52,7 +55,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
               ? "Đã thanh toán"
               : item.statusBill === "TRA_HANG"
               ? "Trả hàng"
-              : item.statusBill === "KHONG_TRA_HANG"
+              : item.statusBill === "THANH_CONG"
               ? "Thành công"
               : "Đã hủy"
           }

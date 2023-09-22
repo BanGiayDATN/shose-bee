@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface GetDetailProductOfClient {
-    @Value("#{target.idProduct}")
-    String getIdProduct();
+
     @Value("#{target.idProductDetail}")
     String getIdProductDetail();
 
@@ -27,9 +26,6 @@ public interface GetDetailProductOfClient {
     Integer getQuantity();
     @Value("#{target.codeColor}")
     String getCodeColor();
-
-    @Value("#{target.listNameSize}")
-    String getListNameSize();
 
     @Value("#{target.nameSize}")
     String getNameSize();
