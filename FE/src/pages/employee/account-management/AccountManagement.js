@@ -250,7 +250,7 @@ const AccountManagement = () => {
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       sorter: (a, b) => a.dateOfBirth - b.dateOfBirth,
-      render: (date) => moment(date).format("DD-MM-YYYY"),
+      render: (date) => moment(date).format("DD/MM/YYYY"),
     },
     {
       title: "Giới tính",

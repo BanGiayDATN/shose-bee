@@ -359,7 +359,7 @@ const ModalUpdateAccount = ({ visible }) => {
                       { required: true, message: "Vui lòng nhập tên" },
                       {
                         validator: (_, value) => {
-                          if (value && value.trim() === "") {
+                          if (value && value[0] === " ") {
                             return Promise.reject(
                               "Tên không được nhập khoảng trắng"
                             );
