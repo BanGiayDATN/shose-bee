@@ -98,7 +98,15 @@ function BillManagement() {
     setFillter({
       startTimeString: "",
       endTimeString: "",
-      status: [],
+      status: [
+      "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+    ],
       endDeliveryDateString: "",
       startDeliveryDateString: "",
       key: "",
