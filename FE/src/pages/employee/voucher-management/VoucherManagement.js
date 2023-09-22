@@ -49,6 +49,9 @@ const VoucherManagement = () => {
   }, [data]);
   useEffect(() => {
   }, [list]);
+  useEffect(() => {
+    console.log(data);
+  }, []);
 
   useEffect(() => {
     loadData();

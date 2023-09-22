@@ -284,35 +284,22 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     @Query( value = """
-
-            SELECT
-            p.id as idProduct,
-            pd.id as idProductDetail,
-            GROUP_CONCAT(i.name)as image,
-             p.name as nameProduct,
-             pd.price as price,
-             pd.quantity as quantity,
-             REPLACE(c.code, '#','%23') as codeColor,
-             s.name as nameSize,
-             (select GROUP_CONCAT(s.name) FROM size s WHERE s.name in( 
-               SELECT s2.name
-                FROM color c3 
-                JOIN product_detail pd3 ON c3.id =  pd3.id_color 
-                 JOIN product p3 ON p3.id = pd3.id_product  
-                JOIN size s2 ON s2.id = pd3.id_size
-                WHERE c3.code = c.code AND p3.id = p.id
-                ))
-              as listNameSize
-             from product_detail pd
-             left JOIN image i on i.id_product_detail = pd.id
-             JOIN product p on pd.id_product = p.id
-             JOIN color c on c.id = pd.id_color
-             JOIN size s on s.id = pd.id_size
-            where p.id = :id and c.code = :codeColor and s.name =:nameSize
-            GROUP BY p.id, pd.id, p.name, pd.price, pd.quantity, REPLACE(c.code, '#','%23'), s.name
+       SELECT
+           pd.id as idProductDetail,
+           GROUP_CONCAT(i.name)as image,
+           p.name as nameProduct,
+           pd.price as price,
+           pd.quantity as quantity,
+           c.code as codeColor,
+           s.name as nameSize
+       from product_detail pd
+                left JOIN image i on i.id_product_detail = pd.id
+                JOIN product p on pd.id_product = p.id
+                JOIN color c on c.id = pd.id_color
+                JOIN size s on s.id = pd.id_size
+       where pd.id = :id
             """, nativeQuery = true)
-
-    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor,@Param("nameSize") String nameSize);
+    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id);
 
 
 

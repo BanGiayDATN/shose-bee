@@ -305,8 +305,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public GetDetailProductOfClient getDetailProductOfClient(String id, String codeColor, String nameSize) {
-        return productDetailRepository.getDetailProductOfClient(id, codeColor,nameSize);
+    public GetDetailProductOfClient getDetailProductOfClient(String id) {
+        return productDetailRepository.getDetailProductOfClient(id);
 
 
     }
@@ -324,17 +324,17 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     public Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable) {
-        return productDetailRepository.getProductDetailHavePromotion(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        return productDetailRepository.getProductDetailHavePromotion(pageable);
     }
 
     @Override
     public Page<GetProductDetail> getProductDetailNew(Pageable pageable) {
-        return productDetailRepository.getProductDetailNew(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        return productDetailRepository.getProductDetailNew(pageable);
     }
 
     @Override
     public Page<GetProductDetail> getProductDetailSellMany(Pageable pageable) {
-        return productDetailRepository.getProductDetailSellMany(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        return productDetailRepository.getProductDetailSellMany(pageable);
     }
 
 

@@ -42,18 +42,9 @@ public class ProductDetailClientRestController {
     }
 
 
-    @GetMapping("/{id}&&{codeColor}&&{nameSize}")
-    public ResponseObject getDetailProductOfClient(@PathVariable("id") String id, @PathVariable("codeColor") String codeColor, @PathVariable("nameSize") String nameSize) {
-        String rawCodeColor = codeColor.replace("%23", "#");
-
-        return new ResponseObject(productDetailService.getDetailProductOfClient(id, rawCodeColor, nameSize));
-    }
-
-    @GetMapping("/getInCart/{id}&&{codeColor}&&{nameSize}")
-    public ResponseObject getProductDetailInCart(@PathVariable("id") String id, @PathVariable("codeColor") String codeColor, @PathVariable("nameSize") String nameSize) {
-        String rawCodeColor = codeColor.replace("%23", "#");
-
-        return new ResponseObject(productDetailService.getDetailProductOfClient(id, rawCodeColor, nameSize));
+    @GetMapping("/{id}")
+    public ResponseObject getDetailProductOfClient(@PathVariable("id") String id) {
+        return new ResponseObject(productDetailService.getDetailProductOfClient(id));
     }
 
     @GetMapping("/listSizeCart/{id}&&{codeColor}")

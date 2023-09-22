@@ -53,7 +53,7 @@ public interface ProductDetailService {
 
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
 
-    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor, String nameSize);
+    GetDetailProductOfClient  getDetailProductOfClient(String id);
 
 //    GetProductDetailInCart getProductDetailInCart()
 List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);

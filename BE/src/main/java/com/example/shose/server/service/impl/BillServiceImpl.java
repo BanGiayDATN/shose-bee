@@ -611,16 +611,19 @@ public class BillServiceImpl implements BillService {
 
         paymentsMethodRepository.save(paymentsMethod);
 
-        Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
+        if(!request.getIdVoucher().isEmpty()){
+            Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
-        VoucherDetail voucherDetail = VoucherDetail.builder()
-                .voucher(voucher)
-                .bill(bill)
-                .beforPrice(request.getTotalMoney())
-                .afterPrice(request.getAfterPrice())
-                .discountPrice(request.getItemDiscount())
-                .build();
-        voucherDetailRepository.save(voucherDetail);
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforPrice(request.getTotalMoney())
+                    .afterPrice(request.getAfterPrice())
+                    .discountPrice(request.getItemDiscount())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        }
+
 
         return "thanh toán ok";
     }
@@ -666,16 +669,7 @@ public class BillServiceImpl implements BillService {
 
         paymentsMethodRepository.save(paymentsMethod);
 
-        if(request.getIdVoucher().equals("")){
-            VoucherDetail voucherDetail = VoucherDetail.builder()
-                    .voucher(null)
-                    .bill(bill)
-                    .beforPrice(request.getTotalMoney())
-                    .afterPrice(request.getAfterPrice())
-                    .discountPrice(request.getItemDiscount())
-                    .build();
-            voucherDetailRepository.save(voucherDetail);
-        }else{
+        if(!request.getIdVoucher().isEmpty()){
             Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
