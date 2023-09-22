@@ -22,6 +22,8 @@ public interface GetProductDetailByProduct {
     @Value("#{target.price}")
     BigDecimal getPrice();
 
+    @Value("#{target.value}")
+    BigDecimal getValue();
     @Value("#{target.created_date}")
     Long getCreateDate();
 

@@ -8,10 +8,10 @@ export class ProductDetailClientApi {
         });
       };
     
-      static getDetailProductOfClient = (id,codeColor,nameSize)=>{
+      static getDetailProductOfClient = (idProductDetail)=>{
         return request({
           method: "GET",
-          url: `/client/product-detail/${id}&&${codeColor}&&${nameSize}`
+          url: `/client/product-detail/${idProductDetail}`
         });
       };
       static getListSizeCart = (id,codeColor)=>{
@@ -20,5 +20,23 @@ export class ProductDetailClientApi {
           url: `/client/product-detail/listSizeCart/${id}&&${codeColor}`
         });
       }
+      static getDetailProductHavePromotion = (pageNo) => {
+        return request({
+          method: "GET",
+          url: `/client/product-detail/have-promotion?page=${pageNo}&size=12`
+        });
+      };
+      static getDetailProductNew = (pageNo) => {
+        return request({
+          method: "GET",
+          url: `/client/product-detail/new?page=${pageNo}&size=12`
+        });
+      };
+      static getDetailProductSellMany = (pageNo) => {
+        return request({
+          method: "GET",
+          url: `/client/product-detail/sell-many?page=${pageNo}&size=12`
+        });
+      };
    
 }

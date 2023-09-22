@@ -61,10 +61,8 @@ const ModalUpdateAccount = ({ visible }) => {
 
   const handleChange = ({ file }) => {
     if (file.status === "removed") {
-      // If the file is being uploaded or removed, set the uploadedFile state accordingly
       setUploadedFile(null);
     } else if (file.type !== "image/jpeg" && file.type !== "image/png") {
-      // If the file is not a JPG or PNG image, display an error message
       toast.error("Bạn chỉ có thể tải lên tệp JPG/PNG!");
       return;
     } else {
@@ -200,7 +198,7 @@ const ModalUpdateAccount = ({ visible }) => {
             return new Promise((resolve, reject) => {
               if (uploadedFile.originFileObj) {
                 formData.append(`multipartFile`, uploadedFile.originFileObj);
-                resolve(); // Resolve the promise immediately if there is originFileObj
+                resolve();
               } else if (uploadedFile.url) {
                 axios
                   .get(uploadedFile.url, { responseType: "arraybuffer" })
@@ -211,19 +209,19 @@ const ModalUpdateAccount = ({ visible }) => {
                       { type: "image/jpeg" }
                     );
                     formData.append(`multipartFile`, imageFile);
-                    resolve(); // Resolve the promise after adding the imageFile to formData
+                    resolve();
                   })
                   .catch((error) => {
                     console.error("Error fetching image:", error);
-                    reject(error); // Reject the promise if there is an error
+                    reject(error);
                   });
               } else {
-                resolve(); // Resolve the promise immediately if there is neither originFileObj nor url
+                resolve();
               }
             });
           };
 
-          promises() // Call the 'promises' function to execute the file conversion promise
+          promises()
             .then(() => {
               formData.append(`request`, JSON.stringify(updatedValues));
               console.log(id);
@@ -286,16 +284,10 @@ const ModalUpdateAccount = ({ visible }) => {
         </span>
       </div>
       <Row gutter={[24, 8]}>
-        <Col
-          className="filter"
-          span={6}
-        >
+        <Col className="filter" span={6}>
           <div>
             <h1
               style={{
-                // display: "flex",
-                // alignItems: "center",
-                // justifyContent: "center",
                 marginTop: "50px",
                 marginBottom: "50px",
                 fontSize: "20px",
@@ -309,12 +301,14 @@ const ModalUpdateAccount = ({ visible }) => {
               <Col span={12}>
                 <div style={{ marginLeft: "20%" }}>
                   <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                     listType="picture-circle"
                     fileList={uploadedFile ? [uploadedFile] : []}
                     onPreview={handlePreview}
                     onChange={handleChange}
                     onRemove={() => setUploadedFile(null)}
+                    customRequest={({ file, onSuccess }) => {
+                      onSuccess(file);
+                    }}
                     showUploadList={{
                       showPreviewIcon: true,
                       showRemoveIcon: true,
@@ -364,11 +358,25 @@ const ModalUpdateAccount = ({ visible }) => {
                     label="Tên nhân viên"
                     name="fullName"
                     rules={[
+                      { required: true, message: "Vui lòng nhập tên" },
                       {
-                        required: true,
-                        message: "Vui lòng nhập tên nhân viên",
+                        validator: (_, value) => {
+                          if (value && value.trim() === "") {
+                            return Promise.reject(
+                              "Tên không được nhập khoảng trắng"
+                            );
+                          }
+                          if (value.length > 50) {
+                            return Promise.reject(
+                              "Tên nhân viên tối đa 50 ký tự"
+                            );
+                          }
+                          if (/\d/.test(value)) {
+                            return Promise.reject("Tên không được chứa số");
+                          }
+                          return Promise.resolve();
+                        },
                       },
-                      { max: 30, message: "Tên nhân viên tối đa 30 ký tự" },
                     ]}
                   >
                     <Input className="input-item" placeholder="Tên nhân viên" />

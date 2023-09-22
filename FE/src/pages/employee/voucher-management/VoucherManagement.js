@@ -6,17 +6,13 @@ import {
   Button,
   Select,
   Table,
-  Modal,
   InputNumber,
-  Popconfirm,
   DatePicker,
 } from "antd";
 import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import {
-  CreateVoucher,
   GetVoucher,
   SetVoucher,
-  UpdateVoucher,
 } from "../../../app/reducer/Voucher.reducer";
 import CreateVoucherManagement from "./modal/CreateVoucherManagement";
 import UpdateVoucherManagement from "./modal/UpdateVoucherManagement";
@@ -32,8 +28,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 dayjs.extend(utc);
 const VoucherManagement = () => {
   const dispatch = useAppDispatch();
@@ -45,15 +39,8 @@ const VoucherManagement = () => {
   const [formDataSearch, setFormDataSearch] = useState({});
 
 
-  const [showDetail, setShowDetail] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [formData, setFormData] = useState({});
 
-  const [showData, setShowData] = useState(true);
 
-  const [adding, setAdding] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
-  const [form] = Form.useForm();
   const data = useAppSelector(GetVoucher);
   useEffect(() => {
     if (data != null) {
@@ -62,10 +49,13 @@ const VoucherManagement = () => {
   }, [data]);
   useEffect(() => {
   }, [list]);
+  useEffect(() => {
+    console.log(data);
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, [showData, formDataSearch]);
+  }, [formDataSearch]);
   const updatedList = list.map((item, index) => ({
     ...item,
     stt: index + 1,
@@ -245,8 +235,8 @@ const VoucherManagement = () => {
       type: "select",
       label: "Trạng thái",
       options: [
-        { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-        { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
+        { value: "DANG_SU_DUNG", label: "Còn hạn" },
+        { value: "KHONG_SU_DUNG", label: "Hết hạn" },
       ],
       class: "input-search",
       placeholder: "Tìm kiếm",

@@ -10,10 +10,12 @@ import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.cart.ListSizeOfItemCart;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
+import com.example.shose.server.dto.response.productdetail.GetProductDetail;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.entity.ProductDetail;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -43,12 +45,15 @@ public interface ProductDetailService {
 
     //    ProductDetailResponse findByIdProductDetail(String id);
     List<GetProductDetailByCategory> GetProductDetailByCategory(String id);
+    Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable);
+    Page<GetProductDetail> getProductDetailNew(Pageable pageable);
+    Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     List<ProductDetailReponse> findAllByIdProduct(String id);
 
 //    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
 
-    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor, String nameSize);
+    GetDetailProductOfClient  getDetailProductOfClient(String id);
 
 //    GetProductDetailInCart getProductDetailInCart()
 List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);

@@ -8,7 +8,6 @@ import {
   Input,
   InputNumber,
   Modal,
-  Popconfirm,
   Row,
   Select,
   Space,
@@ -27,7 +26,6 @@ import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
-import { ColorApi } from "../../../api/employee/color/Color.api";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
@@ -45,12 +43,12 @@ import {
 } from "../../../app/reducer/Category.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
-import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
 import { toast } from "react-toastify";
-import AddColorModal from "./modal/ModalAddColor";
 import convert from "color-convert";
+import ModalAddListSizeProduct from "./modal/ModalAddListSizeProduct";
+import AddColorModal from "./modal/ModalAddListColor";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -150,7 +148,6 @@ const CreateProductManagment = () => {
           `Kích cỡ ${selectedSizeData.size} đã tồn tại trong danh sách!`
         );
       } else {
-        // Nếu kích thước chưa tồn tại, thêm vào listSizeAdd
         setListSizeAdd((prevList) => [
           ...prevList,
           {
@@ -360,6 +357,7 @@ const CreateProductManagment = () => {
       width: "15%",
       render: (_, record) => (
         <Input
+          min={100000}
           value={formatCurrency(record.price)}
           onChange={(e) =>
             handlePriceChange(e.target.value.replace(/\D/g, ""), record.key)
@@ -411,11 +409,14 @@ const CreateProductManagment = () => {
           const uploadColumn = (
             <>
               <Upload
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                 listType="picture-card"
                 fileList={colorFileData}
+                accept="image/*"
                 onPreview={handlePreview}
                 onChange={(info) => handleUploadImages(info, record)}
+                customRequest={({ file, onSuccess }) => {
+                  onSuccess(file);
+                }}
                 beforeUpload={(file) => {
                   // Kiểm tra xem tệp có phải là hình ảnh hay không
                   const isImage = file.type.startsWith("image/");
@@ -455,8 +456,7 @@ const CreateProductManagment = () => {
             children: (
               <td
                 style={{
-                  // border: "1px solid blue", // Màu viền
-                  borderRadius: "15px", //
+                  borderRadius: "15px",
                 }}
                 rowSpan={rowsWithSameColor.length}
               >
@@ -476,6 +476,9 @@ const CreateProductManagment = () => {
 
   // cập nhập số lượng
   const handleQuantityChange = (value, key) => {
+    if (value <= 0) {
+      value = 1;
+    }
     setTableData((prevTableData) =>
       prevTableData.map((item) =>
         item.key === key ? { ...item, quantity: value } : item
@@ -484,6 +487,9 @@ const CreateProductManagment = () => {
   };
   // cập nhập giá tiền
   const handlePriceChange = (value, key) => {
+    if (value <= 0) {
+      value = 100000;
+    }
     setTableData((prevTableData) =>
       prevTableData.map((item) =>
         item.key === key ? { ...item, price: value } : item
@@ -513,7 +519,11 @@ const CreateProductManagment = () => {
         const updatedTableData = tableData.filter(
           (item) => item.key !== recordToDelete.key
         );
-        setTableData(updatedTableData);
+        const updatedTableDataWithSTT = updatedTableData.map((item, index) => ({
+          ...item,
+          stt: index + 1,
+        }));
+        setTableData(updatedTableDataWithSTT);
       },
     });
   };
@@ -592,9 +602,9 @@ const CreateProductManagment = () => {
       listSizeAdd.forEach((sizeItem) => {
         const newRecord = {
           key: `${colorItem.color}-${sizeItem.nameSize}`,
-          ...formData, // Copy existing formData properties
-          color: colorItem.color, // Add color property
-          size: sizeItem.nameSize, // Add size property
+          ...formData,
+          color: colorItem.color,
+          size: sizeItem.nameSize,
           quantity: 1,
           price: "1000000",
           stt: stt++,
@@ -608,6 +618,10 @@ const CreateProductManagment = () => {
   useEffect(() => {
     dataDetail();
   }, [listColorAdd, listSizeAdd]);
+
+  const handleUploadTableData = () => {
+    dataDetail();
+  };
 
   return (
     <>
@@ -630,19 +644,6 @@ const CreateProductManagment = () => {
         <div style={{ marginTop: "1%" }}>
           <div className="content">
             <Form form={form} initialValues={initialValues}>
-              <Form.Item>
-                <Tooltip title="Thêm sản phẩm chi tiết">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="form-submit-btn"
-                    onClick={handleUpload}
-                    disabled={isSubmitting}
-                  >
-                    Hoàn Tất
-                  </Button>
-                </Tooltip>
-              </Form.Item>
               <Form.Item
                 label="Tên sản phẩm"
                 name="productId"
@@ -678,6 +679,7 @@ const CreateProductManagment = () => {
                     onChange={(e) => {
                       handleProductNameChange(e.target.value);
                       setSelectedProduct(e.target.value);
+                      handleUploadTableData();
                     }}
                   />
                 </AutoComplete>
@@ -944,7 +946,7 @@ const CreateProductManagment = () => {
             gutter={16}
             style={{ marginTop: "50px", marginBottom: "80px" }}
           >
-            <Col span={3} style={{ marginLeft: "25px" }}>
+            <Col span={3} style={{ flex: 1 }}>
               <h2>Kích Cỡ : </h2>
             </Col>
             <Col span={16}>
@@ -963,10 +965,10 @@ const CreateProductManagment = () => {
                     />
                   </Button>
                 ))}
-                <Col span={5}>
+                <Col span={16}>
                   <Tooltip title="Thêm kích cỡ">
                     <Button
-                      style={{ height: "40px", marginLeft: "20%" }}
+                      style={{ height: "40px", marginLeft: "3%" }}
                       type="primary"
                       onClick={() => {
                         if (isProductNameValid) {
@@ -981,7 +983,7 @@ const CreateProductManagment = () => {
                       <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Tooltip>
-                  <ModalAddSizeProduct
+                  <ModalAddListSizeProduct
                     visible={modalAddSize}
                     onCancel={handleCancel}
                     onSaveData={handleSaveData}
@@ -996,7 +998,7 @@ const CreateProductManagment = () => {
             gutter={16}
             style={{ marginTop: "80px", marginBottom: "80px" }}
           >
-            <Col span={3} style={{ marginLeft: "25px" }}>
+            <Col span={3} style={{ flex: 1 }}>
               <h2>Màu Sắc : </h2>
             </Col>
             <Col span={16}>
@@ -1016,17 +1018,10 @@ const CreateProductManagment = () => {
                     />
                   </Button>
                 ))}
-                <Col
-                  span={5}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
+                <Col span={16}>
                   <Tooltip title="Thêm màu sắc">
                     <Button
-                      style={{ height: "40px", marginRight: "50%" }}
+                      style={{ height: "40px", marginLeft: "3%" }}
                       type="primary"
                       onClick={() => {
                         if (isProductNameValid) {
@@ -1073,6 +1068,19 @@ const CreateProductManagment = () => {
             Chi tiết sản phẩm
           </span>
         </div>
+        <Form.Item>
+          <Tooltip title="Thêm sản phẩm chi tiết">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="form-submit-btn"
+              onClick={handleUpload}
+              disabled={isSubmitting}
+            >
+              Hoàn Tất
+            </Button>
+          </Tooltip>
+        </Form.Item>
         <Table
           rowKey="id"
           columns={columns}

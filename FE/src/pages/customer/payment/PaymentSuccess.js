@@ -5,13 +5,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import { faSquareCheck,faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { useCart } from "../cart/CartContext";
 function PayMentSuccess() {
-  
-
+  const idAccount = localStorage.getItem("idAccount");
 const urlObject = new URL(window.location.href);
 const vnp_ResponseCode = urlObject.searchParams.get("vnp_ResponseCode");
 const vnp_Amount = urlObject.searchParams.get("vnp_Amount");
 const formBill = JSON.parse(sessionStorage.getItem("formBill"))
+const { updateTotalQuantity } = useCart();
 useEffect(()=>{
 if(vnp_ResponseCode==='00'){
   console.log(formBill);
@@ -26,12 +27,37 @@ const formatMoney = (price) => {
     );
   };
   const onPayment =(formBill) => {
-    BillClientApi.createBillOnline(formBill).then(
-      (res) => {},
-      (err) => {
-        console.log(err);
-      }
-    )
+    if(idAccount!== null){
+      BillClientApi.createBillAccountOnline(formBill).then(
+        (res) => {
+       
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
+    }else{
+      BillClientApi.createBillOnline(formBill).then(
+        (res) => {
+          console.log("thanh toán khi nhận hàng!");
+          const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
+          const updatelist = cartLocal.filter((item) => {
+            // Kiểm tra xem item.idProductDetail có tồn tại trong formBill.billDetail hay không
+            return !formBill.billDetail.some((itemBill) => item.idProductDetail === itemBill.idProductDetail);
+          });
+          const total = updatelist.reduce((acc, item) => acc + item.quantity, 0);
+          updateTotalQuantity(total);
+          localStorage.setItem("cartLocal", JSON.stringify(updatelist));
+
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
+    }
+   
+   
+    
   }
     return ( <>
 

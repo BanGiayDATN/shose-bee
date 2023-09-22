@@ -5,11 +5,12 @@ import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.cart.ListSizeOfItemCart;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
+import com.example.shose.server.dto.response.productdetail.GetProductDetail;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.dto.response.productdetail.GetProductDetailInCart;
-import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -80,32 +81,33 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
 
     @Query(value = """
 
-             SELECT 
-                               detail.id AS id,
-                               i.name AS image,
-                               p.code AS codeProduct,
-                               p.name AS nameProduct,
-                               detail.price AS price,
-                               detail.created_date AS created_date,
-                               detail.gender AS gender,
-                               detail.status AS status,
-                               co.code AS codeColor,
-                               s.name AS nameSize
-                             
-                        FROM product_detail detail
-                        LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
-                        LEFT JOIN promotion pr on pr.id = ppd.id_promotion
-                        JOIN product p on detail.id_product = p.id
-                        JOIN (
-                        SELECT id_product_detail, MAX(id) AS max_image_id
-                        FROM image
-                        GROUP BY id_product_detail
-                        ) max_images ON detail.id = max_images.id_product_detail
-                        LEFT JOIN image i ON max_images.max_image_id = i.id
-                        JOIN color co on co.id = detail.id_color
-                         JOIN size s on s.id = detail.id_size
-                        where p.id = :id 
-                        group by detail.id
+           SELECT
+               detail.id AS id,
+               i.name AS image,
+               p.code AS codeProduct,
+               p.name AS nameProduct,
+               detail.price AS price,
+               sum(pr.value) AS value,
+               detail.created_date AS created_date,
+               detail.gender AS gender,
+               detail.status AS status,
+               co.code AS codeColor,
+               s.name AS nameSize
+           
+           FROM product_detail detail
+                    LEFT JOIN promotion_product_detail ppd on detail.id = ppd.id_product_detail
+                    LEFT JOIN promotion pr on pr.id = ppd.id_promotion
+                    JOIN product p on detail.id_product = p.id
+                    JOIN (
+               SELECT id_product_detail, MAX(id) AS max_image_id
+               FROM image
+               GROUP BY id_product_detail
+           ) max_images ON detail.id = max_images.id_product_detail
+                    LEFT JOIN image i ON max_images.max_image_id = i.id
+                    JOIN color co on co.id = detail.id_color
+                    JOIN size s on s.id = detail.id_size
+           where p.id = :id
+           group by detail.id
             """, nativeQuery = true)
     List<GetProductDetailByProduct> getByIdProduct(@Param("id") String id);
 
@@ -147,59 +149,157 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     List<ProductDetailReponse> findAllByIdProduct(@Param("id") String id);
 
     @Query(value = """
-            SELECT
-            p.id as idProduct,
-             pd.id as idProductDetail,
-            REPLACE(c.code, '#', '%23') as codeColor,
-             s.name as nameSize,
-             i.name as image,
-             p.name as nameProduct,
-             pd.price as price,
-             sum(po.value) as valuePromotion
-             
-             from product_detail pd
-             JOIN image i on i.id_product_detail = pd.id
-             LEFT JOIN promotion_product_detail ppd on pd.id = ppd.id_product_detail
-             LEFT JOIN promotion po on po.id = ppd.id_promotion
-             JOIN product p on pd.id_product = p.id
-             JOIN color c on c.id = pd.id_color
-              JOIN size s on s.id = pd.id_size
-            JOIN category ca on ca.id = pd.id_category
-            where ca.id = :id and (ppd.status ='DANG_SU_DUNG' OR ppd.status IS NULL)
-            group by pd.id
-            """, nativeQuery = true)
+          SELECT
+              p.id as idProduct,
+              pd.id as idProductDetail,
+              REPLACE(c.code, '#', '%23') as codeColor,
+              s.name as nameSize,
+              GROUP_CONCAT(i.name) as image,
+              p.name as nameProduct,
+              pd.price as price,
+              promotion_summary.valuePromotion as valuePromotion,
+              pd.created_date as createdDate
+          
+          FROM product_detail pd
+                   LEFT JOIN (
+              SELECT
+                  pd.id as pd_id,
+                  SUM(po.value) as valuePromotion
+              FROM product_detail pd
+                       LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                       LEFT JOIN promotion po ON po.id = ppd.id_promotion
+              GROUP BY pd.id
+          ) promotion_summary ON pd.id = promotion_summary.pd_id
+          
+                   JOIN product p ON pd.id_product = p.id
+                   JOIN color c ON c.id = pd.id_color
+                   JOIN size s ON s.id = pd.id_size
+                   LEFT JOIN image i ON i.id_product_detail = pd.id
+                   JOIN category ca on ca.id = pd.id_category
+          where ca.id = :id 
+          group by pd.id
+                 """, nativeQuery = true)
     List<GetProductDetailByCategory> getProductDetailByCategory(@Param("id") String id);
 
+    @Query(value = """
+            SELECT
+                p.id as idProduct,
+                pd.id as idProductDetail,
+                REPLACE(c.code, '#', '%23') as codeColor,
+                s.name as nameSize,
+                GROUP_CONCAT(i.name) as image,
+                p.name as nameProduct,
+                pd.price as price,
+                promotion_summary.valuePromotion as valuePromotion,
+                pd.created_date as createdDate
+            
+            FROM product_detail pd
+                     LEFT JOIN (
+                SELECT
+                    pd.id as pd_id,
+                    SUM(po.value) as valuePromotion,
+                    ppd.status as status
+                FROM product_detail pd
+                         LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                         LEFT JOIN promotion po ON po.id = ppd.id_promotion
+            
+                GROUP BY pd.id , ppd.status
+            ) promotion_summary ON pd.id = promotion_summary.pd_id
+            
+                     JOIN product p ON pd.id_product = p.id
+                     JOIN color c ON c.id = pd.id_color
+                     JOIN size s ON s.id = pd.id_size
+                     LEFT JOIN image i ON i.id_product_detail = pd.id
+            where promotion_summary.status ='DANG_SU_DUNG'
+            group by pd.id
+                """, nativeQuery = true)
+    Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable);
+    @Query(value = """
+          SELECT
+              p.id as idProduct,
+              pd.id as idProductDetail,
+              REPLACE(c.code, '#', '%23') as codeColor,
+              s.name as nameSize,
+              GROUP_CONCAT(i.name) as image,
+              p.name as nameProduct,
+              pd.price as price,
+              promotion_summary.valuePromotion as valuePromotion,
+              pd.created_date as createdDate
+          
+          FROM product_detail pd
+                   LEFT JOIN (
+              SELECT
+                  pd.id as pd_id,
+                  SUM(po.value) as valuePromotion
+              FROM product_detail pd
+                       LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                       LEFT JOIN promotion po ON po.id = ppd.id_promotion
+              WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+              GROUP BY pd.id
+          ) promotion_summary ON pd.id = promotion_summary.pd_id
+          
+                   JOIN product p ON pd.id_product = p.id
+                   JOIN color c ON c.id = pd.id_color
+                   JOIN size s ON s.id = pd.id_size
+                   LEFT JOIN image i ON i.id_product_detail = pd.id
+          WHERE DATE_FORMAT(FROM_UNIXTIME(pd.created_date / 1000), '%Y-%m-%d %H:%i:%s') between DATE_SUB(NOW(), INTERVAL 15 DAY)  and  NOW()
+          GROUP BY pd.id
+          
+                """, nativeQuery = true)
+    Page<GetProductDetail> getProductDetailNew(Pageable pageable);
+
+    @Query(value = """
+           SELECT
+               p.id as idProduct,
+               pd.id as idProductDetail,
+               REPLACE(c.code, '#', '%23') as codeColor,
+               s.name as nameSize,
+               GROUP_CONCAT(i.name) as image,
+               p.name as nameProduct,
+               pd.price as price,
+               promotion_summary.valuePromotion as valuePromotion,
+               pd.created_date as createdDate
+           FROM product_detail pd
+                    LEFT JOIN (
+               SELECT
+                   pd.id as pd_id,
+                   SUM(po.value) as valuePromotion
+               FROM product_detail pd
+                        LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                        LEFT JOIN promotion po ON po.id = ppd.id_promotion
+               WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+               GROUP BY pd.id
+           ) promotion_summary ON pd.id = promotion_summary.pd_id
+           
+                    JOIN product p ON pd.id_product = p.id
+                    JOIN color c ON c.id = pd.id_color
+                    JOIN size s ON s.id = pd.id_size
+                    LEFT JOIN image i ON i.id_product_detail = pd.id
+                    JOIN bill_detail bd on pd.id = bd.id_product_detail
+           
+           GROUP BY pd.id
+           having sum(bd.quantity) >5
+           order by sum(bd.quantity)  desc
+                """, nativeQuery = true)
+    Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     @Query( value = """
-
-            SELECT
-            p.id as idProduct,
-            pd.id as idProductDetail,
-            GROUP_CONCAT(i.name)as image,
-             p.name as nameProduct,
-             pd.price as price,
-             pd.quantity as quantity,
-             REPLACE(c.code, '#','%23') as codeColor,
-             s.name as nameSize,
-             (select GROUP_CONCAT(s.name) FROM size s WHERE s.name in( 
-               SELECT s2.name
-                FROM color c3 
-                JOIN product_detail pd3 ON c3.id =  pd3.id_color 
-                 JOIN product p3 ON p3.id = pd3.id_product  
-                JOIN size s2 ON s2.id = pd3.id_size
-                WHERE c3.code = c.code AND p3.id = p.id
-                ))
-              as listNameSize
-             from product_detail pd
-             left JOIN image i on i.id_product_detail = pd.id
-             JOIN product p on pd.id_product = p.id
-             JOIN color c on c.id = pd.id_color
-             JOIN size s on s.id = pd.id_size
-            where p.id = :id and c.code = :codeColor and s.name =:nameSize
+       SELECT
+           pd.id as idProductDetail,
+           GROUP_CONCAT(i.name)as image,
+           p.name as nameProduct,
+           pd.price as price,
+           pd.quantity as quantity,
+           c.code as codeColor,
+           s.name as nameSize
+       from product_detail pd
+                left JOIN image i on i.id_product_detail = pd.id
+                JOIN product p on pd.id_product = p.id
+                JOIN color c on c.id = pd.id_color
+                JOIN size s on s.id = pd.id_size
+       where pd.id = :id
             """, nativeQuery = true)
-
-    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id,@Param("codeColor") String codeColor,@Param("nameSize") String nameSize);
+    GetDetailProductOfClient getDetailProductOfClient(@Param("id")String id);
 
 
 
@@ -219,7 +319,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    detail.price AS price,
                    c2.id AS idCode,
                    s2.id AS idSize,
-                   detail.maqr AS QRCode
+                   detail.maqr AS QRCode,
+                   p2.value AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -235,21 +336,23 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
+                LEFT JOIN promotion_product_detail ppd ON detail.id = ppd.id_product_detail
+                LEFT JOIN promotion p2 ON ppd.id_promotion = p2.id
                 WHERE  detail.id = :id
             """, nativeQuery = true)
 
     ProductDetailDTOResponse getOneById(@Param("id") String id);
     @Query(value = """
-SELECT
-    s.name as nameSize,
-    p.id as idProduct,
-    REPLACE(c.code, '#','%23') as codeColor
-FROM product_detail detail
-join product p on detail.id_product = p.id
-join size s on detail.id_size = s.id
-join color c on detail.id_color = c.id
-where p.id = :idProduct and c.code = :codeColor
-""",nativeQuery = true)
+                SELECT
+                    s.name as nameSize,
+                    p.id as idProduct,
+                    REPLACE(c.code, '#','%23') as codeColor
+                FROM product_detail detail
+                join product p on detail.id_product = p.id
+                join size s on detail.id_size = s.id
+                join color c on detail.id_color = c.id
+                where p.id = :idProduct and c.code = :codeColor
+            """,nativeQuery = true)
     List<ListSizeOfItemCart> listSizeByProductAndColor(@Param("idProduct") String idProduct, @Param("codeColor") String codeColor);
 
 }

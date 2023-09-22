@@ -113,13 +113,14 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.ward AS ward,
                 a.status AS status,
                 a.ward_code AS wardCode,
+                a.province_id AS provinceId,
+                a.to_district_id AS districtId,
                 u.full_name AS fullName,
                 u.phone_number AS phoneNumber
             FROM address a
             JOIN user u on a.id_user = u.id
             JOIN account acc on u.id = acc.id_user
             WHERE acc.id = :idAccount and a.status = 'DANG_SU_DUNG'
-            
                   """,
             nativeQuery = true
     )
@@ -133,8 +134,11 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.ward AS ward,
                 a.status AS status,
                 a.ward_code AS wardCode,
+                a.province_id AS provinceId,
+                a.to_district_id AS districtId,
                 u.full_name AS fullName,
                 u.phone_number AS phoneNumber
+                
             FROM address a
             JOIN user u on a.id_user = u.id
             JOIN account acc on u.id = acc.id_user
@@ -145,7 +149,6 @@ public interface AddressRepository extends JpaRepository<Address, String> {
     )
     List<AddressAccountResponse> getListAddressByAcountId(@Param("idAccount") String idAccount);
 
-//    Address getOneAddressByStatus(@Param("status") Status status,@Param("idUser") String idUser);
 
 }
 

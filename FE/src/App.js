@@ -8,10 +8,11 @@ import AuthGuard from "./guard/AuthGuard";
 import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
 import Home from "./pages/customer/home/Home";
+import Products from "./pages/customer/products/Products";
 import Cart from "./pages/customer/cart/Cart";
 import Payment from "./pages/customer/payment/Payment";
 import PaymentAccount from "./pages/customer/payment/PaymentAccount";
-import { CartProvider }  from "./pages/customer/cart/CartContext";
+import { CartProvider } from "./pages/customer/cart/CartContext";
 import DashBoardEmployee from "./component/employee/DashBoardEmployee";
 import ProductManagement from "./pages/employee/product-management/ProductManagement";
 import CreatePromotionManagement from "./pages/employee/promotion-management/CreatePromotionManagement";
@@ -50,16 +51,16 @@ function App() {
     setIsLoading(false); // Giả sử trang đã tải xong sau khi component hiển thị
   }, []);
 
-//   window.addEventListener('beforeunload', function() {
-//     // Xóa dữ liệu trong localStorage
-//     localStorage.removeItem('data');
-// });
+  //   window.addEventListener('beforeunload', function() {
+  //     // Xóa dữ liệu trong localStorage
+  //     localStorage.removeItem('data');
+  // });
 
-// Bắt đầu lắng nghe sự kiện unload (trang bị đóng)
-// window.addEventListener('unload', function() {
-//     // Xóa dữ liệu trong localStorage
-//     localStorage.removeItem('idAccount');
-// });
+  // Bắt đầu lắng nghe sự kiện unload (trang bị đóng)
+  // window.addEventListener('unload', function() {
+  //     // Xóa dữ liệu trong localStorage
+  //     localStorage.removeItem('idAccount');
+  // });
   return (
     <div className="App">
       {isLoading && (
@@ -88,61 +89,72 @@ function App() {
             path="/home"
             element={
               <GuestGuard>
-                  <CartProvider>
-                <DashBoardCustomer>
-                  <Home />
-                </DashBoardCustomer>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Home />
+                  </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>
             }
           />
-            <Route
+          <Route
+            path="/products"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Products />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
             path="/cart"
             element={
               <GuestGuard>
-                 <CartProvider>
-                <DashBoardCustomer>
-                  <Cart />
-                </DashBoardCustomer>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Cart />
+                  </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>
             }
           />
-           <Route
+          <Route
             path="/payment"
             element={
               <GuestGuard>
-                 <CartProvider>
-                <DashBoardCustomer>
-                  <Payment/>
-                </DashBoardCustomer>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Payment />
+                  </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>
             }
           />
-           <Route
+          <Route
             path="/payment-acc"
             element={
               <GuestGuard>
-                 <CartProvider>
-                <DashBoardCustomer>
-                  <PaymentAccount/>
-                </DashBoardCustomer>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <PaymentAccount />
+                  </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>
             }
           />
-            <Route
+          <Route
             path="/client/payment/payment-success"
             element={
               <GuestGuard>
-             
-                  <PayMentSuccess/>
-             
+               <CartProvider>
+                <PayMentSuccess />
+                </CartProvider>
               </GuestGuard>
             }
           />
-          
           <Route
             path="/login-management"
             element={
@@ -411,7 +423,6 @@ function App() {
               </AuthGuard>
             }
           />
-          
         </Routes>
       </BrowserRouter>
       <ToastContainer />

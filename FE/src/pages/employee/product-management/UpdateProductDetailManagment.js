@@ -17,8 +17,6 @@ import {
   Row,
   Select,
   Slider,
-  Space,
-  Spin,
   Table,
   Tooltip,
 } from "antd";
@@ -55,8 +53,8 @@ const UpdateProductDetailManagment = () => {
     ProducDetailtApi.getOne(data).then((res) => {
       setScannedQRCode(res.data.data);
     });
-    setModalVisible(false); // C
-    setModalVisible(false); // Close the modal after scanning
+    setModalVisible(false);
+    setModalVisible(false);
   };
 
   const listSize = [];
@@ -117,7 +115,6 @@ const UpdateProductDetailManagment = () => {
       product: search,
     }).then((res) => {
       setListProductDetails(res.data.data);
-      // Restore the selected rows using temporarySelectedRowKeys
       setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
@@ -129,7 +126,6 @@ const UpdateProductDetailManagment = () => {
       product: "",
     }).then((res) => {
       setListProductDetails(res.data.data);
-      // Restore the selected rows using temporarySelectedRowKeys
       setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
@@ -257,7 +253,7 @@ const UpdateProductDetailManagment = () => {
               value={record.price}
               onChange={(value) => handlePriceChange(record.id, value)}
               style={{ width: "100%" }}
-              min={0}
+              min={100000}
               step={1000}
               formatter={(value) => `${formatCurrency(value)}`}
               parser={(value) => value.replace(/\D/g, "")}
@@ -289,7 +285,7 @@ const UpdateProductDetailManagment = () => {
             borderRadius: "6px",
             width: "60px",
             height: "25px",
-            pointerEvents: "none", // Ngăn chặn sự kiện click
+            pointerEvents: "none",
           }}
         />
       ),
@@ -300,10 +296,18 @@ const UpdateProductDetailManagment = () => {
       key: "status",
       render: (text) => {
         const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+          text === "DANG_SU_DUNG"
+            ? "trangthai-sd"
+            : text === "KHONG_SU_DUNG"
+            ? "trangthai-ksd"
+            : "trangthai-hethang";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Không kinh doanh"}
+            {text === "DANG_SU_DUNG"
+              ? "Đang kinh doanh "
+              : text === "KHONG_SU_DUNG"
+              ? "Không kinh doanh"
+              : "Hết sản phẩm "}
           </button>
         );
       },
@@ -336,6 +340,10 @@ const UpdateProductDetailManagment = () => {
       return;
     }
 
+    if (value === null || value === undefined || isNaN(value) || value <= 0) {
+      return;
+    }
+
     const updatedRow = {
       ...listProductDetails.find((detail) => detail.id === id),
       quantity: value,
@@ -356,6 +364,10 @@ const UpdateProductDetailManagment = () => {
   const handlePriceChange = (id, value) => {
     if (!temporarySelectedRowKeys.includes(id)) {
       toast.warning("Vui lòng chọn hàng để chỉnh sửa trước.");
+      return;
+    }
+
+    if (value === null || value === undefined || isNaN(value) || value <= 0) {
       return;
     }
 
@@ -384,7 +396,7 @@ const UpdateProductDetailManagment = () => {
       cancelText: "Hủy",
       onOk: () => {
         console.log(updatedDetails);
-        if (updatedDetails.length == 0) {
+        if (updatedDetails.length === 0) {
           toast.warning("Bạn chưa có sản phẩm để chỉnh sửa");
           return;
         }
@@ -699,8 +711,8 @@ const UpdateProductDetailManagment = () => {
                 defaultValue=""
               >
                 <Option value="">Tất cả</Option>
-                <Option value="DANG_SU_DUNG">Đang sử dung</Option>
-                <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+                <Option value="DANG_SU_DUNG">Đang kinh doanh</Option>
+                <Option value="KHONG_SU_DUNG">Không kinh doanh</Option>
               </Select>
             </Col>
             <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>

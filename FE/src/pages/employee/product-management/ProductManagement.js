@@ -20,7 +20,6 @@ import { Option } from "antd/es/mentions";
 
 const ProductManagement = () => {
   const [listProduct, setListProduct] = useState([]);
-  const dispatch = useAppDispatch();
   const [modaleDetail, setModalDetail] = useState(false);
 
   const handleSubmitSearch = (event) => {
@@ -221,8 +220,8 @@ const ProductManagement = () => {
                 defaultValue=""
               >
                 <Option value="">Tất cả</Option>
-                <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-                <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+                <Option value="DANG_SU_DUNG">Đang kinh doanh</Option>
+                <Option value="KHONG_SU_DUNG">Không kinh doanh</Option>
               </Select>
             </div>
             <div className="content-right">

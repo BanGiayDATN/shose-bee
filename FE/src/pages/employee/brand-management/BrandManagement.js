@@ -101,6 +101,11 @@ const BrandManagement = () => {
     setModalVisibleDetail(true);
   };
 
+  const listBrandWithStt = listBrand.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
+
   const columns = [
     {
       title: "STT",
@@ -250,7 +255,7 @@ const BrandManagement = () => {
         </div>
         <div style={{ marginTop: "25px" }}>
           <Table
-            dataSource={listBrand}
+            dataSource={listBrandWithStt}
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 3 }}

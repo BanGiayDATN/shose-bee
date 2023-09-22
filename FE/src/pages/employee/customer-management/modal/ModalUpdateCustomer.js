@@ -338,12 +338,14 @@ const ModalUpdateCustomer = ({ visible }) => {
               <Col span={12}>
                 <div style={{ marginLeft: "20%" }}>
                   <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                     listType="picture-circle"
                     fileList={uploadedFile ? [uploadedFile] : []}
                     onPreview={handlePreview}
                     onChange={handleChange}
                     onRemove={() => setUploadedFile(null)}
+                    customRequest={({ file, onSuccess }) => {
+                      onSuccess(file);
+                    }}
                     showUploadList={{
                       showPreviewIcon: true,
                       showRemoveIcon: true,
@@ -508,10 +510,7 @@ const ModalUpdateCustomer = ({ visible }) => {
                     },
                   ]}
                 >
-                  <Input
-                    className="input-item"
-                    placeholder="Số điện thoại"
-                  />
+                  <Input className="input-item" placeholder="Số điện thoại" />
                 </Form.Item>
                 <Form.Item
                   label="Ngày sinh"

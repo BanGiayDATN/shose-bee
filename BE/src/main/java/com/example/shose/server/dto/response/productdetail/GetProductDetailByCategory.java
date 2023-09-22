@@ -28,4 +28,6 @@ public interface GetProductDetailByCategory {
 
     @Value("#{target.valuePromotion}")
     String getValuePromotion();
+    @Value("#{target.createdDate}")
+    String getCreatedDate();
 }

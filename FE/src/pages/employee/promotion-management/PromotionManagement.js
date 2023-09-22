@@ -1,21 +1,3 @@
-import React, { useEffect, useState, useRef } from "react";
-import "./style-promotion.css";
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  Table,
-  Modal,
-  InputNumber,
-  DatePicker,
-} from "antd";
-import { Link } from "react-router-dom";
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import {
-  GetPromotion,
-  SetPromotion,
-} from "../../../app/reducer/Promotion.reducer";
 import {
   faEdit,
   faEye,
@@ -24,11 +6,29 @@ import {
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useAppDispatch, useAppSelector } from "../../../app/hook";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Table,
+} from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { toast } from "react-toastify";
+
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { useAppDispatch, useAppSelector } from "../../../app/hook";
+import {
+  GetPromotion,
+  SetPromotion,
+} from "../../../app/reducer/Promotion.reducer";
+import "./style-promotion.css";
 dayjs.extend(utc);
 const PromotionManagement = () => {
   const dispatch = useAppDispatch();
@@ -38,9 +38,7 @@ const PromotionManagement = () => {
   const [formData, setFormData] = useState({});
   const [formDataSearch, setFormDataSearch] = useState({});
   const [showData, setShowData] = useState(true);
-  const [id, setId] = useState("");
   const [formErrors, setFormErrors] = useState({});
-  const receiveFormData = useRef({});
   const data = useAppSelector(GetPromotion);
 
   useEffect(() => {
@@ -63,16 +61,6 @@ const PromotionManagement = () => {
   const resetFormSearch = () => {
     setFormDataSearch({});
     loadData();
-  };
-  const convertToLong = () => {
-    const convertedFormData = { ...formData };
-    if (formData.startDate) {
-      convertedFormData.startDate = dayjs(formData.startDate).unix() * 1000;
-    }
-    if (formData.endDate) {
-      convertedFormData.endDate = dayjs(formData.endDate).unix() * 1000;
-    }
-    return convertedFormData;
   };
   const convertToLongSearch = () => {
     const convertedFormDataSearch = { ...formDataSearch };
@@ -232,21 +220,21 @@ const PromotionManagement = () => {
       label: "Mã khuyễn mại",
       text: "mã khuyễn mại",
       hidden: true,
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "name",
       type: "text",
       label: "Tên khuyễn mại",
       text: "tên khuyễn mại",
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "value",
       type: "number",
       label: "Giá trị giảm",
       text: "giá trị giảm",
-      class: "input-form",
+      class: "input-form-promotion",
       formatter: (value) => `${value}%`,
     },
     {
@@ -254,25 +242,25 @@ const PromotionManagement = () => {
       type: "date",
       label: "Ngày bắt đầu",
       text: "ngày bắt đầu",
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "endDate",
       type: "date",
       label: "Ngày kết thúc",
       text: "ngày kết thúc",
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "status",
       type: "select",
       label: "Trạng thái",
       options: [
-        { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-        { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
+        { value: "DANG_SU_DUNG", label: "Còn hạn" },
+        { value: "KHONG_SU_DUNG", label: "Hết hạn" },
       ],
       text: "trạng thái",
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "createdDate",
@@ -280,7 +268,7 @@ const PromotionManagement = () => {
       label: "Ngày tạo",
       text: "ngày tạo",
       hidden: true,
-      class: "input-form",
+      class: "input-form-promotion",
     },
   ];
 
@@ -312,8 +300,8 @@ const PromotionManagement = () => {
       type: "select",
       label: "Trạng thái",
       options: [
-        { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-        { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
+        { value: "DANG_SU_DUNG", label: "Còn hạn" },
+        { value: "KHONG_SU_DUNG", label: "Hết hạn" },
       ],
       class: "input-search",
       placeholder: "Tìm kiếm",
@@ -535,8 +523,8 @@ const PromotionManagement = () => {
                         placeholder={field.label}
                         value={
                           formData[field.name] === "DANG_SU_DUNG"
-                            ? "Đang sử dụng"
-                            : "Không sử dụng"
+                            ? "Còn hạn"
+                            : "Hết hạn"
                         }
                       />
                     ) : (

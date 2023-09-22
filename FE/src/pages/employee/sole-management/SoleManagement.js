@@ -112,6 +112,11 @@ const SoleManagement = () => {
     loadData();
   }, []);
 
+  const listSoleWithStt = listSole.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
+
   const columns = [
     {
       title: "STT",
@@ -251,7 +256,7 @@ const SoleManagement = () => {
         </div>
         <div style={{ marginTop: "25px" }}>
           <Table
-            dataSource={listSole}
+            dataSource={listSoleWithStt}
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 3 }}

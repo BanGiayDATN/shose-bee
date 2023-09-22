@@ -5,18 +5,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0abcb6f-82ce-4957-9346-c269be5e31e0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/VoucherRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/VoucherRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/response/voucher/VoucherRespone.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/response/voucher/VoucherRespone.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/billaccount/CreateBillAccountOnlineRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/response/productdetail/GetProductDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/BillClientRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/BillClientRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/ProductDetailClientRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/ProductDetailClientRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/billcustomer/BillDetailCustomerOnline.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/billcustomer/BillDetailOnline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/billcustomer/CreateBillCustomerOnlineRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/billcustomer/CreateBillCustomerOnlineRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/response/address/AddressAccountResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/response/address/AddressAccountResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/AddressRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/AddressRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartDetailRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/ProductDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/ProductDetailRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/BillService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/BillService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/ProductDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/ProductDetailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/BillServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/BillServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/ProductDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/ProductDetailServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/util/ResponseObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/util/ResponseObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BE/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/resources/banner.txt" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/resources/banner.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FE/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/app/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/app/store.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/employee/category-management/CategoryManagement.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/employee/category-management/CategoryManagement.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/VoucherManagement.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/VoucherManagement.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/style-voucher.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/employee/voucher-management/style-voucher.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/api/customer/bill/billClient.api.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/api/customer/bill/billClient.api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/api/customer/productdetail/productDetailClient.api.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/api/customer/productdetail/productDetailClient.api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/component/customer/footer/style-footer.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/component/customer/footer/style-footer.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/cart/Cart.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/cart/Cart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/cart/style-cart.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/cart/style-cart.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/component/Card.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/component/Card.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/component/style-card.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/component/style-card.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/home/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/home/Home.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/home/style-home.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/home/style-home.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/Payment.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/Payment.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentAccount.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentAccount.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentSuccess.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentSuccess.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/style-payment-account.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/style-payment-account.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/style-payment.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/style-payment.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,16 +61,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "E:/duantotnghiep/shose",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/duantotnghiep/shose&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -60,6 +80,7 @@
       <option name="presentableId" value="Default" />
       <updated>1689422634570</updated>
       <workItem from="1689422636377" duration="168000" />
+      <workItem from="1694761143337" duration="25000" />
     </task>
     <servers />
   </component>

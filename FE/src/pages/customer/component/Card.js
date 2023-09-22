@@ -1,26 +1,23 @@
-import { useState, useEffect } from "react";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { Col, InputNumber, Modal, Row } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "./style-card.css";
-import { Card, Modal, Row, Col, Button, InputNumber } from "antd";
 import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
-function CardItem({
-  item,
-  index
-}) {
-  const [hovered, setHovered] = useState(false);
+import "./style-card.css";
+
+function CardItem({ item, index }) {
+  const now = dayjs();
   const [modal, setModal] = useState(false);
   const [clickedIndex, setClickedIndex] = useState(-1);
 
-
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
-    idProduct: "",
-    idProductDetail:"",
+    idProductDetail: "",
     image: "",
     nameSize: "",
-    listNameSize: "",
     nameProduct: "",
     price: 0,
     quantity: 0,
@@ -28,7 +25,7 @@ function CardItem({
 
   const idAccountLocal = localStorage.getItem("idAccount");
   const [quantity, setQuantity] = useState(1);
-  const [cartAccount,setCartAccount] = useState([]);
+  const [cartAccount, setCartAccount] = useState([]);
   const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
 
   const [cartLocal, setCartLocal] = useState(initialCartLocal);
@@ -36,75 +33,73 @@ function CardItem({
   useEffect(() => {
     localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
   }, [cartLocal]);
-
-
-
+  useEffect(() => {
+    console.log( now.format("HH:mm:ss DD-MM-YYYY"));
+    console.log(now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY"),dayjs.unix(item.createdDate/1000).format("HH:mm:ss DD-MM-YYYY"),  now.format("HH:mm:ss DD-MM-YYYY") );
+  }, []);
 
   const addToCard = () => {
-    if (idAccountLocal===null) {
+    if (idAccountLocal === null) {
       const newCartItem = {
         idProductDetail: detailProduct.idProductDetail,
-        name: detailProduct.nameProduct,
         image: detailProduct.image,
         price: detailProduct.price,
         quantity: quantity,
-        idProduct:detailProduct.idProduct,
-        codeColor:detailProduct.codeColor,
-        nameSize:detailProduct.nameSize
+        nameProduct: detailProduct.nameProduct,
+        codeColor: detailProduct.codeColor,
+        nameSize: detailProduct.nameSize,
       };
-      
-     
-        setCartLocal((prev) => {
-          console.log(cartLocal);
-          const exists = prev.find(item =>item.idProductDetail === newCartItem.idProductDetail); 
+
+      setCartLocal((prev) => {
+        console.log(cartLocal);
+        const exists = prev.find(
+          (item) => item.idProductDetail === newCartItem.idProductDetail
+        );
         if (!exists) {
           console.log("mới");
           return [...prev, newCartItem];
-        }else{
+        } else {
           console.log("trùng");
-          return prev.map(item => 
+          return prev.map((item) =>
             item.idProductDetail === newCartItem.idProductDetail
-              ? { ...item, quantity: item.quantity + newCartItem.quantity} 
+              ? { ...item, quantity: item.quantity + newCartItem.quantity }
               : item
           );
         }
-        
       });
-      window.location.href = "/cart"
+      window.location.href = "/cart";
       toast.success("Add cart không login", {
         autoClose: 3000,
-      });  
-     
+      });
     } else {
       const newCartItem = {
-        idAccount:idAccountLocal,
+        idAccount: idAccountLocal,
         idProductDetail: detailProduct.idProductDetail,
         price: detailProduct.price,
-        quantity: quantity
+        quantity: quantity,
       };
 
-        CartClientApi.addCart(newCartItem).then(
-          (res) => {
-            console.log(res.data.data);
-            // setListProductDetailByCategory(res.data.data);
-          },
-          (err) => {
-            console.log(err);
-          }
-        );
-        window.location.href = "/cart"
+      CartClientApi.addCart(newCartItem).then(
+        (res) => {
+          console.log(res.data.data);
+          // setListProductDetailByCategory(res.data.data);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+      window.location.href = "/cart";
       toast.success("Add cart có login!", {
         autoClose: 3000,
       });
     }
   };
 
-  const getDetailProduct = (idProduct, idColor, nameSize) => {
-    // console.log(detailProduct);
+  const getDetailProduct = (idProductDetail) => {
+    console.log(idProductDetail);
+    console.log(detailProduct);
     ProductDetailClientApi.getDetailProductOfClient(
-      idProduct,
-      idColor,
-      nameSize
+      idProductDetail
     ).then(
       (res) => {
         console.log(res.data.data);
@@ -116,14 +111,10 @@ function CardItem({
     );
     setModal(true);
   };
-  const handleSizeClick = (index, idProduct, codeColor, nameSize) => {
-    getDetailProduct(idProduct, codeColor, nameSize);
-    setClickedIndex(index);
-  };
 
-  const handleClickDetail = (idProduct, codeColor, nameSize) => {
+  const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
-    getDetailProduct(idProduct, codeColor, nameSize);
+    getDetailProduct(idProductDetail);
   };
   const closeModal = () => {
     setModal(false);
@@ -132,56 +123,92 @@ function CardItem({
   };
 
   const formatMoney = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
-  };
-  const handleButtonMouseEnter = () => {
-    setHovered(true);
+    return (
+      parseInt(price)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
+    );
   };
 
-  const handleButtonMouseLeave = () => {
-    setHovered(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    // Thiết lập một interval để tự động chuyển ảnh sau một khoảng thời gian
+    const intervalId = setInterval(() => {
+      nextImage();
+    }, 3000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
+
+    // Xóa interval khi component unmount để tránh lỗi memory leak
+    return () => clearInterval(intervalId);
+  }, [currentImageIndex]);
+  const previousImage = () => {
+    if (currentImageIndex === 0) {
+      // Nếu đang ở ảnh đầu tiên, chuyển đến ảnh cuối cùng
+      setCurrentImageIndex(detailProduct.image.split(",").length - 1);
+    } else {
+      setCurrentImageIndex(currentImageIndex - 1);
+    }
   };
+
+  const nextImage = () => {
+    if (currentImageIndex === detailProduct.image.split(",").length - 1) {
+      // Nếu đang ở ảnh cuối cùng, chuyển đến ảnh đầu tiên
+      setCurrentImageIndex(0);
+    } else {
+      setCurrentImageIndex(currentImageIndex + 1);
+    }
+  };
+  const nowTimestamp = now.format("HH:mm:ss DD-MM-YYYY");
+const itemTimestamp = dayjs.unix(item.createdDate / 1000).format("HH:mm:ss DD-MM-YYYY");
+const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY");
   return (
     <>
-      <div>
-        <div
-          to="/detail"
-          className="card-item"
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-        >
+      <div
+        to="/detail"
+        className="card-item"
+        data-slick-index="-1"
+        tabindex="0"
+      >
+        <div>
           <Link className="link-card-item" to="/detail">
-            {item.valuePromotion !== null && (
-              <p className="value-promotion">
-                Giảm {parseInt(item.valuePromotion)}%
-              </p>
-            )}
-            <img className="image-product" src={item.image} alt="..." />
+            <div className="box-img-product">
+              <div
+                style={{
+                  backgroundImage: `url(${item.image.split(",")[0]})`,
+                }}
+                className="image-product"
+              >
+                {item.valuePromotion !== null && (
+                  <div className="value-promotion">
+                    Giảm {parseInt(item.valuePromotion)}%
+                  </div>
+                )}
+                {(nowTimestampReduce <= itemTimestamp || itemTimestamp <= nowTimestamp) && (
+                  <div className="new-product">
+                    Mới
+                  </div>
+                )}
+              </div>
+            </div>
             <div>
-              <p className="name-product">
-                {item.nameProduct}
-                {/* - [{item.nameSize}] */}
-              </p>
+              <p className="name-product">{item.nameProduct} - [{item.nameSize}]</p>
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
           </Link>
         </div>
-
-        <p
-          className={`button-buy-now ${hovered ? "visible" : "hidden"}`}
-          onMouseEnter={handleButtonMouseEnter}
-          onMouseLeave={handleButtonMouseLeave}
+        <div
+          className="button-buy-now"
           onClick={() => {
-            handleClickDetail(item.idProduct, item.codeColor, item.nameSize);
+            handleClickDetail(item.idProductDetail);
           }}
         >
           Mua ngay
-        </p>
+        </div>
       </div>
 
       <Modal
         className="modal-detail-product"
-        width={900}
+        width={1000}
         onCancel={closeModal}
         open={modal}
         closeIcon={null}
@@ -190,14 +217,25 @@ function CardItem({
       >
         <div className="modal-detail-product">
           <Row justify="center">
-            <Col lg={{ span: 11, offset: 0 }} style={{ height: 500 }}>
+            <Col
+              lg={{ span: 11, offset: 0 }}
+              style={{ height: 500, display: "flex", alignItems: "center" }}
+            >
+              <LeftOutlined
+                className="button-prev-card"
+                onClick={previousImage}
+              />
               <img
                 className="img-detail-product"
-                src={detailProduct.image}
+                src={detailProduct.image.split(",")[currentImageIndex]}
                 alt="..."
               />
+              <RightOutlined className="button-next-card" onClick={nextImage} />
             </Col>
-            <Col lg={{ span: 12, offset: 1 }} style={{ height: 500 }}>
+            <Col
+              lg={{ span: 12, offset: 1 }}
+              style={{ height: 500, paddingLeft: 20 }}
+            >
               <h1>{detailProduct.nameProduct}</h1>
               <div className="price-product">
                 {" "}
@@ -213,10 +251,7 @@ function CardItem({
                     className="color-product"
                     key={index}
                     style={{
-                      backgroundColor: detailProduct.codeColor.replace(
-                        "%23",
-                        "#"
-                      ),
+                      backgroundColor: detailProduct.codeColor
                     }}
                   ></div>
                 </div>
@@ -228,33 +263,19 @@ function CardItem({
               <div>
                 <div>Size:</div>
                 <div className="list-size-product" tabIndex="0">
-                  {detailProduct.listNameSize
-                    .split(",")
-                    .sort()
-                    .map((nameSize, index) => (
+        
                       <div
-                        className={`size-product ${
-                          clickedIndex === index ? "clicked" : ""
-                        }`}
+                        className="size-product "
                         key={index}
                         tabIndex="0"
-                        onClick={() =>
-                          handleSizeClick(
-                            index,
-                            item.idProduct,
-                            item.codeColor,
-                            nameSize
-                          )
-                        }
+                    
                         style={
-                          nameSize !== detailProduct.nameSize
-                            ? {}
-                            : { border: "1px solid black" }
+                        { border: "1px solid black" }
                         }
                       >
-                        {nameSize}
+                        {detailProduct.nameSize}
                       </div>
-                    ))}
+                    
                 </div>
               </div>
               <div className="add-to-card">
