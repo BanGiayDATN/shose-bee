@@ -1595,11 +1595,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Row>
           )}
 
-          {products.map((item) => {
+          {products.map((item, index) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
                 <Col span={2}>
-                 
+                        {index + 1}
                 </Col>
                 <Col span={4}>
                   <img
