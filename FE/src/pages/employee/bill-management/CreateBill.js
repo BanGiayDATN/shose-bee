@@ -2140,7 +2140,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   <MdOutlinePayment></MdOutlinePayment>
                 </Button>
               </Col>
-              <Col span={14} align={"end"} style={{ marginRight: "10px" }}>
+              <Col span={14} align={"end"} style={{ marginRight: "10px", fontSize: "15px",
+                  fontWeight: "bold",
+                  marginRight: "10px", }} >
                 {formatCurrency(
                   dataPayment.reduce((accumulator, currentValue) => {
                     return accumulator + currentValue.totalMoney;
@@ -2222,8 +2224,15 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Row>
 
             <Row justify="space-between" style={{ marginTop: "29px" }}>
-              <Col span={5}>Tiền hàng: </Col>
-              <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
+              <Col span={5} style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}>Tiền hàng: </Col>
+              <Col span={10} align={"end"} style={{ marginRight: "10px", 
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  marginRight: "10px", }}>
                 {formatCurrency(
                   products.reduce((accumulator, currentValue) => {
                     return (
@@ -2235,8 +2244,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Row>
             {isOpenDelivery == true ? (
               <Row justify="space-between" style={{ marginTop: "29px" }}>
-                <Col span={8}>Phí vận chuyển: </Col>
-                <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
+                <Col span={8}  style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}>Phí vận chuyển: </Col>
+                <Col span={10} align={"end"} style={{ marginRight: "10px" }} style={{
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                }}>
                   {formatCurrency(shipFee)}
                 </Col>
               </Row>
@@ -2245,8 +2262,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             )}
 
             <Row justify="space-between" style={{ marginTop: "29px" }}>
-              <Col span={5}>Giảm giá: </Col>
-              <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
+              <Col span={5} style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}>Giảm giá: </Col>
+              <Col span={10} align={"end"} style={{ marginRight: "10px" }} style={{
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                }}>
                 {formatCurrency(voucher.discountPrice)}
               </Col>
             </Row>
