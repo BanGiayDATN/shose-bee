@@ -903,6 +903,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
+                  toast.success("Đặt hàng thành công")
                   removePane(targetKey, invoiceNumber, items);
                   form.resetFields();
                 });
@@ -929,6 +930,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             onOk: async () => {
               await BillApi.createBillWait(data).then((res) => {
                 removePane(targetKey, invoiceNumber, items);
+                  toast.success("Đặt hàng thành công")
               });
             },
             onCancel: () => {},
