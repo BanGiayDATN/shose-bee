@@ -1027,7 +1027,7 @@ function DetailBill() {
 
   const columnsPayments = [
      {
-    title: 'RowHead',
+    title: 'STT',
     dataIndex: 'key',
     rowScope: 'row',
   },
