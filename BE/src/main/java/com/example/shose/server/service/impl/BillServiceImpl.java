@@ -203,7 +203,7 @@ public class BillServiceImpl implements BillService {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if(TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()){
-            optional.get().setStatusBill(StatusBill.KHONG_TRA_HANG);
+            optional.get().setStatusBill(StatusBill.THANH_CONG);
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         }else{
@@ -462,7 +462,7 @@ public class BillServiceImpl implements BillService {
 //            }
             PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
             paymentsMethodRepository.save(paymentsMethod);
-        } else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
+        } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
 
@@ -473,15 +473,15 @@ public class BillServiceImpl implements BillService {
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
 
-        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
-            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-            BillHistory billHistoryPayMent = new BillHistory();
-            billHistoryPayMent.setBill(bill.get());
-            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
-            billHistoryPayMent.setActionDescription(request.getActionDescription());
-            billHistoryPayMent.setEmployees(account.get());
-            billHistoryRepository.save(billHistoryPayMent);
-        }
+//        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+//            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+//            BillHistory billHistoryPayMent = new BillHistory();
+//            billHistoryPayMent.setBill(bill.get());
+//            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+//            billHistoryPayMent.setActionDescription(request.getActionDescription());
+//            billHistoryPayMent.setEmployees(account.get());
+//            billHistoryRepository.save(billHistoryPayMent);
+//        }
         return billRepository.save(bill.get());
     }
 

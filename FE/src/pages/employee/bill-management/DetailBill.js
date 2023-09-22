@@ -11,7 +11,7 @@ import {
 } from "antd";
 import TimeLine from "./TimeLine";
 import {
-  addPaymentsMethod,
+  addPaymentsMethod,showModalBill,
   addStatusPresent,
   getBill,
   getBillHistory,
@@ -42,7 +42,7 @@ var listStatus = [
   { id: 2, name: "Chờ vận chuyển", status: "CHO_VAN_CHUYEN" },
   { id: 3, name: "Vận chuyển", status: "VAN_CHUYEN" },
   { id: 4, name: "Thanh toán", status: "DA_THANH_TOAN" },
-  { id: 5, name: "Thành công", status: "KHONG_TRA_HANG" },
+  { id: 5, name: "Thành công", status: "THANH_CONG" },
 ];
 
 function DetailBill() {
@@ -988,18 +988,19 @@ function DetailBill() {
           {statusBill === "TAO_HOA_DON"
             ? "Chờ xác nhận"
             : statusBill === "CHO_XAC_NHAN"
-              ? "Xác nhận"
-              : statusBill === "CHO_VAN_CHUYEN"
-                ? "Chờ vận chuyển"
-                : statusBill === "VAN_CHUYEN"
-                  ? "Đang vận chuyển"
-                  : statusBill === "DA_THANH_TOAN"
-                    ? "Đã thanh toán"
-                    : statusBill === "TRA_HANG"
-                      ? "Trả hàng"
-                      : statusBill === "KHONG_TRA_HANG"
-                        ? "Thành công"
-                        : "Đã hủy"}
+
+            ? "Xác nhận"
+            : statusBill === "CHO_VAN_CHUYEN"
+            ? "Chờ vận chuyển"
+            : statusBill === "VAN_CHUYEN"
+            ? "Đang vận chuyển"
+            : statusBill === "DA_THANH_TOAN"
+            ? "Đã thanh toán"
+            : statusBill === "TRA_HANG"
+            ? "Trả hàng"
+            : statusBill === "THANH_CONG"
+            ? "Thành công"
+            : "Đã hủy"}
         </span>
       ),
     },
@@ -1183,7 +1184,7 @@ function DetailBill() {
                     style={{ width: "100%" }}
                     span={statusPresent < 5 ? 7 : 0}
                   >
-                    {statusPresent < 5 && statusPresent != 3 ? (
+                    {statusPresent < 6  ? (
                       <Button
                         type="primary"
                         className="btn btn-primary"
@@ -1538,7 +1539,7 @@ function DetailBill() {
                       ? "Đang vận chuyển"
                       : bill.statusBill === "DA_THANH_TOAN"
                       ? "Đã thanh toán"
-                      : bill.statusBill === "KHONG_TRA_HANG"
+                      : bill.statusBill === "THANH_CONG"
                       ? "Thành công"
                       : bill.statusBill === "TRA_HANG"
                       ? "Trả hàng"
@@ -1766,8 +1767,8 @@ function DetailBill() {
                       <div></div>
                     )}
                     {bill.statusBill == "DA_THANH_TOAN" ||
-                      bill.statusBill == "KHONG_TRA_HANG" ||
-                      bill.statusBill == "TRA_HANG" ? (
+                    bill.statusBill == "THANH_CONG" ||
+                    bill.statusBill == "TRA_HANG" ? (
                       <Col span={12}>
                         <Button
                           type=""

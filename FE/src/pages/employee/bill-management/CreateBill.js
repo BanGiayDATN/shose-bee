@@ -1447,9 +1447,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const submitCodeTransactionNext = (e) => {
     const data = {
-      vnp_Ammount: totalMoneyPayMent,
-      vnp_TxnRef: billRequest.code + "-" + generateUniqueRandomNumber(1),
-    };
+        vnp_Ammount: totalMoneyPayMent,
+        vnp_TxnRef: billRequest.code,
+      };
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
       window.open(res.data.data, "_self");

@@ -81,7 +81,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             throw new RestApiException(Message.NOT_PAYMENT);
         }
         BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
-        if((bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN || bill.get().getStatusBill() != StatusBill.KHONG_TRA_HANG || bill.get().getStatusBill() != StatusBill.TRA_HANG)  && bill.get().getTotalMoney().compareTo(payment) >= 0){
+        if((bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN || bill.get().getStatusBill() != StatusBill.THANH_CONG || bill.get().getStatusBill() != StatusBill.TRA_HANG)  && bill.get().getTotalMoney().compareTo(payment) >= 0){
 
             bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
             BillHistory billHistory = new BillHistory();
