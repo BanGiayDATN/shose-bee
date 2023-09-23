@@ -514,6 +514,15 @@ public class BillServiceImpl implements BillService {
                 billHistory.setEmployees(account.get());
                 billHistoryRepository.save(billHistory);
             }
+            if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
+            bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
+            bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
+            bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
+            bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+        }
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
