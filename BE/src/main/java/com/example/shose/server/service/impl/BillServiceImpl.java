@@ -1,4 +1,4 @@
-package com.example.shose.server.service.impl;
+savepackage com.example.shose.server.service.impl;
 
 
 import com.example.shose.server.dto.request.bill.BillRequest;
@@ -208,7 +208,9 @@ public class BillServiceImpl implements BillService {
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         }else{
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
+             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
         }
