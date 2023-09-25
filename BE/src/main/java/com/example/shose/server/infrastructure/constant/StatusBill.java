@@ -9,7 +9,7 @@ public enum StatusBill {
     CHO_VAN_CHUYEN,
     VAN_CHUYEN,
     DA_THANH_TOAN,
-    KHONG_TRA_HANG,
+    THANH_CONG,
     TRA_HANG,
     DA_HUY
 

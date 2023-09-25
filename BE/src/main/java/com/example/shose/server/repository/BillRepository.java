@@ -103,7 +103,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             FROM bill b JOIN bill_detail bd ON b.id = bd.id_bill
             WHERE
             b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
-            AND b.status_bill = 'KHONG_TRA_HANG';
+            AND b.status_bill = 'THANH_CONG';
             
                                          
               """, nativeQuery = true)
@@ -118,7 +118,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 bill
             WHERE
                 completion_date >= :currentDate
-                AND status_bill like 'KHONG_TRA_HANG';                       
+                AND status_bill like 'THANH_CONG';                       
                           """, nativeQuery = true)
     List<StatisticalDayResponse> getAllStatisticalDay(@Param("currentDate") Long currentDate);
 
@@ -148,7 +148,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                   FROM image
                   GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
             LEFT JOIN image i ON max_images.max_image_id = i.id
-   WHERE bd.id_product_detail IS NOT NULL AND b.status_bill like 'KHONG_TRA_HANG'
+   WHERE bd.id_product_detail IS NOT NULL AND b.status_bill like 'THANH_CONG'
    GROUP BY image, nameProduct, price
    ORDER BY sold desc
                                       """, nativeQuery = true)
@@ -161,7 +161,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     FROM
         bill
     WHERE   (completion_date >= :#{#req.startDate} AND completion_date <= :#{#req.endDate} )
-        AND (status_bill like 'KHONG_TRA_HANG')
+        AND (status_bill like 'THANH_CONG')
     GROUP BY billDate
     ORDER BY completion_date ASC;
                           """, nativeQuery = true)

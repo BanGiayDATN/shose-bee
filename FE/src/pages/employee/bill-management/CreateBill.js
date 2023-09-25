@@ -741,8 +741,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const columnsPayments = [
     {
       title: <div className="title-product">STT</div>,
-      dataIndex: "stt",
-      key: "stt",
+      key:"index",
+      render: ((value, item, index) =>   index + 1)
     },
     {
       title: <div className="title-product">Mã giao dịch</div>,
@@ -903,6 +903,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               cancelText: "Hủy",
               onOk: async () => {
                 await BillApi.createBillWait(data).then((res) => {
+                  toast.success("Đặt hàng thành công");
                   removePane(targetKey, invoiceNumber, items);
                   form.resetFields();
                 });
@@ -929,6 +930,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             onOk: async () => {
               await BillApi.createBillWait(data).then((res) => {
                 removePane(targetKey, invoiceNumber, items);
+                toast.success("Đặt hàng thành công");
               });
             },
             onCancel: () => {},
@@ -1448,7 +1450,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const submitCodeTransactionNext = (e) => {
     const data = {
       vnp_Ammount: totalMoneyPayMent,
-      vnp_TxnRef: billRequest.code + "-" + generateUniqueRandomNumber(1),
+      vnp_TxnRef: billRequest.code,
     };
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
@@ -1508,6 +1510,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
+        {console.log(products)}
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
@@ -1518,7 +1521,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 padding: "5px",
               }}
             >
-              <Col span={2} align={"center"}>
+              <Col span={1} align={"center"}>
                 <span
                   style={{
                     fontSize: "16px",
@@ -1529,7 +1532,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   STT
                 </span>
               </Col>
-              <Col span={10} align={"center"}>
+              <Col span={11} align={"center"}>
                 <span
                   style={{
                     fontSize: "16px",
@@ -1595,11 +1598,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Row>
           )}
 
-          {products.map((item) => {
+          {products.map((item, index) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
-                <Col span={2}>
-                 
+                <Col
+                  span={1}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    fontSize: "21px",
+                    fontFamily: "500",
+                    margin: "auto",
+                  }}
+                >
+                  {index + 1}
                 </Col>
                 <Col span={4}>
                   <img
@@ -1613,7 +1625,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     }}
                   />
                 </Col>
-                <Col span={6}>
+                <Col span={7}>
                   <Row>
                     {" "}
                     <span
@@ -2140,7 +2152,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   <MdOutlinePayment></MdOutlinePayment>
                 </Button>
               </Col>
-              <Col span={14} align={"end"} style={{ marginRight: "10px" }}>
+              <Col
+                span={14}
+                align={"end"}
+                style={{
+                  marginRight: "10px",
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                }}
+              >
                 {formatCurrency(
                   dataPayment.reduce((accumulator, currentValue) => {
                     return accumulator + currentValue.totalMoney;
@@ -2222,8 +2243,26 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Row>
 
             <Row justify="space-between" style={{ marginTop: "29px" }}>
-              <Col span={5}>Tiền hàng: </Col>
-              <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
+              <Col
+                span={5}
+                style={{
+                  margin: "2px",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                }}
+              >
+                Tiền hàng:{" "}
+              </Col>
+              <Col
+                span={10}
+                align={"end"}
+                style={{
+                  marginRight: "10px",
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                }}
+              >
                 {formatCurrency(
                   products.reduce((accumulator, currentValue) => {
                     return (
@@ -2235,8 +2274,25 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Row>
             {isOpenDelivery == true ? (
               <Row justify="space-between" style={{ marginTop: "29px" }}>
-                <Col span={8}>Phí vận chuyển: </Col>
-                <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
+                <Col
+                  span={8}
+                  style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "15px",
+                  }}
+                >
+                  Phí vận chuyển:{" "}
+                </Col>
+                <Col
+                  span={10}
+                  align={"end"}
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    marginRight: "10px",
+                  }}
+                >
                   {formatCurrency(shipFee)}
                 </Col>
               </Row>
@@ -2245,8 +2301,25 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             )}
 
             <Row justify="space-between" style={{ marginTop: "29px" }}>
-              <Col span={5}>Giảm giá: </Col>
-              <Col span={10} align={"end"} style={{ marginRight: "10px" }}>
+              <Col
+                span={5}
+                style={{
+                  margin: "2px",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                }}
+              >
+                Giảm giá:{" "}
+              </Col>
+              <Col
+                span={10}
+                align={"end"}
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                }}
+              >
                 {formatCurrency(voucher.discountPrice)}
               </Col>
             </Row>
@@ -2266,7 +2339,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 span={10}
                 style={{
                   color: "red",
-                  fontSize: "15px",
+                  fontSize: "18px",
                   fontWeight: "bold",
                   marginRight: "10px",
                 }}

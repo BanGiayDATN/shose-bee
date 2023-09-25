@@ -81,7 +81,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             throw new RestApiException(Message.NOT_PAYMENT);
         }
         BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
-        if((bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN || bill.get().getStatusBill() != StatusBill.KHONG_TRA_HANG || bill.get().getStatusBill() != StatusBill.TRA_HANG)  && bill.get().getTotalMoney().compareTo(payment) >= 0){
+        if((bill.get().getStatusBill() != StatusBill.DA_THANH_TOAN || bill.get().getStatusBill() != StatusBill.THANH_CONG || bill.get().getStatusBill() != StatusBill.TRA_HANG)  && bill.get().getTotalMoney().compareTo(payment) >= 0){
 
             bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
             BillHistory billHistory = new BillHistory();
@@ -119,7 +119,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         vnp_Params.put("vnp_Version", VnPayConstant.vnp_Version);
         vnp_Params.put("vnp_Command",VnPayConstant.vnp_Command);
         vnp_Params.put("vnp_TmnCode",VnPayConstant.vnp_TmnCode);
-        vnp_Params.put("vnp_Amount",String.valueOf(payModel.vnp_Ammount + "00"));
+        vnp_Params.put("vnp_Amount",String.valueOf(payModel.vnp_Ammount));
         vnp_Params.put("vnp_BankCode", VnPayConstant.vnp_BankCode);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
         vnp_Params.put("vnp_CurrCode",VnPayConstant.vnp_CurrCode);

@@ -224,9 +224,6 @@ const ModalCreateAccount = () => {
           <div>
             <h1
               style={{
-                // display: "flex",
-                // alignItems: "center",
-                // justifyContent: "center",
                 marginTop: "50px",
                 marginBottom: "50px",
                 fontSize: "20px",
@@ -320,7 +317,7 @@ const ModalCreateAccount = () => {
                       { required: true, message: "Vui lòng nhập tên" },
                       {
                         validator: (_, value) => {
-                          if (value && value.trim() === "") {
+                          if (value && value[0] === " ") {
                             return Promise.reject(
                               "Tên không được nhập khoảng trắng"
                             );

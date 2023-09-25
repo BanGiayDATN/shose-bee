@@ -1,4 +1,4 @@
-package com.example.shose.server.service.impl;
+savepackage com.example.shose.server.service.impl;
 
 
 import com.example.shose.server.dto.request.bill.BillRequest;
@@ -203,13 +203,15 @@ public class BillServiceImpl implements BillService {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if(TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()){
-            optional.get().setStatusBill(StatusBill.KHONG_TRA_HANG);
+            optional.get().setStatusBill(StatusBill.THANH_CONG);
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         }else{
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).employees(optional.get().getEmployees()).build());
+             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
         }
 
@@ -460,9 +462,13 @@ public class BillServiceImpl implements BillService {
 //            if(bill.get().getTotalMoney().compareTo(new BigDecimal(request.getTotalMoney())) > 0){
 //                throw new RestApiException(Message.ERROR_TOTALMONEY);
 //            }
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
-            paymentsMethodRepository.save(paymentsMethod);
-        } else if (bill.get().getStatusBill() == StatusBill.KHONG_TRA_HANG) {
+            int checkPayMent = paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
+            if(checkPayMent == 0){
+                PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
+                paymentsMethodRepository.save(paymentsMethod);
+            }
+
+        } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
 
@@ -473,16 +479,21 @@ public class BillServiceImpl implements BillService {
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
 
-        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
-            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-            BillHistory billHistoryPayMent = new BillHistory();
-            billHistoryPayMent.setBill(bill.get());
-            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
-            billHistoryPayMent.setActionDescription(request.getActionDescription());
-            billHistoryPayMent.setEmployees(account.get());
-            billHistoryRepository.save(billHistoryPayMent);
-        }
+//        if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
+//            bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
+//            BillHistory billHistoryPayMent = new BillHistory();
+//            billHistoryPayMent.setBill(bill.get());
+//            billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
+//            billHistoryPayMent.setActionDescription(request.getActionDescription());
+//            billHistoryPayMent.setEmployees(account.get());
+//            billHistoryRepository.save(billHistoryPayMent);
+//        }
         return billRepository.save(bill.get());
+    }
+
+    @Override
+    public int countPayMentPostpaidByIdBill(String id) {
+        return paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
     }
 
     @Override
@@ -503,6 +514,15 @@ public class BillServiceImpl implements BillService {
                 billHistory.setEmployees(account.get());
                 billHistoryRepository.save(billHistory);
             }
+            if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
+            bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
+            bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
+            bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
+            bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+        }
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));

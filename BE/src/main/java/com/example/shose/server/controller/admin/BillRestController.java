@@ -57,6 +57,11 @@ public class BillRestController {
         return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(request));
     }
 
+    @GetMapping("/count-paymet-post-paid/{id}")
+    public ResponseObject countPayMentPostpaidByIdBill(@PathVariable("id") String id) {
+        return  new ResponseObject(billService.countPayMentPostpaidByIdBill(id));
+    }
+
     @PutMapping("/update-offline/{id}")
     public ResponseObject updateBillOffline(@PathVariable("id") String id, @RequestBody UpdateBillRequest request) {
         return  new ResponseObject(billService.updateBillOffline(id, request));

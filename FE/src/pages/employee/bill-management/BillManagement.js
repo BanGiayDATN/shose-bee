@@ -43,12 +43,13 @@ function BillManagement() {
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);
-  var [quantityNotify, setQuantityNotify] = useState([ ])
+  var [quantityNotify, setQuantityNotify] = useState([]);
 
   const dispatch = useAppDispatch();
   const { Option } = Select;
 
   useEffect(() => {
+    console.log(fillter);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
@@ -64,7 +65,9 @@ function BillManagement() {
 
   const handleSubmitSearch = (e) => {
     var data = fillter;
-    data.status = status;
+    if(status.length != 0){
+      data.status = status;
+    }
     setFillter(data);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
@@ -98,7 +101,15 @@ function BillManagement() {
     setFillter({
       startTimeString: "",
       endTimeString: "",
-      status: [],
+      status: [
+      "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+    ],
       endDeliveryDateString: "",
       startDeliveryDateString: "",
       key: "",
@@ -108,18 +119,31 @@ function BillManagement() {
       type: "",
       page: 0,
     });
-    setStatus([]);
+    setStatus([ "CHO_XAC_NHAN",
+    "CHO_VAN_CHUYEN",
+    "VAN_CHUYEN",
+    "DA_THANH_TOAN",
+    "THANH_CONG",
+    "TRA_HANG",
+    "DA_HUY"]);
+    console.log(fillter);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
     });
   };
 
-  
-
   const [fillter, setFillter] = useState({
     startTimeString: "",
     endTimeString: "",
-    status: [],
+    status: [
+      "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+    ],
     endDeliveryDateString: "",
     startDeliveryDateString: "",
     key: "",
@@ -130,9 +154,8 @@ function BillManagement() {
     page: 0,
   });
 
-
   const onChange = (key) => {
-    setQuantityNotify(quantityNotify.filter(item => item.status !== key))
+    setQuantityNotify(quantityNotify.filter((item) => item.status !== key));
   };
 
   const listtab = [
@@ -141,7 +164,7 @@ function BillManagement() {
     "CHO_VAN_CHUYEN",
     "VAN_CHUYEN",
     "DA_THANH_TOAN",
-    "KHONG_TRA_HANG",
+    "THANH_CONG",
     "DA_HUY",
   ];
 
@@ -156,32 +179,30 @@ function BillManagement() {
       ? "Vận chuyển"
       : key === "DA_THANH_TOAN"
       ? "thanh toán"
-      : key === "KHONG_TRA_HANG"
+      : key === "THANH_CONG"
       ? "Hoàn thành"
       : "Hủy";
   };
   const checkNotifyNew = (key) => {
-   var index =  quantityNotify.findIndex((item) => item.name == key)
-   if(index == -1){
-    return false
-   }else{
-    return true
-   }
-  }
+    var index = quantityNotify.findIndex((item) => item.name == key);
+    if (index == -1) {
+      return false;
+    } else {
+      return true;
+    }
+  };
 
   const showQuantityBillNotify = (key) => {
     var index = quantityNotify.findIndex((item) => item.status == key);
-    if(index != -1){
-      return quantityNotify[index].quantity
+    if (index != -1) {
+      return quantityNotify[index].quantity;
     }
-    return null
-   }
+    return null;
+  };
 
-  const addNotify = (notify) =>{
-    setQuantityNotify([...quantityNotify, notify])
-  }
-
-  
+  const addNotify = (notify) => {
+    setQuantityNotify([...quantityNotify, notify]);
+  };
 
   return (
     <div>
@@ -235,13 +256,17 @@ function BillManagement() {
               return {
                 label: (
                   <Badge count={showQuantityBillNotify(item)}>
-                    <span >
-                      {convertString(item)}
-                    </span>
+                    <span>{convertString(item)}</span>
                   </Badge>
                 ),
                 key: item,
-                children: <TabBills statusBill={item} dataFillter={fillter} addNotify={addNotify}/>,
+                children: (
+                  <TabBills
+                    statusBill={item}
+                    dataFillter={fillter}
+                    addNotify={addNotify}
+                  />
+                ),
               };
             })}
           />
