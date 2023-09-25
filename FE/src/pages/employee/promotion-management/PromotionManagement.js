@@ -120,7 +120,10 @@ const PromotionManagement = () => {
     detailPromotion(id);
     setShowDetail(true);
   };
-
+  const updatedList = list.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
   const columns = [
     {
       title: "STT",
@@ -428,7 +431,7 @@ const PromotionManagement = () => {
 
         <div className="promotion-table">
           <Table
-            dataSource={list}
+            dataSource={updatedList}
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 5 }}

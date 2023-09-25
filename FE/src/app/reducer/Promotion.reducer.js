@@ -14,7 +14,6 @@ const promotionSlice = createSlice({
     UpdatePromotion: (state, action) => {
         const updatedPromotion = action.payload;
         const index = state.findIndex((promotion) => promotion.id === updatedPromotion.id);
-        console.log(index);
         if (index !== -1) {
           state[index] = updatedPromotion;
         }

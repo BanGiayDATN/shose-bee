@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import io from 'socket.io-client';
 import "./style-voucher.css";
 import {
   Form,
@@ -10,13 +11,10 @@ import {
   DatePicker,
 } from "antd";
 import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
-import {
-  GetVoucher,
-  SetVoucher,
-} from "../../../app/reducer/Voucher.reducer";
+import { GetVoucher, SetVoucher } from "../../../app/reducer/Voucher.reducer";
 import CreateVoucherManagement from "./modal/CreateVoucherManagement";
 import UpdateVoucherManagement from "./modal/UpdateVoucherManagement";
-import DetailVoucherManagement from"./modal/DetailVoucherManagement";
+import DetailVoucherManagement from "./modal/DetailVoucherManagement";
 import {
   faEdit,
   faEye,
@@ -32,26 +30,21 @@ dayjs.extend(utc);
 const VoucherManagement = () => {
   const dispatch = useAppDispatch();
   const [list, setList] = useState([]);
-  const [modalCreate,setModalCreate] = useState(false);
-  const [modalUpdate,setModalUpdate] = useState(false);
-  const [modalDetail,setModalDetail] = useState(false);
+  const [modalCreate, setModalCreate] = useState(false);
+  const [modalUpdate, setModalUpdate] = useState(false);
+  const [modalDetail, setModalDetail] = useState(false);
   const [id, setId] = useState("");
   const [formDataSearch, setFormDataSearch] = useState({});
-
-
-
 
   const data = useAppSelector(GetVoucher);
   useEffect(() => {
     if (data != null) {
       setList(data);
+      console.log(data);
     }
   }, [data]);
-  useEffect(() => {
-  }, [list]);
-  useEffect(() => {
-    console.log(data);
-  }, []);
+  useEffect(() => { console.log(list);}, [list]);
+
 
   useEffect(() => {
     loadData();
@@ -60,7 +53,7 @@ const VoucherManagement = () => {
     ...item,
     stt: index + 1,
   }));
-  
+
   const resetFormSearch = () => {
     setFormDataSearch({});
     loadData();
@@ -96,11 +89,11 @@ const VoucherManagement = () => {
   };
 
   const openUpdate = (id) => {
-   setModalUpdate(true);
-   setId(id)
+    setModalUpdate(true);
+    setId(id);
   };
   const openAdd = () => {
-   setModalCreate(true)
+    setModalCreate(true);
   };
   const openDetail = (id) => {
     setModalDetail(true);
@@ -375,9 +368,20 @@ const VoucherManagement = () => {
       </div>
 
       {/* modal */}
-      <CreateVoucherManagement modalCreate={modalCreate} setModalCreate={setModalCreate}/>
-      <UpdateVoucherManagement modalUpdate={modalUpdate} setModalUpdate={setModalUpdate} id={id}/>
-      <DetailVoucherManagement modalDetail={modalDetail} setModalDetail={setModalDetail} id={id}/>
+      <CreateVoucherManagement
+        modalCreate={modalCreate}
+        setModalCreate={setModalCreate}
+      />
+      <UpdateVoucherManagement
+        modalUpdate={modalUpdate}
+        setModalUpdate={setModalUpdate}
+        id={id}
+      />
+      <DetailVoucherManagement
+        modalDetail={modalDetail}
+        setModalDetail={setModalDetail}
+        id={id}
+      />
     </div>
   );
 };
