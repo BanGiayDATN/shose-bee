@@ -43,6 +43,7 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
   const handleSubmit = () => {
     
     const isFormValid =
+    formData.code &&
       formData.name &&
       formData.value &&
       formData.quantity &&
@@ -52,6 +53,7 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
 
     if (!isFormValid) {
       const errors = {
+        code: !formData.code ? "Vui lòng nhập mã khuyễn mãi" : "",
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
         value: !formData.value ? "Vui lòng nhập giá giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
@@ -99,6 +101,21 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
         cancelButtonProps={{ style: { display: "none" } }}
       >
         <Form layout="vertical">
+        <Form.Item
+            label="Mã khuyến mãi"
+            validateStatus={formErrors["code"] ? "error" : ""}
+            help={formErrors["code"] || ""}
+          >
+            <Input
+              name="code"
+              className="input-create-voucher"
+              placeholder="Tên khuyến mãi"
+              value={formData["code"]}
+              onChange={(e) => {
+                inputChange("code", e.target.value);
+              }}
+            />
+          </Form.Item>
           <Form.Item
             label="Tên khuyến mãi"
             validateStatus={formErrors["name"] ? "error" : ""}

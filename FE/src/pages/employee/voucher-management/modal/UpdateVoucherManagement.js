@@ -53,6 +53,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
   const handleSubmit = () => {
     console.log(convertToLong());
     const isFormValid =
+    formData.code &&
       formData.name &&
       formData.value &&
       formData.quantity &&
@@ -62,6 +63,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
 
     if (!isFormValid) {
       const errors = {
+        code: !formData.code ? "Vui lòng nhập mã khuyễn mãi" : "",
         name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
         value: !formData.value ? "Vui lòng nhập giá giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
@@ -83,15 +85,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
           autoClose: 5000,
         });
         closeModal();
-      })
-      .catch((error) => {
-        if (error.response.data.message === "BS-400") {
-          toast.success("Vui lòng nhập đầy đủ!", {
-            autoClose: 5000,
-          });
-          return;
-        }
-      });
+      }, (err) => console.log(err))
+     
   };
 
   const detailVoucher = (id) => {
@@ -127,6 +122,21 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
         cancelButtonProps={{ style: { display: "none" } }}
       >
         <Form layout="vertical">
+        <Form.Item
+            label="Mã khuyến mãi"
+            validateStatus={formErrors["code"] ? "error" : ""}
+            help={formErrors["code"] || ""}
+          >
+            <Input
+              name="code"
+              className="input-create-voucher"
+              placeholder="Tên khuyến mãi"
+              value={formData["code"]}
+              onChange={(e) => {
+                inputChange("code", e.target.value);
+              }}
+            />
+          </Form.Item>
           <Form.Item
             label="Tên khuyến mãi"
             validateStatus={formErrors["name"] ? "error" : ""}
@@ -207,18 +217,14 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
             />
           </Form.Item>
           <Form.Item label="Trạng thái">
-            <Select
+            <Input
+            disable
               className="status"
               name="status"
-              placeholder="Vui lòng chọn trạng thái"
-              value={formData["status"] || ""}
-              onChange={(value) => {
-                inputChange("status", value);
-              }}
+              value={formData["status"] === "DANG_SU_DUNG" ? "Còn hạn" : "Hết hạn" || ""}
+          
             >
-              <Option value="DANG_SU_DUNG">Còn hạn</Option>
-              <Option value="KHONG_SU_DUNG">Hết hạn</Option>
-            </Select>
+            </Input>
           </Form.Item>
 
           <Form.Item>

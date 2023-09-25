@@ -61,6 +61,7 @@ function UpdatePromotionManagement() {
           console.log(res.data.data);
           const getDetailPromotion = res.data.data;
           setFormData({
+            code: getDetailPromotion.code,
             name: getDetailPromotion.name,
             value: getDetailPromotion.value,
             startDate: dayjs(getDetailPromotion.startDate),
@@ -197,21 +198,19 @@ function UpdatePromotionManagement() {
   const handleSubmit = (ids) => {
     console.log(formData);
     const isFormValid =
+     formData.code &&
       formData.name &&
       formData.value &&
       formData.startDate &&
       formData.endDate &&
-      // formData.idProductDetails &&
       formData.startDate < formData.endDate;
 
     if (!isFormValid) {
       const errors = {
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
+        code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
+        name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
         value: !formData.value ? "Vui lòng nhập giá giảm" : "",
         startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        // idProductDetails:!formData.idProductDetails ? toast.success("Bạn chưa chọn chi tiết sản phẩm!", {
-        //   autoClose: 5000,
-        // }):"",
         endDate: !formData.endDate
           ? "Vui lòng chọn ngày kết thúc"
           : formData.startDate >= formData.endDate
@@ -236,6 +235,13 @@ function UpdatePromotionManagement() {
     setSelectedRowKeysDetail("");
   };
   const fields = [
+    {
+      name: "code",
+      type: "text",
+      label: "Mã khuyễn mại",
+      text: "mã khuyễn mại",
+      class: "input-form-promotion",
+    },
     {
       name: "name",
       type: "text",
@@ -542,22 +548,16 @@ function UpdatePromotionManagement() {
                       />
                     )}
                     {field.type === "select" && (
-                      <Select
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.label}
-                        value={formData[field.name] || ""}
-                        onChange={(value) => {
-                          handleInputChange(field.name, value);
-                        }}
-                      >
-                        <Option value="">Chọn trạng thái</Option>
-                        {field.options.map((option, optionIndex) => (
-                          <Option key={optionIndex} value={option.value}>
-                            {option.label}
-                          </Option>
-                        ))}
-                      </Select>
+            
+                        <Input
+                        disable
+                          className="status"
+                          name="status"
+                          value={formData["status"] === "DANG_SU_DUNG" ? "Còn hạn" : "Hết hạn" || ""}
+                      
+                        >
+                        </Input>
+                    
                     )}
 
                     {field.type !== "date" &&

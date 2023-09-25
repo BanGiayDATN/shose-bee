@@ -1,9 +1,10 @@
 package com.example.shose.server.infrastructure.exception.rest;
 
+import com.example.shose.server.util.ResponseObject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
@@ -12,7 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,6 +74,19 @@ public final class RestExceptionHandler extends
 
     private void log(Exception ex) {
         System.out.println(ex.getMessage());
+    }
+
+    @ExceptionHandler({CustomListValidationException.class})
+    public ResponseEntity<Object> handleValidationException(
+            CustomListValidationException ex) {
+        List<String> errors = new ArrayList<>();
+        ex.getErrors().forEach((error) -> {
+            String errorMessage = error.getDefaultMessage();
+            errors.add(errorMessage);
+        });
+
+        return new ResponseEntity<>(
+                new ResponseObject(false, "Thất bại", errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 }
 

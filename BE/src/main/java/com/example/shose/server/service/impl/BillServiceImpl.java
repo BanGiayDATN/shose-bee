@@ -1,4 +1,4 @@
-savepackage com.example.shose.server.service.impl;
+package com.example.shose.server.service.impl;
 
 
 import com.example.shose.server.dto.request.bill.BillRequest;

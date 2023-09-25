@@ -31,4 +31,10 @@ export class VoucherApi {
           data: data,
         });
       };
+      static updateStatus = (id) => {
+        return request({
+          method: "POST",
+          url: `/admin/voucher/expired/${id}`,
+        });
+      };
 }

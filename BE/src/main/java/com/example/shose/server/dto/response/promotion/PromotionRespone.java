@@ -13,9 +13,6 @@ import java.math.BigDecimal;
 
 @Projection(types = Promotion.class)
 public interface PromotionRespone extends BaseResponse {
-    @Value("#{target.stt}")
-    Integer getSTT();
-
     @Value("#{target.id}")
     String getId();
     @Value("#{target.code}")
