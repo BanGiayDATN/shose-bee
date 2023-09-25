@@ -3,9 +3,12 @@ package com.example.shose.server.controller.admin;
 import com.example.shose.server.dto.request.promotion.CreatePromotionRequest;
 import com.example.shose.server.dto.request.promotion.FindPromotionRequest;
 import com.example.shose.server.dto.request.promotion.UpdatePromotionRequest;
+import com.example.shose.server.infrastructure.exception.rest.CustomListValidationException;
 import com.example.shose.server.service.PromotionService;
 import com.example.shose.server.util.ResponseObject;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,10 +36,17 @@ public class PromotionRestController {
 
 
     @PostMapping
-    public ResponseObject add(@RequestBody CreatePromotionRequest request) {
+    public ResponseObject add(@Valid @RequestBody CreatePromotionRequest request, BindingResult bindingResult) throws Exception {
+        if(bindingResult.hasErrors()){
+            throw new CustomListValidationException(404,bindingResult.getAllErrors());
+        }
         return new ResponseObject(promotionService.add(request));
     }
+    @PostMapping("/expired/{id}")
+    public ResponseObject promotionExpired(@PathVariable("id") String id) {
 
+        return new ResponseObject(promotionService.updateStatus(id));
+    }
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id, @RequestBody UpdatePromotionRequest request) {
         request.setId(id);

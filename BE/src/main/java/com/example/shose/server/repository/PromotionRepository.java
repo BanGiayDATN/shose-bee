@@ -19,8 +19,6 @@ import java.util.List;
 public interface PromotionRepository extends JpaRepository<Promotion,String> {
     @Query(value = """ 
             select 
-            ROW_NUMBER() OVER (ORDER BY po.last_modified_date DESC ) as stt,
-                        
             po.id as id,
             po.code as code,
             po.name as name,

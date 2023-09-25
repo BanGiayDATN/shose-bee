@@ -12,10 +12,12 @@
   border-radius: 15px;
   padding: 10px;
 }
-.content-header{
+
+.content-header {
   margin-top: 5px;
   margin-left: 15px;
 }
+
 .row-body {
   width: 91%;
   margin-left: 59px;
@@ -35,6 +37,7 @@
   border-radius: 15px;
   padding: 10px;
 }
+
 .row-footer-right {
   width: 32%;
   margin-left: 20px;
@@ -44,20 +47,29 @@
   border-radius: 15px;
   padding: 10px;
 }
-.header-date{
+
+.header-date {
   margin-left: 50px;
 }
+
 .row-body-container {
   margin-right: 139px;
   margin-bottom: 159px;
 }
-.color-text-topic{
+
+.color-text-topic {
   color: rgb(150, 150, 150);
 }
-.color-text-content{
+
+.color-text-content {
   color: rgb(196, 133, 56);
 }
 
-
-
-
+.chart-container .chartjs-legend {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  color: #333;
+}

@@ -44,23 +44,95 @@ import loading from "./../src/assets/images/s_discount_icon.png";
 import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
 import PayMentSuccess from "./pages/customer/payment/PaymentSuccess";
 import LoginManagement from "./pages/employee/login-management/LoginManagement";
+import { useAppDispatch, useAppSelector } from "../src/app/hook";
+import { VoucherApi } from "../src/api/employee/voucher/Voucher.api";
+import { UpdateVoucher, GetVoucher } from "../src/app/reducer/Voucher.reducer";
+import { PromotionApi } from "../src/api/employee/promotion/Promotion.api";
+import {
+  UpdatePromotion,
+  GetPromotion,
+} from "../src/app/reducer/Promotion.reducer";
+import dayjs from "dayjs";
 function App() {
+  const dispatch = useAppDispatch();
+  const [listVoucher, setListVoucher] = useState([]);
+  const [listPromotion, setListPromotion] = useState([]);
+  const dataVoucher = useAppSelector(GetVoucher);
+  const dataPromotion = useAppSelector(GetPromotion);
+  const updateItemList = (items, api, updateFunction) => {
+    const now = dayjs();
+    items.forEach((item) => {
+      const endDate = dayjs.unix(item.endDate / 1000);
+      const startDate = dayjs.unix(item.startDate / 1000);
+  
+      if (
+        endDate.isSame(now, 'second') ||
+        startDate.isSame(now, 'second')
+      ) {
+        api(item.id)
+          .then((res) => {
+            dispatch(updateFunction(res.data.data));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
+  };
+  useEffect(() => {
+    if (dataVoucher != null) {
+      setListVoucher(dataVoucher);
+    }
+  }, [dataVoucher]);
+  
+  useEffect(() => {
+    if (dataPromotion != null) {
+      setListPromotion(dataPromotion);
+    }
+  }, [dataPromotion]);
+  
+  useEffect(() => {
+    VoucherApi.fetchAll("").then(
+      (res) => {
+        setListVoucher(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  
+    PromotionApi.fetchAll("").then(
+      (res) => {
+        setListPromotion(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, []);
+  
+  useEffect(() => {
+    const intervalVoucher = setInterval(() => {
+      updateItemList(listVoucher, VoucherApi.updateStatus, UpdateVoucher);
+    }, 1000);
+  
+    return () => clearInterval(intervalVoucher);
+  }, [listVoucher]);
+  
+  useEffect(() => {
+    const intervalPromotion = setInterval(() => {
+      updateItemList(listPromotion, PromotionApi.updateStatus, UpdatePromotion);
+    }, 1000);
+  
+    return () => clearInterval(intervalPromotion);
+  }, [listPromotion]);
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(false); // Giả sử trang đã tải xong sau khi component hiển thị
   }, []);
 
-  //   window.addEventListener('beforeunload', function() {
-  //     // Xóa dữ liệu trong localStorage
-  //     localStorage.removeItem('data');
-  // });
-
-  // Bắt đầu lắng nghe sự kiện unload (trang bị đóng)
-  // window.addEventListener('unload', function() {
-  //     // Xóa dữ liệu trong localStorage
-  //     localStorage.removeItem('idAccount');
-  // });
   return (
     <div className="App">
       {isLoading && (
@@ -149,8 +221,8 @@ function App() {
             path="/client/payment/payment-success"
             element={
               <GuestGuard>
-               <CartProvider>
-                <PayMentSuccess />
+                <CartProvider>
+                  <PayMentSuccess />
                 </CartProvider>
               </GuestGuard>
             }

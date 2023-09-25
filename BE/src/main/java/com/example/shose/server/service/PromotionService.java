@@ -15,9 +15,9 @@ import java.util.List;
 
 public interface PromotionService {
     List<PromotionRespone> getAll(FindPromotionRequest findPromotionRequest);
-    Promotion add(CreatePromotionRequest request);
+    Promotion add(CreatePromotionRequest request) throws Exception;
     Promotion update(UpdatePromotionRequest request);
-
+    Promotion updateStatus(String id);
     Promotion getById(String id);
     List<Promotion> expiredVoucher();
     List<Promotion> startVoucher();

@@ -147,7 +147,7 @@ const DashBoard = () => {
     CHO_VAN_CHUYEN: "Chờ vận chuyển",
     VAN_CHUYEN: "vận chuyển",
     DA_THANH_TOAN: "Đã thanh toán",
-    KHONG_TRA_HANG: "Không trả hàng",
+    THANH_CONG: "Thành công",
     TRA_HANG: "Trả hàng",
     DA_HUY: "Đã Hủy",
   };
@@ -158,7 +158,7 @@ const DashBoard = () => {
     CHO_VAN_CHUYEN: "#FFCE56",
     VAN_CHUYEN: "#9C27B0",
     DA_THANH_TOAN: "#41B883",
-    KHONG_TRA_HANG: "#4CAF50",
+    THANH_CONG: "#4CAF50",
     TRA_HANG: "##FF5733",
     DA_HUY: "#DD1B16",
   };
@@ -170,9 +170,8 @@ const DashBoard = () => {
   const dateMap = {};
   dataColumn.forEach((item) => {
     const date = new Date(Number(item.billDate));
-    const formattedDate = `${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()}`;
+    const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+      }/${date.getFullYear()}`;
 
     if (dateMap[formattedDate]) {
       dateMap[formattedDate] += item.totalBillDate;
@@ -296,8 +295,9 @@ const DashBoard = () => {
                   datasets: [
                     {
                       label: "Hóa đơn",
-                      backgroundColor: "#6cb2eb", // Màu xanh dương
+                      backgroundColor: "#3b5e96", // Màu xanh dương
                       data: chartData,
+                      barThickness: 60,
                     },
                   ],
                 }}
@@ -325,6 +325,7 @@ const DashBoard = () => {
                       },
                       ticks: {
                         color: "#555", // Màu số trên trục x
+
                       },
                     },
                     y: {
@@ -344,8 +345,9 @@ const DashBoard = () => {
                       bottom: 20, // Khoảng cách từ biểu đồ đến phía dưới
                     },
                   },
+
                 }}
-                style={{ width: "1010px", height: "460px" }} // Kích thước của biểu đồ
+                style={{ width: "1100px", height: "460px" }} // Kích thước của biểu đồ
               />
             </div>
           </div>
@@ -371,6 +373,7 @@ const DashBoard = () => {
             </h2>
             <CChart
               type="doughnut"
+              className="chart-container"
               data={{
                 datasets: [
                   {
@@ -381,6 +384,8 @@ const DashBoard = () => {
                 labels: chartPieLabels,
               }}
               options={{
+                borderRadius: 2,
+                borderWidth: 5,
                 plugins: {
                   legend: {
                     position: "bottom",

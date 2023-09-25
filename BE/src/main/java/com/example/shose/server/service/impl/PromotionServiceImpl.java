@@ -10,8 +10,10 @@ import com.example.shose.server.dto.request.promotion.UpdatePromotionRequest;
 import com.example.shose.server.dto.response.promotion.PromotionByIdRespone;
 import com.example.shose.server.dto.response.promotion.PromotionByProDuctDetail;
 import com.example.shose.server.dto.response.promotion.PromotionRespone;
+import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.Promotion;
 import com.example.shose.server.entity.PromotionProductDetail;
+import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -22,6 +24,7 @@ import com.example.shose.server.service.PromotionService;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,26 +49,38 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion add(CreatePromotionRequest request) {
-
-
-        request.setCode(new RandomNumberGenerator().randomToString("PR"));
+    public Promotion add(CreatePromotionRequest request) throws Exception {
+        if(ObjectUtils.isEmpty(request.getIdProductDetails())){
+            throw new RestApiException("Không có sản phẩm");
+        }
+        for (IdProductDetail x : request.getIdProductDetails()) {
+            Optional<ProductDetail> optional = productDetailRepository.findById(x.getId());
+            if(!optional.isPresent()){
+                throw new RestApiException("Có sản phẩm không tồn tại");
+            }
+        }
+        long currentSeconds = (System.currentTimeMillis() / 1000)*1000;
+        Status status = (request.getStartDate() <= currentSeconds && currentSeconds <= request.getEndDate())
+                ? Status.DANG_SU_DUNG
+                : Status.KHONG_SU_DUNG;
         Promotion promotion = Promotion.builder()
                 .code(request.getCode())
                 .name(request.getName())
                 .value(request.getValue())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
-                .status(Status.DANG_SU_DUNG).build();
+                .status(status).build();
 
         promotionRepository.save(promotion);
+
+
         for (IdProductDetail x : request.getIdProductDetails()) {
+            Optional<ProductDetail> optional = productDetailRepository.findById(x.getId());
             PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
             promotionProductDetail.setPromotion(promotion);
-            promotionProductDetail.setProductDetail(productDetailRepository.findById(x.getId()).get());
+            promotionProductDetail.setProductDetail(optional.get());
             promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
             promotionProductDetailRepository.save(promotionProductDetail);
-
         }
         return promotion;
     }
@@ -74,15 +89,25 @@ public class PromotionServiceImpl implements PromotionService {
     public Promotion update(UpdatePromotionRequest request) {
         Optional<Promotion> optional = promotionRepository.findById(request.getId());
         if (!optional.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
+            throw new RestApiException("Khuyến mại không tồn tại");
         }
-
+        for (IdProductDetail x : request.getIdProductDetails()) {
+            Optional<ProductDetail> optional1 = productDetailRepository.findById(x.getId());
+            if(!optional1.isPresent()){
+                throw new RestApiException("Có sản phẩm không tồn tại");
+            }
+        }
         Promotion promotion = optional.get();
+        promotion.setCode(request.getCode());
         promotion.setName(request.getName());
         promotion.setValue(request.getValue());
         promotion.setStartDate(request.getStartDate());
         promotion.setEndDate(request.getEndDate());
-        promotion.setStatus(request.getStatus());
+        if(request.getStartDate()<= ( System.currentTimeMillis() / 1000)*1000 && ( System.currentTimeMillis() / 1000)*1000 <=request.getEndDate()){
+            promotion.setStatus(Status.DANG_SU_DUNG);
+        }else{
+            promotion.setStatus(Status.KHONG_SU_DUNG);
+        }
         promotionRepository.save(promotion);
 
         PromotionByIdRespone promotionByIdRespone = promotionRepository.getByIdPromotion(request.getId());
@@ -127,6 +152,22 @@ public class PromotionServiceImpl implements PromotionService {
                 promotionProductDetailRepository.save(promotionProductDetail);
             }
         }
+        return promotion;
+    }
+
+    @Override
+    public Promotion updateStatus(String id) {
+        Optional<Promotion> optional = promotionRepository.findById(id);
+        if (!optional.isPresent()) {
+            throw new RestApiException("Khuyến mại không tồn tại");
+        }
+        Promotion promotion = optional.get();
+        if(promotion.getStatus().equals(Status.DANG_SU_DUNG)){
+            promotion.setStatus(Status.KHONG_SU_DUNG);
+        }else{
+            promotion.setStatus(Status.DANG_SU_DUNG);
+        }
+        promotionRepository.save(promotion);
         return promotion;
     }
 
