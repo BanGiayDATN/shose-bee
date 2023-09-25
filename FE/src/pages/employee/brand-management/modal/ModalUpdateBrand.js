@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Modal, Input, Select, Button, Form } from "antd";
 import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { useAppDispatch } from "../../../../app/hook";
@@ -92,7 +92,15 @@ const ModalUpdateBrand = ({ visible, id, onCancel }) => {
             { max: 50, message: "Tên thương hiệu tối đa 50 ký tự" },
           ]}
         >
-          <Input placeholder="Tên thương hiệu" />
+          <Input
+            placeholder="Tên thương hiệu"
+            onKeyDown={(e) => {
+              if (e.target.value === "" && e.key === " ") {
+                e.preventDefault();
+                e.target.value.replace(/\s/g, "");
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item

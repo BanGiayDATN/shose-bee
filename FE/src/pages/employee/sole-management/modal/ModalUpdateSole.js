@@ -98,7 +98,15 @@ const ModalUpdateSole = ({ visible, id, onCancel }) => {
             },
           ]}
         >
-          <Input placeholder="Tên thương hiệu" />
+          <Input
+            placeholder="Tên thương hiệu"
+            onKeyDown={(e) => {
+              if (e.target.value === "" && e.key === " ") {
+                e.preventDefault();
+                e.target.value.replace(/\s/g, "");
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item

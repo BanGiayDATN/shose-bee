@@ -99,7 +99,15 @@ const ModalUpdateCategory = ({ visible, id, onCancel }) => {
             },
           ]}
         >
-          <Input placeholder="Tên thể loại" />
+          <Input
+            placeholder="Tên thể loại"
+            onKeyDown={(e) => {
+              if (e.target.value === "" && e.key === " ") {
+                e.preventDefault();
+                e.target.value.replace(/\s/g, "");
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item

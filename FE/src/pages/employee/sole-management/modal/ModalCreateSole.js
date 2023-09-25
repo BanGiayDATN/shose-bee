@@ -92,7 +92,15 @@ const ModalCreateSole = ({ visible, onCancel }) => {
             },
           ]}
         >
-          <Input placeholder="Tên đế giày" />
+          <Input
+            placeholder="Tên đế giày"
+            onKeyDown={(e) => {
+              if (e.target.value === "" && e.key === " ") {
+                e.preventDefault();
+                e.target.value.replace(/\s/g, "");
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item

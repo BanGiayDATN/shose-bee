@@ -91,7 +91,15 @@ const ModalCreateMaterial = ({ visible, onCancel }) => {
             },
           ]}
         >
-          <Input placeholder="Tên chất liệu" />
+          <Input
+            placeholder="Tên chất liệu"
+            onKeyDown={(e) => {
+              if (e.target.value === "" && e.key === " ") {
+                e.preventDefault();
+                e.target.value.replace(/\s/g, "");
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item
