@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider, Row, Col, Modal } from "antd";
+import { Input, Button, Select, Table, Slider, Row, Col, Modal, Tooltip } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-customer.css";
 import { CustomerApi } from "../../../api/employee/account/customer.api";
@@ -414,57 +414,35 @@ const CustomerManagement = () => {
   return (
     <>
       <div className="title_account">
-        {" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý tài khoản khách hàng</span>
       </div>
       <div className="filter">
-        <FontAwesomeIcon icon={faFilter} size="2x" />{" "}
+        <FontAwesomeIcon icon={faFilter} size="2x" />
         <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
         <hr />
-        <div className="content">
-          <div className="content-wrapper">
-            <div>
-              <Row>
+        <div className="content_ac">
+          <div className="content-wrapper-ac">
+            <Row>
+              <Col span={24} style={{ marginBottom: "10px" }}>
+                <label>Tìm kiếm:</label>
                 <Input
                   style={{
-                    width: "250px",
-                    height: "38px",
-                    marginRight: "8px",
+                    width: "300px",
+                    marginLeft: "19px",
+                    marginBottom: "20px",
                   }}
-                  placeholder="Tìm kiếm"
+                  placeholder="Tìm kiếm tên và sđt... "
                   type="text"
                   name="keyword"
                   value={searchCustomer.keyword}
                   onChange={handleKeywordChange}
                 />
-                <Button
-                  className="btn_filter"
-                  type="submit"
-                  onClick={handleSubmitSearch}
-                >
-                  Tìm kiếm
-                </Button>
-                <Button
-                  className="btn_clear"
-                  key="submit"
-                  type="primary"
-                  onClick={handleClear}
-                >
-                  Làm mới bộ lọc
-                </Button>
-                ,
-              </Row>
-            </div>
-          </div>
-        </div>
-        <div>
-          <Row gutter={[24, 16]}>
-            <Col span={6}>
-              <div>
-                Trạng thái :{" "}
+              </Col>
+              <Col span={24}>
+                <label>Trạng thái:</label>
                 <Select
-                  style={{ width: "90%", marginLeft: "" }}
+                  style={{ width: "300px", marginLeft: "15px" }}
                   name="status"
                   value={searchCustomer.status}
                   onChange={handleStatusChange}
@@ -473,38 +451,64 @@ const CustomerManagement = () => {
                   <Option value="DANG_SU_DUNG">Kích hoạt</Option>
                   <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
                 </Select>
-              </div>
-            </Col>
-            <Col span={10}>
-              <div>
-                Ngày sinh : <br />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col span={24}>
+                <label>Ngày sinh:</label>
                 <Input
-                  style={{ width: "47%", height: "40px" }}
+                  style={{
+                    width: "200px",
+                    marginRight: "15px",
+                    marginLeft: "15px",
+                  }}
                   type="date"
                   value={startDate || initialStartDate}
                   onChange={handleStartDateChange}
                 />
                 <Input
-                  style={{ width: "47%", height: "40px" }}
+                  style={{ width: "200px" }}
                   type="date"
                   value={endDate || initialEndDate}
                   onChange={handleEndDateChange}
                 />
-              </div>
-            </Col>
-            <Col span={8}>
-              Khoảng tuổi:<br></br>
-              <Slider
-                style={{ width: "70%" }}
-                range
-                min={0}
-                max={100}
-                defaultValue={ageRange}
-                value={ageRange}
-                onChange={handleAgeRangeChange}
-              />
-            </Col>
-          </Row>
+              </Col>
+
+              <Col
+                span={24}
+                style={{
+                  display: "flex",
+                  marginTop: "30px",
+                }}
+              >
+                <label>Khoảng tuổi:</label>
+                <Slider
+                  style={{ width: "400px", marginLeft: "15px" }}
+                  range
+                  min={0}
+                  max={100}
+                  defaultValue={ageRange}
+                  value={ageRange}
+                  onChange={handleAgeRangeChange}
+                />
+              </Col>
+            </Row>
+          </div>
+        </div>
+        <div>
+          <div className="box_btn_filter">
+            <Button
+              className="btn_filter"
+              type="submit"
+              onClick={handleSubmitSearch}
+            >
+              Tìm kiếm
+            </Button>
+            <Button className="btn_clear" onClick={handleClear}>
+              Làm mới bộ lọc
+            </Button>
+          </div>
         </div>
       </div>
       <div className="account-table">
@@ -520,14 +524,16 @@ const CustomerManagement = () => {
             Danh sách khách hàng
           </span>
           <div style={{ marginLeft: "auto" }}>
-            <Link to="/create-customer-management">
-              <Button
-                type="primary"
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={() => setModalVisible(true)}
-              >
-                Thêm
-              </Button>
+            <Link to="/create-staff-management">
+              <Tooltip title="Thêm nhân viên">
+                <Button
+                  type="primary"
+                  icon={<FontAwesomeIcon icon={faPlus} />}
+                  onClick={() => setModalVisible(true)}
+                >
+                  Thêm
+                </Button>
+              </Tooltip>
             </Link>
           </div>
         </div>
@@ -537,7 +543,7 @@ const CustomerManagement = () => {
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 3 }}
-            className="customer-table"
+            className="account-table"
           />
         </div>
       </div>
