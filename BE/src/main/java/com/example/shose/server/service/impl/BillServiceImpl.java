@@ -1,4 +1,4 @@
-package com.example.shose.server.service.impl;
+savepackage com.example.shose.server.service.impl;
 
 
 import com.example.shose.server.dto.request.bill.BillRequest;
@@ -208,8 +208,10 @@ public class BillServiceImpl implements BillService {
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         }else{
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).employees(optional.get().getEmployees()).build());
+             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
 
         }
 
@@ -460,8 +462,12 @@ public class BillServiceImpl implements BillService {
 //            if(bill.get().getTotalMoney().compareTo(new BigDecimal(request.getTotalMoney())) > 0){
 //                throw new RestApiException(Message.ERROR_TOTALMONEY);
 //            }
-            PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
-            paymentsMethodRepository.save(paymentsMethod);
+            int checkPayMent = paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
+            if(checkPayMent == 0){
+                PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
+                paymentsMethodRepository.save(paymentsMethod);
+            }
+
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
@@ -486,6 +492,11 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public int countPayMentPostpaidByIdBill(String id) {
+        return paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
+    }
+
+    @Override
     public boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, String idEmployees) {
         request.getIds().forEach(id ->{
             Optional<Bill> bill = billRepository.findById(id);
@@ -503,6 +514,15 @@ public class BillServiceImpl implements BillService {
                 billHistory.setEmployees(account.get());
                 billHistoryRepository.save(billHistory);
             }
+            if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
+            bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
+            bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
+            bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
+        } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
+            bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+        }
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));

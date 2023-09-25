@@ -136,16 +136,13 @@ function FormSearch({
           </Col>
         </Row>
         <Row style={{ marginTop: "15px" }}>
-          <Col span={12}>
+          <Col span={24}>
             <Row>
-              <Col span={3} className="text">
-                {" "}
-              </Col>
-              <Col span={20}>
+              <Col span={24}>
                 <Row>
                   <Col span={12}>
                     <Row>
-                      <Col span={6}>Ngày bắt đầu</Col>
+                      <Col span={6} style={{margin: "auto"}}>Ngày bắt đầu:</Col>
                       <Col span={18}>
                         <Input
                           type="date"
@@ -161,7 +158,7 @@ function FormSearch({
                   </Col>
                   <Col span={12}>
                     <Row>
-                      <Col span={6}>Ngày kết thúc</Col>
+                      <Col span={6} style={{margin: "auto"}}>Ngày kết thúc:</Col>
                       <Col span={18}>
                         <Input
                           type="date"

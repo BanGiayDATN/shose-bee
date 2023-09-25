@@ -114,7 +114,31 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
   });
 
   useEffect(() => {
-    BillApi.fetchAll(fillter).then((res) => {
+    const data = {
+      startTimeString: dataFillter.startTimeString,
+      endTimeString: dataFillter.endTimeString,
+      status: [statusBill],
+      endDeliveryDateString: dataFillter.endDeliveryDateString,
+      startDeliveryDateString: dataFillter.startDeliveryDateString,
+      key: dataFillter.key,
+      employees: dataFillter.employees,
+      user: dataFillter.user,
+      phoneNumber: dataFillter.phoneNumber,
+      type: dataFillter.type,
+      page: 0,
+    }
+    if(statusBill == ""){
+      data.status = [
+        "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+      ]
+    }
+    BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
     });
   }, []);
@@ -122,6 +146,17 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
   useEffect(() => {
     var data = dataFillter
     dataFillter.status = [statusBill]
+    if(statusBill == ""){
+      data.status = [
+        "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+      ]
+    }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
     });

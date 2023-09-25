@@ -25,7 +25,6 @@ import java.util.Optional;
  */
 @Repository
 public interface BillRepository extends JpaRepository<Bill, String> {
-
         @Query(value = """
                 SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
                 LEFT JOIN account ac ON ac.id = bi.id_account
@@ -95,32 +94,34 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 """, nativeQuery = true)
         List<String> getAllBillTrash();
 
-        @Query(value = """
-                SELECT   
-                COUNT(DISTINCT b.id) AS totalBill,
-                SUM(b.total_money) AS totalBillAmount,
-                SUM(bd.quantity) AS totalProduct
-                FROM bill b JOIN bill_detail bd ON b.id = bd.id_bill
-                WHERE
-                b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
-                AND b.status_bill = 'THANH_CONG';
-                
-                                             
-                  """, nativeQuery = true)
+
+    @Query(value = """
+            SELECT   
+            COUNT(DISTINCT b.id) AS totalBill,
+            SUM(b.total_money) AS totalBillAmount,
+            SUM(bd.quantity) AS totalProduct
+            FROM bill b JOIN bill_detail bd ON b.id = bd.id_bill
+            WHERE
+            b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
+            AND b.status_bill = 'THANH_CONG';
+            
+                                         
+              """, nativeQuery = true)
 
         List<StatisticalMonthlyResponse> getAllStatisticalMonthly(@Param("startOfMonth") Long startOfMonth, @Param("endOfMonth") Long endOfMonth);
 
-        @Query(value = """
-                SELECT
-                    COUNT(id) AS totalBillToday,
-                    SUM(total_money) AS totalBillAmountToday
-                FROM
-                    bill
-                WHERE
-                    completion_date >= :currentDate
-                    AND status_bill like 'THANH_CONG';                       
-                              """, nativeQuery = true)
-        List<StatisticalDayResponse> getAllStatisticalDay(@Param("currentDate") Long currentDate);
+    @Query(value = """
+            SELECT
+                COUNT(id) AS totalBillToday,
+                SUM(total_money) AS totalBillAmountToday
+            FROM
+                bill
+            WHERE
+                completion_date >= :currentDate
+                AND status_bill like 'THANH_CONG';                       
+                          """, nativeQuery = true)
+    List<StatisticalDayResponse> getAllStatisticalDay(@Param("currentDate") Long currentDate);
+
 
         @Query(value = """
               SELECT
@@ -133,39 +134,38 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                               """, nativeQuery = true)
         List<StatisticalStatusBillResponse> getAllStatisticalStatusBill();
 
-        @Query(value = """
-       SELECT
-           i.name AS image,
-           p.name  AS nameProduct,
-           pd.price AS price,
-           SUM(bd.quantity) AS sold,
-           SUM(bd.price) AS sales
-       FROM bill_detail bd
-                JOIN bill b on bd.id_bill = b.id
-                JOIN product_detail pd on pd.id = bd.id_product_detail
-                JOIN product p on pd.id_product = p.id
-                JOIN (SELECT id_product_detail, MAX(id) AS max_image_id
-                      FROM image
-                      GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
-                LEFT JOIN image i ON max_images.max_image_id = i.id
-       WHERE bd.id_product_detail IS NOT NULL AND b.status_bill like 'THANH_CONG'
-       GROUP BY image, nameProduct, price
-       ORDER BY sold desc
-                                          """, nativeQuery = true)
-        List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct();
+    @Query(value = """
+   SELECT
+       i.name AS image,
+       p.name  AS nameProduct,
+       pd.price AS price,
+       SUM(bd.quantity) AS sold,
+       SUM(bd.price) AS sales
+   FROM bill_detail bd
+            JOIN bill b on bd.id_bill = b.id
+            JOIN product_detail pd on pd.id = bd.id_product_detail
+            JOIN product p on pd.id_product = p.id
+            JOIN (SELECT id_product_detail, MAX(id) AS max_image_id
+                  FROM image
+                  GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
+            LEFT JOIN image i ON max_images.max_image_id = i.id
+   WHERE bd.id_product_detail IS NOT NULL AND b.status_bill like 'THANH_CONG'
+   GROUP BY image, nameProduct, price
+   ORDER BY sold desc
+                                      """, nativeQuery = true)
+    List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct();
 
-        @Query(value = """
-        SELECT
-            completion_date AS billDate,
-            COUNT(*) AS totalBillDate
-        FROM
-            bill
-        WHERE   (completion_date >= :#{#req.startDate} AND completion_date <= :#{#req.endDate} )
-            AND (status_bill like 'THANH_CONG')
-        GROUP BY billDate
-        ORDER BY completion_date ASC;
-                              """, nativeQuery = true)
-        List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
-
-        Optional<Bill> findByCode(String code);
+    @Query(value = """
+    SELECT
+        completion_date AS billDate,
+        COUNT(*) AS totalBillDate
+    FROM
+        bill
+    WHERE   (completion_date >= :#{#req.startDate} AND completion_date <= :#{#req.endDate} )
+        AND (status_bill like 'THANH_CONG')
+    GROUP BY billDate
+    ORDER BY completion_date ASC;
+                          """, nativeQuery = true)
+    List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
+    Optional<Bill> findByCode(String code);
 }
