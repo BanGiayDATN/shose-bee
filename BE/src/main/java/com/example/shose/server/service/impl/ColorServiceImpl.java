@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.color.UpdateColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
 import com.example.shose.server.entity.Color;
 import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.service.ColorService;
@@ -40,7 +41,7 @@ public class ColorServiceImpl implements ColorService {
         }
         Color add = new Color();
         add.setName(req.getName());
-        add.setStatus(req.getStatus());
+        add.setStatus(Status.valueOf(req.getStatus()));
         add.setCode(req.getCode());
         return colorRepository.save(add);
     }
@@ -58,7 +59,7 @@ public class ColorServiceImpl implements ColorService {
         Color update = optional.get();
         update.setCode(req.getCode());
         update.setName(req.getName());
-        update.setStatus(req.getStatus());
+        update.setStatus(Status.valueOf(req.getStatus()));
         return colorRepository.save(update);
     }
 

@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.brand.UpdateBrandRequest;
 import com.example.shose.server.dto.response.BrandResponse;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.BrandRepository;
 import com.example.shose.server.service.BrandService;
@@ -40,7 +41,8 @@ public class BrandServiceImpl implements BrandService {
         }
         Brand add = new Brand();
         add.setName(req.getName());
-        add.setStatus(req.getStatus());
+        add.setStatus(Status.valueOf(req.getStatus()));
+
         return brandRepository.save(add);
     }
 
@@ -56,7 +58,7 @@ public class BrandServiceImpl implements BrandService {
         }
         Brand update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus());
+        update.setStatus(Status.valueOf(req.getStatus()));
         return brandRepository.save(update);
     }
 

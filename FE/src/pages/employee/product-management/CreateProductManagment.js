@@ -49,6 +49,7 @@ import { toast } from "react-toastify";
 import convert from "color-convert";
 import ModalAddListSizeProduct from "./modal/ModalAddListSizeProduct";
 import AddColorModal from "./modal/ModalAddListColor";
+import { GetProduct, SetProduct } from "../../../app/reducer/Product.reducer";
 
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
@@ -80,38 +81,30 @@ const CreateProductManagment = () => {
     setModalAddSize(false);
   };
 
-  const [listMaterial, setListMaterial] = useState([]);
-  const [listCategory, setListCategory] = useState([]);
-  const [listBrand, setListBrand] = useState([]);
   const [listProduct, setListProduct] = useState([]);
-  const [listSole, setListSole] = useState([]);
 
   const getList = () => {
-    ProductApi.fetchAll().then((res) => {
+    ProductApi.fetchAllByName().then((res) => {
       setListProduct(res.data.data);
     });
     MaterialApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListMaterial(res.data.data);
       dispatch(SetMaterial(res.data.data));
     });
     CategoryApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListCategory(res.data.data);
       dispatch(SetCategory(res.data.data));
     });
     SoleApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListSole(res.data.data);
       dispatch(SetSole(res.data.data));
     });
     BrandApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListBrand(res.data.data);
       dispatch(SetBrand(res.data.data));
     });
   };
@@ -125,6 +118,7 @@ const CreateProductManagment = () => {
   };
 
   const renderOptions = (nameList) => {
+    console.log(nameList);
     return nameList.map((product, index) => ({
       key: `${product}-${index}`,
       value: product,
@@ -305,21 +299,6 @@ const CreateProductManagment = () => {
   useEffect(() => {
     getList();
   }, []);
-
-  useEffect(() => {
-    if (
-      dataSole != null ||
-      dataBrand != null ||
-      dataCategory != null ||
-      dataMaterial != null ||
-      dataSize != null
-    ) {
-      setListSole(dataSole);
-      setListCategory(dataCategory);
-      setListMaterial(dataMaterial);
-      setListBrand(dataBrand);
-    }
-  }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
 
   const columns = [
     {
@@ -657,6 +636,11 @@ const CreateProductManagment = () => {
                           "Không được chỉ nhập khoảng trắng"
                         );
                       }
+                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                        return Promise.reject(
+                          "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                        );
+                      }
                       return Promise.resolve();
                     },
                   },
@@ -667,9 +651,9 @@ const CreateProductManagment = () => {
                   placeholder="Nhập tên sản phẩm"
                   onSearch={handleSearch}
                   onSelect={(value) => {
+                    handleProductNameChange(value);
                     setSelectedProduct(value);
-                    setProductNameValid(true);
-                    form.validateFields(["productId"]);
+                    handleUploadTableData();
                   }}
                   value={selectedProduct}
                 >
@@ -677,9 +661,18 @@ const CreateProductManagment = () => {
                     className="form-input"
                     style={{ fontWeight: "bold" }}
                     onChange={(e) => {
-                      handleProductNameChange(e.target.value);
-                      setSelectedProduct(e.target.value);
+                      handleProductNameChange(e.target.value.trim());
+                      setSelectedProduct(e.target.value.trim());
                       handleUploadTableData();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === " " && e.target.value === "") {
+                        e.preventDefault();
+                        const inputValue = e.target.value.replace(/\s/g, "");
+                        handleProductNameChange(inputValue);
+                        setSelectedProduct(inputValue);
+                        handleUploadTableData();
+                      }
                     }}
                   />
                 </AutoComplete>
@@ -707,6 +700,12 @@ const CreateProductManagment = () => {
                   rows={7}
                   placeholder="Nhập mô tả sản phẩm"
                   className="form-textarea-product "
+                  onKeyDown={(e) => {
+                    if (e.key === " " && e.target.value === "") {
+                      e.preventDefault();
+                      e.target.value.replace(/\s/g, "");
+                    }
+                  }}
                 />
               </Form.Item>
               <br />
@@ -722,7 +721,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn thương hiệu">
-                      {listBrand.map((brand, index) => (
+                      {dataBrand.map((brand, index) => (
                         <Option key={index} value={brand.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {brand.name}
@@ -784,7 +783,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn chất liệu">
-                      {listMaterial.map((material, index) => (
+                      {dataMaterial.map((material, index) => (
                         <Option key={index} value={material.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {material.name}
@@ -816,7 +815,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn đế giày">
-                      {listSole.map((sole, index) => (
+                      {dataSole.map((sole, index) => (
                         <Option key={index} value={sole.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {sole.name}
@@ -886,7 +885,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn thể loại">
-                      {listCategory.map((category, index) => (
+                      {dataCategory.map((category, index) => (
                         <Option key={index} value={category.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {category.name}

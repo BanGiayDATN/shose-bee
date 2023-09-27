@@ -202,7 +202,7 @@ const CategoryManagement = () => {
               <Input
                 placeholder="Tìm kiếm"
                 type="text"
-                style={{ width: "50%", marginLeft: "10px" , height:"40px"}}
+                style={{ width: "50%", marginLeft: "10px", height: "40px" }}
                 name="keyword"
                 value={searchCategory.keyword}
                 onChange={handleKeywordChange}
@@ -249,12 +249,12 @@ const CategoryManagement = () => {
           <span style={{ fontSize: "18px", fontWeight: "500" }}>
             Danh sách thể loại
           </span>
-          <div style={{ marginLeft: "auto" , marginRight:"3%" }}>
+          <div style={{ marginLeft: "auto", marginRight: "3%" }}>
             <Button
               type="primary"
               icon={<FontAwesomeIcon icon={faPlus} />}
               onClick={() => setModalVisible(true)}
-              style={{height:"40px"}}
+              style={{ height: "40px" }}
             >
               Thêm
             </Button>
@@ -265,7 +265,7 @@ const CategoryManagement = () => {
             dataSource={listCategoryWithStt}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="category-table"
           />
         </div>
