@@ -50,17 +50,16 @@ const ModalUpdateBrand = ({ visible, id, onCancel }) => {
         });
       })
       .then((trimmedValues) => {
-        form.resetFields();
         BrandApi.update(id, trimmedValues).then((res) => {
           dispatch(UpdateBrand(res.data.data));
           toast.success("Cập nhật thành công");
           onCancel();
+          form.resetFields();
         });
-        form.resetFields();
       })
       .catch((error) => {
-        toast.error("Cập nhật thất bại");
-        console.log("Validation failed:", error);
+        toast.error(error.response.data.message);
+        console.log("Create failed:", error);
       });
   };
 
@@ -90,6 +89,19 @@ const ModalUpdateBrand = ({ visible, id, onCancel }) => {
           rules={[
             { required: true, message: "Vui lòng nhập tên thương hiệu" },
             { max: 50, message: "Tên thương hiệu tối đa 50 ký tự" },
+            {
+              validator: (_, value) => {
+                if (value && value.trim() === "") {
+                  return Promise.reject("Không được chỉ nhập khoảng trắng");
+                }
+                if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                  return Promise.reject(
+                    "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                  );
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input

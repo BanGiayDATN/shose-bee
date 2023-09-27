@@ -2359,7 +2359,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
               <Button
                 type="primary"
-                style={{ backgroundColor: "black", fontWeight: "500" }}
+                style={{ backgroundColor: "black", fontWeight: "500" , height:"40px"}}
                 onClick={(e) => orderBill(e)}
               >
                 {isOpenDelivery == true

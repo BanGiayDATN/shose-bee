@@ -231,7 +231,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Transactional
     public List<UpdateQuantityAndPrice> updateList(List<UpdateQuantityAndPrice> requestData) {
         List<ProductDetail> detailList = new ArrayList<>();
-        requestData.parallelStream().forEach(a -> {
+        requestData.stream().forEach(a -> {
             Optional<ProductDetail> detailOptional = productDetailRepository.findById(a.getId());
             System.out.println(detailOptional.get().getId());
             if (!detailOptional.isPresent()) {
@@ -291,7 +291,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         Product product = productRepository.getOneByName(productId);
         if (product == null) {
             product = new Product();
-            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
+            product.setCode(new RandomNumberGenerator().randomToString("SP", 2000000000));
             product.setName(productId);
             product.setStatus(Status.DANG_SU_DUNG);
             productRepository.save(product);

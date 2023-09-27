@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.material.UpdateMaterialRequest;
 import com.example.shose.server.dto.response.MaterialResponse;
 import com.example.shose.server.entity.Material;
 import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.MaterialRepository;
 import com.example.shose.server.service.MaterialService;
@@ -41,7 +42,7 @@ public class MaterialServiceImpl implements MaterialService {
         }
         Material add = new Material();
         add.setName(req.getName());
-        add.setStatus(req.getStatus());
+        add.setStatus(Status.valueOf(req.getStatus()));
         return materialRepository.save(add);
     }
 
@@ -58,7 +59,7 @@ public class MaterialServiceImpl implements MaterialService {
 
         Material update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus());
+        update.setStatus(Status.valueOf(req.getStatus()));
         return materialRepository.save(update);
     }
 
