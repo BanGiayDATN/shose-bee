@@ -12,6 +12,7 @@ import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.CategoryRepository;
 import com.example.shose.server.service.CategoryService;
 import jakarta.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category add = new Category();
         add.setName(req.getName());
-        add.setStatus(req.getStatus());
+        add.setStatus(Status.valueOf(req.getStatus()));
         return categoryRepository.save(add);
     }
 
@@ -66,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus());
+        update.setStatus(Status.valueOf(req.getStatus()));
         return categoryRepository.save(update);
     }
 

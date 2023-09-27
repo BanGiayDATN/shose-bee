@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.sole.UpdateSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.SoleService;
@@ -41,7 +42,7 @@ public class SoleServiceImpl implements SoleService {
             throw new RestApiException(Message.NAME_EXISTS);
         }
         Sole add = new Sole();
-        add.setStatus(req.getStatus());
+        add.setStatus(Status.valueOf(req.getStatus()));
         add.setName(req.getName());
         return soleRepository.save(add);
     }
@@ -58,7 +59,7 @@ public class SoleServiceImpl implements SoleService {
         }
         Sole update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus());
+        update.setStatus(Status.valueOf(req.getStatus()));
         return soleRepository.save(update);
     }
 

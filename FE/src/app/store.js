@@ -12,6 +12,7 @@ import AddressReducer from "./reducer/Address.reducer";
 import ProductDetailReducer from "./reducer/ProductDetail.reducer";
 import ColorReducer from "./reducer/Color.reducer";
 import VoucherReducer from "./reducer/Voucher.reducer";
+import ProductReducer from "./reducer/Product.reducer";
 export const store = configureStore({
   reducer: {
     category: CategoryReducer,
@@ -27,6 +28,7 @@ export const store = configureStore({
     productDetail: ProductDetailReducer,
     color: ColorReducer,
     voucher: VoucherReducer,
+    product: ProductReducer,
   },
 });
 
