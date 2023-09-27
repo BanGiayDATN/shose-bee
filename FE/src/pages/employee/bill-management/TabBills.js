@@ -5,10 +5,9 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 function TabBills({ statusBill, dataFillter, addNotify }) {
-
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
 
@@ -20,7 +19,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     });
     return formatter.format(value);
   };
-  
+
   const columns = [
     {
       title: "STT",
@@ -55,7 +54,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       },
     },
     {
-      title: <div className="title-product">Ngày tạo</div>,
+      title: "Ngày tạo",
       dataIndex: "createdDate",
       key: "createdDate",
       sorter: (a, b) => a.createdDate - b.createdDate,
@@ -65,27 +64,19 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       },
     },
     {
-      title: <div className="title-product">Tiền giảm</div>,
+      title: "Tiền giảm",
       dataIndex: "itemDiscount",
       key: "itemDiscount",
-      render: (itemDiscount) => (
-        <span>
-          {formatCurrency(itemDiscount) }
-        </span>
-      ),
+      render: (itemDiscount) => <span>{formatCurrency(itemDiscount)}</span>,
     },
     {
-      title: <div className="title-product">Tổng tiền</div>,
+      title: "Tổng tiền",
       dataIndex: "totalMoney",
       key: "totalMoney",
-      render: (totalMoney) => (
-        <span>
-          {formatCurrency(totalMoney) }
-        </span>
-      ),
+      render: (totalMoney) => <span>{formatCurrency(totalMoney)}</span>,
     },
     {
-      title: <div className="title-product">Thao Tác</div>,
+      title: "Thao Tác",
       dataIndex: "id",
       key: "actions",
       render: (id) => (
@@ -98,7 +89,6 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     },
   ];
 
- 
   const [fillter, setFillter] = useState({
     startTimeString: dataFillter.startTimeString,
     endTimeString: dataFillter.endTimeString,
@@ -126,17 +116,17 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       phoneNumber: dataFillter.phoneNumber,
       type: dataFillter.type,
       page: 0,
-    }
-    if(statusBill == ""){
+    };
+    if (statusBill == "") {
       data.status = [
         "CHO_XAC_NHAN",
-      "CHO_VAN_CHUYEN",
-      "VAN_CHUYEN",
-      "DA_THANH_TOAN",
-      "THANH_CONG",
-      "TRA_HANG",
-      "DA_HUY",
-      ]
+        "CHO_VAN_CHUYEN",
+        "VAN_CHUYEN",
+        "DA_THANH_TOAN",
+        "THANH_CONG",
+        "TRA_HANG",
+        "DA_HUY",
+      ];
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
@@ -144,18 +134,18 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
   }, []);
 
   useEffect(() => {
-    var data = dataFillter
-    dataFillter.status = [statusBill]
-    if(statusBill == ""){
+    var data = dataFillter;
+    dataFillter.status = [statusBill];
+    if (statusBill == "") {
       data.status = [
         "CHO_XAC_NHAN",
-      "CHO_VAN_CHUYEN",
-      "VAN_CHUYEN",
-      "DA_THANH_TOAN",
-      "THANH_CONG",
-      "TRA_HANG",
-      "DA_HUY",
-      ]
+        "CHO_VAN_CHUYEN",
+        "VAN_CHUYEN",
+        "DA_THANH_TOAN",
+        "THANH_CONG",
+        "TRA_HANG",
+        "DA_HUY",
+      ];
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
@@ -163,53 +153,57 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
   }, [dataFillter]);
 
   const convertString = (key) => {
-    return  key === ""
-    ? "Tất cả"
-    : key === "CHO_XAC_NHAN"
-    ? "Xác nhận"
-    : key === "CHO_VAN_CHUYEN"
-    ? "Vận chuyển"
-    : key === "VAN_CHUYEN"
-    ? "Xác nhận thanh Toán"
-    : key === "DA_THANH_TOAN" 
-    ? "Hoàn thành" 
-    : key === "THANH_CONG"
-    ? "Hoàn thành"
-    : "Hủy"
-  }
+    return key === ""
+      ? "Tất cả"
+      : key === "CHO_XAC_NHAN"
+      ? "Xác nhận"
+      : key === "CHO_VAN_CHUYEN"
+      ? "Vận chuyển"
+      : key === "VAN_CHUYEN"
+      ? "Xác nhận thanh Toán"
+      : key === "DA_THANH_TOAN"
+      ? "Hoàn thành"
+      : key === "THANH_CONG"
+      ? "Hoàn thành"
+      : "Hủy";
+  };
 
   const nextStatusBill = () => {
-    return  statusBill == "CHO_XAC_NHAN" ? 
-    "CHO_VAN_CHUYEN" : statusBill == "CHO_VAN_CHUYEN" ? 
-    "VAN_CHUYEN" :  statusBill == "VAN_CHUYEN" ? "DA_THANH_TOAN" :
-    statusBill == "DA_THANH_TOAN" ?
-    "THANH_CONG" : "HUY"
-  }
+    return statusBill == "CHO_XAC_NHAN"
+      ? "CHO_VAN_CHUYEN"
+      : statusBill == "CHO_VAN_CHUYEN"
+      ? "VAN_CHUYEN"
+      : statusBill == "VAN_CHUYEN"
+      ? "DA_THANH_TOAN"
+      : statusBill == "DA_THANH_TOAN"
+      ? "THANH_CONG"
+      : "HUY";
+  };
   const changeStatusBill = (e) => {
     Modal.confirm({
       title: "Xác nhận",
       content: `Bạn có đồng ý ${convertString(statusBill)} không?`,
       okText: "Đồng ý",
       cancelText: "Hủy",
-      onOk: async() => {
+      onOk: async () => {
         var data = {
           ids: dataIdCheck,
-          status: nextStatusBill()
-        }
-        await BillApi.changeStatusAllBillByIds(data).then(response =>{
-          if(response.data.data == true){
-            addNotify( {status: nextStatusBill() ,
-            quantity:dataIdCheck.length})
-            toast.success(`${convertString(statusBill)} thành công`)
+          status: nextStatusBill(),
+        };
+        await BillApi.changeStatusAllBillByIds(data).then((response) => {
+          if (response.data.data == true) {
+            addNotify({
+              status: nextStatusBill(),
+              quantity: dataIdCheck.length,
+            });
+            toast.success(`${convertString(statusBill)} thành công`);
           }
-        })
-        await  BillApi.fetchAll(fillter).then((res) => {
+        });
+        await BillApi.fetchAll(fillter).then((res) => {
           setDataBill(res.data.data);
         });
       },
-      onCancel: () => {
-       
-      },
+      onCancel: () => {},
     });
   };
 
@@ -232,7 +226,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
                 setDataIdCheck([]);
               }
             },
-            onSelect: ( keys, checked) => {
+            onSelect: (keys, checked) => {
               if (checked) {
                 setDataIdCheck([...dataIdCheck, keys.id]);
               } else {
@@ -248,16 +242,19 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
           className="bill-table"
         />
       </Row>
-      {statusBill != "" && statusBill != 'DA_HUY' && statusBill != 'THANH_CONG'? (
+      {statusBill != "" &&
+      statusBill != "DA_HUY" &&
+      statusBill != "THANH_CONG" ? (
         <Row style={{ width: "100%", marginTop: "15px" }} justify={"end"}>
           <Col span={3} style={{ marginRight: "10px" }}>
-            <Button onClick={(e) => changeStatusBill(e)}>{convertString(statusBill)}</Button>
+            <Button onClick={(e) => changeStatusBill(e)}>
+              {convertString(statusBill)}
+            </Button>
           </Col>
         </Row>
       ) : (
         <Row></Row>
       )}
-
     </div>
   );
 }

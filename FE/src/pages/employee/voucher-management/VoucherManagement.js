@@ -42,8 +42,9 @@ const VoucherManagement = () => {
       console.log(data);
     }
   }, [data]);
-  useEffect(() => { console.log(list);}, [list]);
-
+  useEffect(() => {
+    console.log(list);
+  }, [list]);
 
   useEffect(() => {
     loadData();
@@ -121,18 +122,21 @@ const VoucherManagement = () => {
     {
       title: "Số lượng tồn",
       dataIndex: "quantity",
+      align: "center",
       key: "quantity",
       sorter: (a, b) => a.quantity - b.quantity,
     },
     {
       title: "Giá trị giảm",
       dataIndex: "value",
+      align: "center",
       key: "value",
       sorter: (a, b) => a.value - b.value,
     },
     {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
+      align: "center",
       key: "startDate",
       sorter: (a, b) => a.startDate - b.startDate,
       render: (date) => dayjs(date).format("HH:mm:ss  DD-MM-YYYY "),
@@ -140,6 +144,7 @@ const VoucherManagement = () => {
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
+      align: "center",
       key: "endDate",
       sorter: (a, b) => a.endDate - b.endDate,
       render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
@@ -148,6 +153,7 @@ const VoucherManagement = () => {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
+      align: "center",
       sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
       render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
     },
@@ -155,6 +161,7 @@ const VoucherManagement = () => {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
+      align: "center",
       render: (text) => {
         const genderClass =
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
@@ -169,8 +176,9 @@ const VoucherManagement = () => {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
+      align: "center",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             type="primary"
             title="Chi tiết thể loại"

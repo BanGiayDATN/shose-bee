@@ -240,6 +240,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             ProductDetail detail = detailOptional.get();
             detail.setPrice(a.getPrice());
             detail.setQuantity(a.getQuantity());
+            detail.setStatus(Status.DANG_SU_DUNG);
             detailList.add(detail);
         });
         productDetailRepository.saveAll(detailList);

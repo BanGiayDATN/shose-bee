@@ -1,6 +1,7 @@
 .title_category {
   font-size: 25px;
-  font-weight: 500;
+  font-weight: bold;
+  
 }
 
 .filter {
@@ -93,5 +94,17 @@
   pointer-events: none;
 }
 
-
+.custom-header-row {
+  background-color: #e6630b;
+  color: #fff;
+}
   
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background-color: #e4641a;
+  color: white;
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th:hover {
+  background-color: #dad6cc;
+  color: rgb(153, 124, 8);
+}

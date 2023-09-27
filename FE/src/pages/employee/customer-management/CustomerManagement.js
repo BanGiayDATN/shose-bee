@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider, Row, Col, Modal, Tooltip } from "antd";
+import {
+  Input,
+  Button,
+  Select,
+  Table,
+  Slider,
+  Row,
+  Col,
+  Modal,
+  Tooltip,
+} from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-customer.css";
 import { CustomerApi } from "../../../api/employee/account/customer.api";
@@ -324,6 +334,10 @@ const CustomerManagement = () => {
       ),
     },
   ];
+
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
   const columnsAddress = [
     {
       title: "STT",
@@ -524,8 +538,8 @@ const CustomerManagement = () => {
             Danh sách khách hàng
           </span>
           <div style={{ marginLeft: "auto" }}>
-            <Link to="/create-staff-management">
-              <Tooltip title="Thêm nhân viên">
+            <Link to="/create-customer-management">
+              <Tooltip title="Thêm khách hàng">
                 <Button
                   type="primary"
                   icon={<FontAwesomeIcon icon={faPlus} />}
@@ -542,8 +556,9 @@ const CustomerManagement = () => {
             dataSource={listaccount}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="account-table"
+            rowClassName={getRowClassName}
           />
         </div>
       </div>
@@ -586,8 +601,9 @@ const CustomerManagement = () => {
             dataSource={listAddress}
             rowKey="id"
             columns={columnsAddress}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="customer-table"
+            rowClassName={getRowClassName}
           />
         </Row>
       </Modal>

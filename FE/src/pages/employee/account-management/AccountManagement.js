@@ -197,6 +197,10 @@ const AccountManagement = () => {
     filterByAgeRange(ageRange[0], ageRange[1]);
   }, [ageRange, initialAccountList]);
 
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
+
   const columns = [
     {
       title: "STT",
@@ -436,8 +440,9 @@ const AccountManagement = () => {
             dataSource={listaccount}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="account-table"
+            rowClassName={getRowClassName}
           />
         </div>
       </div>

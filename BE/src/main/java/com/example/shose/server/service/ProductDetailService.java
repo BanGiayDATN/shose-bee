@@ -43,18 +43,17 @@ public interface ProductDetailService {
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 
-    //    ProductDetailResponse findByIdProductDetail(String id);
     List<GetProductDetailByCategory> GetProductDetailByCategory(String id);
+
     Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable);
+
     Page<GetProductDetail> getProductDetailNew(Pageable pageable);
+
     Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     List<ProductDetailReponse> findAllByIdProduct(String id);
 
-//    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
+    GetDetailProductOfClient getDetailProductOfClient(String id);
 
-    GetDetailProductOfClient  getDetailProductOfClient(String id);
-
-//    GetProductDetailInCart getProductDetailInCart()
-List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);
+    List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);
 }

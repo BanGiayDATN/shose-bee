@@ -51,8 +51,6 @@ const PromotionManagement = () => {
     loadData();
   }, [showData, formDataSearch]);
 
- 
-
   const closeModal = () => {
     setModal(false);
     setShowDetail(false);
@@ -90,16 +88,16 @@ const PromotionManagement = () => {
   const detailPromotion = (id) => {
     PromotionApi.getOne(id).then(
       (res) => {
-        const  getDetailPromotion = res.data.data
+        const getDetailPromotion = res.data.data;
         setFormData({
           name: getDetailPromotion.name,
-          code:getDetailPromotion.code,
+          code: getDetailPromotion.code,
           value: getDetailPromotion.value,
           startDate: dayjs(getDetailPromotion.startDate),
           endDate: dayjs(getDetailPromotion.endDate),
           status: getDetailPromotion.status,
           createdDate: dayjs(getDetailPromotion.createdDate),
-        })
+        });
       },
       (err) => console.log(err)
     );
@@ -129,6 +127,7 @@ const PromotionManagement = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      align: "center",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -147,6 +146,7 @@ const PromotionManagement = () => {
     {
       title: "Giá trị giảm",
       dataIndex: "value",
+      align: "center",
       key: "value",
       sorter: (a, b) => a.value - b.value,
       render: (value) => `${value}%`,
@@ -154,6 +154,7 @@ const PromotionManagement = () => {
     {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
+      align: "center",
       key: "startDate",
       sorter: (a, b) => a.startDate - b.startDate,
       render: (date) => dayjs(date).format("HH:mm:ss  DD-MM-YYYY "),
@@ -161,6 +162,7 @@ const PromotionManagement = () => {
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
+      align: "center",
       key: "endDate",
       sorter: (a, b) => a.endDate - b.endDate,
       render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
@@ -169,6 +171,7 @@ const PromotionManagement = () => {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
+      align: "center",
       sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
       render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
     },
@@ -176,6 +179,7 @@ const PromotionManagement = () => {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
+      align: "center",
       render: (text) => {
         const genderClass =
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
@@ -191,7 +195,7 @@ const PromotionManagement = () => {
       dataIndex: "hanhDong",
       key: "hanhDong",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             type="primary"
             title="Chi tiết thể loại"
@@ -237,6 +241,7 @@ const PromotionManagement = () => {
       type: "number",
       label: "Giá trị giảm",
       text: "giá trị giảm",
+      align: "center",
       class: "input-form-promotion",
       formatter: (value) => `${value}%`,
     },
@@ -245,6 +250,7 @@ const PromotionManagement = () => {
       type: "date",
       label: "Ngày bắt đầu",
       text: "ngày bắt đầu",
+      align: "center",
       class: "input-form-promotion",
     },
     {
@@ -252,6 +258,7 @@ const PromotionManagement = () => {
       type: "date",
       label: "Ngày kết thúc",
       text: "ngày kết thúc",
+      align: "center",
       class: "input-form-promotion",
     },
     {
@@ -263,6 +270,7 @@ const PromotionManagement = () => {
         { value: "KHONG_SU_DUNG", label: "Hết hạn" },
       ],
       text: "trạng thái",
+      align: "center",
       class: "input-form-promotion",
     },
     {
@@ -270,6 +278,7 @@ const PromotionManagement = () => {
       type: "date",
       label: "Ngày tạo",
       text: "ngày tạo",
+      align: "center",
       hidden: true,
       class: "input-form-promotion",
     },
@@ -295,6 +304,7 @@ const PromotionManagement = () => {
       type: "number",
       label: "Giá trị giảm",
       class: "input-search",
+      align: "center",
       placeholder: "Tìm kiếm",
       formatter: (value) => `${value}%`,
     },
@@ -302,6 +312,7 @@ const PromotionManagement = () => {
       name: "status",
       type: "select",
       label: "Trạng thái",
+      align: "center",
       options: [
         { value: "DANG_SU_DUNG", label: "Còn hạn" },
         { value: "KHONG_SU_DUNG", label: "Hết hạn" },
@@ -313,6 +324,7 @@ const PromotionManagement = () => {
       name: "startDate",
       type: "date",
       label: "Từ ngày",
+      align: "center",
       class: "input-search",
       placeholder: "Tìm kiếm",
     },
@@ -320,6 +332,7 @@ const PromotionManagement = () => {
       name: "endDate",
       type: "date",
       label: "Đến ngày",
+      align: "center",
       class: "input-search",
       placeholder: "Tìm kiếm",
     },
@@ -422,7 +435,6 @@ const PromotionManagement = () => {
       </h3>
       <hr></hr>
       <div className="manager-promotion">
-
         <Link to="/create-promotion-management">
           <Button title="Thêm khuyến mại" className="button-add">
             + Thêm
