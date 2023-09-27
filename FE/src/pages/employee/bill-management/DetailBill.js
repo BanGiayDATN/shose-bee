@@ -1115,7 +1115,7 @@ function DetailBill() {
       dataIndex: "employees",
       key: "employees",
       render: (employees) => {
-        return employees.user.fullName;
+        return employees?.user.fullName;
       },
     },
   ];
