@@ -259,7 +259,7 @@ const SoleManagement = () => {
             dataSource={listSoleWithStt}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="category-table"
           />
         </div>

@@ -15,5 +15,6 @@ public abstract class BaseMaterialRequest {
     @NotBlank(message = "Vui lòng không để trống")
     private String name;
 
-    private Status status;
+    @NotBlank(message = "Vui lòng không để trống")
+    private String status;
 }
