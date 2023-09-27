@@ -499,28 +499,28 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     const { value } = event.target;
     handleInputChangeSearch("keyword", value);
   };
-
-  const handleSubmitSearch = (event) => {
-    event.preventDefault();
+  const handleSubmitSearch = (value) => {
     const { keyword, status } = searchCustomer;
 
     CustomerApi.fetchAll({ status }).then((res) => {
       const filteredCustomers = res.data.data
-        .filter(
-          (customer) =>
-            customer.fullName.toLowerCase().includes(keyword) ||
-            customer.email.includes(keyword) ||
+        .filter((customer) => {
+          const toKeyword = keyword.toLowerCase();
+          const fullName = customer.fullName.toLowerCase();
+          return (
+            fullName.includes(toKeyword) ||
             customer.phoneNumber.includes(keyword)
-        )
+          );
+        })
         .map((customer, index) => ({
           ...customer,
           stt: index + 1,
         }));
       setListaccount(filteredCustomers);
-      // dispatch(SetCustomer(filteredCustomers));
       setDataCustom(filteredCustomers);
     });
   };
+
   const columnsAccount = [
     {
       title: "STT",
@@ -741,8 +741,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const columnsPayments = [
     {
       title: <div className="title-product">STT</div>,
-      key:"index",
-      render: ((value, item, index) =>   index + 1)
+      key: "index",
+      render: (value, item, index) => index + 1,
     },
     {
       title: <div className="title-product">Mã giao dịch</div>,

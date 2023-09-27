@@ -29,4 +29,6 @@ public abstract class BaseCustomerRequest {
 
     private Integer points;
 
+    private String citizenIdentity;
+
 }

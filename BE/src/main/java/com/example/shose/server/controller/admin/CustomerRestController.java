@@ -58,6 +58,7 @@ public class CustomerRestController {
         customerRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
         customerRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
         customerRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
+        customerRequest.setCitizenIdentity(jsonObject.get("citizenIdentity").getAsString());
 
         // add địa chỉ
         CreateAddressRequest addressRequest = new CreateAddressRequest();
@@ -93,7 +94,7 @@ public class CustomerRestController {
         customerRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
         customerRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
         customerRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
-
+        customerRequest.setCitizenIdentity(jsonObject.get("citizenIdentity").getAsString());
         // update địa chỉ
         UpdateAddressRequest addressRequest = new UpdateAddressRequest();
         addressRequest.setLine(jsonObject.get("line").getAsString());
