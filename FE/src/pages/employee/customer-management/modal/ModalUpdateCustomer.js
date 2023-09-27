@@ -397,11 +397,25 @@ const ModalUpdateCustomer = ({ visible }) => {
                     label="Tên khách hàng"
                     name="fullName"
                     rules={[
+                      { required: true, message: "Vui lòng nhập tên" },
                       {
-                        required: true,
-                        message: "Vui lòng nhập tên khách hàng",
+                        validator: (_, value) => {
+                          if (value && value[0] === " ") {
+                            return Promise.reject(
+                              "Tên không được nhập khoảng trắng"
+                            );
+                          }
+                          if (value.length > 50) {
+                            return Promise.reject(
+                              "Tên khách hàng tối đa 50 ký tự"
+                            );
+                          }
+                          if (/\d/.test(value)) {
+                            return Promise.reject("Tên không được chứa số");
+                          }
+                          return Promise.resolve();
+                        },
                       },
-                      { max: 30, message: "Tên khách hàng tối đa 30 ký tự" },
                     ]}
                   >
                     <Input
