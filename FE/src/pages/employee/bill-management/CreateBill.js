@@ -995,8 +995,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     {
       title: "STT",
       dataIndex: "stt",
-      key: "stt",
-      sorter: (a, b) => a.stt - b.stt,
+      key: "index",
+      render: ((value, item, index) =>   index + 1)
     },
     {
       title: "Mã ",
@@ -1109,13 +1109,18 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const handleQuantityChange = (value, record) => {
     // Ensure the value is at least 1
-    const newQuantity = Math.max(value, 1);
-    const updatedListSole = products.map((item) =>
-      item.idSizeProduct === record.idSizeProduct
-        ? { ...item, quantity: newQuantity }
-        : item
-    );
-    setProducts(updatedListSole);
+        var max = products.find((item) => item.idSizeProduct === record.idSizeProduct)?.maxQuantity;
+         if (!Number.isInteger(value)) {
+        }else if (value > max) {
+        }else{
+          const newQuantity = Math.max(value, 1);
+          const updatedListSole = products.map((item) =>
+            item.idSizeProduct === record.idSizeProduct
+              ? { ...item, quantity: newQuantity }
+              : item
+          );
+          setProducts(updatedListSole);
+        }
   };
 
   const handleQuantityIncrease = (record) => {
@@ -1463,6 +1468,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     formCheckCodeVnPay.resetFields();
   };
 
+  function checkQuantity(input) {
+    let max = input.getAttribute("max");
+     if (!Number.isInteger(input.value)) {
+        input.value = input.id;
+    }else if (input.value > max) {
+        input.value = input.id;
+    }
+}
   // open modal when payment vnpay
   return (
     <div style={{ width: "100%" }}>
@@ -1685,8 +1698,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     max={item.maxQuantity}
                     style={{ margin: "0 5px" }}
                     value={item.quantity}
-                    onChange={(value) => handleQuantityChange(value, item)}
+                    onChange={(value) => {handleQuantityChange(value, item)}}
                   />
+
                   <Button
                     onClick={() => handleQuantityIncrease(item)}
                     style={{ margin: "0 10px 0 0" }}
