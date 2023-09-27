@@ -87,7 +87,8 @@ public class CustomerServiceImpl implements CustomerService {
                 .status(request.getStatus())
                 .dateOfBirth(request.getDateOfBirth())
                 .gender(request.getGender())
-                .points(0) // điểm khi tạo mới max định 0
+                .points(0)
+                .citizenIdentity(request.getCitizenIdentity())
                 .avata(urlImage) // đường dẫn ảnh từ url
                 .build();
         userReposiory.save(user); // add user vào database
@@ -147,6 +148,7 @@ public class CustomerServiceImpl implements CustomerService {
         user.setGender(request.getGender());
         user.setStatus(request.getStatus());
         user.setPoints(0);
+        user.setCitizenIdentity(request.getCitizenIdentity());
         user.setAvata(urlImage);
         user.setDateOfBirth(request.getDateOfBirth());
 

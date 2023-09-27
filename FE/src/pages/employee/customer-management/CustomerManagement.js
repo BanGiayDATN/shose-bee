@@ -82,7 +82,6 @@ const CustomerManagement = () => {
       const filteredCustomers = res.data.data.filter(
         (customer) =>
           customer.fullName.includes(keyword) ||
-          customer.email.includes(keyword) ||
           customer.phoneNumber.includes(keyword)
       );
       setListaccount(filteredCustomers);
@@ -90,18 +89,19 @@ const CustomerManagement = () => {
     });
   }, [searchCustomer.status]);
 
-  const handleSubmitSearch = (event) => {
-    event.preventDefault();
+  const handleSubmitSearch = (value) => {
     const { keyword, status } = searchCustomer;
 
     CustomerApi.fetchAll({ status }).then((res) => {
       const filteredCustomers = res.data.data
-        .filter(
-          (customer) =>
-            customer.fullName.toLowerCase().includes(keyword) ||
-            customer.email.includes(keyword) ||
+        .filter((customer) => {
+          const toKeyword = keyword.toLowerCase();
+          const fullName = customer.fullName.toLowerCase();
+          return (
+            fullName.includes(toKeyword) ||
             customer.phoneNumber.includes(keyword)
-        )
+          );
+        })
         .map((customer, index) => ({
           ...customer,
           stt: index + 1,
@@ -257,10 +257,10 @@ const CustomerManagement = () => {
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      sorter: (a, b) => a.email.localeCompare(b.email),
+      title: "CCCD",
+      dataIndex: "citizenIdentity",
+      key: "citizenIdentity",
+      sorter: (a, b) => a.citizenIdentity.localeCompare(b.citizenIdentity),
     },
     {
       title: "Số điện thoại",
@@ -273,14 +273,14 @@ const CustomerManagement = () => {
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       sorter: (a, b) => a.dateOfBirth - b.dateOfBirth,
-      render: (date) => moment(date).format("DD-MM-YYYY"),
+      render: (date) => moment(date).format("DD/MM/YYYY"),
     },
-    {
-      title: "Điểm",
-      dataIndex: "points",
-      key: "points",
-      sorter: (a, b) => a.points.localeCompare(b.points),
-    },
+    // {
+    //   title: "Điểm",
+    //   dataIndex: "points",
+    //   key: "points",
+    //   sorter: (a, b) => a.points.localeCompare(b.points),
+    // },
     {
       title: "Trạng Thái",
       dataIndex: "status",
