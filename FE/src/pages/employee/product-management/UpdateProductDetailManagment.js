@@ -33,11 +33,12 @@ import { Option } from "antd/es/mentions";
 import "./style-product.css";
 import ModalQRScanner from "./modal/ModalQRScanner";
 import { toast } from "react-toastify";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import ModalUpdateProductDetail from "./modal/ModalUpdateProductDetail";
 
 const UpdateProductDetailManagment = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Bộ lọc
   const [listMaterial, setListMaterial] = useState([]);
@@ -410,20 +411,14 @@ const UpdateProductDetailManagment = () => {
         console.log(extractedDetails);
         const formData = new FormData();
         formData.append("data", extractedDetails);
-        axios
-          .put(
-            `http://localhost:8080/admin/product-detail/list-data`,
-            extractedDetails
-          )
-          .then((response) => {
+        ProducDetailtApi.updateListProduct(extractedDetails).then(
+          (response) => {
             console.log(response.data);
             setSelectedRowKeys([]);
             setTemporarySelectedRowKeys([]);
-            window.location.href = `/product-detail-management/${id}`;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+            loadData();
+          }
+        );
       },
     });
   };

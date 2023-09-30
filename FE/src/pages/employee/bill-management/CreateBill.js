@@ -1938,12 +1938,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                               if (value && value.trim() === "") {
                                 return Promise.reject("Không được chỉ nhập khoảng trắng");
                               }
-                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
-                                return Promise.reject(
-                                  "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
-                                );
-                              }
-              
                               return Promise.resolve();
                             },
                           },
@@ -1982,12 +1976,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                               if (value && value.trim() === "") {
                                 return Promise.reject("Không được chỉ nhập khoảng trắng");
                               }
-                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
-                                return Promise.reject(
-                                  "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
-                                );
-                              }
-              
                               return Promise.resolve();
                             },
                           },

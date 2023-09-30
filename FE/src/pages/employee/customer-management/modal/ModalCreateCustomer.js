@@ -175,7 +175,6 @@ const ModalCreateCustomer = () => {
               navigate("/customer-management");
             })
             .catch((error) => {
-              toast.error(error.response.data.message);
               console.log("Create failed:", error);
             });
         }
@@ -330,7 +329,7 @@ const ModalCreateCustomer = () => {
               </Row>
               <Row gutter={[24, 8]}>
                 <Col span={10} style={{ marginLeft: "6%" }}>
-                <Form.Item
+                  <Form.Item
                     label="Tên khách hàng"
                     name="fullName"
                     rules={[
@@ -355,7 +354,10 @@ const ModalCreateCustomer = () => {
                       },
                     ]}
                   >
-                    <Input className="input-item" placeholder="Tên khách hàng" />
+                    <Input
+                      className="input-item"
+                      placeholder="Tên khách hàng"
+                    />
                   </Form.Item>
                   <Form.Item
                     label="Căn cước công dân"

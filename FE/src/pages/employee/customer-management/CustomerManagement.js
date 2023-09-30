@@ -334,6 +334,10 @@ const CustomerManagement = () => {
       ),
     },
   ];
+
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
   const columnsAddress = [
     {
       title: "STT",
@@ -552,8 +556,9 @@ const CustomerManagement = () => {
             dataSource={listaccount}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="account-table"
+            rowClassName={getRowClassName}
           />
         </div>
       </div>
@@ -596,8 +601,9 @@ const CustomerManagement = () => {
             dataSource={listAddress}
             rowKey="id"
             columns={columnsAddress}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="customer-table"
+            rowClassName={getRowClassName}
           />
         </Row>
       </Modal>

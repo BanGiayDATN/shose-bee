@@ -92,7 +92,6 @@ const DashBoard = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      width: "5%",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -104,7 +103,7 @@ const DashBoard = () => {
           <img
             src={text}
             alt="Ảnh sản phẩm"
-            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
+            style={{ width: "90px", borderRadius: "10%", height: "90px" }}
           />
         </div>
       ),
@@ -170,8 +169,9 @@ const DashBoard = () => {
   const dateMap = {};
   dataColumn.forEach((item) => {
     const date = new Date(Number(item.billDate));
-    const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-      }/${date.getFullYear()}`;
+    const formattedDate = `${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()}`;
 
     if (dateMap[formattedDate]) {
       dateMap[formattedDate] += item.totalBillDate;
@@ -325,7 +325,6 @@ const DashBoard = () => {
                       },
                       ticks: {
                         color: "#555", // Màu số trên trục x
-
                       },
                     },
                     y: {
@@ -345,7 +344,6 @@ const DashBoard = () => {
                       bottom: 20, // Khoảng cách từ biểu đồ đến phía dưới
                     },
                   },
-
                 }}
                 style={{ width: "1100px", height: "460px" }} // Kích thước của biểu đồ
               />

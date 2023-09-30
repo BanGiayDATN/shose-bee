@@ -596,7 +596,7 @@ public class BillServiceImpl implements BillService {
         addressRepository.save(address);
 
         Bill bill = Bill.builder()
-                .code(new RandomNumberGenerator().randomToString("Bill"))
+                .code(new RandomNumberGenerator().randomToString("HD"))
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())

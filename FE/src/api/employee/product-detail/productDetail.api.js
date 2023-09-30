@@ -51,4 +51,20 @@ export class ProducDetailtApi {
       data: data,
     });
   };
+
+  static addListProduct = (data) => {
+    return request({
+      method: "POST",
+      url: `/admin/product-detail`,
+      data: data,
+    });
+  };
+
+  static updateListProduct = (data) => {
+    return request({
+      method: "PUT",
+      url: `/admin/product-detail/list-data`,
+      data: data,
+    });
+  };
 }
