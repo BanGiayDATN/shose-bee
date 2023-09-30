@@ -703,11 +703,11 @@ public class BillServiceImpl implements BillService {
             voucherDetailRepository.save(voucherDetail);
         }
 
-//        Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
-//        for (BillDetailOnline x : request.getBillDetail()) {
-//            List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndProductDetail_Id(cart.getId(), x.getIdProductDetail());
-//            cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
-//        }
+        Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
+        for (BillDetailOnline x : request.getBillDetail()) {
+            List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndProductDetail_Id(cart.getId(), x.getIdProductDetail());
+            cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
+        }
         return "thanh toán ok";
     }
 
