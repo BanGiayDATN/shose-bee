@@ -56,7 +56,6 @@ const ModalUpdateSole = ({ visible, id, onCancel }) => {
             form.resetFields();
           })
           .catch((error) => {
-            toast.error(error.response.data.message);
             console.log("Validation failed:", error);
           });
       });

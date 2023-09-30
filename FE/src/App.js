@@ -53,6 +53,7 @@ import {
   GetPromotion,
 } from "../src/app/reducer/Promotion.reducer";
 import dayjs from "dayjs";
+import { GetLoading } from "./app/reducer/Loading.reducer";
 function App() {
   const dispatch = useAppDispatch();
   const [listVoucher, setListVoucher] = useState([]);
@@ -64,11 +65,8 @@ function App() {
     items.forEach((item) => {
       const endDate = dayjs.unix(item.endDate / 1000);
       const startDate = dayjs.unix(item.startDate / 1000);
-  
-      if (
-        endDate.isSame(now, 'second') ||
-        startDate.isSame(now, 'second')
-      ) {
+
+      if (endDate.isSame(now, "second") || startDate.isSame(now, "second")) {
         api(item.id)
           .then((res) => {
             dispatch(updateFunction(res.data.data));
@@ -84,13 +82,13 @@ function App() {
       setListVoucher(dataVoucher);
     }
   }, [dataVoucher]);
-  
+
   useEffect(() => {
     if (dataPromotion != null) {
       setListPromotion(dataPromotion);
     }
   }, [dataPromotion]);
-  
+
   useEffect(() => {
     VoucherApi.fetchAll("").then(
       (res) => {
@@ -100,7 +98,7 @@ function App() {
         console.log(err);
       }
     );
-  
+
     PromotionApi.fetchAll("").then(
       (res) => {
         setListPromotion(res.data.data);
@@ -110,28 +108,24 @@ function App() {
       }
     );
   }, []);
-  
+
   useEffect(() => {
     const intervalVoucher = setInterval(() => {
       updateItemList(listVoucher, VoucherApi.updateStatus, UpdateVoucher);
     }, 1000);
-  
+
     return () => clearInterval(intervalVoucher);
   }, [listVoucher]);
-  
+
   useEffect(() => {
     const intervalPromotion = setInterval(() => {
       updateItemList(listPromotion, PromotionApi.updateStatus, UpdatePromotion);
     }, 1000);
-  
+
     return () => clearInterval(intervalPromotion);
   }, [listPromotion]);
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setIsLoading(false); // Giả sử trang đã tải xong sau khi component hiển thị
-  }, []);
+  const isLoading = useAppSelector(GetLoading);
 
   return (
     <div className="App">

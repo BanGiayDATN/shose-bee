@@ -58,7 +58,6 @@ const ModalUpdateBrand = ({ visible, id, onCancel }) => {
         });
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
         console.log("Create failed:", error);
       });
   };
