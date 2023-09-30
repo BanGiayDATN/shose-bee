@@ -38,11 +38,12 @@ import { AddressApi } from "../../../api/customer/address/address.api";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
-  { id: 1, name: "Xác nhận", status: "CHO_XAC_NHAN" },
-  { id: 2, name: "Chờ vận chuyển", status: "CHO_VAN_CHUYEN" },
-  { id: 3, name: "Vận chuyển", status: "VAN_CHUYEN" },
-  { id: 4, name: "Thanh toán", status: "DA_THANH_TOAN" },
-  { id: 5, name: "Thành công", status: "THANH_CONG" },
+  { id: 2, name: "Chờ xác nhận", status: "CHO_XAC_NHAN" },
+  { id: 3, name: "Xác nhận", status: "XAC_NHAN" },
+  { id: 4, name: "Chờ vận chuyển", status: "CHO_VAN_CHUYEN" },
+  { id: 5, name: "Vận chuyển", status: "VAN_CHUYEN" },
+  { id: 6, name: "Thanh toán", status: "DA_THANH_TOAN" },
+  { id: 7, name: "Thành công", status: "THANH_CONG" },
 ];
 
 function DetailBill() {
@@ -91,10 +92,10 @@ function DetailBill() {
         (item) => item.status == res.data.data.statusBill
       );
       if (res.data.data.statusBill == "TRA_HANG") {
-        index = 6;
+        index = 7;
       }
       if (res.data.data.statusBill == "DA_HUY") {
-        index = 7;
+        index = 8;
       }
       dispatch(addStatusPresent(index));
     });
@@ -183,10 +184,10 @@ function DetailBill() {
             (item) => item.status == res.data.data.statusBill
           );
           if (res.data.data.statusBill == "TRA_HANG") {
-            index = 5;
+            index = 7;
           }
           if (res.data.data.statusBill == "DA_HUY") {
-            index = 6;
+            index = 8;
           }
           var history = {
             stt: billHistory.length + 1,
@@ -247,7 +248,7 @@ function DetailBill() {
             index = 7;
           }
           if (res.data.data.statusBill == "DA_HUY") {
-            index = 6;
+            index = 8;
           }
           dispatch(addStatusPresent(index));
         });
@@ -290,10 +291,10 @@ function DetailBill() {
               (item) => item.status == res.data.data.statusBill
             );
             if (res.data.data.statusBill == "TRA_HANG") {
-              index = 6;
+              index = 7;
             }
             if (res.data.data.statusBill == "DA_HUY") {
-              index = 7;
+              index = 8;
             }
             dispatch(addStatusPresent(index));
             console.log(index);
@@ -419,10 +420,10 @@ function DetailBill() {
               (item) => item.status == res.data.data.statusBill
             );
             if (res.data.data.statusBill == "TRA_HANG") {
-              index = 6;
+              index = 7;
             }
             if (res.data.data.statusBill == "DA_HUY") {
-              index = 7;
+              index = 8;
             }
             dispatch(addStatusPresent(index));
           });
@@ -549,10 +550,10 @@ function DetailBill() {
               (item) => item.status == res.data.data.statusBill
             );
             if (res.data.data.statusBill == "TRA_HANG") {
-              index = 6;
+              index = 7;
             }
             if (res.data.data.statusBill == "DA_HUY") {
-              index = 7;
+              index = 8;
             }
             dispatch(addStatusPresent(index));
           });
@@ -659,10 +660,10 @@ function DetailBill() {
                 (item) => item.status == res.data.data.statusBill
               );
               if (res.data.data.statusBill == "TRA_HANG") {
-                index = 6;
+                index = 7;
               }
               if (res.data.data.statusBill == "DA_HUY") {
-                index = 7;
+                index = 8;
               }
               dispatch(addStatusPresent(index));
             });
@@ -756,10 +757,10 @@ function DetailBill() {
               console.log(res.data.data.statusBill);
               console.log(index);
               if (res.data.data.statusBill == "TRA_HANG") {
-                index = 6;
+                index = 7;
               }
               if (res.data.data.statusBill == "DA_HUY") {
-                index = 7;
+                index = 8;
               }
               dispatch(addStatusPresent(index));
             });
@@ -991,10 +992,11 @@ function DetailBill() {
       render: (statusBill) => (
         <span>
           {statusBill === "TAO_HOA_DON"
-            ? "Chờ xác nhận"
+            ? "Hóa đơn chờ"
             : statusBill === "CHO_XAC_NHAN"
-
-            ? "Xác nhận"
+            ? " Chờ xác nhận"
+            : statusBill === "XAC_NHAN"
+            ? " Xác nhận"
             : statusBill === "CHO_VAN_CHUYEN"
             ? "Chờ vận chuyển"
             : statusBill === "VAN_CHUYEN"
@@ -1192,9 +1194,9 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    span={statusPresent < 5 ? 7 : 0}
+                    span={statusPresent < 6 ? 7 : 0}
                   >
-                    {statusPresent < 5  ? (
+                    {statusPresent < 6  ? (
                       <Button
                         type="primary"
                         className="btn btn-primary"
@@ -1356,6 +1358,20 @@ function DetailBill() {
                           required: true,
                           message: "Vui lòng nhập mô tả",
                         },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.trim() === "") {
+                              return Promise.reject("Không được chỉ nhập khoảng trắng");
+                            }
+                            if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                              return Promise.reject(
+                                "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                              );
+                            }
+            
+                            return Promise.resolve();
+                          },
+                        },
                       ]}
                     >
                       <TextArea
@@ -1398,6 +1414,20 @@ function DetailBill() {
                         {
                           required: true,
                           message: "Vui lòng nhập mô tả",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.trim() === "") {
+                              return Promise.reject("Không được chỉ nhập khoảng trắng");
+                            }
+                            if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                              return Promise.reject(
+                                "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                              );
+                            }
+            
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                     >
@@ -2045,6 +2075,20 @@ function DetailBill() {
                     required: true,
                     message: "Vui lòng nhập tên khách hàng",
                   },
+                  {
+                    validator: (_, value) => {
+                      if (value && value.trim() === "") {
+                        return Promise.reject("Không được chỉ nhập khoảng trắng");
+                      }
+                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                        return Promise.reject(
+                          "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                        );
+                      }
+      
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
                 <Input
@@ -2077,6 +2121,20 @@ function DetailBill() {
                     pattern:
                       "(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}",
                     message: "Vui lòng nhập đúng số điện thoại",
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (value && value.trim() === "") {
+                        return Promise.reject("Không được chỉ nhập khoảng trắng");
+                      }
+                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                        return Promise.reject(
+                          "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                        );
+                      }
+      
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >
@@ -2266,6 +2324,20 @@ function DetailBill() {
                   {
                     required: true,
                     message: "Vui lòng chọn Quận",
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (value && value.trim() === "") {
+                        return Promise.reject("Không được chỉ nhập khoảng trắng");
+                      }
+                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                        return Promise.reject(
+                          "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                        );
+                      }
+      
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >

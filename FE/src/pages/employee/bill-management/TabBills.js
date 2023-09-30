@@ -120,13 +120,14 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     if (statusBill == "") {
       data.status = [
         "CHO_XAC_NHAN",
-        "CHO_VAN_CHUYEN",
-        "VAN_CHUYEN",
-        "DA_THANH_TOAN",
-        "THANH_CONG",
-        "TRA_HANG",
-        "DA_HUY",
-      ];
+        "XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+      ]
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
@@ -138,14 +139,15 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     dataFillter.status = [statusBill];
     if (statusBill == "") {
       data.status = [
-        "CHO_XAC_NHAN",
-        "CHO_VAN_CHUYEN",
-        "VAN_CHUYEN",
-        "DA_THANH_TOAN",
-        "THANH_CONG",
-        "TRA_HANG",
-        "DA_HUY",
-      ];
+      "CHO_XAC_NHAN",
+      "XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+      ]
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
@@ -153,32 +155,31 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
   }, [dataFillter]);
 
   const convertString = (key) => {
-    return key === ""
-      ? "Tất cả"
-      : key === "CHO_XAC_NHAN"
-      ? "Xác nhận"
-      : key === "CHO_VAN_CHUYEN"
-      ? "Vận chuyển"
-      : key === "VAN_CHUYEN"
-      ? "Xác nhận thanh Toán"
-      : key === "DA_THANH_TOAN"
-      ? "Hoàn thành"
-      : key === "THANH_CONG"
-      ? "Hoàn thành"
-      : "Hủy";
-  };
+    return  key === ""
+    ? "Tất cả"
+    : key === "CHO_XAC_NHAN"
+    ? " xác nhận"
+    : key === "XAC_NHAN"
+    ? "Chờ vận chuyển"
+    : key === "CHO_VAN_CHUYEN"
+    ? " Vận chuyển"
+    : key === "VAN_CHUYEN"
+    ? "Xác nhận thanh Toán"
+    : key === "DA_THANH_TOAN" 
+    ? "Hoàn thành" 
+    : key === "THANH_CONG"
+    ? "Hoàn thành"
+    : "Hủy"
+  }
 
   const nextStatusBill = () => {
-    return statusBill == "CHO_XAC_NHAN"
-      ? "CHO_VAN_CHUYEN"
-      : statusBill == "CHO_VAN_CHUYEN"
-      ? "VAN_CHUYEN"
-      : statusBill == "VAN_CHUYEN"
-      ? "DA_THANH_TOAN"
-      : statusBill == "DA_THANH_TOAN"
-      ? "THANH_CONG"
-      : "HUY";
-  };
+    return  statusBill == "CHO_XAC_NHAN" ? 
+    "XAC_NHAN" : statusBill == "XAC_NHAN" ? 
+    "CHO_VAN_CHUYEN" : statusBill == "CHO_VAN_CHUYEN" ? 
+    "VAN_CHUYEN" :  statusBill == "VAN_CHUYEN" ? "DA_THANH_TOAN" :
+    statusBill == "DA_THANH_TOAN" ?
+    "THANH_CONG" : "HUY"
+  }
   const changeStatusBill = (e) => {
     Modal.confirm({
       title: "Xác nhận",
