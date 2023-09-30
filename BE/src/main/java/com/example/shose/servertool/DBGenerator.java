@@ -395,7 +395,7 @@ public class DBGenerator implements CommandLineRunner {
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000000"))
                 .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("11/09/2023"))
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
-                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.CHO_XAC_NHAN)
                 .employees(account2).account(account3)
                 .build();
 
