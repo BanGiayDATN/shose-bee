@@ -140,7 +140,7 @@ function FormSearch({
             <Row>
               <Col span={24}>
                 <Row>
-                  <Col span={12}>
+                  <Col span={10}>
                     <Row>
                       <Col span={6} style={{margin: "auto"}}>Ngày bắt đầu:</Col>
                       <Col span={18}>
@@ -156,7 +156,8 @@ function FormSearch({
                       </Col>
                     </Row>
                   </Col>
-                  <Col span={12}>
+                  <Col span={1}></Col>
+                  <Col span={11} style={{marginLeft: "17px"}}>
                     <Row>
                       <Col span={6} style={{margin: "auto"}}>Ngày kết thúc:</Col>
                       <Col span={18}>

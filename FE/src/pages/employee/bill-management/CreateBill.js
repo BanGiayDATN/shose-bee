@@ -1884,6 +1884,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                             required: true,
                             message: "Vui lòng nhập tên khách hàng",
                           },
+                          {
+                            validator: (_, value) => {
+                              if (value && value.trim() === "") {
+                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                              }
+                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                                return Promise.reject(
+                                  "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                                );
+                              }
+              
+                              return Promise.resolve();
+                            },
+                          },
                         ]}
                       >
                         <Input
@@ -1919,6 +1933,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                               "(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}",
                             message: "Vui lòng nhập đúng số điện thoại",
                           },
+                          {
+                            validator: (_, value) => {
+                              if (value && value.trim() === "") {
+                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                              }
+                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                                return Promise.reject(
+                                  "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                                );
+                              }
+              
+                              return Promise.resolve();
+                            },
+                          },
                         ]}
                       >
                         <Input
@@ -1948,6 +1976,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                           {
                             required: true,
                             message: "Vui lòng nhập địa chỉ",
+                          },
+                          {
+                            validator: (_, value) => {
+                              if (value && value.trim() === "") {
+                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                              }
+                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                                return Promise.reject(
+                                  "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                                );
+                              }
+              
+                              return Promise.resolve();
+                            },
                           },
                         ]}
                       >
