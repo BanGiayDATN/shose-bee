@@ -161,6 +161,7 @@ function BillManagement() {
   const listtab = [
     "",
     "CHO_XAC_NHAN",
+    "XAC_NHAN",
     "CHO_VAN_CHUYEN",
     "VAN_CHUYEN",
     "DA_THANH_TOAN",
@@ -173,6 +174,8 @@ function BillManagement() {
       ? "Tất cả"
       : key === "CHO_XAC_NHAN"
       ? "Chờ xác nhận"
+      : key === "XAC_NHAN"
+      ? "Xác nhận"
       : key === "CHO_VAN_CHUYEN"
       ? "Chờ vận chuyển"
       : key === "VAN_CHUYEN"

@@ -130,6 +130,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     if(statusBill == ""){
       data.status = [
         "CHO_XAC_NHAN",
+        "XAC_NHAN",
       "CHO_VAN_CHUYEN",
       "VAN_CHUYEN",
       "DA_THANH_TOAN",
@@ -148,7 +149,8 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     dataFillter.status = [statusBill]
     if(statusBill == ""){
       data.status = [
-        "CHO_XAC_NHAN",
+      "CHO_XAC_NHAN",
+      "XAC_NHAN",
       "CHO_VAN_CHUYEN",
       "VAN_CHUYEN",
       "DA_THANH_TOAN",
@@ -166,9 +168,11 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     return  key === ""
     ? "Tất cả"
     : key === "CHO_XAC_NHAN"
-    ? "Xác nhận"
+    ? " xác nhận"
+    : key === "XAC_NHAN"
+    ? "Chờ vận chuyển"
     : key === "CHO_VAN_CHUYEN"
-    ? "Vận chuyển"
+    ? " Vận chuyển"
     : key === "VAN_CHUYEN"
     ? "Xác nhận thanh Toán"
     : key === "DA_THANH_TOAN" 
@@ -180,6 +184,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
 
   const nextStatusBill = () => {
     return  statusBill == "CHO_XAC_NHAN" ? 
+    "XAC_NHAN" : statusBill == "XAC_NHAN" ? 
     "CHO_VAN_CHUYEN" : statusBill == "CHO_VAN_CHUYEN" ? 
     "VAN_CHUYEN" :  statusBill == "VAN_CHUYEN" ? "DA_THANH_TOAN" :
     statusBill == "DA_THANH_TOAN" ?
