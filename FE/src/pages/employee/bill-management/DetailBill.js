@@ -736,12 +736,12 @@ function DetailBill() {
     if (statusBill.actionDescription == "") {
       toast.error("Vui lòng nhập mô tả");
     } else {
-      if (
-        statusBill.totalMoney < bill.totalMoney &&
-        bill.statusBill == "VAN_CHUYEN" && paymentPostpaid != 0
-      ) {
-        toast.error("Số tiền thanh toán không đủ");
-      } else {
+      // if (
+      //   statusBill.totalMoney < bill.totalMoney &&
+      //   bill.statusBill == "VAN_CHUYEN" && paymentPostpaid != 0
+      // ) {
+      //   toast.error("Số tiền thanh toán không đủ");
+      // } else {
         Modal.confirm({
           title: "Xác nhận",
           content: "Bạn có đồng ý xác nhận thanh toán không?",
@@ -784,7 +784,7 @@ function DetailBill() {
           status: "THANH_TOAN",
         });
         form.resetFields();
-      }
+      
       setIsModalOpenChangeStatus(false);
     }
 
@@ -1261,7 +1261,7 @@ function DetailBill() {
                 form={form}
                 initialValues={initialValues}
               >
-                {bill.statusBill === "VAN_CHUYEN" && paymentPostpaid != 0? (
+                {/* {bill.statusBill === "VAN_CHUYEN" && paymentPostpaid != 0? (
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
                       <Col span={24} style={{ marginTop: "10px" }}>
@@ -1345,7 +1345,7 @@ function DetailBill() {
                   </div>
                 ) : (
                   <div></div>
-                )}
+                )} */}
                 <Row style={{ width: "100%" }}>
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
