@@ -468,9 +468,10 @@ public class BillServiceImpl implements BillService {
 //                PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
 //                paymentsMethodRepository.save(paymentsMethod);
 //            }
-            paymentsMethodRepository.updateAllByIdBill(id);
+            
 
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
+            paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
 
@@ -515,10 +516,9 @@ public class BillServiceImpl implements BillService {
             } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
-                paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
-
+                paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             }
             BillHistory billHistory = new BillHistory();
