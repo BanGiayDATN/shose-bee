@@ -16,7 +16,7 @@ import java.util.Optional;
  * @author Nguyễn Vinh
  */
 @Repository
-public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,String> {
+public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod, String> {
 
     List<PaymentsMethod> findAllByBill(Bill bill);
 
@@ -43,4 +43,11 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,S
             """, nativeQuery = true)
     int countPayMentPostpaidByIdBill(@Param("idBill") String idBill);
 
+    @Modifying
+    @Query(value = """
+                    UPDATE payments_method pa
+                    SET pa.status = 'THANH_TOAN'
+                    WHERE pa.id_bill = :idBill
+                    """, nativeQuery = true)
+    void updateAllByIdBill(@Param("idBill") String idBill);
 }
