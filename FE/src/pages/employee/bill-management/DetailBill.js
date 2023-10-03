@@ -1254,6 +1254,8 @@ function DetailBill() {
               open={isModalOpenChangeStatus}
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}
+                cancelText={"huỷ"}
+             okText=={"Xác nhận"}
             >
               <Form
                 onFinish={onFinish}
@@ -1396,6 +1398,8 @@ function DetailBill() {
                 open={isModalCanCelOpen}
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
+                  cancelText={"huỷ"}
+               okText=={"Xác nhận"}
               >
                 <Form
                   onFinish={onFinish}
@@ -1454,6 +1458,8 @@ function DetailBill() {
                 onCancel={handleCancel}
                 className="widthModal"
                 width={800}
+                cancelText={"huỷ"}
+               okText=={"Xác nhận"}
               >
                 <Table
                   dataSource={billHistory}
@@ -1923,6 +1929,8 @@ function DetailBill() {
         open={isModalPayMentOpen}
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
+        cancelText={"huỷ"}
+        okText=={"Xác nhận"}
       >
         <Form form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2054,6 +2062,8 @@ function DetailBill() {
         open={isModaBillOpen}
         onOk={handleOkBill}
         onCancel={handleCancelBill}
+          cancelText={"huỷ"}
+        okText=={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}></Row>
@@ -2360,6 +2370,8 @@ function DetailBill() {
         onOk={handleOkRefundProduct}
         onCancel={handleCancelRefundProduct}
         style={{ width: "800px" }}
+        cancelText={"huỷ"}
+        okText=={"Xác nhận"}
       >
         <Form initialValues={initialValues} ref={formRef} form={form}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2487,6 +2499,8 @@ function DetailBill() {
         onOk={handleOkUpdateProduct}
         onCancel={handleCancelUpdateProduct}
         style={{ width: "800px" }}
+        cancelText={"huỷ"}
+        okText=={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2627,6 +2641,8 @@ function DetailBill() {
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
         width={1000}
+        cancelText={"huỷ"}
+        okText=={"Xác nhận"}
       >
         <ModalAddProductDetail
           handleCancelProduct={handleCancelProduct}
