@@ -2568,6 +2568,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         onOk={handleOkAddress}
         className="account"
         onCancel={handleCancelAddress}
+        cancelText={"huỷ"}
+        okText=={"Xác nhận"}
       >
         <Row style={{ width: "100%" }}>
           <Col span={20}>
@@ -2680,6 +2682,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         open={isModalPayMentOpen}
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
+        cancelText={"huỷ"}
+        okText=={"Xác nhận"}
         width={650}
       >
         <Form form={form} ref={formRef}>
@@ -2861,6 +2865,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
+        cancelText={"huỷ"}
+        okText=={"Xác nhận"}
       >
         <Row style={{ width: "100%" }}>
           <Form
