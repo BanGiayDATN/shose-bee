@@ -763,7 +763,9 @@ function DetailBill() {
                 index = 8;
               }
               dispatch(addStatusPresent(index));
-            });
+            }).catch((error) =>{
+              toast.error(error.response.data.message);
+            })
             await PaymentsMethodApi.findByIdBill(id).then((res) => {
               dispatch(getPaymentsMethod(res.data.data));
             });
@@ -1255,7 +1257,7 @@ function DetailBill() {
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}
                 cancelText={"huỷ"}
-             okText=={"Xác nhận"}
+             okText={"Xác nhận"}
             >
               <Form
                 onFinish={onFinish}
@@ -1399,7 +1401,7 @@ function DetailBill() {
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
                   cancelText={"huỷ"}
-               okText=={"Xác nhận"}
+               okText={"Xác nhận"}
               >
                 <Form
                   onFinish={onFinish}
@@ -1459,7 +1461,7 @@ function DetailBill() {
                 className="widthModal"
                 width={800}
                 cancelText={"huỷ"}
-               okText=={"Xác nhận"}
+               okText={"Xác nhận"}
               >
                 <Table
                   dataSource={billHistory}
@@ -1930,7 +1932,7 @@ function DetailBill() {
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
         cancelText={"huỷ"}
-        okText=={"Xác nhận"}
+        okText={"Xác nhận"}
       >
         <Form form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2063,7 +2065,7 @@ function DetailBill() {
         onOk={handleOkBill}
         onCancel={handleCancelBill}
           cancelText={"huỷ"}
-        okText=={"Xác nhận"}
+        okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}></Row>
@@ -2371,7 +2373,7 @@ function DetailBill() {
         onCancel={handleCancelRefundProduct}
         style={{ width: "800px" }}
         cancelText={"huỷ"}
-        okText=={"Xác nhận"}
+        okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} ref={formRef} form={form}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2500,7 +2502,7 @@ function DetailBill() {
         onCancel={handleCancelUpdateProduct}
         style={{ width: "800px" }}
         cancelText={"huỷ"}
-        okText=={"Xác nhận"}
+        okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2642,7 +2644,7 @@ function DetailBill() {
         onCancel={handleCancelProduct}
         width={1000}
         cancelText={"huỷ"}
-        okText=={"Xác nhận"}
+        okText={"Xác nhận"}
       >
         <ModalAddProductDetail
           handleCancelProduct={handleCancelProduct}

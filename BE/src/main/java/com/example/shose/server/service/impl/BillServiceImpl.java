@@ -178,7 +178,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
 
         List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
-        billDetailResponse.parallelStream().forEach(item -> {
+        billDetailResponse.forEach(item -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
             if (!productDetail.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
