@@ -17,14 +17,15 @@ import { ProducDetailtApi } from "../../../api/employee/product-detail/productDe
 import ModalDetailProductManagment from "./ModalDetailProductManagment";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { Option } from "antd/es/mentions";
+import useDebounce from "../../custom-hook/useDebounce";
 
 const ProductManagement = () => {
   const [listProduct, setListProduct] = useState([]);
   const [modaleDetail, setModalDetail] = useState(false);
 
+
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    console.log(selectedValues);
     ProducDetailtApi.fetchAll(selectedValues).then((res) => {
       setListProduct(res.data.data);
     });
@@ -32,7 +33,6 @@ const ProductManagement = () => {
 
   // Xử lý làm mới bộ lọc
   const handleClear = () => {
-    console.log(selectedValues);
     setSelectedValues({
       keyword: "",
       status: "",
@@ -58,6 +58,7 @@ const ProductManagement = () => {
     }));
   };
 
+
   const handleChangeValueQuantity = (value) => {
     const [minQuantity, maxQuantity] = value;
 
@@ -68,6 +69,7 @@ const ProductManagement = () => {
     }));
   };
 
+
   const handleInputChangeSearch = (name, value) => {
     setSelectedValues((prevSearchCategory) => ({
       ...prevSearchCategory,
@@ -77,6 +79,7 @@ const ProductManagement = () => {
   const handleKeywordChange = (event) => {
     const { value } = event.target;
     handleInputChangeSearch("keyword", value);
+
   };
 
   const loadData = () => {
