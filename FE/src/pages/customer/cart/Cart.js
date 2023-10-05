@@ -7,7 +7,15 @@ import { toast } from "react-toastify";
 import { useCart } from "./CartContext";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTags } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHeader,
+  faHeart,
+  faHeartBroken,
+  faHeartCrack,
+  faHeartPulse,
+  faTags,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Row,
   Col,
@@ -17,13 +25,16 @@ import {
   Modal,
   Button,
   Radio,
+  Table,
+  Tooltip,
 } from "antd";
-import { DeleteOutlined, DownOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
 import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { CartDetailClientApi } from "./../../../api/customer/cartdetail/cartDetailClient.api";
 import dayjs from "dayjs";
+import { Header } from "antd/es/layout/layout";
 
 function Cart() {
   const idAccountLocal = localStorage.getItem("idAccount");
@@ -168,8 +179,6 @@ function Cart() {
   };
   const closeModalVoucher = () => {
     setModalVoucher(false);
-    // setVoucher(setDefaultVoucher);
-    // setSelectedItem({})
   };
   const openListSize = (item) => {
     setDetailProductOld(item);
@@ -189,7 +198,7 @@ function Cart() {
   const openListVoucher = (idAcccount) => {
     if (chooseItemCart.length === 0) {
       setVoucher(setDefaultVoucher);
-      toast.success("Vui lòng chọn sản phẩm trước khi nhập khuyến mại!", {
+      toast.warning("Vui lòng chọn sản phẩm trước khi nhập khuyến mại!", {
         autoClose: 3000,
       });
     } else {
@@ -324,30 +333,39 @@ function Cart() {
     setFormSearch(value);
   };
   const deleteItemCart = (itemOld) => {
-    const exist = chooseItemCart.find(
-      (item) => item.idProductDetail === itemOld.idProductDetail
-    );
-    if (!exist) {
-      if (idAccountLocal === null) {
-        const updatedCart = cart.filter(
-          (item) => item.idProductDetail !== itemOld.idProductDetail
+    Modal.confirm({
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn xóa sản phẩm này?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        const exist = chooseItemCart.find(
+          (item) => item.idProductDetail === itemOld.idProductDetail
         );
-        setCart(updatedCart);
-      } else {
-        CartDetailClientApi.deleteCartDetail(itemOld.idCartDetail).then(
-          (res) => {
-            getListCart(idAccountLocal);
-          },
-          (err) => {
-            console.log(err);
+        if (!exist) {
+          if (idAccountLocal === null) {
+            const updatedCart = cart.filter(
+              (item) => item.idProductDetail !== itemOld.idProductDetail
+            );
+            setCart(updatedCart);
+          } else {
+            CartDetailClientApi.deleteCartDetail(itemOld.idCartDetail).then(
+              (res) => {
+                getListCart(idAccountLocal);
+              },
+              (err) => {
+                console.log(err);
+              }
+            );
           }
-        );
-      }
-    } else {
-      toast.success("Sản phẩm đang được chọn!", {
-        autoClose: 3000,
-      });
-    }
+        } else {
+          toast.success("Sản phẩm đang được chọn!", {
+            autoClose: 3000,
+          });
+        }
+      },
+    });
   };
   const changeQuantity = (itemOld, value) => {
     chooseItemCart.map((item) => {
@@ -414,13 +432,13 @@ function Cart() {
     console.log(chooseItemCart.length);
     if (chooseItemCart.length === 0) {
       setVoucher(setDefaultVoucher);
-      toast.success("Vui lòng chọn sản phẩm trước khi nhập khuyến mại!", {
+      toast.warning("Vui lòng chọn sản phẩm trước khi nhập khuyến mại!", {
         autoClose: 3000,
       });
     } else {
       if (code.trim() === "") {
         setVoucher(setDefaultVoucher);
-        toast.success("Bạn chưa nhập mã khuyễn mãi!", {
+        toast.warning("Bạn chưa nhập mã khuyễn mãi!", {
           autoClose: 3000,
         });
       } else {
@@ -429,10 +447,13 @@ function Cart() {
             const voucher = res.data.data;
             if (voucher === null) {
               setVoucher(setDefaultVoucher);
-              toast.success("Khuyến mãi không tồn tại!", {
+              toast.warning("Khuyến mãi không tồn tại!", {
                 autoClose: 3000,
               });
             } else {
+              toast.success("Áp dụng khuyến mại thành công .", {
+                autoClose: 3000,
+              });
               setModalVoucher(false);
               setVoucher((prev) => ({
                 ...prev,
@@ -468,6 +489,66 @@ function Cart() {
     draggable: false, // Tắt tính năng kéo thả
   };
 
+  // tessment
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+    },
+  ];
+  const data = [
+    {
+      key: "1",
+      name: "John Brown",
+      age: 32,
+      address: "New York No. 1 Lake Park",
+    },
+    {
+      key: "2",
+      name: "Jim Green",
+      age: 42,
+      address: "London No. 1 Lake Park",
+    },
+    {
+      key: "3",
+      name: "Joe Black",
+      age: 32,
+      address: "Sydney No. 1 Lake Park",
+    },
+    {
+      key: "4",
+      name: "Disabled User",
+      age: 99,
+      address: "Sydney No. 1 Lake Park",
+    },
+  ];
+
+  // rowSelection object indicates the need for row selection
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        "selectedRows: ",
+        selectedRows
+      );
+    },
+    getCheckboxProps: (record) => ({
+      disabled: record.name === "Disabled User",
+      // Column configuration not to be checked
+      name: record.name,
+    }),
+  };
+  const [selectionType, setSelectionType] = useState("checkbox");
+
   return (
     <div className="cart">
       <div className="img-banner">
@@ -487,10 +568,12 @@ function Cart() {
                 <div
                   style={{
                     height: "30px",
-                    backgroundColor: " #f4efed",
                     display: "flex",
                     padding: "30px",
                     alignItems: "center",
+                    marginTop: "60px",
+                    borderRadius: "10px",
+                    backgroundColor: "#FF6600",
                   }}
                 >
                   <div>
@@ -500,9 +583,36 @@ function Cart() {
                       checked={selectAllChecked}
                     />
                   </div>
-                  <div style={{ marginLeft: "7%" }}>Hình ảnh</div>
-                  <div style={{ marginLeft: "20%" }}>Sản phẩm</div>
-                  <div style={{ marginLeft: "32%" }}>Tổng cộng</div>
+                  <div
+                    style={{
+                      marginLeft: "7%",
+                      fontWeight: "bold",
+                      color: "white",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Hình ảnh
+                  </div>
+                  <div
+                    style={{
+                      marginLeft: "20%",
+                      fontWeight: "bold",
+                      color: "white",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Sản phẩm
+                  </div>
+                  <div
+                    style={{
+                      marginLeft: "35%",
+                      fontWeight: "bold",
+                      color: "white",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Tổng cộng
+                  </div>
                 </div>
 
                 <div>
@@ -534,10 +644,11 @@ function Cart() {
                             />
                             <img
                               style={{
-                                width: "180px",
-                                height: "180px",
+                                width: "150px",
+                                height: "150px",
                                 marginRight: 50,
-                                marginLeft: 60,
+                                marginLeft: 50,
+                                borderRadius: "10px",
                               }}
                               src={item.image.split(",")[0]}
                               alt="..."
@@ -554,9 +665,9 @@ function Cart() {
 
                             <div
                               style={{
-                                marginTop: "auto",
                                 display: "flex",
                                 alignItems: "center",
+                                marginTop: "10px",
                               }}
                             >
                               <p
@@ -576,26 +687,29 @@ function Cart() {
                                 }
                               ></InputNumber>
                             </div>
+                            <div className="button-delete-cart">
+                              <Tooltip title="Xóa sản phẩm">
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  size="xl"
+                                  onClick={() => {
+                                    deleteItemCart(item);
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
                           </div>
                           <div className="form-status-cart">
                             <div
                               style={{
-                                color: "#ff4400",
-                                fontSize: "20px",
-                                fontWeight: "600",
-                                marginBottom: "20px",
+                                fontSize: "17px",
+                                fontWeight: "500",
+                                textAlign: "center",
+                                marginTop: "50%",
+                                width: "150px",
                               }}
                             >
                               {formatMoney(item.quantity * item.price)}
-                            </div>
-
-                            <div
-                              className="button-delete-cart"
-                           
-                            >
-                              <DeleteOutlined className="icon-button-delete-cart"   onClick={() => {
-                                deleteItemCart(item);
-                              }}/>
                             </div>
                           </div>
                         </div>
@@ -603,17 +717,18 @@ function Cart() {
 
                       <div style={{ display: "flex" }}>
                         <div className="button-delete-all-cart">Xóa tất cả</div>
-                        <div className="button-continue-to-buy">
-                          Tiếp tục mua
-                        </div>
+                        <Link to="/home" style={{ marginLeft: "48%" }}>
+                          <Button className="button-continue-to-buy">
+                            Tiếp tục mua hàng
+                          </Button>
+                        </Link>
                       </div>
                     </>
                   )}
                 </div>
               </div>
-
               {/* bill of cart */}
-              <div className="bill-of-cart">
+              <div className="bill-of-cart" style={{ borderRadius: "20px" }}>
                 <div className="content-bill-of-cart">
                   <div className="text-bill-in-cart"> ĐƠN HÀNG</div>
                   {idAccountLocal === null ? (
@@ -623,7 +738,7 @@ function Cart() {
                         <Input
                           // readOnly
                           type="text"
-                          style={{ borderRadius: "0" }}
+                          style={{ borderRadius: "5px" }}
                           onChange={(e) => {
                             handleInputChange(e.target.value);
                           }}
@@ -664,8 +779,16 @@ function Cart() {
                     }`}
                   >
                     <div style={{ display: "flex" }}>
-                      <div style={{ color: "#21201f", fontFamily: "700" }}>
-                        Đơn hàng
+                      <div
+                        style={{
+                          color: "#21201f",
+                          fontFamily: "700",
+                          textAlign: "center",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Đơn hàng :
                       </div>{" "}
                       <div
                         style={{
@@ -678,14 +801,14 @@ function Cart() {
                       </div>
                     </div>
                     <div style={{ display: "flex", marginTop: "20px" }}>
-                      <span>Giảm</span>{" "}
+                      <span>Giảm : </span>{" "}
                       <span style={{ marginLeft: "auto" }}>
                         {formatMoney(voucher.value)}
                       </span>
                     </div>
                   </div>
                   <div style={{ padding: "20px" }}>
-                    <h3>TẠM TÍNH: {formatMoney(totalBill)}</h3>
+                    <h3>Tổng tiền : {formatMoney(totalBill)}</h3>
                   </div>
                   <div className="button-pay" onClick={payment}>
                     TIẾP TỤC THANH TOÁN

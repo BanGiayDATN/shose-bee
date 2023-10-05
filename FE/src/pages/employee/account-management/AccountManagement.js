@@ -5,7 +5,7 @@ import "./style-staff.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetAccount, SetAccount } from "../../../app/reducer/Account.reducer";
-import { GetAddress, SetAddress } from "../../../app/reducer/Address.reducer";
+import { GetAddress } from "../../../app/reducer/Address.reducer";
 
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -177,10 +177,8 @@ const AccountManagement = () => {
   };
 
   // Xử lý logic chỉnh sửa
-  const [idUpdate, setIdUpdate] = useState("");
   const [idDetail, setIdDetail] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
   const handleViewDetail = (id) => {
@@ -196,6 +194,10 @@ const AccountManagement = () => {
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
   }, [ageRange, initialAccountList]);
+
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
 
   const columns = [
     {
@@ -436,8 +438,9 @@ const AccountManagement = () => {
             dataSource={listaccount}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="account-table"
+            rowClassName={getRowClassName}
           />
         </div>
       </div>

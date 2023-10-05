@@ -117,11 +117,16 @@ const SoleManagement = () => {
     stt: index + 1,
   }));
 
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
+
   const columns = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      align: "center",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -134,6 +139,7 @@ const SoleManagement = () => {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
+      align: "center",
       sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
       render: (date) => moment(date).format("DD-MM-YYYY"),
     },
@@ -141,6 +147,7 @@ const SoleManagement = () => {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
+      align: "center",
       render: (text) => {
         const genderClass =
           text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
@@ -155,8 +162,9 @@ const SoleManagement = () => {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
+      align: "center",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             type="primary"
             title="Chi tiết thể loại"
@@ -261,6 +269,7 @@ const SoleManagement = () => {
             columns={columns}
             pagination={{ pageSize: 5 }}
             className="category-table"
+            rowClassName={getRowClassName}
           />
         </div>
         {/* modal thêm */}

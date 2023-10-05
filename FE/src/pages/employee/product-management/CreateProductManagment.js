@@ -11,6 +11,7 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   Table,
   Tooltip,
   Upload,
@@ -44,15 +45,16 @@ import {
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { PlusOutlined } from "@ant-design/icons";
-import axios from "axios";
 import { toast } from "react-toastify";
 import convert from "color-convert";
 import ModalAddListSizeProduct from "./modal/ModalAddListSizeProduct";
 import AddColorModal from "./modal/ModalAddListColor";
-import { GetProduct, SetProduct } from "../../../app/reducer/Product.reducer";
-
+import { useNavigate } from "react-router-dom";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import useDebounce from "../../custom-hook/useDebounce";
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const status = "DANG_SU_DUNG";
   const [form] = Form.useForm();
   const [modalAddSole, setModalAddSole] = useState(false);
@@ -110,12 +112,20 @@ const CreateProductManagment = () => {
   };
 
   const handleSearch = (value) => {
+    setValueInput(value);
+  };
+
+  const [valueInput, setValueInput] = useState("");
+
+  const debouncedNameValue = useDebounce(valueInput, 700);
+
+  useEffect(() => {
     ProductApi.fetchAllByName({
-      name: value,
+      name: valueInput,
     }).then((res) => {
       setListProduct(res.data.data);
     });
-  };
+  }, [debouncedNameValue]);
 
   const renderOptions = (nameList) => {
     console.log(nameList);
@@ -131,13 +141,11 @@ const CreateProductManagment = () => {
   const handleSaveData = (selectedSizeData) => {
     console.log(selectedSizeData);
     selectedSizeData.forEach((selectedSizeData) => {
-      // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
       const existingSize = listSizeAdd.find(
         (item) => item.nameSize === selectedSizeData.size
       );
 
       if (existingSize) {
-        // Nếu kích thước đã tồn tại, hiển thị cảnh báo
         toast.warning(
           `Kích cỡ ${selectedSizeData.size} đã tồn tại trong danh sách!`
         );
@@ -217,13 +225,6 @@ const CreateProductManagment = () => {
     });
   };
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  useEffect(() => {
-    if (isSubmitting) {
-      window.location.href = "/product-management";
-    }
-  }, [isSubmitting]);
-
   const handleUpload = () => {
     form
       .validateFields()
@@ -281,11 +282,10 @@ const CreateProductManagment = () => {
           });
         });
         formData.append("data", JSON.stringify(updatedTableData));
-        axios
-          .post("http://localhost:8080/admin/product-detail", formData)
+        ProducDetailtApi.addListProduct(formData)
           .then((response) => {
             console.log(response.data);
-            setIsSubmitting(true);
+            navigate(`/product-management`);
           })
           .catch((error) => {
             console.error(error);
@@ -305,11 +305,11 @@ const CreateProductManagment = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      width: "5%",
+      width: "7%",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Tên Sản Phẩm",
+      title: <div style={{ textAlign: "center" }}>Tên Sản Phẩm</div>,
       dataIndex: "productId",
       key: "productId",
       width: "25%",
@@ -320,6 +320,7 @@ const CreateProductManagment = () => {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
+      align: "center",
       width: "10%",
       render: (_, record) => (
         <InputNumber
@@ -333,6 +334,7 @@ const CreateProductManagment = () => {
       title: "Giá Bán",
       dataIndex: "price",
       key: "price",
+      align: "center",
       width: "15%",
       render: (_, record) => (
         <Input
@@ -363,7 +365,7 @@ const CreateProductManagment = () => {
       ),
     },
     {
-      title: "Upload Ảnh",
+      title: <div style={{ textAlign: "center" }}>Upload Ảnh</div>,
       dataIndex: "color",
       key: "color",
       render: (color, record, index) => {
@@ -636,7 +638,9 @@ const CreateProductManagment = () => {
                           "Không được chỉ nhập khoảng trắng"
                         );
                       }
-                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                      if (
+                        !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)
+                      ) {
                         return Promise.reject(
                           "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                         );
@@ -1074,7 +1078,6 @@ const CreateProductManagment = () => {
               htmlType="submit"
               className="form-submit-btn"
               onClick={handleUpload}
-              disabled={isSubmitting}
             >
               Hoàn Tất
             </Button>

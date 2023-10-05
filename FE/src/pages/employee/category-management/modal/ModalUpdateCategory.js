@@ -56,7 +56,6 @@ const ModalUpdateCategory = ({ visible, id, onCancel }) => {
             form.resetFields();
           })
           .catch((error) => {
-            toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
       });

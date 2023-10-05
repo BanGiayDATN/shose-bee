@@ -17,14 +17,15 @@ import { ProducDetailtApi } from "../../../api/employee/product-detail/productDe
 import ModalDetailProductManagment from "./ModalDetailProductManagment";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { Option } from "antd/es/mentions";
+import useDebounce from "../../custom-hook/useDebounce";
 
 const ProductManagement = () => {
   const [listProduct, setListProduct] = useState([]);
   const [modaleDetail, setModalDetail] = useState(false);
 
+
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    console.log(selectedValues);
     ProducDetailtApi.fetchAll(selectedValues).then((res) => {
       setListProduct(res.data.data);
     });
@@ -32,7 +33,6 @@ const ProductManagement = () => {
 
   // Xử lý làm mới bộ lọc
   const handleClear = () => {
-    console.log(selectedValues);
     setSelectedValues({
       keyword: "",
       status: "",
@@ -58,6 +58,7 @@ const ProductManagement = () => {
     }));
   };
 
+
   const handleChangeValueQuantity = (value) => {
     const [minQuantity, maxQuantity] = value;
 
@@ -68,6 +69,7 @@ const ProductManagement = () => {
     }));
   };
 
+
   const handleInputChangeSearch = (name, value) => {
     setSelectedValues((prevSearchCategory) => ({
       ...prevSearchCategory,
@@ -77,6 +79,7 @@ const ProductManagement = () => {
   const handleKeywordChange = (event) => {
     const { value } = event.target;
     handleInputChangeSearch("keyword", value);
+
   };
 
   const loadData = () => {
@@ -121,6 +124,8 @@ const ProductManagement = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 4,
+      align: "center",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -145,6 +150,7 @@ const ProductManagement = () => {
     {
       title: "Trạng Thái",
       dataIndex: "status",
+      align: "center",
       key: "status",
       render: (text) => {
         const genderClass =
@@ -160,8 +166,9 @@ const ProductManagement = () => {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
+      align: "center",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Tooltip title="Xem chi tiết sản phẩm">
             <Button
               type="primary"

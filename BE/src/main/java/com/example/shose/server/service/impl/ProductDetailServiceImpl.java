@@ -43,6 +43,7 @@ import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.RandomNumberGenerator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -66,6 +67,7 @@ import java.util.stream.IntStream;
  */
 @Service
 @Validated
+@Slf4j
 public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
@@ -119,6 +121,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         CreateProductDetailRequest request = listData.get(0);
         String productId = request.getProductId();
+        listData.stream().forEach(a -> System.out.println(a));
 
         Product product = createProductIfNotExist(productId);
         Brand brand = brandRepository.getById(request.getBrandId());
@@ -196,7 +199,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         update.setSize(size);
         update.setColor(color);
         update.setCategory(category);
-        update.setStatus(getStatus(req.getStatus()));
+        update.setStatus((!req.getStatus().equals("KHONG_SU_DUNG") && req.getQuantity() != 0) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
         productDetailRepository.save(update);
 
 
@@ -240,12 +243,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             ProductDetail detail = detailOptional.get();
             detail.setPrice(a.getPrice());
             detail.setQuantity(a.getQuantity());
+            detail.setStatus(Status.DANG_SU_DUNG);
             detailList.add(detail);
         });
         productDetailRepository.saveAll(detailList);
         return requestData;
     }
-
 
 
     @Override
