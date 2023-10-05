@@ -28,6 +28,7 @@
 .content-info-bill-payment{
   background-color: #f1f1f1;
   padding: 15px ;
+  border-radius: 5px;
 }
 .title-info-shipping {
   font-size: 23px;
@@ -38,6 +39,8 @@
   padding-left: 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  border-radius: 5px;
 }
 .form-address {
   margin-top: 40px;
@@ -46,7 +49,7 @@
 .input-form-payment {
   width: 100%;
   height: 40px;
-  border-radius: 0;
+  border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0.1, 0, 0, 0.1);
 
   border: 1px solid #ccc3c3;
@@ -78,18 +81,23 @@
     border-bottom: 2px solid black;
     padding-bottom: 10px;
     margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .button-submit-buy{
     width: 100%;
-    height: 80px;
+    height: 60px;
     color: white;
     background-color: #ff4400;
-    font-size: 25px;
+    font-size: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom:30px;
     cursor: pointer;
+    border-radius: 5px;
+    font-weight: 700;
 }
 .title-method-payment {
   font-size: 23px;
@@ -101,6 +109,8 @@
   display: flex;
   align-items: center;
   margin-top: 10%;
+  justify-content: center;
+  border-radius: 5px;
 }
 .method-payment{
   margin-top: 5%;
@@ -117,6 +127,8 @@ justify-content: center;
 align-items: center;
 font-size: 15px;
 cursor: pointer;
+border-radius: 5px;
+
 }
 .payment-by-vnpay{
   width: 250px;
@@ -127,6 +139,8 @@ justify-content: center;
 align-items: center;
 font-size: 15px;
 cursor: pointer;
+border-radius: 5px;
+
 }
 .payment-by-vnpay.click{
   border: 1px solid #ff4400;

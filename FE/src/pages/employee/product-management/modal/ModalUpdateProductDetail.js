@@ -409,6 +409,9 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                   <Option value="KHONG_SU_DUNG">
                     <span style={{ fontWeight: "bold" }}>Không Kinh Doanh</span>
                   </Option>
+                  <Option value="HET_SAN_PHAM">
+                    <span style={{ fontWeight: "bold" }}>Hết sản phẩm</span>
+                  </Option>
                 </Select>
               </Form.Item>
             </Col>

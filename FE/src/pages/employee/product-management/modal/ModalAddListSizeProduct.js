@@ -31,12 +31,16 @@ const ModalAddListSizeProduct = ({ visible, onCancel, onSaveData }) => {
     if (inputValue.trim() !== "") {
       try {
         const response = await SizeApi.getOneByName(inputValue);
-
         if (response && response.data && response.data.data !== null) {
           toast.error("Kích cỡ đã tồn tại");
         } else {
           setListSize([...listSize, { name: inputValue.trim() }]);
           setInputValue("");
+
+          SizeApi.create({
+            name: inputValue.trim(),
+            status: "DANG_SU_DUNG",
+          });
           toast.success("Thêm thành công");
         }
       } catch (error) {

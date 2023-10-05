@@ -199,7 +199,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         update.setSize(size);
         update.setColor(color);
         update.setCategory(category);
-        update.setStatus(getStatus(req.getStatus()));
+        update.setStatus((!req.getStatus().equals("KHONG_SU_DUNG") && req.getQuantity() != 0) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
         productDetailRepository.save(update);
 
 
