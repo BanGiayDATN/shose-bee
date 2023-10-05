@@ -906,7 +906,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   toast.success("Đặt hàng thành công");
                   removePane(targetKey, invoiceNumber, items);
                   form.resetFields();
-                });
+                }).catch((error) =>{
+                  toast.error(error.response.data.message);
+                })
               },
               onCancel: () => {},
             });
@@ -931,7 +933,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               await BillApi.createBillWait(data).then((res) => {
                 removePane(targetKey, invoiceNumber, items);
                 toast.success("Đặt hàng thành công");
-              });
+              }).catch((error) =>{
+                toast.error(error.response.data.message);
+              })
             },
             onCancel: () => {},
           });
@@ -1979,6 +1983,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                               return Promise.resolve();
                             },
                           },
+                          {
+                            validator: (_, value) => {
+                              if (value && value.trim() === "") {
+                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                              }
+                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                                return Promise.reject(
+                                  "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                                );
+                              }
+              
+                              return Promise.resolve();
+                            },
+                          },
                         ]}
                       >
                         <Input
@@ -2554,6 +2572,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         onOk={handleOkAddress}
         className="account"
         onCancel={handleCancelAddress}
+        cancelText={"huỷ"}
+        okText={"Xác nhận"}
       >
         <Row style={{ width: "100%" }}>
           <Col span={20}>
@@ -2666,6 +2686,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         open={isModalPayMentOpen}
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
+        cancelText={"huỷ"}
+        okText={"Xác nhận"}
         width={650}
       >
         <Form form={form} ref={formRef}>
@@ -2847,6 +2869,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
+        cancelText={"huỷ"}
+        okText={"Xác nhận"}
       >
         <Row style={{ width: "100%" }}>
           <Form
