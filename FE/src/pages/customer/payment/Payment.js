@@ -11,6 +11,8 @@ import { AddressClientApi } from "./../../../api/customer/address/addressClient.
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import "./style-payment.css";
 import { useCart } from "../cart/CartContext";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 dayjs.extend(utc);
 function Payment() {
   const { updateTotalQuantity } = useCart();
@@ -19,6 +21,7 @@ function Payment() {
   const [listCity, setListCity] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
+  const navigate = useNavigate();
   const [formBill, setFormBill] = useState({
     address: "",
     billDetail: [],
@@ -201,6 +204,8 @@ function Payment() {
               );
               updateTotalQuantity(total);
               localStorage.setItem("cartLocal", JSON.stringify(updatelist));
+              toast.success("Bạn đặt hàng thành công.");
+              navigate(`/home`);
             },
             (err) => {
               console.log(err);
