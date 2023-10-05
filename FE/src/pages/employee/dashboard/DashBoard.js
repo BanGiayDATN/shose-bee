@@ -287,7 +287,7 @@ const DashBoard = () => {
                 />
               </div>
             </div>
-            <div>
+            <div style={{ marginLeft: "50px" }}>
               <CChart
                 type="bar"
                 data={{
@@ -297,7 +297,7 @@ const DashBoard = () => {
                       label: "Hóa đơn",
                       backgroundColor: "#3b5e96", // Màu xanh dương
                       data: chartData,
-                      barThickness: 60,
+                      barThickness: 70,
                     },
                   ],
                 }}
@@ -308,7 +308,7 @@ const DashBoard = () => {
                       labels: {
                         color: "#333", // Màu văn bản
                         font: {
-                          size: 15,
+                          size: 17,
                         },
                       },
                     },
