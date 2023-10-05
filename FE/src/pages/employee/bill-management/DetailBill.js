@@ -736,12 +736,12 @@ function DetailBill() {
     if (statusBill.actionDescription == "") {
       toast.error("Vui lòng nhập mô tả");
     } else {
-      if (
-        statusBill.totalMoney < bill.totalMoney &&
-        bill.statusBill == "VAN_CHUYEN" && paymentPostpaid != 0
-      ) {
-        toast.error("Số tiền thanh toán không đủ");
-      } else {
+      // if (
+      //   statusBill.totalMoney < bill.totalMoney &&
+      //   bill.statusBill == "VAN_CHUYEN" && paymentPostpaid != 0
+      // ) {
+      //   toast.error("Số tiền thanh toán không đủ");
+      // } else {
         Modal.confirm({
           title: "Xác nhận",
           content: "Bạn có đồng ý xác nhận thanh toán không?",
@@ -763,7 +763,9 @@ function DetailBill() {
                 index = 8;
               }
               dispatch(addStatusPresent(index));
-            });
+            }).catch((error) =>{
+              toast.error(error.response.data.message);
+            })
             await PaymentsMethodApi.findByIdBill(id).then((res) => {
               dispatch(getPaymentsMethod(res.data.data));
             });
@@ -784,7 +786,7 @@ function DetailBill() {
           status: "THANH_TOAN",
         });
         form.resetFields();
-      }
+      
       setIsModalOpenChangeStatus(false);
     }
 
@@ -1254,6 +1256,8 @@ function DetailBill() {
               open={isModalOpenChangeStatus}
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}
+                cancelText={"huỷ"}
+             okText={"Xác nhận"}
             >
               <Form
                 onFinish={onFinish}
@@ -1261,7 +1265,7 @@ function DetailBill() {
                 form={form}
                 initialValues={initialValues}
               >
-                {bill.statusBill === "VAN_CHUYEN" && paymentPostpaid != 0? (
+                {/* {bill.statusBill === "VAN_CHUYEN" && paymentPostpaid != 0? (
                   <div>
                     <Row style={{ width: "100%", marginTop: "10px" }}>
                       <Col span={24} style={{ marginTop: "10px" }}>
@@ -1345,7 +1349,7 @@ function DetailBill() {
                   </div>
                 ) : (
                   <div></div>
-                )}
+                )} */}
                 <Row style={{ width: "100%" }}>
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
@@ -1396,6 +1400,8 @@ function DetailBill() {
                 open={isModalCanCelOpen}
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
+                  cancelText={"huỷ"}
+               okText={"Xác nhận"}
               >
                 <Form
                   onFinish={onFinish}
@@ -1454,6 +1460,8 @@ function DetailBill() {
                 onCancel={handleCancel}
                 className="widthModal"
                 width={800}
+                cancelText={"huỷ"}
+               okText={"Xác nhận"}
               >
                 <Table
                   dataSource={billHistory}
@@ -1923,6 +1931,8 @@ function DetailBill() {
         open={isModalPayMentOpen}
         onOk={handleOkPayMent}
         onCancel={handleCancelPayMent}
+        cancelText={"huỷ"}
+        okText={"Xác nhận"}
       >
         <Form form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2054,6 +2064,8 @@ function DetailBill() {
         open={isModaBillOpen}
         onOk={handleOkBill}
         onCancel={handleCancelBill}
+          cancelText={"huỷ"}
+        okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}></Row>
@@ -2121,20 +2133,6 @@ function DetailBill() {
                     pattern:
                       "(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}",
                     message: "Vui lòng nhập đúng số điện thoại",
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (value && value.trim() === "") {
-                        return Promise.reject("Không được chỉ nhập khoảng trắng");
-                      }
-                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
-                        return Promise.reject(
-                          "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
-                        );
-                      }
-      
-                      return Promise.resolve();
-                    },
                   },
                 ]}
               >
@@ -2374,6 +2372,8 @@ function DetailBill() {
         onOk={handleOkRefundProduct}
         onCancel={handleCancelRefundProduct}
         style={{ width: "800px" }}
+        cancelText={"huỷ"}
+        okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} ref={formRef} form={form}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2501,6 +2501,8 @@ function DetailBill() {
         onOk={handleOkUpdateProduct}
         onCancel={handleCancelUpdateProduct}
         style={{ width: "800px" }}
+        cancelText={"huỷ"}
+        okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2641,6 +2643,8 @@ function DetailBill() {
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
         width={1000}
+        cancelText={"huỷ"}
+        okText={"Xác nhận"}
       >
         <ModalAddProductDetail
           handleCancelProduct={handleCancelProduct}
