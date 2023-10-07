@@ -711,7 +711,7 @@ const UpdateProductDetailManagment = () => {
               </Select>
             </Col>
             <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
-              <label>Giới Tinh :</label>
+              <label>Giới Tính :</label>
             </Col>
             <Col span={3}>
               <Select

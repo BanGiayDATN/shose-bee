@@ -56,4 +56,6 @@ public interface ProductDetailService {
     GetDetailProductOfClient getDetailProductOfClient(String id);
 
     List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);
+
+    ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request);
 }
