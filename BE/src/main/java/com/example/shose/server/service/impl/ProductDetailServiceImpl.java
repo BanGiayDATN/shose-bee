@@ -36,7 +36,6 @@ import com.example.shose.server.repository.ImageRepository;
 import com.example.shose.server.repository.MaterialRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
-import com.example.shose.server.repository.PromotionRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.ProductDetailService;
@@ -46,7 +45,6 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -121,7 +119,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         CreateProductDetailRequest request = listData.get(0);
         String productId = request.getProductId();
-        listData.stream().forEach(a -> System.out.println(a));
+        listData.stream().forEach(a -> {
+            ProductDetailReponse reponse = productDetailRepository.getOneProductDetailByAll(a);
+            if (reponse != null) {
+                throw new RestApiException("Sản phẩm : " + request.getProductId() + "[" + request.getSize() + "-" + colorRepository.getOneByCode(request.getColor()).getName() + "]" + " đã tồn tại !!");
+            }
+        });
 
         Product product = createProductIfNotExist(productId);
         Brand brand = brandRepository.getById(request.getBrandId());
@@ -319,6 +322,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.listSizeByProductAndColor(idProduct, codeColor);
     }
 
+    @Override
+    public ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request) {
+        return productDetailRepository.getOneProductDetailByAll(request);
+    }
 
     @Override
     public List<GetProductDetailByCategory> GetProductDetailByCategory(String id) {
