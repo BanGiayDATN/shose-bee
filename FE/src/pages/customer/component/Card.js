@@ -39,6 +39,12 @@ function CardItem({ item, index }) {
   }, []);
 
   const addToCard = () => {
+    if(detailProduct.quantity === 0){
+      toast.error("Sản phẩm đã hết hàng", {
+        autoClose: 3000,
+      });
+      return;
+    }
     if (idAccountLocal === null) {
       const newCartItem = {
         idProductDetail: detailProduct.idProductDetail,
@@ -278,14 +284,23 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
                     
                 </div>
               </div>
+
+              <div>
+              <div style={{marginBottom:"10px",color:"black"}}>
+                  Số lượng tồn: <span style={{color:"#ff4400"}}>{detailProduct.quantity} sản phẩm</span>
+                </div>
+              </div>
               <div className="add-to-card">
+
+                
                 <InputNumber
                   className="input-quantity-card"
                   name="quantity"
                   type="number"
                   value={quantity}
-                  // defaultValue="1"
-                  min="1"
+                  disabled={detailProduct.quantity === 0}
+                  min={1}
+                  max={detailProduct.quantity}
                   onChange={(value) => setQuantity(value)}
                 ></InputNumber>
                 <div className="button-add-to-card" onClick={addToCard}>
