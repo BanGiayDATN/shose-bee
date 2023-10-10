@@ -195,7 +195,7 @@ function Payment() {
           localStorage.setItem("cartLocal", JSON.stringify(updatelist));
         },
         (err) => {
-          console.log(err);
+           toast.error(err.response.data.message);
         }
       );
     }
