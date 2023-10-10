@@ -6,6 +6,7 @@ import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import { faSquareCheck,faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
+import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 function PayMentSuccess() {
   const idAccount = localStorage.getItem("idAccount");
 const urlObject = new URL(window.location.href);
@@ -17,6 +18,18 @@ useEffect(()=>{
 if(vnp_ResponseCode==='00'){
   console.log(formBill);
   onPayment(formBill)
+}else{
+  var data ={
+    billDetail: formBill.billDetail
+  }
+  PaymentClientApi.changeQuantityProductAfterPayment(data).then(
+    (res) => {
+   
+    },
+    (err) => {
+      console.log(err);
+    }
+  )
 }
 },[])
 const formatMoney = (price) => {
@@ -26,9 +39,20 @@ const formatMoney = (price) => {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
     );
   };
-  const onPayment =(formBill) => {
+  const onPayment = async(formBill) => {
     if(idAccount!== null){
-      BillClientApi.createBillAccountOnline(formBill).then(
+      var data ={
+        billDetail: formBill.billDetail
+      }
+     await PaymentClientApi.changeQuantityProductAfterPayment(data).then(
+        (res) => {
+       
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
+      await BillClientApi.createBillAccountOnline(formBill).then(
         (res) => {
        
         },
