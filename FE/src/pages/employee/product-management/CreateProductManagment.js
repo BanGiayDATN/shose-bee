@@ -141,13 +141,11 @@ const CreateProductManagment = () => {
   const handleSaveData = (selectedSizeData) => {
     console.log(selectedSizeData);
     selectedSizeData.forEach((selectedSizeData) => {
-      // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
       const existingSize = listSizeAdd.find(
         (item) => item.nameSize === selectedSizeData.size
       );
 
       if (existingSize) {
-        // Nếu kích thước đã tồn tại, hiển thị cảnh báo
         toast.warning(
           `Kích cỡ ${selectedSizeData.size} đã tồn tại trong danh sách!`
         );
@@ -226,7 +224,6 @@ const CreateProductManagment = () => {
       },
     });
   };
-
 
   const handleUpload = () => {
     form
@@ -308,11 +305,11 @@ const CreateProductManagment = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      width: "5%",
+      width: "7%",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Tên Sản Phẩm",
+      title: <div style={{ textAlign: "center" }}>Tên Sản Phẩm</div>,
       dataIndex: "productId",
       key: "productId",
       width: "25%",
@@ -323,6 +320,7 @@ const CreateProductManagment = () => {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
+      align: "center",
       width: "10%",
       render: (_, record) => (
         <InputNumber
@@ -336,6 +334,7 @@ const CreateProductManagment = () => {
       title: "Giá Bán",
       dataIndex: "price",
       key: "price",
+      align: "center",
       width: "15%",
       render: (_, record) => (
         <Input
@@ -366,7 +365,7 @@ const CreateProductManagment = () => {
       ),
     },
     {
-      title: "Upload Ảnh",
+      title: <div style={{ textAlign: "center" }}>Upload Ảnh</div>,
       dataIndex: "color",
       key: "color",
       render: (color, record, index) => {

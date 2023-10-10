@@ -12,7 +12,6 @@ import lombok.Setter;
 @Getter
 public abstract class BaseSizeRequest {
 
-    @NotBlank(message = "Vui lòng không để trống")
     private int name;
 
     private Status status;

@@ -48,6 +48,7 @@ import { useAppDispatch, useAppSelector } from "../src/app/hook";
 import { VoucherApi } from "../src/api/employee/voucher/Voucher.api";
 import { UpdateVoucher, GetVoucher } from "../src/app/reducer/Voucher.reducer";
 import { PromotionApi } from "../src/api/employee/promotion/Promotion.api";
+import Login from "./pages/customer/login/Login";
 import {
   UpdatePromotion,
   GetPromotion,
@@ -151,6 +152,14 @@ function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
           <Route path="/" element={<Navigate replace to="/dashboard" />} />
+          <Route
+            path="/login"
+            element={
+              <GuestGuard>
+                    <Login />
+              </GuestGuard>
+            }
+          />
           <Route
             path="/home"
             element={
