@@ -166,6 +166,7 @@ function Payment() {
       setFormErrors(errors);
       return;
     }
+
     Modal.confirm({
       title: "Xác nhận đặt hàng",
       content: "Bạn có chắc chắn muốn đặt hàng ?",
@@ -208,7 +209,7 @@ function Payment() {
               navigate(`/home`);
             },
             (err) => {
-              console.log(err);
+             toast.error(err.response.data.message);
             }
           );
         }

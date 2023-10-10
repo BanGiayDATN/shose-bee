@@ -10,13 +10,6 @@ import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterReque
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
-import com.example.shose.server.dto.request.bill.BillRequest;
-import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
-import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
-import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
-import com.example.shose.server.dto.request.bill.CreateBillRequest;
-import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
-import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
@@ -34,11 +27,6 @@ import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
-import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.StatusBill;
-import com.example.shose.server.infrastructure.constant.StatusMethod;
-import com.example.shose.server.infrastructure.constant.StatusPayMents;
-import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -670,6 +658,9 @@ public class BillServiceImpl implements BillService {
 
         for (BillDetailOnline x : request.getBillDetail()) {
             ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
+             if (productDetail.get().getQuantity() < x.getQuantity()) {
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
             BillDetail billDetail = BillDetail.builder()
                     .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
                     .productDetail(productDetail)
@@ -677,6 +668,9 @@ public class BillServiceImpl implements BillService {
                     .quantity(x.getQuantity())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
+            
+             productDetail.get().setQuantity(productDetail.get().getQuantity() - x.getQuantity());
+            productDetailRepository.save(productDetail.get());
         }
 
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
