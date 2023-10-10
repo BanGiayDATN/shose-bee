@@ -670,6 +670,9 @@ public class BillServiceImpl implements BillService {
 
         for (BillDetailOnline x : request.getBillDetail()) {
             ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
+             if (productDetail.get().getQuantity() < x.getQuantity()) {
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
             BillDetail billDetail = BillDetail.builder()
                     .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
                     .productDetail(productDetail)
@@ -677,6 +680,9 @@ public class BillServiceImpl implements BillService {
                     .quantity(x.getQuantity())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
+            
+             productDetail.get().setQuantity(productDetail.get().getQuantity() - x.getQuantity());
+            productDetailRepository.save(productDetail.get());
         }
 
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
