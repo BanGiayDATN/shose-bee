@@ -688,7 +688,6 @@ public class BillServiceImpl implements BillService {
             }
 
 
-
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)

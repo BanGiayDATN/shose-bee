@@ -2,6 +2,7 @@ package com.example.shose.server.controller.client;
 
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
+import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
@@ -35,5 +36,10 @@ public class PaymentRestController {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping("/change-quantity-payment")
+    public ResponseObject changeQuantityProductAfterPayment(@RequestBody QuantityProductPaymentRequest request){
+        return new ResponseObject(paymentsMethodService.changeQuantityProduct( request)) ;
     }
 }
