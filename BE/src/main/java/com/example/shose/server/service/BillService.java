@@ -30,7 +30,7 @@ public interface BillService {
 
     boolean updateBillWait(CreateBillOfflineRequest request);
 
-    Bill  save(String id,  CreateBillOfflineRequest request);
+    Bill  save(String id,HttpServletRequest requests,  CreateBillOfflineRequest request);
 
     Bill updateBillOffline(String id, UpdateBillRequest bill);
 
@@ -39,11 +39,11 @@ public interface BillService {
     Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request);
 
     int countPayMentPostpaidByIdBill(String id);
-    boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, String idEmployees);
+    boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request,  HttpServletRequest requests, String idEmployees);
 
     Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request);
     String createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
     String createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
-    boolean createFilePdf(String idBill);
+    boolean createFilePdf(String idBill, HttpServletRequest request);
 }

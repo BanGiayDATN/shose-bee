@@ -5,12 +5,13 @@ import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.math.BigDecimal;
+import java.security.Principal;
 import java.text.NumberFormat;
 import java.util.*;
 
@@ -33,7 +34,11 @@ public class ExportFilePdfFormHtml {
         return context;
     }
 
-    public String htmlToPdf(String processedHtml, String code) {
+    public String htmlToPdf(String processedHtml, HttpServletRequest request, String code) {
+
+//        Principal principal = request.getUserPrincipal();
+//        String downloadPath = principal.getPath();
+        String downloadPath = System.getProperty("user.home") + "/Downloads";
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -49,7 +54,7 @@ public class ExportFilePdfFormHtml {
 
             HtmlConverter.convertToPdf(processedHtml, pdfwriter, converterProperties);
 
-            FileOutputStream fout = new FileOutputStream(code+".pdf");
+            FileOutputStream fout = new FileOutputStream(downloadPath + "/"+code+".pdf");
 
             byteArrayOutputStream.writeTo(fout);
             byteArrayOutputStream.close();

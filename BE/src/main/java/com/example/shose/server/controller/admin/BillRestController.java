@@ -12,6 +12,7 @@ import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -60,8 +61,8 @@ public class BillRestController {
     }
 
     @PostMapping("")
-    public ResponseObject save(@RequestBody CreateBillOfflineRequest request){
-        return  new ResponseObject(billService.save(userId, request));
+    public ResponseObject save(@RequestBody CreateBillOfflineRequest request, HttpServletRequest requests){
+        return  new ResponseObject(billService.save(userId,requests, request));
     }
 
     @PutMapping("/change-status/{id}")
@@ -90,8 +91,8 @@ public class BillRestController {
     }
 
     @PutMapping("/change-status-bill")
-    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request) {
-        return  new ResponseObject(billService.changeStatusAllBillByIds(request, userId));
+    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request, HttpServletRequest requests) {
+        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, userId));
     }
 
     @GetMapping("/code-bill")
@@ -106,7 +107,7 @@ public class BillRestController {
 
 
     @GetMapping("/invoice/{id}")
-    public ResponseObject getInvoice(@PathVariable("id") String id)  {
-        return new ResponseObject(billService.createFilePdf(id));
+    public ResponseObject getInvoice(@PathVariable("id") String id, HttpServletRequest requests)  {
+        return new ResponseObject(billService.createFilePdf(id,requests));
     }
 }
