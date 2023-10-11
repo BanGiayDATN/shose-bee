@@ -44,4 +44,6 @@ public interface BillService {
     Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request);
     String createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
     String createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
+
+    boolean createFilePdf(String idBill);
 }

@@ -104,40 +104,9 @@ public class BillRestController {
         return  new ResponseObject(billService.updateBillWait(request));
     }
 
-//    @Autowired
-//    private SpringTemplateEngine thymeleafTemplateEngine;
-//
-//    @GetMapping("/invoice")
-//    public String getInvoice() throws IOException {
-//        // Tạo hóa đơn PDF
-//        String workingDir = System.getProperty("user.dir");
-//
-//        Context thymeleafContext = new Context();
-//
-//
-//        InvoiceResponse invoice = new InvoiceResponse();
-//        invoice.setCustomerName("Nguyễn Văn A");
-//        invoice.setCustomerAddress("Số 100, Đường Nguyễn Thị Minh Khai, Quận 1, Thành phố Hồ Chí Minh");
-//        invoice.setCustomerPhone("0987654321");
-//        invoice.setCustomerEmail("nguyenvana@gmail.com");
-//
-//        List<InvoiceItemResponse> items = new ArrayList<>();
-//        items.add(new InvoiceItemResponse("Máy tính", 1, new BigDecimal("20000000")));
-//        items.add(new InvoiceItemResponse("Điện thoại", 2,  new BigDecimal("20000000")));
-//        invoice.setItems(items);
-//        Map<String, Object> model = new HashMap<>();
-//        model.put("invoice", invoice);
-//        thymeleafContext.setVariables(model);
-//        String html =  thymeleafTemplateEngine.process(workingDir+"\\src\\main\\resources\\template\\static\\templateBill.html", thymeleafContext);
-//
-//        File htmlSource = new File(workingDir+"/src/main/resources/template/static/templateBill.html");
-//        File pdfDest = new File("output.pdf");
-//        // pdfHTML specific code
-//        ConverterProperties converterProperties = new ConverterProperties();
-//        HtmlConverter.convertToPdf(new FileInputStream(htmlSource),
-//                new FileOutputStream(pdfDest), converterProperties);
-//
-//        // Trả về hóa đơn PDF
-//        return "ok";
-//    }
+
+    @GetMapping("/invoice/{id}")
+    public ResponseObject getInvoice(@PathVariable("id") String id)  {
+        return new ResponseObject(billService.createFilePdf(id));
+    }
 }

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"-->
+<!--          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">-->
+<!--    <style>-->
+<!--        .invoice-title h2, .invoice-title h3 {-->
+<!--            display: inline-block;-->
+<!--        }-->
+
+<!--        .table > tbody > tr > .no-line {-->
+<!--            border-top: none;-->
+<!--        }-->
+
+<!--        .table > thead > tr > .no-line {-->
+<!--            border-bottom: none;-->
+<!--        }-->
+
+<!--        .table > tbody > tr > .thick-line {-->
+<!--            border-top: 2px solid;-->
+<!--        }-->
+<!--    </style>-->
+</head>
+
+<body>
+<div class="container">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="invoice-title">
+                <h3 class="pull-right" th:text="${'Mã hóa đơn: '+ invoice.code}"> </h3>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-xs-6 text-right">
+                    <address>
+                        <strong>Đến:</strong><br>
+                        <p class="row"  th:text="${invoice.userName}"></p>
+                        <p class="row"  th:text="${invoice.phoneNumber}"></p>
+                        <p class="row"  th:text="${invoice.address}"></p>
+                    </address>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+
+                </div>
+                <div class="col-xs-6 text-right">
+                    <address>
+                        <strong>Order Date:</strong><br>
+                        March 7, 2014<br><br>
+                    </address>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong>Thanh toán</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-condensed" style="width: 100%">
+                            <thead>
+                            <tr>
+                                <td>stt</td>
+                                <td class="text-center"><strong>Tiền</strong></td>
+                                <td class="text-center"><strong>Hình thức</strong></td>
+                                <td class="text-right"><strong>Mã giao dịch</strong></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <th:block th:each="item,idex : ${invoice.paymentsMethodRequests}">
+                                <tr>
+                                    <td th:text="${idex.index  + 1}">BS-200</td>
+                                    <td th:text="${item.total}">BS-200</td>
+                                    <td class="text-center" th:text="${item.method}"></td>
+                                    <td class="text-center" th:text="${item.vnp_TransactionNo}">1</td>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong>Nội dung đơn hàng</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-condensed" style="width: 100%">
+                            <thead>
+                            <tr>
+                                <td>stt</td/>
+                                <td><strong>Tên</strong></td>
+                                <td class="text-center"><strong>Giá</strong></td>
+                                <td class="text-center"><strong>Số lương</strong></td>
+                                <td class="text-right"><strong>Tổng</strong></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <th:block th:each="item,index : ${invoice.items}">
+                                <tr>
+                                    <td th:text="${index.index  + 1}">BS-200</td>
+                                    <td th:text="${item.name}">BS-200</td>
+                                    <td class="text-center" th:text="${item.priceVn}"></td>
+                                    <td class="text-center" th:text="${item.quantity}">1</td>
+                                    <td class="text-right" th:text="${item.sum}">$10.99</td>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                            <table>
+                                <tbody>
+                                <tr >
+                                    <td class="thick-line" style="width: 70%"></td>
+                                    <td class="thick-line"></td>
+                                    <td class="thick-line " ><strong>Tổng Tiền</strong></td>
+                                    <td class="thick-line text-end" float="right" th:text="${invoice.totalMoney}"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-0" ></td>
+                                    <td class="border-0"></td>
+                                    <td class="border-0 " ><strong>Phí ship</strong></td>
+                                    <td class="border-0 text-end" float="right" th:text="${invoice.moneyShip}"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-0" ></td>
+                                    <td class="nborder-0"></td>
+                                    <td class="border-0 " ><strong>Giảm giá</strong></td>
+                                    <td class="border-0no-line text-end" float="right" th:text="${invoice.itemDiscount}">ádsadasd</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-0" ></td>
+                                    <td class="border-0"></td>
+                                    <td class="border-0 " ><strong>Tổng đơn hàng</strong></td>
+                                    <td class="border-0  text-end" float="right" th:text="${(invoice.totalBill)}">ádadsadasdsadsadsadasd</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
