@@ -56,4 +56,17 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod, 
                     WHERE vnp_transaction_no = :code
                     """, nativeQuery = true)
     List<String> findAllByVnpTransactionNo(@Param("code") String code);
+
+    @Query(value = """
+                    SELECT id  FROM payments_method
+                    WHERE id_bill = :idBill
+                    AND method = 'TIEN_MAT'
+                    """, nativeQuery = true)
+    List<String> findAllPayMentByIdBillAndMethod(@Param("idBill") String idBill);
+
+    @Query(value = """
+                    SELECT sum(total_money)  FROM payments_method
+                    WHERE id_bill = :idBill
+                    """, nativeQuery = true)
+    BigDecimal findTotalPayMnetByIdBill(@Param("idBill") String idBill);
 }

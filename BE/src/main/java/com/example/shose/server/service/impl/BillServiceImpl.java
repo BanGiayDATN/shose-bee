@@ -726,7 +726,9 @@ public class BillServiceImpl implements BillService {
         //     begin   create file pdf
         Optional<Bill> optional = billRepository.findById(idBill);
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(idBill);
+        List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(optional.get());
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(optional.get());
+
         String finalHtml = null;
         NumberFormat formatter = exportFilePdfFormHtml.formatCurrency();
         InvoiceResponse invoice = InvoiceResponse.builder()
@@ -756,15 +758,30 @@ public class BillServiceImpl implements BillService {
             InvoicePaymentResponse invoicePaymentResponse = InvoicePaymentResponse.builder()
                     .total(formatter.format(item.getTotalMoney()))
                     .method(item.getMethod() == StatusMethod.TIEN_MAT ? "Tiền mặt" : item.getMethod() == StatusMethod.CHUYEN_KHOAN ? "Chuyển khoản": "Thẻ")
+                    .vnp_TransactionNo(item.getVnp_TransactionNo())
                     .build();
             paymentsMethodRequests.add(invoicePaymentResponse);
         });
+        BigDecimal totalPayMnet = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
+        invoice.setTotalPayment(formatter.format(totalPayMnet));
+        invoice.setChange(formatter.format(totalPayMnet.subtract(optional.get().getTotalMoney().add(optional.get().getMoneyShip()).subtract(optional.get().getItemDiscount()))));
         invoice.setPaymentsMethodRequests(paymentsMethodRequests);
         invoice.setItems(items);
 
+        List<String> findAllPayMentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(idBill);
+        if(findAllPayMentByIdBillAndMethod.size() > 0){
+            invoice.setMethod(true);
+        }else{
+            invoice.setMethod(false);
+        }
+        if(optional.get().getTypeBill() == TypeBill.ONLINE || optional.get().getStatusBill() ==StatusBill.CHO_XAC_NHAN || findAllByBill.size() > 1){
+            invoice.setTypeBill(true);
+        }else{
+            invoice.setTypeBill(false);
+        }
         Date date = new Date(optional.get().getCreatedDate());
 
-        SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String formattedDate = formatterDate.format(date);
         invoice.setDate(formattedDate);
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
