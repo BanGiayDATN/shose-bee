@@ -25,6 +25,7 @@ public class InvoiceResponse {
     private String note;
     private String moneyShip;
     private String totalBill;
+    private String date;
     private List<InvoiceItemResponse> items;
     private List<InvoicePaymentResponse> paymentsMethodRequests;
 

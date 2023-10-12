@@ -62,13 +62,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -767,6 +761,12 @@ public class BillServiceImpl implements BillService {
         });
         invoice.setPaymentsMethodRequests(paymentsMethodRequests);
         invoice.setItems(items);
+
+        Date date = new Date(optional.get().getCreatedDate());
+
+        SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = formatterDate.format(date);
+        invoice.setDate(formattedDate);
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
 
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
