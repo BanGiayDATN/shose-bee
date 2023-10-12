@@ -68,7 +68,6 @@ const CreateProductManagment = () => {
   const dataCategory = useAppSelector(GetCategory);
   const dataMaterial = useAppSelector(GetMaterail);
   const dataBrand = useAppSelector(GetBrand);
-  const dataSize = useAppSelector(GetSize);
 
   const initialValues = {
     status: "DANG_SU_DUNG",
@@ -282,6 +281,12 @@ const CreateProductManagment = () => {
           });
         });
         formData.append("data", JSON.stringify(updatedTableData));
+
+        if (updatedTableData.length === 0) {
+          toast.warning("Bạn không có sản phẩm để thêm.");
+          return;
+        }
+
         ProducDetailtApi.addListProduct(formData)
           .then((response) => {
             console.log(response.data);
@@ -312,7 +317,7 @@ const CreateProductManagment = () => {
       title: <div style={{ textAlign: "center" }}>Tên Sản Phẩm</div>,
       dataIndex: "productId",
       key: "productId",
-      width: "25%",
+      width: "32%",
       render: (productId, record) =>
         `${productId} [ ${record.size} - ${getColorName(record.color)} ]`,
     },
@@ -368,6 +373,7 @@ const CreateProductManagment = () => {
       title: <div style={{ textAlign: "center" }}>Upload Ảnh</div>,
       dataIndex: "color",
       key: "color",
+      width: "100%",
       render: (color, record, index) => {
         // Lọc các dòng có cùng màu sắc
         const rowsWithSameColor = tableData.filter(

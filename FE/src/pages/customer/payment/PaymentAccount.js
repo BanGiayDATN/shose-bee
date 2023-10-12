@@ -126,6 +126,7 @@ function PaymentAccount() {
     if (formBill.paymentMethod === "paymentVnpay") {
       const data = {
         vnp_Ammount: totalBefore,
+        billDetail: listproductOfBill,
       };
       PaymentClientApi.paymentVnpay(data).then(
         (res) => {
@@ -133,7 +134,7 @@ function PaymentAccount() {
           sessionStorage.setItem("formBill", JSON.stringify(formBill));
         },
         (err) => {
-          console.log(err);
+          toast.error(err.response.data.message);
         }
       );
     } else {

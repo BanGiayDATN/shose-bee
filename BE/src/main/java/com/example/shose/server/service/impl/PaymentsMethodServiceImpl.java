@@ -1,18 +1,25 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
+import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
+import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
+import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
+import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
+import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
+import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.FormUtils;
 import com.example.shose.server.util.payMent.Config;
@@ -49,6 +56,12 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Autowired
     private BillHistoryRepository billHistoryRepository;
+
+    @Autowired
+    private BillDetailRepository billDetailRepository;
+
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
 
     @Autowired
     private AccountRepository accountRepository;
@@ -186,6 +199,16 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
+    public boolean changeQuantityProduct(QuantityProductPaymentRequest request) {
+        for (BillDetailOnline x : request.getBillDetail()) {
+            ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
+            productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
+            productDetailRepository.save(productDetail);
+        }
+        return true;
+    }
+
+    @Override
     public boolean updatepayMent(String idBill,String idEmployees, List<String> ids) {
         Optional<Bill> bill = billRepository.findById(idBill);
         Optional<Account> account = accountRepository.findById(idEmployees);
@@ -213,6 +236,14 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Override
     public String payWithVNPAYOnline(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
+        payModel.getBillDetail().forEach(item -> {
+            ProductDetail productDetail = productDetailRepository.findById(item.getIdProductDetail()).get();
+            if (productDetail.getQuantity() < item.getQuantity()) {
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
+            productDetailRepository.save(productDetail);
+        });
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
