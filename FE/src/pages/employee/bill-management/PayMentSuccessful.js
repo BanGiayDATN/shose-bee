@@ -84,9 +84,9 @@ function PayMentSuccessful() {
     setAmount(getAmount());
     PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {});
   }, []);
-  setTimeout(() => {
-    window.open("http://localhost:3000/sale-counter", "_self");
-  }, 10000);
+  // setTimeout(() => {
+  //   window.open("http://localhost:3000/sale-counter", "_self");
+  // }, 10000);
   return (
     <>
       <div className="header-payment-success">
@@ -107,9 +107,9 @@ function PayMentSuccessful() {
             />
             <h1>Thanh toán thành công</h1>
             <div style={{ marginTop: "5%" }}>
-              Tổng thanh toán: {formatCurrency(amount)}
+              Tổng thanh toán: {formatCurrency(amount /100)}
             </div>
-            <Link to="/sale">Tiếp tục mua</Link>
+            <Link to="/sale-counter">Tiếp tục bán hàng</Link>
           </div>
         ) : (
           <div className="content-payment-success">
@@ -120,7 +120,7 @@ function PayMentSuccessful() {
             <h1>Thanh toán thất bại</h1>
             <div>
               <Link style={{ marginLeft: "10px" }} to="/sale-counter">
-                Tiếp tục mua
+                Tiếp tục bán hàng
               </Link>
             </div>
           </div>
