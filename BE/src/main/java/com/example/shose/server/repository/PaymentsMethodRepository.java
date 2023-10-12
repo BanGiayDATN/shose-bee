@@ -50,4 +50,10 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod, 
                     WHERE pa.id_bill = :idBill
                     """, nativeQuery = true)
     void updateAllByIdBill(@Param("idBill") String idBill);
+
+    @Query(value = """
+                    SELECT id FROM payments_method
+                    WHERE vnp_transaction_no = :code
+                    """, nativeQuery = true)
+    List<String> findAllByVnpTransactionNo(@Param("code") String code);
 }
