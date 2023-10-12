@@ -1,4 +1,4 @@
-package com.example.shose.server.dto.request.login;
+package com.example.shose.server.infrastructure.sercurity.logindto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class LoginRequest {
+public class ResetPassword {
 
-    private  String email ;
+    private  String emailForgot ;
 
-    private String password;
+    private String phoneNumber;
 }

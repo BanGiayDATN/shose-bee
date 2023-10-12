@@ -150,7 +150,10 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
-          <Route path="/" element={<Navigate replace to="/dashboard" />} />
+          <Route
+            path="/"
+            element={<Navigate replace to="/login-management" />}
+          />
           <Route
             path="/home"
             element={

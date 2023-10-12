@@ -1,6 +1,7 @@
-package com.example.shose.server.dto.request.login;
+package com.example.shose.server.infrastructure.sercurity.logindto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,9 +12,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ResetPassword {
+@Builder
+public class ResponseToken {
 
-    private  String emailForgot ;
+    private String accessToken;
 
-    private String phoneNumber;
+    private String refreshToken;
 }

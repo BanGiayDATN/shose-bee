@@ -26,7 +26,7 @@ const LoginManagement = () => {
         window.location.href = "/dashboard";
       })
       .catch((err) => {
-        toast.error("Tài khoản hoặc mật khẩu không đúng");
+        console.log("Tài khoản hoặc mật khẩu không đúng");
       });
   };
 
@@ -56,7 +56,7 @@ const LoginManagement = () => {
             toast.success("Đổi mật khẩu thành công");
           })
           .catch((err) => {
-            toast.error("Tài khoản hoặc mật khẩu không đúng");
+            console.log("Tài khoản hoặc mật khẩu không đúng");
           });
       })
       .catch(() => {

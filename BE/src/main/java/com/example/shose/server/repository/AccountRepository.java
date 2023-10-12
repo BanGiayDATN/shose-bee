@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -39,4 +40,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
             "LEFT JOIN bill bi ON bi.id_account = ac.id\n" +
             "WHERE bi.id  = :idBill", nativeQuery = true)
     AccountResponse getAccountUserByIdBill(@Param("idBill") String idBill );
+
+    @Query("SELECT ac FROM Account ac WHERE ac.email =:email")
+    Optional<Account> findByEmail(String email);
 }
