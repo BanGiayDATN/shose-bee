@@ -36,7 +36,7 @@ public interface SoleRepository extends JpaRepository<Sole, String> {
             GROUP BY s.id
             ORDER BY s.last_modified_date DESC         
             """, nativeQuery = true)
-    List<SoleResponse> getAll(@Param(("req")) FindSoleRequest req);
+    List<SoleResponse> getAll(@Param("req") FindSoleRequest req);
 
     @Query("SELECT s FROM Sole s WHERE s.name =:name")
     Sole getByName(@Param("name") String name);

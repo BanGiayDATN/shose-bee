@@ -131,14 +131,16 @@ function PaymentAccount() {
     if (formBill.paymentMethod === "paymentVnpay") {
       const data = {
         vnp_Ammount: totalBefore,
+        billDetail: listproductOfBill,
       };
+      console.log(listproductOfBill);
       PaymentClientApi.paymentVnpay(data).then(
         (res) => {
           window.location.replace(res.data.data);
           sessionStorage.setItem("formBill", JSON.stringify(formBill));
         },
         (err) => {
-          console.log(err);
+          toast.error(err.response.data.message);
         }
       );
     } else {

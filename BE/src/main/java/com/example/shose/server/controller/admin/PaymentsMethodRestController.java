@@ -2,6 +2,7 @@ package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
+import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ResponseObject;

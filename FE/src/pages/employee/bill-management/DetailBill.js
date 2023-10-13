@@ -1133,6 +1133,16 @@ function DetailBill() {
 
   // begin delete product
 
+  const xuatPdf =() => {
+    BillApi.exportPdf(id).then(
+      (res) => {
+     
+      },
+      (err) => {
+        console.log(err);
+      }
+    )
+  }
   const removeProductInBill = (idProduct, size) => {
     Modal.confirm({
       title: "Xác nhận",
@@ -1196,7 +1206,7 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    span={statusPresent < 6 ? 7 : 0}
+                    // span={statusPresent < 6 ? 7 : 0}
                   >
                     {statusPresent < 6  ? (
                       <Button
@@ -1214,6 +1224,18 @@ function DetailBill() {
                     ) : (
                       <div></div>
                     )}
+                    <Button
+                        type="primary"
+                        className="btn btn-primary"
+                        onClick={(e) => xuatPdf(e)}
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "500",
+                          marginLeft: "20px",
+                        }}
+                      >
+                        Xuất hóa đơn
+                      </Button>
                   </Col>
                   <Col span={statusPresent < 2 ? 6 : 0}>
                     {statusPresent < 2 ? (
