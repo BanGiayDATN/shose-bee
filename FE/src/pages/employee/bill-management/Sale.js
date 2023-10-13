@@ -61,6 +61,7 @@ function Sale() {
                   />
               ),
               key: newActiveKey,
+              code: res.data.data.code
             },
           ]));
           dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`));
@@ -87,6 +88,7 @@ function Sale() {
                 />
             ),
             key: newActiveKey,
+            code: res.data.data.code
           };
         });
        
@@ -94,6 +96,23 @@ function Sale() {
         dispatch(getAllBillWait(defaultPanes));
         setActiveKey('1');
       }
+      const code = localStorage.getItem("code");
+      if(code == null || code ==" " || code == undefined){
+        localStorage.setItem("code", " ");
+      }else{
+        const targetIndex = items.findIndex((pane) => pane.code === code);
+        const newPanes = items.filter((pane) => pane.code !== code);
+        if (newPanes.length > 0 && targetIndex >= 0) {
+          const { key } =
+              newPanes[
+                  targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
+                  ];
+          setActiveKey(key);
+          setChangTab(key);
+          dispatch(updateKeyBillAtCounter(key))
+          dispatch(getAllBillWait(newPanes));
+      }
+    }
     });
   }, []);
 
@@ -120,6 +139,7 @@ function Sale() {
               />
           ),
           key: newActiveKey,
+          code: res.data.data.code
         },)
          
         );
