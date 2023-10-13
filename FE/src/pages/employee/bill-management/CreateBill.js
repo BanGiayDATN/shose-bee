@@ -251,6 +251,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         code: code,
         openDelivery: isOpenDelivery,
       };
+      console.log(data)
       BillApi.updateBillWait(data).then((res) => {});
     }
   };
@@ -318,6 +319,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           price: item.price,
           idSizeProduct: item.idProduct,
           maxQuantity: item.maxQuantity,
+          promotion: item.promotion
         };
       });
       setProducts(data);
