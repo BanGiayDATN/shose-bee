@@ -755,6 +755,7 @@ public class BillServiceImpl implements BillService {
                     .name(billDetailRequest.getProductName())
                     .priceVn(formatter.format(billDetailRequest.getPrice()))
                     .quantity(billDetailRequest.getQuantity())
+                    .promotion(billDetailRequest.getPromotion())
                     .build();
             items.add(invoiceItemResponse);
         });
