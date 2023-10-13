@@ -137,9 +137,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }, [keyTab]);
 
   const updateBill = () => {
-    console.log("update");
-    console.log(voucher);
-    console.log(accountuser);
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -170,7 +167,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var idAccount = "";
     if (accountuser != null) {
-      console.log(accountuser);
       idAccount = accountuser.idAccount;
     }
     var typeBill = "OFFLINE";
@@ -210,7 +206,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         price: product.price,
         promotion: product.promotion
       }));
-      console.log(newProduct);
       var newVoucher = [];
       if (voucher.idVoucher != "") {
         newVoucher.push(voucher);
@@ -355,7 +350,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       setDataPayMent(data);
     });
     AccountApi.getAccountUserByIdBill(id).then((res) => {
-      console.log(res);
       setAccountUser(res.data.data);
     });
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
@@ -1463,11 +1457,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       vnp_Ammount: totalMoneyPayMent,
       vnp_TxnRef: billRequest.code,
     };
+    localStorage.setItem("code", billRequest.code);
+    updateBillWhenSavePayMent([...dataPayment]);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
       window.open(res.data.data, "_self");
     });
-    updateBillWhenSavePayMent([...dataPayment]);
     setTotalMoneyPayment("");
     form.resetFields();
     setVnp_TransactionNo("");
@@ -1536,7 +1531,7 @@ const getPromotionColor = (promotion) => {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        {console.log(products)}
+
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
