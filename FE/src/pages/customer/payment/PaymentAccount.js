@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./style-payment-account.css";
-import { Row, Col, InputNumber, Input, Select, Form } from "antd";
+import { Row, Col, InputNumber, Input, Select, Form, Modal, Button, Radio } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
@@ -18,6 +18,9 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
 import { useCart } from "../cart/CartContext";
+import { AddressApi } from "../../../api/customer/address/address.api";
+import ModalCreateAddress from "../../employee/customer-management/modal/ModalCreateAddress";
+import ModalUpdateAddress from "../../employee/customer-management/modal/ModalUpdateAddress";
 dayjs.extend(utc);
 function PaymentAccount() {
   const { updateTotalQuantity } = useCart();
@@ -35,8 +38,8 @@ function PaymentAccount() {
     phoneNumber: "",
     totalMoney: 0,
     userName: "",
-    idVoucher:"",
-    afterPrice:0
+    idVoucher: "",
+    afterPrice: 0
   });
   const [moneyShip, setMoneyShip] = useState(0);
   const [dayShip, setDayShip] = useState("");
@@ -54,12 +57,13 @@ function PaymentAccount() {
   const [totalAfter, setTotalAfter] = useState({});
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
- 
+
     getAddressDefault(idAccount);
     moneyBefore();
-   
+
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % comercial.length);
     }, 3000);
@@ -75,7 +79,7 @@ function PaymentAccount() {
   }, [totalBefore]);
   useEffect(() => {
     setTotalBefore(total.totalMoney - voucher.value);
-    
+
   }, [total]);
   useEffect(() => {
     formBillChange("afterPrice", totalAfter)
@@ -84,24 +88,24 @@ function PaymentAccount() {
   useEffect(() => {
     setTotalAfter(totalBefore + moneyShip);
     formBillChange("moneyShip", moneyShip)
-    
+
   }, [moneyShip]);
   useEffect(() => {
     getMoneyShip(addressDefault.districtId, addressDefault.wardCode);
     getDayShip(addressDefault.districtId, addressDefault.wardCode)
     const updatedListproductOfBill = listproductOfBill.map((item) => {
-      const { nameProduct, nameSize,image, ...rest } = item;
+      const { nameProduct, nameSize, image, ...rest } = item;
       return rest;
     });
     setFormBill((prevFormBill) => ({
       ...prevFormBill,
       "address": addressDefault.line + ", " + addressDefault.ward + " - " + addressDefault.district + " - " + addressDefault.province,
       "phoneNumber": addressDefault.phoneNumber,
-      "userName": addressDefault.fullname,
+      "userName": addressDefault.fullName,
       "idVoucher": voucher.idVoucher,
       "itemDiscount": voucher.value,
-      "billDetail":updatedListproductOfBill,
-      "idAccount":idAccount
+      "billDetail": updatedListproductOfBill,
+      "idAccount": idAccount
     }));
     console.log(addressDefault);
   }, [addressDefault]);
@@ -114,6 +118,7 @@ function PaymentAccount() {
     AddressClientApi.getByAccountAndStatus(idAccount).then(
       (res) => {
         setAddressDefault(res.data.data);
+        setUserId(res.data.data.userId)
       },
       (err) => {
         console.log(err);
@@ -121,7 +126,7 @@ function PaymentAccount() {
     );
   };
   const payment = () => {
-   
+
 
     if (formBill.paymentMethod === "paymentVnpay") {
       const data = {
@@ -220,6 +225,48 @@ function PaymentAccount() {
     }));
   };
 
+  const [clickRadio, setClickRadio] = useState('');
+  const changeRadio = (index, item) => {
+    setClickRadio(index)
+    setAddressDefault(item)
+  }
+  const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
+  const [modalVisibleAddAddress, setModalVisibleAddAddress] = useState(false);
+  const [modalVisibleUpdateAddress, setModalVisibleUpdateAddress] =
+    useState(false);
+  const [addressId, setAddressId] = useState("");
+
+  const handleViewUpdate = (id) => {
+    setAddressId(id);
+    setModalVisibleUpdateAddress(true);
+    setIsModalAddressOpen(false);
+  };
+
+  const handleCancel = () => {
+    setModalVisibleAddAddress(false);
+    setModalVisibleUpdateAddress(false);
+  };
+
+  const handleOkAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const handleCancelAddress = () => {
+    setIsModalAddressOpen(false);
+  };
+  const handleOpenAddAdress = () => {
+    setIsModalAddressOpen(false);
+    setModalVisibleAddAddress(true);
+  };
+  const [listAddress, setListAddress] = useState([]);
+
+  const handleChangeAddress = () => {
+    console.log(listAddress);
+    setIsModalAddressOpen(true);
+    AddressApi.fetchAllAddressByUser(userId).then((res) => {
+      setListAddress(res.data.data);
+    });
+  };
+
   return (
     <div className="payment-acc">
       <div className="comercial">{comercial[currentTitleIndex].title}</div>
@@ -234,7 +281,7 @@ function PaymentAccount() {
             </div>
             <div>
               <span style={{ fontSize: 17, fontWeight: 600 }}>
-                {addressDefault.fullname}
+                {addressDefault.fullName}
               </span>
               {" | "}
               <span>{addressDefault.phoneNumber}</span>
@@ -247,7 +294,7 @@ function PaymentAccount() {
               ) : (
                 ""
               )}
-              <span className="change-address-payment">Thay đổi</span>
+              <span className="change-address-payment" onClick={handleChangeAddress}>Thay đổi</span>
             </div>
           </div>
           <div className="product-of-bill-acc">
@@ -316,17 +363,15 @@ function PaymentAccount() {
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${
-                  keyMethodPayment === "paymentReceive" ? "click" : ""
-                }`}
+                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
+                  }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${
-                  keyMethodPayment === "paymentVnpay" ? "click" : ""
-                }`}
+                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
+                  }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}
@@ -366,7 +411,81 @@ function PaymentAccount() {
           </div>
         </Col>
       </Row>
-    </div>
+      <ModalCreateAddress
+        visible={modalVisibleAddAddress}
+        onCancel={handleCancel}
+        id={userId}
+      />
+      <ModalUpdateAddress
+        visible={modalVisibleUpdateAddress}
+        onCancel={handleCancel}
+        id={addressId}
+      />
+      {/* begin modal Address */}
+      <Modal
+        title="Địa chỉ"
+        open={isModalAddressOpen}
+        onOk={handleOkAddress}
+        onCancel={handleCancelAddress}
+        height={400}
+      >
+        <Row style={{ width: "100%" }}>
+          <Col span={16}></Col>
+          <Col span={1}>
+            <Button onClick={() => handleOpenAddAdress()}>+ Thêm địa chỉ mới</Button>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: "20px" }}>
+        </Row>
+        <div style={{ overflowY: 'auto', height: '450px' }}>
+          {listAddress.map((item, index) => (
+            <div style={{ marginTop: "10px", marginBottom: "20px", borderTop: "1px solid grey", padding: "10px 0" }}>
+              <Row style={{ marginTop: "20px" }}>
+                <Col span={2}>
+                  <Radio
+                    name="group-radio"
+                    value={item}
+                    checked={!clickRadio ? item.status === "DANG_SU_DUNG" : index === clickRadio}
+                    onChange={() => changeRadio(index, item)}
+                  />
+                </Col>
+                <Col span={17}>
+                  <Row>
+                    <span style={{ fontSize: 17, fontWeight: 600, marginRight: 3 }}>
+                      {item.fullName}
+                    </span>
+                    {"  |  "}
+                    <span style={{marginTop:"2px",marginLeft: 3}}>{item.phoneNumber}</span>
+                  </Row>
+                  <Row>
+                    <span style={{ fontSize: 14}}>
+                      {item.address}
+                    </span>
+                  </Row>
+                  {item.status === "DANG_SU_DUNG" ? (
+                    <Row>
+                      <div style={{ marginTop: "10px", marginRight: "30px" }}>
+                        <span className="status-default-address">Mặc định</span>
+                      </div>
+                    </Row>
+                  ) : null}
+                </Col>
+                <Col span={4}>
+                  <Button type="dashed"
+                    title="Chọn"
+                    style={{
+                      border: "1px solid #ff4400",
+                      fontWeight: "470",
+                    }}
+                    onClick={() => handleViewUpdate(item.id)}> Cập nhật</Button>
+                </Col>
+              </Row>
+            </div>
+          ))}
+        </div>
+      </Modal>
+    </div >
+
   );
 }
 export default PaymentAccount;

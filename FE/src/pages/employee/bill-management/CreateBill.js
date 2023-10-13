@@ -387,6 +387,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     });
   }, []);
 
+  useEffect(() => {
+    if (valueAddressShip != null) {
+      handleWardChange(valueAddressShip.children, valueAddressShip);
+    }
+  }, [products]);
+
+
   const loadData = () => {
     CustomerApi.fetchAll().then(
       (res) => {
@@ -448,18 +455,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
     setAddress({ ...address, wards: valueWard.value });
-
     const totalQuantity = products.length > 0 ? products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.quantity;
     }, 0) : 1;
     setValueAddressShip(valueWard)
-    AddressApi.fetchAllMoneyShip(
-      valueWard.valueDistrict,
-      valueWard.valueWard,
-      totalQuantity
-    ).then((res) => {
-      setShipFee(res.data.data.total);
-    });
+    // số lượng sản phầm lớn hơn 2 free ship
+    if (totalQuantity > 2) {
+      setShipFee(0);
+    } else {
+      AddressApi.fetchAllMoneyShip(
+        valueWard.valueDistrict,
+        valueWard.valueWard,
+        totalQuantity
+      ).then((res) => {
+        setShipFee(res.data.data.total);
+      });
+    }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -1108,6 +1119,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
+
+  useEffect(() => {
+    if (valueAddressShip != null) {
+      handleWardChange(valueAddressShip.children, valueAddressShip);
+    }
+  }, [isModalProductOpen]);
 
   const handleQuantityDecrease = (record) => {
     const updatedListSole = products.map((item) =>
