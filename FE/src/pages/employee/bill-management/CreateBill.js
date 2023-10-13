@@ -49,7 +49,7 @@ import { Center, useInterval } from "@chakra-ui/react";
 import NumberFormat from "react-number-format";
 import { MdOutlinePayment } from "react-icons/md";
 import ModalQRScanner from "../product-management/modal/ModalQRScanner";
-import { faQrcode } from "@fortawesome/free-solid-svg-icons";
+import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { Navigate } from "react-router-dom";
@@ -1195,6 +1195,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               (res.data.data.price * (100 - res.data.data.promotion)) / 100,
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
+            promotion: res.data.data.promotion
           };
           setProducts((prevProducts) => [...prevProducts, newProduct]);
           toast.success("Thêm sản phẩm thành công ");
@@ -1480,6 +1481,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         input.value = input.id;
     }
 }
+const getPromotionStyle = (promotion) => {
+  return promotion >= 50 ? { color: "white" } : { color: "#000000" };
+};
+const getPromotionColor = (promotion) => {
+  return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
+};
+
   // open modal when payment vnpay
   return (
     <div style={{ width: "100%" }}>
@@ -1631,7 +1639,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   {index + 1}
                 </Col>
                 <Col span={4}>
-                  <img
+                  {/* <img
                     src={item.image}
                     alt="Ảnh sản phẩm"
                     style={{
@@ -1640,7 +1648,60 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       height: "110px",
                       marginLeft: "10px",
                     }}
-                  />
+                  /> */}
+                  <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src={item.image}
+            alt="Ảnh sản phẩm"
+            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
+          />
+          {item.promotion !== null && (
+            <div
+              style={{
+                position: "absolute",
+                top: "0px",
+                right: "0px",
+                padding: "0px",
+                cursor: "pointer",
+                borderRadius: "50%",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faBookmark}
+                style={{
+                  ...getPromotionColor(item.promotion),
+                  fontSize: "3.5em",
+                }}
+              />
+              <span
+                style={{
+                  position: "absolute",
+                  top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                  left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(item.promotion),
+                }}
+              >
+                {`${item.promotion}%`}
+              </span>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "60%", 
+                  left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(item.promotion),
+                }}
+              >
+                Giảm
+              </span>
+            </div>
+          )}
+        </div>
                 </Col>
                 <Col span={7}>
                   <Row>

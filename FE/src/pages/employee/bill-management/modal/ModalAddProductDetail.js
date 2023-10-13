@@ -54,6 +54,7 @@ function ModalAddProductDetail({
     price: "",
     idSizeProduct: "",
     maxQuantity: 1,
+    promotion: ""
   });
 
   // format tiền
@@ -354,6 +355,7 @@ function ModalAddProductDetail({
       price: (record.price * (100 - record.promotion)) / 100,
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
+      promotion: record.promotion
     };
     dispatch(addProductBillWait(data));
     setProductSelected(data);

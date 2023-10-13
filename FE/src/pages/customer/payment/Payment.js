@@ -177,6 +177,7 @@ function Payment() {
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
             vnp_Ammount: totalBillToPay,
+            billDetail: listproductOfBill,
           };
           PaymentClientApi.paymentVnpay(data).then(
             (res) => {

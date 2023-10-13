@@ -128,6 +128,7 @@ function PaymentAccount() {
         vnp_Ammount: totalBefore,
         billDetail: listproductOfBill,
       };
+      console.log(listproductOfBill);
       PaymentClientApi.paymentVnpay(data).then(
         (res) => {
           window.location.replace(res.data.data);
