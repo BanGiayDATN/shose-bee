@@ -1462,11 +1462,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       vnp_Ammount: totalMoneyPayMent,
       vnp_TxnRef: billRequest.code,
     };
+     updateBillWhenSavePayMent([...dataPayment]);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
       window.open(res.data.data, "_self");
     });
-    updateBillWhenSavePayMent([...dataPayment]);
     setTotalMoneyPayment("");
     form.resetFields();
     setVnp_TransactionNo("");
