@@ -208,7 +208,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         size: product.nameSize,
         quantity: product.quantity,
         price: product.price,
+        promotion: product.promotion
       }));
+      console.log(newProduct);
       var newVoucher = [];
       if (voucher.idVoucher != "") {
         newVoucher.push(voucher);
@@ -341,8 +343,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       });
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
-      console.log("datapayment");
-      console.log(res);
 
       const data = res.data.data.map((item) => {
         return {
@@ -817,6 +817,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       size: product.nameSize,
       quantity: product.quantity,
       price: product.price,
+      promotion: product.promotion
     }));
     var newVoucher = [];
     if (voucher.idVoucher != "") {
@@ -1462,11 +1463,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       vnp_Ammount: totalMoneyPayMent,
       vnp_TxnRef: billRequest.code,
     };
-     updateBillWhenSavePayMent([...dataPayment]);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
       window.open(res.data.data, "_self");
     });
+    updateBillWhenSavePayMent([...dataPayment]);
     setTotalMoneyPayment("");
     form.resetFields();
     setVnp_TransactionNo("");
