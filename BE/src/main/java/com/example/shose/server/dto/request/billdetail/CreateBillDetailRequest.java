@@ -30,5 +30,5 @@ public class CreateBillDetailRequest {
     @NotEmpty
     private String price;
 
-    private String promotion;
+    private Integer promotion;
 }
