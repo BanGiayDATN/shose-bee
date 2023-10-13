@@ -179,7 +179,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       address: addressuser,
       userName: billRequest.userName,
       itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
+      totalMoney: Math.round(totalBill),
       note: billRequest.note,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
@@ -238,7 +238,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         address: addressuser,
         userName: billRequest.userName,
         itemDiscount: voucher.discountPrice,
-        totalMoney: totalBill,
+        totalMoney: Math.round(totalBill),
         note: billRequest.note,
         statusPayMents: statusPayMents,
         typeBill: typeBill,
@@ -790,7 +790,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }, 0) +
       shipFee -
       voucher.discountPrice;
-    setTotalMoneyPayment(total);
+    setTotalMoneyPayment(Math.round(total));
   };
   const handleOkPayMent = () => {
     setIsModalPayMentOpen(false);
@@ -866,7 +866,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       address: addressuser,
       userName: billRequest.userName,
       itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
+      totalMoney: Math.round(totalBill),
       note: billRequest.note,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
@@ -890,7 +890,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         billRequest.userName != ""
       ) {
         if (totalBill > 0) {
-          if (totaPayMent >= totalBill) {
+          if (Math.round(totaPayMent) >= Math.round(totalBill)) {
             Modal.confirm({
               title: "Xác nhận",
               content: "Bạn có xác nhận đặt hàng không?",
@@ -918,7 +918,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (totaPayMent >= totalBill) {
+        if (Math.round(totaPayMent) >= Math.round(totalBill)) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",

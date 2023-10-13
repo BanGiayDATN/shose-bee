@@ -101,6 +101,7 @@ function Sale() {
         localStorage.setItem("code", " ");
       }else{
         const targetIndex = items.findIndex((pane) => pane.code === code);
+       if(targetIndex != -1){
         const newPanes = items.filter((pane) => pane.code !== code);
         if (newPanes.length > 0 && targetIndex >= 0) {
           const { key } =
@@ -111,6 +112,9 @@ function Sale() {
           setChangTab(key);
           dispatch(updateKeyBillAtCounter(key))
           dispatch(getAllBillWait(newPanes));
+       }else{
+        localStorage.setItem("code", " ");
+       }
       }
     }
     });
