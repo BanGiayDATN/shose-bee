@@ -1506,7 +1506,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
   }
 
-}
 const getPromotionStyle = (promotion) => {
   return promotion >= 50 ? { color: "white" } : { color: "#000000" };
 };
@@ -3010,6 +3009,7 @@ const getPromotionColor = (promotion) => {
 
       {/* end modal payment  */}
     </div>
-  );
+    );
+  }
 
 export default CreateBill;
