@@ -15,8 +15,8 @@ import java.util.List;
 public class CreatePayMentMethodTransferRequest {
 
     public String vnp_Ammount ;
-    public String vnp_OrderInfo = "Thanh toan hoa đơn";
-    public String vnp_OrderType = "Thanh toan hoa đơn";
+    public String vnp_OrderInfo = "Thanh toan hoa don";
+    public String vnp_OrderType = "Thanh toan hoa don";
     public String vnp_TxnRef;
     private List<BillDetailOnline> billDetail;
 

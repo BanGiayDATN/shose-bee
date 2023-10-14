@@ -35,6 +35,8 @@ import "react-toastify/dist/ReactToastify.css";
 import NumberFormat from "react-number-format";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import { AddressApi } from "../../../api/customer/address/address.api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -1746,16 +1748,59 @@ function DetailBill() {
                   {index + 1}
                 </Col>
                 <Col span={5}>
-                  <img
-                    src={item.image}
-                    alt="Ảnh sản phẩm"
-                    style={{
-                      width: "170px",
-                      borderRadius: "10%",
-                      height: "140px",
-                      marginLeft: "5px",
-                    }}
-                  />
+                <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src={item.image}
+            alt="Ảnh sản phẩm"
+            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
+          />
+          {item.promotion !== null && (
+            <div
+              style={{
+                position: "absolute",
+                top: "0px",
+                right: "0px",
+                padding: "0px",
+                cursor: "pointer",
+                borderRadius: "50%",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faBookmark}
+                style={{
+                  ...getPromotionColor(item.promotion),
+                  fontSize: "3.5em",
+                }}
+              />
+              <span
+                style={{
+                  position: "absolute",
+                  top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                  left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(item.promotion),
+                }}
+              >
+                {`${item.promotion}%`}
+              </span>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "60%", 
+                  left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(item.promotion),
+                }}
+              >
+                Giảm
+              </span>
+            </div>
+          )}
+        </div>
                 </Col>
                 <Col span={10}>
                   <Row>
