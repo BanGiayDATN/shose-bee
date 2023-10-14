@@ -232,6 +232,9 @@ public class BillServiceImpl implements BillService {
                 throw new RestApiException(Message.ERROR_QUANTITY);
             }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+            if(billDetailRequest.getPromotion() != null){
+                billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
+            }
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity(productDetail.get().getQuantity() - billDetailRequest.getQuantity());
             productDetailRepository.save(productDetail.get());
@@ -363,6 +366,9 @@ public class BillServiceImpl implements BillService {
                 throw new RestApiException(Message.ERROR_QUANTITY);
             }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+            if(billDetailRequest.getPromotion() != null){
+                billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
+            }
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity(productDetail.get().getQuantity() - billDetailRequest.getQuantity());
             if (productDetail.get().getQuantity() == 0) {
@@ -749,6 +755,7 @@ public class BillServiceImpl implements BillService {
                     .name(billDetailRequest.getProductName())
                     .priceVn(formatter.format(billDetailRequest.getPrice()))
                     .quantity(billDetailRequest.getQuantity())
+                    .promotion(billDetailRequest.getPromotion())
                     .build();
             items.add(invoiceItemResponse);
         });

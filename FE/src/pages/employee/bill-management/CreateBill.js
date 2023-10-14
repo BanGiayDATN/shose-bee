@@ -138,9 +138,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }, [keyTab]);
 
   const updateBill = () => {
-    console.log("update");
-    console.log(voucher);
-    console.log(accountuser);
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -171,7 +168,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var idAccount = "";
     if (accountuser != null) {
-      console.log(accountuser);
       idAccount = accountuser.idAccount;
     }
     var typeBill = "OFFLINE";
@@ -184,7 +180,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       address: addressuser,
       userName: billRequest.userName,
       itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
+      totalMoney: Math.round(totalBill),
       note: billRequest.note,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
@@ -209,6 +205,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         size: product.nameSize,
         quantity: product.quantity,
         price: product.price,
+        promotion: product.promotion
       }));
       var newVoucher = [];
       if (voucher.idVoucher != "") {
@@ -242,7 +239,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         address: addressuser,
         userName: billRequest.userName,
         itemDiscount: voucher.discountPrice,
-        totalMoney: totalBill,
+        totalMoney: Math.round(totalBill),
         note: billRequest.note,
         statusPayMents: statusPayMents,
         typeBill: typeBill,
@@ -255,7 +252,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         code: code,
         openDelivery: isOpenDelivery,
       };
-      BillApi.updateBillWait(data).then((res) => { });
+      console.log(data)
+      BillApi.updateBillWait(data).then((res) => {});
     }
   };
 
@@ -322,6 +320,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           price: item.price,
           idSizeProduct: item.idProduct,
           maxQuantity: item.maxQuantity,
+          promotion: item.promotion
         };
       });
       setProducts(data);
@@ -342,8 +341,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       });
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
-      console.log("datapayment");
-      console.log(res);
 
       const data = res.data.data.map((item) => {
         return {
@@ -356,7 +353,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       setDataPayMent(data);
     });
     AccountApi.getAccountUserByIdBill(id).then((res) => {
-      console.log(res);
       setAccountUser(res.data.data);
     });
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
@@ -814,7 +810,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }, 0) +
       shipFee -
       voucher.discountPrice;
-    setTotalMoneyPayment(total);
+    setTotalMoneyPayment(Math.round(total));
   };
   const handleOkPayMent = () => {
     setIsModalPayMentOpen(false);
@@ -835,6 +831,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       size: product.nameSize,
       quantity: product.quantity,
       price: product.price,
+      promotion: product.promotion
     }));
     var newVoucher = [];
     if (voucher.idVoucher != "") {
@@ -889,7 +886,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       address: addressuser,
       userName: billRequest.userName,
       itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
+      totalMoney: Math.round(totalBill),
       note: billRequest.note,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
@@ -913,7 +910,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         billRequest.userName != ""
       ) {
         if (totalBill > 0) {
-          if (totaPayMent >= totalBill) {
+          if (Math.round(totaPayMent) >= Math.round(totalBill)) {
             Modal.confirm({
               title: "Xác nhận",
               content: "Bạn có xác nhận đặt hàng không?",
@@ -941,7 +938,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (totaPayMent >= totalBill) {
+        if (Math.round(totaPayMent) >= Math.round(totalBill)) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
@@ -1486,11 +1483,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       vnp_Ammount: totalMoneyPayMent,
       vnp_TxnRef: billRequest.code,
     };
+    localStorage.setItem("code", billRequest.code);
+    updateBillWhenSavePayMent([...dataPayment]);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
       window.open(res.data.data, "_self");
     });
-    updateBillWhenSavePayMent([...dataPayment]);
     setTotalMoneyPayment("");
     form.resetFields();
     setVnp_TransactionNo("");
@@ -1559,7 +1557,7 @@ const getPromotionColor = (promotion) => {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        {console.log(products)}
+
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row

@@ -161,8 +161,11 @@
                     <tr>
                         <td class="td" th:text="${index.index  + 1}">BS-200</td>
                         <td class="td" th:text="${item.name}">BS-200</td>
-                        <td class="td" th:text="${item.priceVn}"></td>
-                        <td class="td" th:text="${item.quantity}">1</td>
+                        <td class="td" >
+                            <p th:text="${item.priceVn }"></p>
+                            <p style="font-size: 10px" th:text="${ (item.promotion == null ? '' : 'Giảm: '+ item.promotion + '%' )}"></p>
+                        </td>
+                        <td class="td" th:text="${item.quantity }">1</td>
                         <td class="td" th:text="${item.sum}">$10.99</td>
                     </tr>
                 </th:block>
