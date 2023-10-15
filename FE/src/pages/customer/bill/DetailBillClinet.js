@@ -38,7 +38,8 @@ var listStatus = [
 ];
 
 function DetailBillClinet() {
-  const { code } = useParams();
+  const { code } = useParams("code");
+  const { phoneNumber } = useParams("phoneNumber");
   const detailProductInBill = useSelector(
     (state) => state.bill.bill.billDetail
   );
@@ -47,7 +48,7 @@ function DetailBillClinet() {
   const bill = useSelector((state) => state.bill.bill.value);
   const statusPresent = useSelector((state) => state.bill.bill.status);
   const dispatch = useDispatch();
-  const [checkBillExit, setCCheckBillExit] = useState(true)
+  const [checkBillExit, setCheckBillExit] = useState(true)
 
   const formatCurrency = (value) => {
     const formatter = new Intl.NumberFormat("vi-VN", {
@@ -60,7 +61,9 @@ function DetailBillClinet() {
 
 
   useEffect(() => {
-    BillClientApi.fetchDetailBill(code).then((res) => {
+    console.log(code);
+    console.log(phoneNumber)
+    BillClientApi.fetchDetailBill(code,phoneNumber).then((res) => {
       dispatch(getBill(res.data.data));
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
@@ -83,7 +86,7 @@ function DetailBillClinet() {
         dispatch(getProductInBillDetail(res.data.data));
       });
     }).catch((e) =>{
-      setCCheckBillExit(false)
+      setCheckBillExit(false)
     })
 
   }, []);
@@ -255,7 +258,8 @@ function DetailBillClinet() {
 
   return (
     <div>
-      {checkBillExit ? ( <>
+      {checkBillExit ? (
+         <>
         <Row style={{ width: "100%" }}>
         <div
           className="row"
@@ -524,7 +528,7 @@ function DetailBillClinet() {
                   }}>
                   {index + 1}
                 </Col>
-                <Col span={10}>
+                <Col span={3}>
                 <div style={{ position: "relative", display: "inline-block" }}>
           <img
             src={item.image}
@@ -579,7 +583,7 @@ function DetailBillClinet() {
           )}
         </div>
                 </Col>
-                <Col span={10}>
+                <Col span={15}>
                   <Row>
                     {" "}
                     <span
@@ -712,7 +716,8 @@ function DetailBillClinet() {
           </Col>
         </Row>
       </Row>
-      </>) :( <Result
+      </>
+      ) :( <Result 
       status="404"
       title="404"
       subTitle="Xin lỗi, hóa đơn không tồn tại."

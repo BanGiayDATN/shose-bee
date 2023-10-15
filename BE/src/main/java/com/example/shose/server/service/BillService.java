@@ -55,5 +55,5 @@ public interface BillService {
 
     boolean createFilePdf(String idBill, HttpServletRequest request);
 
-    Bill findByCode(String code);
+    Bill findByCode(String code, String phoneNumber);
 }

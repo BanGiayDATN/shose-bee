@@ -14,7 +14,10 @@ import org.thymeleaf.context.Context;
 import java.io.FileOutputStream;
 import java.security.Principal;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Currency;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author thangdt
@@ -30,6 +33,19 @@ public class ExportFilePdfFormHtml {
 
         data.put("invoice", invoice);
 
+        context.setVariables(data);
+
+        return context;
+    }
+
+    public Context setDataSendMail(InvoiceResponse invoice, String url) {
+
+        Context context = new Context();
+
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("invoice", invoice);
+        data.put("url", url);
         context.setVariables(data);
 
         return context;

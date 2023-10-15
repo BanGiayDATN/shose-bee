@@ -16,10 +16,10 @@ export class BillClientApi {
   };
 
   //  code bill Detail 
-  static fetchDetailBill = (code) => {
+  static fetchDetailBill = (code,phoneNumber) => {
     return request({
       method: "GET",
-      url: `/client/bill/`+ code
+      url: `/client/bill/`+ code + "/"+phoneNumber
     });
   };
   static fetchAllBillHistoryInBill = (id) => {

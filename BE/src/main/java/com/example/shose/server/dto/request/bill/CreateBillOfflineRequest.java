@@ -56,6 +56,8 @@ public class CreateBillOfflineRequest {
 
     private String moneyShip;
 
+    private String email;
+
     @NotNull
     private List<CreateBillDetailRequest> billDetailRequests;
 

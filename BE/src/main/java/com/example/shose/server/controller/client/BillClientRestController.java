@@ -35,9 +35,13 @@ public class BillClientRestController {
         return new ResponseObject(billService.createBillAccountOnlineRequest(request));
     }
 
-    @GetMapping("/{code}")
-    public ResponseObject create(@PathVariable("code") String code)  {
-        return new ResponseObject(billService.findByCode(code));
+    @GetMapping("/{code}/{phoneNumber}")
+    public ResponseObject create(@PathVariable("code") String code, @PathVariable("phoneNumber") String phoneNumber)  {
+        return new ResponseObject(billService.findByCode(code, phoneNumber));
+    }
+    @GetMapping("/detail/{id}")
+    public ResponseObject detail(@PathVariable("id") String id){
+        return  new ResponseObject(billService.detail(id));
     }
 
 }
