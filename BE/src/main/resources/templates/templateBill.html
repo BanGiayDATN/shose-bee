@@ -177,7 +177,7 @@
                 <table>
                     <tbody>
                     <tr>
-                        <td class="thick-line" style="width: 49%"></td>
+                        <td class="thick-line" ></td>
                         <td class="thick-line"></td>
                         <td class="thick-line " style="font-size: 16px; font-weight: 500"><strong>Tổng Tiền hàng:</strong></td>
                         <td class="thick-line text-end" float="right" style="font-size: 18px; font-weight: 600" th:text="${invoice.totalMoney}"></td>
@@ -223,12 +223,20 @@
             </table>
         </div>
         <div class="" style="display: flex; justify-content: space-between" >
-            <div class="">Tổng thanh toán: </div>
-            <div style="text-align: end"  th:text="${invoice.totalPayment}"></div>
-        </div>
-        <div class="" style="display: flex; justify-content: space-between" >
-            <div class=""> Tiền Thối lại: </div>
-            <div style="text-align: end"  th:text="${invoice.change}"></div>
+            <table class="table table-condensed" style="width: 100%">
+                <thead>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td  float="right">Tổng thanh toán:</td>
+                        <td class="text-center" float="right" th:text="${invoice.totalPayment}"></td>
+                    </tr>
+                    <tr>
+                        <td  float="right">Tiền Thối lại:</td>
+                        <td class="text-center" float="right" th:text="${invoice.change}"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

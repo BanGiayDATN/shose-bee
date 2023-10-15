@@ -114,8 +114,6 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private AddressRepository addressRepository;
-    @Autowired
-    private CustomerRepository customerRepository;
 
     @Autowired
     private UserReposiory userReposiory;
@@ -179,6 +177,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setUserName(request.getUserName());
         optional.get().setAddress(request.getAddress());
         optional.get().setPhoneNumber(request.getPhoneNumber());
+        optional.get().setEmail(request.getEmail());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
@@ -310,6 +309,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setUserName(request.getUserName());
         optional.get().setAddress(request.getAddress());
         optional.get().setPhoneNumber(request.getPhoneNumber());
+        optional.get().setEmail(request.getEmail());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
@@ -524,20 +524,8 @@ public class BillServiceImpl implements BillService {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
-//            billHistoryPayMent.setActionDescription(request.getActionDescription());
             billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
-//            if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && paymentsMethodRepository.countPayMentPostpaidByIdBill(id) == 0) {
-//                bill.get().setStatusBill(StatusBill.DA_THANH_TOAN);
-//                BillHistory billHistoryPayMent = new BillHistory();
-//                billHistoryPayMent.setBill(bill.get());
-//                billHistoryPayMent.setStatusBill(StatusBill.DA_THANH_TOAN);
-////                billHistoryPayMent.setActionDescription(request.getActionDescription());
-//                billHistoryPayMent.setEmployees(account.get());
-//                billHistoryRepository.save(billHistoryPayMent);
-//            }
-
-
             billRepository.save(bill.get());
         });
         return true;
@@ -743,9 +731,9 @@ public class BillServiceImpl implements BillService {
         InvoiceResponse invoice = getInvoiceResponse(optional.get());
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-//        if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || optional.get().getEmail().isEmpty())){
-//            sendMail(invoice, "http://localhost:3000/bill/"+ idBill, optional.get().getEmail());
-//        }
+        if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || optional.get().getEmail().isEmpty())){
+            sendMail(invoice, "http://localhost:3000/bill/"+ idBill, optional.get().getEmail());
+        }
         exportFilePdfFormHtml.htmlToPdf(finalHtml,request, optional.get().getCode());
 //     end   create file pdf
         return true;
@@ -825,7 +813,7 @@ public class BillServiceImpl implements BillService {
         Context dataContextSendMail = exportFilePdfFormHtml.setDataSendMail(invoice, url);
         finalHtmlSendMail = springTemplateEngine.process("templateBillSendMail", dataContextSendMail);
         String subject = "Biên lai thanh toán ";
-        sendEmailService.sendEmailPasword(email,subject,finalHtmlSendMail);
+        sendEmailService.sendBill(email,subject,finalHtmlSendMail);
 
     }
 

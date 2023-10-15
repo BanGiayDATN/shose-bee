@@ -87,34 +87,28 @@
         </tr>
       </th:block>
       </tbody>
-      <table>
-        <tbody>
-        <tr>
-          <td class="thick-line" style="width: 49%"></td>
-          <td class="thick-line"></td>
-          <td class="thick-line " style="font-size: 16px; font-weight: 500"><strong>Tổng Tiền hàng:</strong></td>
-          <td class="thick-line text-end" float="right" style="font-size: 18px; font-weight: 600" th:text="${invoice.totalMoney}"></td>
-        </tr>
-        <tr>
-          <td class="border-0"></td>
-          <td class="nborder-0"></td>
-          <td class="border-0 " style="font-size: 16px; font-weight: 500"><strong>Giảm giá:</strong></td>
-          <td class="border-0no-line text-end" float="right" style="font-size: 18px; font-weight: 600" th:text="${invoice.itemDiscount}">ádsadasd</td>
-        </tr>
-        <tr>
-          <td class="border-0"></td>
-          <td class="border-0"></td>
-          <td class="border-0 " style="font-size: 16px; font-weight: 500"><strong>Tổng thanh toán:</strong></td>
-          <td class="border-0  text-end" float="right" style="font-size: 18px; font-weight: 600" th:text="${(invoice.totalBill)}">
-          </td>
-        </tr>
-        <tr style="margin-top: 5px">
-          <td class="border-0"></td>
-          <td class="border-0 " colspan="3"><strong style="font-weight: 500; font-size: 16px " th:text="${'Tổng số lượng sản phẩm: '+invoice.items.size() + ' '}"></strong></td>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+    </table>
+    <table>
+      <tbody>
+      <tr>
+        <td class="thick-line " s><strong>Tổng Tiền hàng:</strong></td>
+        <td class="thick-line text-end" float="right"  th:text="${invoice.totalMoney}"></td>
+      </tr>
+      <tr>
+        <td class="border-0 " ><strong>Giảm giá:</strong></td>
+        <td class="border-0no-line text-end" float="right" th:text="${invoice.itemDiscount}">ádsadasd</td>
+      </tr>
+      <tr>
+        <td class="border-0 "><strong>Tổng thanh toán:</strong></td>
+        <td class="border-0  text-end" float="right"  th:text="${(invoice.totalBill)}">
+        </td>
+      </tr>
+      <tr style="margin-top: 5px">
+        <td class="border-0"></td>
+        <td class="border-0 " colspan="3"><strong  th:text="${'Tổng số lượng sản phẩm: '+invoice.items.size() + ' '}"></strong></td>
+        </td>
+      </tr>
+      </tbody>
     </table>
   </div>
 </div>
@@ -136,14 +130,22 @@
     </table>
   </div>
   <div class="" style="display: flex; justify-content: space-between" >
-    <div class="">Tổng thanh toán: </div>
-    <div style="text-align: end"  th:text="${invoice.totalPayment}"></div>
+    <table class="table table-condensed" style="width: 100%">
+      <thead>
+      </thead>
+      <tbody>
+      <tr>
+        <td  float="right">Tổng thanh toán:</td>
+        <td class="text-center" float="right" th:text="${invoice.totalPayment}"></td>
+      </tr>
+      <tr>
+        <td  float="right">Tiền Thối lại:</td>
+        <td class="text-center" float="right" th:text="${invoice.change}"></td>
+      </tr>
+      </tbody>
+    </table>
   </div>
-  <div class="" style="display: flex; justify-content: space-between" >
-    <div class=""> Tiền Thối lại: </div>
-    <div style="text-align: end"  th:text="${invoice.change}"></div>
-  </div>
-  <div style="font-size: 18px; font-weight: 700; text-align: center; width: 100%">Cám ơn Quý khách đã sử dụng dịch vụ của Bee shose</div>
+  <div style="font-size: 18px;margin-top: 20px; font-weight: 700; text-align: center; width: 100%">Cám ơn Quý khách đã sử dụng dịch vụ của Bee shose</div>
   <div >
     <div class="" style="display: flex; justify-content: center; margin-top: 10px">Quý khách xem thông tin chi tiết đơn hàng </div></br>
     <div class="" style="display: flex; justify-content: center">

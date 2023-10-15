@@ -50,6 +50,8 @@ public class Bill extends PrimaryEntity {
     @Column(name = "total_money ")
     private BigDecimal totalMoney;
 
+    private String email;
+
     @Column(name = "confirmation_date")
     private Long confirmationDate;
 
