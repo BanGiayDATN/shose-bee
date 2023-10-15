@@ -1,23 +1,17 @@
-import { Button, Col, Row, Table, Tabs } from "antd";
-import Search from "antd/es/input/Search";
-import React, { useCallback, useRef, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Button, Col, Row, Tabs } from "antd";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import { BillApi } from "../../../api/employee/bill/bill.api";
-import { useAppDispatch } from "../../../app/hook";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BillApi } from "../../../api/employee/bill/bill.api";
+import { useAppDispatch } from "../../../app/hook";
 import {
   addBillAtCounTer,
   addBillWait,
-  deleteBillWait,
-  getAllBillAtCounter,
   getAllBillWait,
-  updateKeyBillAtCounter,
+  updateKeyBillAtCounter
 } from "../../../app/reducer/Bill.reducer";
-import moment from "moment";
 import CreateBill from "./CreateBill";
 import "./sale.css";
 

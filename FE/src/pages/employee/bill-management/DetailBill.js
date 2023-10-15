@@ -9,34 +9,32 @@ import {
   Select,
   Table,
 } from "antd";
-import TimeLine from "./TimeLine";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { BillApi } from "../../../api/employee/bill/bill.api";
 import {
-  addPaymentsMethod,showModalBill,
+  addPaymentsMethod,
   addStatusPresent,
   getBill,
   getBillHistory,
   getPaymentsMethod,
-  getProductInBillDetail,
+  getProductInBillDetail
 } from "../../../app/reducer/Bill.reducer";
-import moment from "moment";
-import { useState } from "react";
-import { BillApi } from "../../../api/employee/bill/bill.api";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import React from "react";
+import TimeLine from "./TimeLine";
 
-import { useParams } from "react-router";
-import { addBillHistory } from "../../../app/reducer/Bill.reducer";
-import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
-import "./detail.css";
+import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TextArea from "antd/es/input/TextArea";
+import NumberFormat from "react-number-format";
+import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import NumberFormat from "react-number-format";
-import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import { AddressApi } from "../../../api/customer/address/address.api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import { addBillHistory } from "../../../app/reducer/Bill.reducer";
+import "./detail.css";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },

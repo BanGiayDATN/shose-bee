@@ -1,4 +1,5 @@
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Button,
   Col,
@@ -6,55 +7,36 @@ import {
   Input,
   InputNumber,
   Modal,
+  Radio,
   Row,
   Select,
-  Table,
-  Tabs,
-  Tooltip,
-  Radio,
   Switch,
+  Table
 } from "antd";
-import React, { useEffect, useState } from "react";
-import "./create-bill.css";
-import { BsFillTrash3Fill, BsTrash } from "react-icons/bs";
-import "./style-bill.css";
-import { useSelector } from "react-redux";
-import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
-import { useNavigate } from "react-router-dom";
-import { FaShoppingBag } from "react-icons/fa";
-import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import { CiDeliveryTruck } from "react-icons/ci";
-import {
-  GetCustomer,
-  SetCustomer,
-} from "../../../app/reducer/Customer.reducer";
-import { CustomerApi } from "../../../api/employee/account/customer.api";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
-import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
-import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
-import {
-  GetPromotion,
-  SetPromotion,
-} from "../../../app/reducer/Promotion.reducer";
-import ModalAddProductDetail from "./modal/ModalAddProductDetail";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import dayjs from "dayjs";
-import { AddressApi } from "../../../api/customer/address/address.api";
-import { set, values } from "lodash";
-import { Center, useInterval } from "@chakra-ui/react";
-import NumberFormat from "react-number-format";
+import React, { useEffect, useState } from "react";
+import { BsFillTrash3Fill, BsTrash } from "react-icons/bs";
+import { CiDeliveryTruck } from "react-icons/ci";
+import { FaShoppingBag } from "react-icons/fa";
 import { MdOutlinePayment } from "react-icons/md";
-import ModalQRScanner from "../product-management/modal/ModalQRScanner";
-import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
-import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
-import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
-import { Navigate } from "react-router-dom";
+import NumberFormat from "react-number-format";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AddressApi } from "../../../api/customer/address/address.api";
 import { AccountApi } from "../../../api/employee/account/account.api";
+import { CustomerApi } from "../../../api/employee/account/customer.api";
+import { BillApi } from "../../../api/employee/bill/bill.api";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import { VoucherDetailApi } from "../../../api/employee/voucherDetail/VoucherDetail.api";
+import ModalQRScanner from "../product-management/modal/ModalQRScanner";
+import "./create-bill.css";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import "./style-bill.css";
 
 function generateUniqueRandomNumber(length) {
   const numbers = new Set();

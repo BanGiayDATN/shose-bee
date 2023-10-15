@@ -1,17 +1,13 @@
-import { Row } from "antd";
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "./style-payment-success.css";
-import logo from "./../../../assets/images/logo_client.png";
-import { white } from "color-name";
-import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import {
   faSquareCheck,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import logo from "./../../../assets/images/logo_client.png";
+import "./style-payment-success.css";
 
 const getUrlVars = () => {
   const urlParams = new URLSearchParams(window.location.search);
