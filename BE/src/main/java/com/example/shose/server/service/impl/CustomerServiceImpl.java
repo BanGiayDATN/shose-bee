@@ -113,6 +113,8 @@ public class CustomerServiceImpl implements CustomerService {
         address.setLine(addressRequest.getLine());
         address.setProvince(addressRequest.getProvince());
         address.setDistrict(addressRequest.getDistrict());
+        address.setFullName(request.getFullName());
+        address.setPhoneNumber(request.getPhoneNumber());
         address.setUser(addressUser); // add địa chỉ vào database
         addressRepository.save(address);
 
@@ -169,6 +171,8 @@ public class CustomerServiceImpl implements CustomerService {
         address.setProvince(addressRequest.getProvince());
         address.setStatus(Status.DANG_SU_DUNG);
         address.setDistrict(addressRequest.getDistrict());
+        address.setFullName(request.getFullName());
+        address.setPhoneNumber(request.getPhoneNumber());
         address.setUser(user);
         addressRepository.save(address);
         return user;
