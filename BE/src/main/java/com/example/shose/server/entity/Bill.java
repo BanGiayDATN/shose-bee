@@ -1,7 +1,6 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
-import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;

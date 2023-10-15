@@ -722,7 +722,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const addPayMent = (e, method) => {
     if (method == "CHUYEN_KHOAN") {
-      // showModal(e);
       updateBillWhenSavePayMent([...dataPayment]);
       submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
@@ -1434,59 +1433,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     return formatter.format(value);
   };
 
-  //  open modal when payment vnpay
-  const [isModalOpenVnpay, setIsModalOpenVnpay] = useState(false);
-  const showModal = (e) => {
-    updateBillWhenSavePayMent([...dataPayment]);
-    setIsModalOpenVnpay(true);
-  };
-  const handleOk = () => {
-    setIsModalOpenVnpay(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpenVnpay(false);
-  };
-  const [vnp_TransactionNo, setVnp_TransactionNo] = useState("");
-  const changeVnp_TransactionNo = (e, value) => {
-    setVnp_TransactionNo(value);
-  };
-
-  const submitCodeTransaction = async (e) => {
-    var data = {
-      actionDescription: "",
-      method: "CHUYEN_KHOAN",
-      totalMoney: totalMoneyPayMent,
-      status: "THANH_TOAN",
-      vnp_TransactionNo: vnp_TransactionNo,
-    };
-    var dataPaymentVnPay = {
-      vnp_Amount: totalMoneyPayMent,
-      vnp_ResponseCode: "00",
-      vnp_TxnRef: billRequest.code,
-      vnp_OrderInfo: "thanh toan",
-      vnp_TransactionNo: vnp_TransactionNo,
-    };
-    var createDataPayment = [...dataPayment, data];
-    Modal.confirm({
-      title: "Xác nhận",
-      content: "Bạn có xác nhận không?",
-      okText: "Đồng ý",
-      cancelText: "Hủy",
-      onOk: async () => {
-        PaymentsMethodApi.checkPaymentVnPay(dataPaymentVnPay).then((res) => {});
-        updateBillWhenSavePayMent(createDataPayment);
-        setDataPayMent([...dataPayment, data]);
-      },
-      onCancel: () => {},
-    });
-
-    handleCancel();
-    setTotalMoneyPayment("");
-    form.resetFields();
-    setVnp_TransactionNo("");
-    formCheckCodeVnPay.resetFields();
-  };
-
+  //   payment vnpay
+ 
   const submitCodeTransactionNext = (e) => {
     var totalBill =
       products.reduce((accumulator, currentValue) => {
@@ -1507,18 +1455,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
     setTotalMoneyPayment("");
     form.resetFields();
-    setVnp_TransactionNo("");
     formCheckCodeVnPay.resetFields();
   };
 
-  function checkQuantity(input) {
-    let max = input.getAttribute("max");
-    if (!Number.isInteger(input.value)) {
-      input.value = input.id;
-    } else if (input.value > max) {
-      input.value = input.id;
-    }
-  }
   const getPromotionStyle = (promotion) => {
     return promotion >= 50 ? { color: "white" } : { color: "#000000" };
   };
@@ -2877,33 +2816,35 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-            {optionsPayMent.map((item) => (
-              <Col span={8} style={{ marginTop: "10px" }}>
-                <Button
-                  type="primary"
-                  onClick={(e) => addPayMent(e, item.value)}
-                  style={{
-                    margin: "0 5px",
-                    borderRadius: "25px",
-                    width: "98%",
-                    alignItems: "center",
-                  }}
-                  disabled={
-                    item.value != "TIEN_MAT"
-                      ? item.value != "TIEN_MAT" &&
-                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
-                        ? true
-                        : false
-                      : item.value == "TIEN_MAT" &&
-                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
-                      ? true
-                      : false
-                  }
-                >
-                  {item.label}
-                </Button>
-              </Col>
-            ))}
+          <Col span={12} style={{ marginTop: "10px" }}>
+              <Button
+                type="primary"
+                onClick={(e) => addPayMent(e, "TIEN_MAT")}
+                style={{
+                  margin: "0 5px",
+                  borderRadius: "25px",
+                  width: "98%",
+                  alignItems: "center",
+                }}
+                disabled={totalMoneyPayMent < 1000 ? true : false}
+              >
+                Tiền mặt
+              </Button>
+            </Col>
+            <Col span={12} style={{ marginTop: "10px" }}>
+              <Button
+                type="primary"
+                onClick={(e) => addPayMent(e, "CHUYEN_KHOAN")}
+                style={{
+                  margin: "0 5px",
+                  borderRadius: "25px",
+                  width: "98%",
+                  alignItems: "center",
+                }}
+              >
+                Chuyển khoản
+              </Button>
+            </Col>
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
@@ -3005,66 +2946,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           </Row>
         </Form>
       </Modal>
-
-      {/* begin modal input code payment when vnpay */}
-      <Modal
-        title="Basic Modal"
-        open={isModalOpenVnpay}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={null}
-        cancelText={"huỷ"}
-        okText={"Xác nhận"}
-      >
-        <Row style={{ width: "100%" }}>
-          <Form
-            style={{ width: "100%" }}
-            form={formCheckCodeVnPay}
-            ref={formRef}
-          >
-            <Col span={24}>
-              {" "}
-              <Form.Item label="" name="price" style={{ marginBottom: "20px" }}>
-                <Input
-                  thousandSeparator={true}
-                  placeholder="nhập mã giao dịch"
-                  style={{
-                    width: "100%",
-                    position: "relative",
-                    height: "37px",
-                  }}
-                  defaultValue={vnp_TransactionNo}
-                  onChange={(e) => {
-                    changeVnp_TransactionNo(e, e.target.value);
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Form>
-        </Row>
-        <Row style={{ width: "100%" }}>
-          <Col span={10}></Col>
-          <Col span={6}>
-            <Button
-              type="primary"
-              onClick={(e) => submitCodeTransactionNext(e)}
-            >
-              Chuyển hướng
-            </Button>
-          </Col>
-          <Col span={2}></Col>
-          <Col span={6}>
-            <Button
-              type="primary"
-              disabled={vnp_TransactionNo.length == 0}
-              onClick={(e) => submitCodeTransaction(e)}
-            >
-              Xác nhận
-            </Button>
-          </Col>
-        </Row>
-      </Modal>
-      {/* end modal input code payment when vnpay */}
 
       {/* end modal payment  */}
     </div>
