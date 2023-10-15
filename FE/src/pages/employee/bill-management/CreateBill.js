@@ -204,7 +204,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         size: product.nameSize,
         quantity: product.quantity,
         price: product.price,
-        promotion: product.promotion
+        promotion: product.promotion,
       }));
       var newVoucher = [];
       if (voucher.idVoucher != "") {
@@ -251,7 +251,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         code: code,
         openDelivery: isOpenDelivery,
       };
-      console.log(data)
+      console.log(data);
       BillApi.updateBillWait(data).then((res) => {});
     }
   };
@@ -319,7 +319,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           price: item.price,
           idSizeProduct: item.idProduct,
           maxQuantity: item.maxQuantity,
-          promotion: item.promotion
+          promotion: item.promotion,
         };
       });
       setProducts(data);
@@ -340,7 +340,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       });
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
-
       const data = res.data.data.map((item) => {
         return {
           actionDescription: "",
@@ -703,8 +702,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const formRef = React.useRef(null);
 
   const addPayMent = (e, method) => {
-    if (method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000) {
-      showModal(e);
+    if (method == "CHUYEN_KHOAN") {
+      // showModal(e);
+      updateBillWhenSavePayMent([...dataPayment]);
+      submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -813,7 +814,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       size: product.nameSize,
       quantity: product.quantity,
       price: product.price,
-      promotion: product.promotion
+      promotion: product.promotion,
     }));
     var newVoucher = [];
     if (voucher.idVoucher != "") {
@@ -899,13 +900,15 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               okText: "Đồng ý",
               cancelText: "Hủy",
               onOk: async () => {
-                await BillApi.createBillWait(data).then((res) => {
-                  toast.success("Đặt hàng thành công");
-                  removePane(targetKey, invoiceNumber, items);
-                  form.resetFields();
-                }).catch((error) =>{
-                  toast.error(error.response.data.message);
-                })
+                await BillApi.createBillWait(data)
+                  .then((res) => {
+                    toast.success("Xuất hóa đơn thành công");
+                    removePane(targetKey, invoiceNumber, items);
+                    form.resetFields();
+                  })
+                  .catch((error) => {
+                    toast.error(error.response.data.message);
+                  });
               },
               onCancel: () => {},
             });
@@ -927,12 +930,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             okText: "Đồng ý",
             cancelText: "Hủy",
             onOk: async () => {
-              await BillApi.createBillWait(data).then((res) => {
-                removePane(targetKey, invoiceNumber, items);
-                toast.success("Đặt hàng thành công");
-              }).catch((error) =>{
-                toast.error(error.response.data.message);
-              })
+              await BillApi.createBillWait(data)
+                .then((res) => {
+                  removePane(targetKey, invoiceNumber, items);
+                  toast.success("Đặt hàng thành công");
+                })
+                .catch((error) => {
+                  toast.error(error.response.data.message);
+                });
             },
             onCancel: () => {},
           });
@@ -997,7 +1002,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       title: "STT",
       dataIndex: "stt",
       key: "index",
-      render: ((value, item, index) =>   index + 1)
+      render: (value, item, index) => index + 1,
     },
     {
       title: "Mã ",
@@ -1110,18 +1115,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const handleQuantityChange = (value, record) => {
     // Ensure the value is at least 1
-        var max = products.find((item) => item.idSizeProduct === record.idSizeProduct)?.maxQuantity;
-         if (!Number.isInteger(value)) {
-        }else if (value > max) {
-        }else{
-          const newQuantity = Math.max(value, 1);
-          const updatedListSole = products.map((item) =>
-            item.idSizeProduct === record.idSizeProduct
-              ? { ...item, quantity: newQuantity }
-              : item
-          );
-          setProducts(updatedListSole);
-        }
+    var max = products.find(
+      (item) => item.idSizeProduct === record.idSizeProduct
+    )?.maxQuantity;
+    if (!Number.isInteger(value)) {
+    } else if (value > max) {
+    } else {
+      const newQuantity = Math.max(value, 1);
+      const updatedListSole = products.map((item) =>
+        item.idSizeProduct === record.idSizeProduct
+          ? { ...item, quantity: newQuantity }
+          : item
+      );
+      setProducts(updatedListSole);
+    }
   };
 
   const handleQuantityIncrease = (record) => {
@@ -1192,7 +1199,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               (res.data.data.price * (100 - res.data.data.promotion)) / 100,
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
-            promotion: res.data.data.promotion
+            promotion: res.data.data.promotion,
           };
           setProducts((prevProducts) => [...prevProducts, newProduct]);
           toast.success("Thêm sản phẩm thành công ");
@@ -1405,6 +1412,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   //  open modal when payment vnpay
   const [isModalOpenVnpay, setIsModalOpenVnpay] = useState(false);
   const showModal = (e) => {
+    updateBillWhenSavePayMent([...dataPayment]);
     setIsModalOpenVnpay(true);
   };
   const handleOk = () => {
@@ -1455,16 +1463,23 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   };
 
   const submitCodeTransactionNext = (e) => {
+    var totalBill =
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) - voucher.discountPrice;
+    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.totalMoney;
+    }, 0);
     const data = {
-      vnp_Ammount: totalMoneyPayMent,
+      vnp_Ammount: Math.round(totalBill - totaPayMent),
       vnp_TxnRef: billRequest.code,
     };
     localStorage.setItem("code", billRequest.code);
-    updateBillWhenSavePayMent([...dataPayment]);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
       window.open(res.data.data, "_self");
     });
+
     setTotalMoneyPayment("");
     form.resetFields();
     setVnp_TransactionNo("");
@@ -1473,18 +1488,18 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   function checkQuantity(input) {
     let max = input.getAttribute("max");
-     if (!Number.isInteger(input.value)) {
-        input.value = input.id;
-    }else if (input.value > max) {
-        input.value = input.id;
+    if (!Number.isInteger(input.value)) {
+      input.value = input.id;
+    } else if (input.value > max) {
+      input.value = input.id;
     }
-}
-const getPromotionStyle = (promotion) => {
-  return promotion >= 50 ? { color: "white" } : { color: "#000000" };
-};
-const getPromotionColor = (promotion) => {
-  return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
-};
+  }
+  const getPromotionStyle = (promotion) => {
+    return promotion >= 50 ? { color: "white" } : { color: "#000000" };
+  };
+  const getPromotionColor = (promotion) => {
+    return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
+  };
 
   // open modal when payment vnpay
   return (
@@ -1533,7 +1548,6 @@ const getPromotionColor = (promotion) => {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
@@ -1647,59 +1661,65 @@ const getPromotionColor = (promotion) => {
                       marginLeft: "10px",
                     }}
                   /> */}
-                  <div style={{ position: "relative", display: "inline-block" }}>
-          <img
-            src={item.image}
-            alt="Ảnh sản phẩm"
-            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
-          />
-          {item.promotion !== null && (
-            <div
-              style={{
-                position: "absolute",
-                top: "0px",
-                right: "0px",
-                padding: "0px",
-                cursor: "pointer",
-                borderRadius: "50%",
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faBookmark}
-                style={{
-                  ...getPromotionColor(item.promotion),
-                  fontSize: "3.5em",
-                }}
-              />
-              <span
-                style={{
-                  position: "absolute",
-                  top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
-                  left: "50%", // Để "50%" nằm chính giữa biểu tượng
-                  transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
-                  fontSize: "0.8em",
-                  fontWeight: "bold",
-                  ...getPromotionStyle(item.promotion),
-                }}
-              >
-                {`${item.promotion}%`}
-              </span>
-              <span
-                style={{
-                  position: "absolute",
-                  top: "60%", 
-                  left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
-                  transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
-                  fontSize: "0.8em",
-                  fontWeight: "bold",
-                  ...getPromotionStyle(item.promotion),
-                }}
-              >
-                Giảm
-              </span>
-            </div>
-          )}
-        </div>
+                  <div
+                    style={{ position: "relative", display: "inline-block" }}
+                  >
+                    <img
+                      src={item.image}
+                      alt="Ảnh sản phẩm"
+                      style={{
+                        width: "100px",
+                        borderRadius: "10%",
+                        height: "100px",
+                      }}
+                    />
+                    {item.promotion !== null && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          right: "0px",
+                          padding: "0px",
+                          cursor: "pointer",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faBookmark}
+                          style={{
+                            ...getPromotionColor(item.promotion),
+                            fontSize: "3.5em",
+                          }}
+                        />
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                            left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          {`${item.promotion}%`}
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "60%",
+                            left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          Giảm
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </Col>
                 <Col span={7}>
                   <Row>
@@ -1716,11 +1736,28 @@ const getPromotionColor = (promotion) => {
                     </span>{" "}
                   </Row>
                   <Row>
+                    {item.promotion != null ? (
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          marginLeft: "15px",
+                          marginTop: "1px",
+                        }}
+                      >
+                        <del>
+                          {formatCurrency(
+                            item.price / (1 - item.promotion / 100)
+                          )}
+                        </del>
+                      </span>
+                    ) : (
+                      <span></span>
+                    )}
                     <span
                       style={{
                         color: "red",
                         fontWeight: "500",
-                        marginLeft: "15px",
+                        marginLeft: "5px",
                       }}
                     >
                       {item.price >= 1000
@@ -1761,7 +1798,9 @@ const getPromotionColor = (promotion) => {
                     max={item.maxQuantity}
                     style={{ margin: "0 5px" }}
                     value={item.quantity}
-                    onChange={(value) => {handleQuantityChange(value, item)}}
+                    onChange={(value) => {
+                      handleQuantityChange(value, item);
+                    }}
                   />
 
                   <Button
@@ -1950,14 +1989,20 @@ const getPromotionColor = (promotion) => {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
-                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                              if (
+                                !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                  value
+                                )
+                              ) {
                                 return Promise.reject(
                                   "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                                 );
                               }
-              
+
                               return Promise.resolve();
                             },
                           },
@@ -1999,7 +2044,9 @@ const getPromotionColor = (promotion) => {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
                               return Promise.resolve();
                             },
@@ -2037,7 +2084,9 @@ const getPromotionColor = (promotion) => {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
                               return Promise.resolve();
                             },
@@ -2045,14 +2094,20 @@ const getPromotionColor = (promotion) => {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
-                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                              if (
+                                !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                  value
+                                )
+                              ) {
                                 return Promise.reject(
                                   "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                                 );
                               }
-              
+
                               return Promise.resolve();
                             },
                           },
@@ -2480,7 +2535,11 @@ const getPromotionColor = (promotion) => {
             <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
               <Button
                 type="primary"
-                style={{ backgroundColor: "black", fontWeight: "500" , height:"40px"}}
+                style={{
+                  backgroundColor: "black",
+                  fontWeight: "500",
+                  height: "40px",
+                }}
                 onClick={(e) => orderBill(e)}
               >
                 {isOpenDelivery == true
@@ -2792,7 +2851,7 @@ const getPromotionColor = (promotion) => {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-            {optionsPayMent.map((item) => (
+            {/* {optionsPayMent.map((item) => (
               <Col span={8} style={{ marginTop: "10px" }}>
                 <Button
                   type="primary"
@@ -2803,22 +2862,45 @@ const getPromotionColor = (promotion) => {
                     width: "98%",
                     alignItems: "center",
                   }}
-                  disabled={
-                    item.value != "TIEN_MAT"
-                      ? item.value != "TIEN_MAT" &&
-                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
-                        ? true
-                        : false
-                      : item.value == "TIEN_MAT" &&
-                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
-                      ? true
-                      : false
-                  }
+                  // disabled={
+                  //   item.value == "TIEN_MAT" || totalMoneyPayMent < 1000
+                  //       ? true
+                  //       : false
+                  // }
                 >
                   {item.label}
                 </Button>
               </Col>
-            ))}
+            ))} */}
+            <Col span={12} style={{ marginTop: "10px" }}>
+              <Button
+                type="primary"
+                onClick={(e) => addPayMent(e, "TIEN_MAT")}
+                style={{
+                  margin: "0 5px",
+                  borderRadius: "25px",
+                  width: "98%",
+                  alignItems: "center",
+                }}
+                disabled={totalMoneyPayMent < 1000 ? true : false}
+              >
+                Tiền mặt
+              </Button>
+            </Col>
+            <Col span={12} style={{ marginTop: "10px" }}>
+              <Button
+                type="primary"
+                onClick={(e) => addPayMent(e, "CHUYEN_KHOAN")}
+                style={{
+                  margin: "0 5px",
+                  borderRadius: "25px",
+                  width: "98%",
+                  alignItems: "center",
+                }}
+              >
+                Chuyển khoản
+              </Button>
+            </Col>
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>

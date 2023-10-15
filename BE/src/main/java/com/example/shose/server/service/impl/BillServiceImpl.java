@@ -204,7 +204,6 @@ public class BillServiceImpl implements BillService {
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
-
         }
 
         request.getPaymentsMethodRequests().forEach(item -> {
@@ -253,7 +252,7 @@ public class BillServiceImpl implements BillService {
             VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        createFilePdf(optional.get().getId(),requests);
+        createFilePdfAtCounter(optional.get().getId(),requests);
         return optional.get();
     }
 
@@ -298,7 +297,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setPhoneNumber(request.getPhoneNumber());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
-        optional.get().setTotalMoney(new BigDecimal(request.getMoneyShip()));
+        optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
         billRepository.save(optional.get());
 
         List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
@@ -310,6 +309,7 @@ public class BillServiceImpl implements BillService {
             productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
             productDetailRepository.save(productDetail.get());
         });
+        billHistoryRepository.deleteAllByIdBill(optional.get().getId());
         billDetailRepository.deleteAllByIdBill(optional.get().getId());
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
@@ -324,6 +324,12 @@ public class BillServiceImpl implements BillService {
         }
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+        }
+        if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).employees(optional.get().getEmployees()).build());
+        } else {
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
         }
         optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
         billRepository.save(optional.get());
@@ -433,7 +439,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request) {
+    public Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests) {
         Optional<Bill> bill = billRepository.findById(id);
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
@@ -448,25 +454,15 @@ public class BillServiceImpl implements BillService {
         if (nextIndex > 6) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
-//        if (StatusBill.valueOf(statusBill[nextIndex].name()) ==  StatusBill.DA_THANH_TOAN && ) {
-//            throw new RestApiException(Message.CHANGED_STATUS_ERROR);
-//        }
         if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-        } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
+        }else if (bill.get().getStatusBill() == StatusBill.CHO_VAN_CHUYEN) {
+            createFilePdf(bill.get().getId(), requests);
+        }
+        else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
             bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
-//            if(bill.get().getTotalMoney().compareTo(new BigDecimal(request.getTotalMoney())) > 0){
-//                throw new RestApiException(Message.ERROR_TOTALMONEY);
-//            }
-//            int checkPayMent = paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
-//            if(checkPayMent == 0){
-//                PaymentsMethod paymentsMethod = PaymentsMethod.builder().method(request.getMethod()).employees(account.get()).bill(bill.get()).description(request.getActionDescription()).totalMoney(new BigDecimal(request.getTotalMoney())).build();
-//                paymentsMethodRepository.save(paymentsMethod);
-//            }
-
-
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
@@ -746,8 +742,15 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(formatter.format(optional.get().getTotalMoney()))
                 .note(optional.get().getNote())
                 .moneyShip(formatter.format(optional.get().getMoneyShip()))
-                .totalBill(formatter.format(optional.get().getTotalMoney().add(optional.get().getMoneyShip()).subtract(optional.get().getItemDiscount())))
                 .build();
+        if(optional.get().getTotalMoney().add(optional.get().getMoneyShip()).subtract(optional.get().getItemDiscount()).compareTo(BigDecimal.ZERO) > 0){
+            invoice.setTotalBill(formatter.format(optional.get().getTotalMoney().add(optional.get().getMoneyShip()).subtract(optional.get().getItemDiscount())));
+        }else{
+            invoice.setTotalBill("0 đ");
+        }
+        if(billDetailRepository.quantityProductByIdBill(idBill) != null){
+            invoice.setQuantity(Integer.valueOf(billDetailRepository.quantityProductByIdBill(idBill)));
+        }
         List<InvoiceItemResponse> items = new ArrayList<>();
         billDetailResponses.forEach(billDetailRequest -> {
             InvoiceItemResponse invoiceItemResponse = InvoiceItemResponse.builder()
@@ -757,6 +760,9 @@ public class BillServiceImpl implements BillService {
                     .quantity(billDetailRequest.getQuantity())
                     .promotion(billDetailRequest.getPromotion())
                     .build();
+            if(billDetailRequest.getPromotion() != null){
+                invoiceItemResponse.setPriceBeforePromotion(formatter.format( billDetailRequest.getPrice().multiply(BigDecimal.ONE.subtract(new BigDecimal(String.valueOf(billDetailRequest.getPromotion())).divide(BigDecimal.valueOf(100))))));
+            }
             items.add(invoiceItemResponse);
         });
         List<InvoicePaymentResponse> paymentsMethodRequests = new ArrayList<>();
@@ -800,4 +806,90 @@ public class BillServiceImpl implements BillService {
         return true;
     }
 
+    @Override
+    public Bill findByCode(String code) {
+        Optional<Bill> bill = billRepository.findByCode(code);
+        if(!bill.isPresent()){
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        return bill.get();
+    }
+
+    public boolean createFilePdfAtCounter(String idBill, HttpServletRequest request) {
+        //     begin   create file pdf
+        Optional<Bill> optional = billRepository.findById(idBill);
+        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(idBill);
+        List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(optional.get());
+        List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(optional.get());
+
+        String finalHtml = null;
+        NumberFormat formatter = exportFilePdfFormHtml.formatCurrency();
+        InvoiceResponse invoice = InvoiceResponse.builder()
+                .phoneNumber(optional.get().getPhoneNumber())
+                .address(optional.get().getAddress())
+                .userName(optional.get().getUserName())
+                .code(optional.get().getCode())
+                .itemDiscount(formatter.format(optional.get().getItemDiscount()))
+                .totalMoney(formatter.format(optional.get().getTotalMoney()))
+                .note(optional.get().getNote())
+                .moneyShip(formatter.format(optional.get().getMoneyShip()))
+                .build();
+        if(optional.get().getTotalMoney().add(optional.get().getMoneyShip()).subtract(optional.get().getItemDiscount()).compareTo(BigDecimal.ZERO) > 0){
+            invoice.setTotalBill(formatter.format(optional.get().getTotalMoney().add(optional.get().getMoneyShip()).subtract(optional.get().getItemDiscount())));
+        }else{
+            invoice.setTotalBill("0 đ");
+        }
+        if(billDetailRepository.quantityProductByIdBill(idBill) != null){
+            invoice.setQuantity(Integer.valueOf(billDetailRepository.quantityProductByIdBill(idBill)));
+        }
+        List<InvoiceItemResponse> items = new ArrayList<>();
+        billDetailResponses.forEach(billDetailRequest -> {
+            InvoiceItemResponse invoiceItemResponse = InvoiceItemResponse.builder()
+                    .sum(formatter.format(billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))))
+                    .name(billDetailRequest.getProductName())
+                    .priceVn(formatter.format(billDetailRequest.getPrice()))
+                    .quantity(billDetailRequest.getQuantity())
+                    .promotion(billDetailRequest.getPromotion())
+                    .build();
+            if(billDetailRequest.getPromotion() != null){
+                invoiceItemResponse.setPriceBeforePromotion(formatter.format(billDetailRequest.getPrice().multiply(BigDecimal.ONE.subtract(new BigDecimal(billDetailRequest.getPromotion()).divide(BigDecimal.valueOf(100))))));
+            }
+            items.add(invoiceItemResponse);
+        });
+        List<InvoicePaymentResponse> paymentsMethodRequests = new ArrayList<>();
+
+        paymentsMethods.forEach(item -> {
+            InvoicePaymentResponse invoicePaymentResponse = InvoicePaymentResponse.builder()
+                    .total(formatter.format(item.getTotalMoney()))
+                    .method(item.getMethod() == StatusMethod.TIEN_MAT ? "Tiền mặt" : item.getMethod() == StatusMethod.CHUYEN_KHOAN ? "Chuyển khoản": "Thẻ")
+                    .vnp_TransactionNo(item.getVnp_TransactionNo())
+                    .build();
+            paymentsMethodRequests.add(invoicePaymentResponse);
+        });
+        BigDecimal totalPayMnet = paymentsMethodRepository.sumTotalMoneyByIdBill(idBill);
+        invoice.setTotalPayment(formatter.format(totalPayMnet));
+        invoice.setChange(formatter.format(totalPayMnet.subtract(optional.get().getTotalMoney().add(optional.get().getMoneyShip()).subtract(optional.get().getItemDiscount()))));
+        invoice.setPaymentsMethodRequests(paymentsMethodRequests);
+        invoice.setItems(items);
+
+        List<String> findAllPayMentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(idBill);
+        if(findAllPayMentByIdBillAndMethod.size() > 0){
+            invoice.setMethod(true);
+        }else{
+            invoice.setMethod(false);
+        }
+            invoice.setTypeBill(false);
+        Date date = new Date(optional.get().getCreatedDate());
+
+        SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        String formattedDate = formatterDate.format(date);
+        invoice.setDate(formattedDate);
+        Context dataContext = exportFilePdfFormHtml.setData(invoice);
+
+        finalHtml = springTemplateEngine.process("templateBill", dataContext);
+
+        exportFilePdfFormHtml.htmlToPdf(finalHtml,request, optional.get().getCode());
+//     end   create file pdf
+        return true;
+    }
 }

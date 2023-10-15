@@ -62,7 +62,7 @@
     </div>
     <div style="padding: 20px 10px;border-top-style: dashed; border-width: 1px; border-color: rgb(0, 0, 0);">
         <div class="" style="margin-right: 20px;">
-            <p  style="font-size: 18px; font-weight: 800; margin-bottom: 30px">Nội dung đơn hàng <span style="font-size: 16px; font-width: 500;" th:text="${'( Tổng số lượng sản phẩm '+invoice.items.size() + ' )'}"></span></p>
+            <p  style="font-size: 18px; font-weight: 800; margin-bottom: 30px">Nội dung đơn hàng <span style="font-size: 16px; font-width: 500;" th:text="${'( Tổng số lượng sản phẩm '+invoice.quantity + ' )'}"></span></p>
             <table class="table table-condensed" style="width: 100%">
                 <thead>
                 </thead>
@@ -147,7 +147,7 @@
         <div class="" style="margin-right: 20px;">
             <p style="font-size: 18px; font-weight: 800; margin-bottom: 30px">Nội dung đơn hàng <span
                     style="font-size: 16px; font-width: 500;"
-                    th:text="${'( Tổng số lượng sản phẩm '+invoice.items.size() + ' )'}"></span></p>
+                    th:text="${'( Tổng số lượng sản phẩm '+invoice.quantity + ' )'}"></span></p>
             <table class="table " style="width: 100%">
                 <thead>
                 <td class="th">stt</td/>
@@ -162,8 +162,12 @@
                         <td class="td" th:text="${index.index  + 1}">BS-200</td>
                         <td class="td" th:text="${item.name}">BS-200</td>
                         <td class="td" >
-                            <p th:text="${item.priceVn }"></p>
-                            <p style="font-size: 10px" th:text="${ (item.promotion == null ? '' : 'Giảm: '+ item.promotion + '%' )}"></p>
+                            <span th:if="item.priceBeforePromotion == null" style="font-size:12px ;margin-top: 2px">
+                            <del th:text="${item.priceBeforePromotion }">
+                            </del>
+                            </span>
+                            <span th:text="${item.priceVn }">
+                            </span>
                         </td>
                         <td class="td" th:text="${item.quantity }">1</td>
                         <td class="td" th:text="${item.sum}">$10.99</td>

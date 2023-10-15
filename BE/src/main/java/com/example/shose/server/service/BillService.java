@@ -1,7 +1,13 @@
 package com.example.shose.server.service;
 
 
-import com.example.shose.server.dto.request.bill.*;
+import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
+import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
+import com.example.shose.server.dto.request.bill.CreateBillRequest;
+import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
@@ -10,7 +16,6 @@ import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -36,14 +41,19 @@ public interface BillService {
 
     Bill detail(String id);
 
-    Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request);
+    Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests);
 
     int countPayMentPostpaidByIdBill(String id);
-    boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request,  HttpServletRequest requests, String idEmployees);
+
+    boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, HttpServletRequest requests, String idEmployees);
 
     Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request);
+
     String createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
+
     String createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
     boolean createFilePdf(String idBill, HttpServletRequest request);
+
+    Bill findByCode(String code);
 }

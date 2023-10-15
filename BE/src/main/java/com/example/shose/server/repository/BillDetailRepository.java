@@ -87,4 +87,10 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
                     """, nativeQuery = true)
     BigDecimal findTotalPayMnetByIdBill(@Param("idBill") String idBill);
 
+
+    @Query(value = """
+                    SELECT sum(quantity)  FROM bill_detail
+                    WHERE id_bill = :idBill
+                    """, nativeQuery = true)
+    String quantityProductByIdBill(@Param("idBill") String idBill);
 }

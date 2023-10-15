@@ -66,8 +66,8 @@ public class BillRestController {
     }
 
     @PutMapping("/change-status/{id}")
-    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
-        return  new ResponseObject(billService.changedStatusbill(id, userId, request));
+    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
+        return  new ResponseObject(billService.changedStatusbill(id, userId, request, requests));
     }
 
     @PutMapping("/cancel-status/{id}")
