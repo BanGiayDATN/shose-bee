@@ -491,6 +491,41 @@ public class DBGenerator implements CommandLineRunner {
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
                 .employees(account1).customer(customer1)
                 .build();
+        Bill bill15 = Bill.builder().code("HD0015")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("02/10/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill16 = Bill.builder().code("HD0016")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("03/10/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill17 = Bill.builder().code("HD0017")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("05/10/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill18 = Bill.builder().code("HD0018")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("08/10/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
+                .employees(account1).customer(customer1)
+                .build();
+        Bill bill19 = Bill.builder().code("HD0019")
+                .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000000"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("09/10/2023"))
+                .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
+                .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
+                .employees(account1).customer(customer1)
+                .build();
         billRepository.save(bill1);
         billRepository.save(bill2);
         billRepository.save(bill3);
@@ -505,6 +540,11 @@ public class DBGenerator implements CommandLineRunner {
         billRepository.save(bill12);
         billRepository.save(bill13);
         billRepository.save(bill14);
+        billRepository.save(bill15);
+        billRepository.save(bill16);
+        billRepository.save(bill17);
+        billRepository.save(bill18);
+        billRepository.save(bill19);
 
         BillDetail billDetail = BillDetail.builder().bill(bill1).statusBill(StatusBill.THANH_CONG).productDetail(productDetail1).quantity(1).price(productDetail1.getPrice()).build();
         BillDetail billDetail1 = BillDetail.builder().bill(bill1).statusBill(StatusBill.THANH_CONG).productDetail(productDetail3).quantity(2).price(productDetail3.getPrice()).build();
@@ -610,7 +650,7 @@ public class DBGenerator implements CommandLineRunner {
         accountVoucherRepository.save(accountVoucher1);
 
         Address address1 = Address.builder().user(user2).status(Status.DANG_SU_DUNG).line("số 20 ngõ 19, Hoàng Hoa Thám").province("Hưng Yên").district("Huyện Văn Lâm")
-                .ward("Xã Lạc Hồng").provinceId(268).toDistrictId(2046).wardCode("220906").build();
+                .ward("Xã Lạc Hồng").provinceId(268).toDistrictId(2046).wardCode("220906").fullName("Ngô Đình Diệm").phoneNumber("0987689098").build();
         addressRepository.save(address1);
     }
 

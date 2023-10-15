@@ -80,6 +80,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
   const [dataPayment, setDataPayMent] = useState([]);
   const [accountuser, setAccountUser] = useState(null);
+  const [valueAddressShip, setValueAddressShip] = useState(null);
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -340,6 +341,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       });
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
+
       const data = res.data.data.map((item) => {
         return {
           actionDescription: "",
@@ -380,6 +382,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (valueAddressShip != null) {
+      handleWardChange(valueAddressShip.children, valueAddressShip);
+    }
+  }, [products]);
+
 
   const loadData = () => {
     CustomerApi.fetchAll().then(
@@ -442,12 +451,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
     setAddress({ ...address, wards: valueWard.value });
-    AddressApi.fetchAllMoneyShip(
-      valueWard.valueDistrict,
-      valueWard.valueWard
-    ).then((res) => {
-      setShipFee(res.data.data.total);
-    });
+    const totalQuantity = products.length > 0 ? products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.quantity;
+    }, 0) : 1;
+    setValueAddressShip(valueWard)
+    // số lượng sản phầm lớn hơn 2 free ship
+    if (totalQuantity > 2) {
+      setShipFee(0);
+    } else {
+      AddressApi.fetchAllMoneyShip(
+        valueWard.valueDistrict,
+        valueWard.valueWard,
+        totalQuantity
+      ).then((res) => {
+        setShipFee(res.data.data.total);
+      });
+    }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -726,7 +745,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           setTotalMoneyPayment("");
           form.resetFields();
         },
-        onCancel: () => {},
+        onCancel: () => { },
       });
     }
   };
@@ -765,8 +784,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-            ? "Chuyển khoản"
-            : "Thẻ"}
+              ? "Chuyển khoản"
+              : "Thẻ"}
         </Button>
       ),
     },
@@ -1103,6 +1122,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
+
+  useEffect(() => {
+    if (valueAddressShip != null) {
+      handleWardChange(valueAddressShip.children, valueAddressShip);
+    }
+  }, [isModalProductOpen]);
 
   const handleQuantityDecrease = (record) => {
     const updatedListSole = products.map((item) =>
@@ -1548,6 +1573,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
+
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
@@ -2851,7 +2877,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-            {/* {optionsPayMent.map((item) => (
+            {optionsPayMent.map((item) => (
               <Col span={8} style={{ marginTop: "10px" }}>
                 <Button
                   type="primary"
@@ -2862,45 +2888,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     width: "98%",
                     alignItems: "center",
                   }}
-                  // disabled={
-                  //   item.value == "TIEN_MAT" || totalMoneyPayMent < 1000
-                  //       ? true
-                  //       : false
-                  // }
+                  disabled={
+                    item.value != "TIEN_MAT"
+                      ? item.value != "TIEN_MAT" &&
+                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
+                        ? true
+                        : false
+                      : item.value == "TIEN_MAT" &&
+                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
+                      ? true
+                      : false
+                  }
                 >
                   {item.label}
                 </Button>
               </Col>
-            ))} */}
-            <Col span={12} style={{ marginTop: "10px" }}>
-              <Button
-                type="primary"
-                onClick={(e) => addPayMent(e, "TIEN_MAT")}
-                style={{
-                  margin: "0 5px",
-                  borderRadius: "25px",
-                  width: "98%",
-                  alignItems: "center",
-                }}
-                disabled={totalMoneyPayMent < 1000 ? true : false}
-              >
-                Tiền mặt
-              </Button>
-            </Col>
-            <Col span={12} style={{ marginTop: "10px" }}>
-              <Button
-                type="primary"
-                onClick={(e) => addPayMent(e, "CHUYEN_KHOAN")}
-                style={{
-                  margin: "0 5px",
-                  borderRadius: "25px",
-                  width: "98%",
-                  alignItems: "center",
-                }}
-              >
-                Chuyển khoản
-              </Button>
-            </Col>
+            ))}
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
