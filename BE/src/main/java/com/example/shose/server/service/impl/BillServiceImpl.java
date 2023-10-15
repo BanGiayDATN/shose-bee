@@ -731,7 +731,7 @@ public class BillServiceImpl implements BillService {
         InvoiceResponse invoice = getInvoiceResponse(optional.get());
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || optional.get().getEmail().isEmpty())){
+        if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
             sendMail(invoice, "http://localhost:3000/bill/"+ idBill, optional.get().getEmail());
         }
         exportFilePdfFormHtml.htmlToPdf(finalHtml,request, optional.get().getCode());

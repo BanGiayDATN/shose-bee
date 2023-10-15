@@ -75,6 +75,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     billDetailRequests: [],
     vouchers: [],
     code: "",
+    email: "",
   });
 
   var optionsPayMent = [
@@ -166,6 +167,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       note: billRequest.note,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
+      email:billRequest.email,
       moneyShip: shipFee,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
@@ -225,6 +227,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         note: billRequest.note,
         statusPayMents: statusPayMents,
         typeBill: typeBill,
+        email:billRequest.email,
         moneyShip: shipFee,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
@@ -597,6 +600,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       const formValues = {
         phoneNumber: record.phoneNumber,
         name: record.fullName,
+        email: record.email
       };
       if (addressData) {
         setAddress({
@@ -722,9 +726,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         cancelText: "Hủy",
         onOk: async () => {
           setDataPayMent([...dataPayment, data]);
-          updateBillWhenSavePayMent([...dataPayment, data]);
+          // updateBillWhenSavePayMent([...dataPayment, data]);
           setTotalMoneyPayment("");
-          form.resetFields();
+          // form.resetFields();
         },
         onCancel: () => { },
       });
@@ -871,6 +875,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       itemDiscount: voucher.discountPrice,
       totalMoney: Math.round(totalBill),
       note: billRequest.note,
+      email:billRequest.email,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
       moneyShip: shipFee,
@@ -2007,6 +2012,37 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                             ChangeBillRequest("phoneNumber", e.target.value)
                           }
                           defaultValue={billRequest.phoneNumber}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
+                        name="email"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            pattern:
+                              /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                            message: "Email không đúng định dạng",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập email"
+                          style={{ width: "90%", height: "39px" }}
+                          onChange={(e) =>
+                            ChangeBillRequest("email", e.target.value)
+                          }
+                          defaultValue={billRequest.email}
                         />
                       </Form.Item>
                     </Col>
