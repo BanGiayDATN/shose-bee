@@ -108,17 +108,20 @@ function SalesHeader() {
       icon: <FileSearchOutlined />,
       className: "title-header",
       title: "Tra cứu đơn hàng",
+      to:"/sreach-bill"
     },
     {
       classIcon: "header-icon",
       icon: <EnvironmentOutlined />,
       className: "title-header",
       title: "Tìm kiếm cửa hàng",
+      to:"#"
     },
     {
       classIcon: "header-icon",
       icon: <UserOutlined />,
       className: "title-header",
+      to:"/login",
 
       title: idUser === null ? "Đăng nhập" : "Thông tin",
       form:
@@ -139,39 +142,11 @@ function SalesHeader() {
       {fields.map((field, index) => {
         return (
           <div key={index} className="content-header">
-            {!field.form ? (
-              <Link to="#" className={field.className}>
+              <Link to={field.to} className={field.className}>
                 <span className={field.classIcon}>{field.icon}</span>
                 {field.title}
               </Link>
-            ) : (
-              <div
-                className={field.className}
-                onClick={idUser === null ? field.form : undefined}
-                onMouseEnter={handleMenuHover}
-                onMouseLeave={handleMenuLeave}
-              >
-                <span className={field.classIcon}>
-                  {field.icon} {field.title}
-                </span>
-
-                {openInfor && idUser !== null && (
-                  <Menu className="option-container-infor">
-                    {field.form.map((option, index) => (
-                      // <Link to="/diem" >
-                      <div
-                        key={index}
-                        className={option.className}
-                        onClick={option.act}
-                      >
-                        {option.title}
-                      </div>
-                      // </Link>
-                    ))}
-                  </Menu>
-                )}
-              </div>
-            )}
+            
           </div>
         );
       })}

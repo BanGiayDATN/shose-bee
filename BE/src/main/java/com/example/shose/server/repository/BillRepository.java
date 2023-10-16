@@ -73,7 +73,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          OR bi.code LIKE :#{#request.key}
                          OR bi.phone_number LIKE :#{#request.key})
                GROUP BY   bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name ) ,   bi.status_bill, bi.total_money, bi.item_discount 
-                ORDER BY bi.created_date DESC          
+                ORDER BY bi.created_date ASC          
                 """, nativeQuery = true)
         List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
 
@@ -168,4 +168,5 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                           """, nativeQuery = true)
     List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
     Optional<Bill> findByCode(String code);
+    Optional<Bill> findByCodeAndPhoneNumber(String code, String phoneNumber);
 }

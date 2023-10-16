@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
+import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
 import moment from "moment";
-import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline'
-import { FaBug, FaFileSignature, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
-import { BiSolidTruck} from "react-icons/bi";
-import { MdPayment} from "react-icons/md";
-import { AiFillCarryOut, AiFillFile} from "react-icons/ai";
-import { GiReturnArrow} from "react-icons/gi";
-import { BsFileEarmarkExcelFill} from "react-icons/bs";
+import React from "react";
+import { AiFillCarryOut, AiFillFile } from "react-icons/ai";
+import { BiSolidTruck } from "react-icons/bi";
+import { BsFileEarmarkExcelFill } from "react-icons/bs";
+import { FaFileSignature } from "react-icons/fa";
+import { GiReturnArrow } from "react-icons/gi";
+import { MdPayment } from "react-icons/md";
 import "./timeline.css";
 
 function TimeLine({ listStatus, data, statusPresent }) {

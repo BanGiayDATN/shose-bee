@@ -61,6 +61,9 @@ public interface BillDetailResponse {
     @Value("#{target.max_quantity}")
     Integer getMaxQuantity();
 
+    @Value("#{target.promotion}")
+    Integer getPromotion();
+
     @Value("#{target.status_bill}")
     String getStatus();
 }

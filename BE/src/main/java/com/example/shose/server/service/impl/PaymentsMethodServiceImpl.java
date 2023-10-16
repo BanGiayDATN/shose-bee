@@ -1,18 +1,23 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
+import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
+import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
+import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
+import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.FormUtils;
 import com.example.shose.server.util.payMent.Config;
@@ -51,6 +56,12 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     private BillHistoryRepository billHistoryRepository;
 
     @Autowired
+    private BillDetailRepository billDetailRepository;
+
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
+
+    @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
@@ -87,7 +98,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.DA_THANH_TOAN);
-            billHistory.setActionDescription(request.getActionDescription());
+            billHistory.setActionDescription("Thanh toán hóa đơn");
             billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
             billRepository.save(bill.get());
@@ -119,7 +130,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         vnp_Params.put("vnp_Version", VnPayConstant.vnp_Version);
         vnp_Params.put("vnp_Command",VnPayConstant.vnp_Command);
         vnp_Params.put("vnp_TmnCode",VnPayConstant.vnp_TmnCode);
-        vnp_Params.put("vnp_Amount",String.valueOf(payModel.vnp_Ammount+"00"));
+        vnp_Params.put("vnp_Amount",payModel.vnp_Ammount+"00");
         vnp_Params.put("vnp_BankCode", VnPayConstant.vnp_BankCode);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
         vnp_Params.put("vnp_CurrCode",VnPayConstant.vnp_CurrCode);
@@ -170,19 +181,62 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         if(response.getVnp_ResponseCode().equals("00")){
+            List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(response.getVnp_TransactionNo());
+            if(findAllByVnpTransactionNo.size() > 0){
+                return false;
+            }
             Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef());
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
             paymentsMethod.setDescription(response.getVnp_OrderInfo());
-            paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount()));
+            paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount().substring(0, response.getVnp_Amount().length() - 2)));
             paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
             paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
             paymentsMethod.setEmployees(account.get());
             paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
             paymentsMethodRepository.save(paymentsMethod);
+
+            List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
+            boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
+            if (checkBill) {
+                bill.get().setStatusBill(StatusBill.THANH_CONG);
+                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                billRepository.save(bill.get());
+            } else {
+                bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+//                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                billRepository.save(bill.get());
+            }
+            billRepository.save(bill.get());
             return true;
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        String chuoi = "260000000";
+
+        // Sử dụng hàm RIGHT()
+        String kq1 = chuoi.substring(0, chuoi.length() - 2);
+        System.out.println(kq1); // 2000
+
+        // Sử dụng hàm TRIM() và RIGHT()
+        String kq2 = chuoi.trim().substring(0, chuoi.length() - 4);
+        System.out.println(kq2); // 2000
+
+        // Sử dụng hàm SEARCH() và LEFT()
+//        String kq = chuoi.substring(0, chuoi.length() - SEARCH("0", chuoi) - 1);
+//        System.out.println(kết quả3); // 2000
+    }
+
+    @Override
+    public boolean changeQuantityProduct(QuantityProductPaymentRequest request) {
+        for (BillDetailOnline x : request.getBillDetail()) {
+            ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
+            productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
+            productDetailRepository.save(productDetail);
+        }
+        return true;
     }
 
     @Override
@@ -213,6 +267,14 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Override
     public String payWithVNPAYOnline(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
+        payModel.getBillDetail().forEach(item -> {
+            ProductDetail productDetail = productDetailRepository.findById(item.getIdProductDetail()).get();
+            if (productDetail.getQuantity() < item.getQuantity()) {
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
+            productDetailRepository.save(productDetail);
+        });
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");

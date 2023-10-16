@@ -166,6 +166,7 @@ function Payment() {
       setFormErrors(errors);
       return;
     }
+
     Modal.confirm({
       title: "Xác nhận đặt hàng",
       content: "Bạn có chắc chắn muốn đặt hàng ?",
@@ -176,6 +177,7 @@ function Payment() {
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
             vnp_Ammount: totalBillToPay,
+            billDetail: listproductOfBill,
           };
           PaymentClientApi.paymentVnpay(data).then(
             (res) => {
@@ -208,7 +210,7 @@ function Payment() {
               navigate(`/home`);
             },
             (err) => {
-              console.log(err);
+             toast.error(err.response.data.message);
             }
           );
         }

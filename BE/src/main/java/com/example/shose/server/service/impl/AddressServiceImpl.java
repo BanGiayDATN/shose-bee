@@ -52,12 +52,12 @@ public class AddressServiceImpl implements AddressService {
         if (checkStatusAddress.isEmpty()) {
             Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
                     .ward(req.getWard()).status(Status.DANG_SU_DUNG).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId())
-                    .wardCode(req.getWardCode()).user(user.get()).build();
+                    .wardCode(req.getWardCode()).fullName(req.getFullName()).phoneNumber(req.getPhoneNumber()).user(user.get()).build();
             return addressRepository.save(address);
         } else {
             Address address = Address.builder().line(req.getLine()).district(req.getDistrict()).province(req.getProvince())
                     .ward(req.getWard()).status(Status.KHONG_SU_DUNG).provinceId(req.getProvinceId()).toDistrictId(req.getToDistrictId())
-                    .wardCode(req.getWardCode()).user(user.get()).build();
+                    .wardCode(req.getWardCode()).fullName(req.getFullName()).phoneNumber(req.getPhoneNumber()).user(user.get()).build();
             return addressRepository.save(address);
         }
 
@@ -81,6 +81,8 @@ public class AddressServiceImpl implements AddressService {
             addressUpdateStatus.setToDistrictId(addressStatus.getToDistrictId());
             addressUpdateStatus.setProvinceId(addressStatus.getProvinceId());
             addressUpdateStatus.setWardCode(addressStatus.getWardCode());
+            addressUpdateStatus.setFullName(addressStatus.getFullName());
+            addressUpdateStatus.setPhoneNumber(addressStatus.getPhoneNumber());
             addressUpdateStatus.setUser(user.get());
             addressRepository.save(addressUpdateStatus);
         }
@@ -93,6 +95,8 @@ public class AddressServiceImpl implements AddressService {
         address.setToDistrictId(req.getToDistrictId());
         address.setProvinceId(req.getProvinceId());
         address.setWardCode(req.getWardCode());
+        address.setFullName(req.getFullName());
+        address.setPhoneNumber(req.getPhoneNumber());
         address.setUser(user.get());
         if (checkStatusAddress == null) {
             return addressRepository.save(address);

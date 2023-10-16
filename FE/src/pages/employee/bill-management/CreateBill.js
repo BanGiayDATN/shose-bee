@@ -1,4 +1,5 @@
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Button,
   Col,
@@ -6,55 +7,36 @@ import {
   Input,
   InputNumber,
   Modal,
+  Radio,
   Row,
   Select,
-  Table,
-  Tabs,
-  Tooltip,
-  Radio,
   Switch,
+  Table
 } from "antd";
-import React, { useEffect, useState } from "react";
-import "./create-bill.css";
-import { BsFillTrash3Fill, BsTrash } from "react-icons/bs";
-import "./style-bill.css";
-import { useSelector } from "react-redux";
-import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
-import { useNavigate } from "react-router-dom";
-import { FaShoppingBag } from "react-icons/fa";
-import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import { CiDeliveryTruck } from "react-icons/ci";
-import {
-  GetCustomer,
-  SetCustomer,
-} from "../../../app/reducer/Customer.reducer";
-import { CustomerApi } from "../../../api/employee/account/customer.api";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
-import { addUserBillWait } from "../../../app/reducer/Bill.reducer";
-import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
-import {
-  GetPromotion,
-  SetPromotion,
-} from "../../../app/reducer/Promotion.reducer";
-import ModalAddProductDetail from "./modal/ModalAddProductDetail";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import dayjs from "dayjs";
-import { AddressApi } from "../../../api/customer/address/address.api";
-import { set, values } from "lodash";
-import { Center, useInterval } from "@chakra-ui/react";
-import NumberFormat from "react-number-format";
+import React, { useEffect, useState } from "react";
+import { BsFillTrash3Fill, BsTrash } from "react-icons/bs";
+import { CiDeliveryTruck } from "react-icons/ci";
+import { FaShoppingBag } from "react-icons/fa";
 import { MdOutlinePayment } from "react-icons/md";
-import ModalQRScanner from "../product-management/modal/ModalQRScanner";
-import { faQrcode } from "@fortawesome/free-solid-svg-icons";
-import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
-import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
-import { Navigate } from "react-router-dom";
+import NumberFormat from "react-number-format";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AddressApi } from "../../../api/customer/address/address.api";
 import { AccountApi } from "../../../api/employee/account/account.api";
+import { CustomerApi } from "../../../api/employee/account/customer.api";
+import { BillApi } from "../../../api/employee/bill/bill.api";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import { VoucherDetailApi } from "../../../api/employee/voucherDetail/VoucherDetail.api";
+import ModalQRScanner from "../product-management/modal/ModalQRScanner";
+import "./create-bill.css";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import "./style-bill.css";
 
 function generateUniqueRandomNumber(length) {
   const numbers = new Set();
@@ -80,6 +62,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
   const [dataPayment, setDataPayMent] = useState([]);
   const [accountuser, setAccountUser] = useState(null);
+  const [valueAddressShip, setValueAddressShip] = useState(null);
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -92,6 +75,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     billDetailRequests: [],
     vouchers: [],
     code: "",
+    email: "",
   });
 
   var optionsPayMent = [
@@ -137,9 +121,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }, [keyTab]);
 
   const updateBill = () => {
-    console.log("update");
-    console.log(voucher);
-    console.log(accountuser);
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
@@ -170,7 +151,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var idAccount = "";
     if (accountuser != null) {
-      console.log(accountuser);
       idAccount = accountuser.idAccount;
     }
     var typeBill = "OFFLINE";
@@ -183,10 +163,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       address: addressuser,
       userName: billRequest.userName,
       itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
+      totalMoney: Math.round(totalBill),
       note: billRequest.note,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
+      email:billRequest.email,
       moneyShip: shipFee,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
@@ -208,6 +189,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         size: product.nameSize,
         quantity: product.quantity,
         price: product.price,
+        promotion: product.promotion,
       }));
       var newVoucher = [];
       if (voucher.idVoucher != "") {
@@ -241,10 +223,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         address: addressuser,
         userName: billRequest.userName,
         itemDiscount: voucher.discountPrice,
-        totalMoney: totalBill,
+        totalMoney: Math.round(totalBill),
         note: billRequest.note,
         statusPayMents: statusPayMents,
         typeBill: typeBill,
+        email:billRequest.email,
         moneyShip: shipFee,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
@@ -254,6 +237,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         code: code,
         openDelivery: isOpenDelivery,
       };
+      console.log(data);
       BillApi.updateBillWait(data).then((res) => {});
     }
   };
@@ -321,6 +305,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           price: item.price,
           idSizeProduct: item.idProduct,
           maxQuantity: item.maxQuantity,
+          promotion: item.promotion,
         };
       });
       setProducts(data);
@@ -341,8 +326,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       });
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
-      console.log("datapayment");
-      console.log(res);
 
       const data = res.data.data.map((item) => {
         return {
@@ -355,7 +338,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       setDataPayMent(data);
     });
     AccountApi.getAccountUserByIdBill(id).then((res) => {
-      console.log(res);
       setAccountUser(res.data.data);
     });
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
@@ -385,6 +367,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (valueAddressShip != null) {
+      handleWardChange(valueAddressShip.children, valueAddressShip);
+    }
+  }, [products]);
+
 
   const loadData = () => {
     CustomerApi.fetchAll().then(
@@ -447,12 +436,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
     setAddress({ ...address, wards: valueWard.value });
-    AddressApi.fetchAllMoneyShip(
-      valueWard.valueDistrict,
-      valueWard.valueWard
-    ).then((res) => {
-      setShipFee(res.data.data.total);
-    });
+    const totalQuantity = products.length > 0 ? products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.quantity;
+    }, 0) : 1;
+    setValueAddressShip(valueWard)
+    // số lượng sản phầm lớn hơn 2 free ship
+    if (totalQuantity > 2) {
+      setShipFee(0);
+    } else {
+      AddressApi.fetchAllMoneyShip(
+        valueWard.valueDistrict,
+        valueWard.valueWard,
+        totalQuantity
+      ).then((res) => {
+        setShipFee(res.data.data.total);
+      });
+    }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -601,6 +600,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       const formValues = {
         phoneNumber: record.phoneNumber,
         name: record.fullName,
+        email: record.email
       };
       if (addressData) {
         setAddress({
@@ -707,8 +707,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const formRef = React.useRef(null);
 
   const addPayMent = (e, method) => {
-    if (method == "CHUYEN_KHOAN" && totalMoneyPayMent >= 10000) {
-      showModal(e);
+    if (method == "CHUYEN_KHOAN") {
+      updateBillWhenSavePayMent([...dataPayment]);
+      submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -725,11 +726,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         cancelText: "Hủy",
         onOk: async () => {
           setDataPayMent([...dataPayment, data]);
-          updateBillWhenSavePayMent([...dataPayment, data]);
+          // updateBillWhenSavePayMent([...dataPayment, data]);
           setTotalMoneyPayment("");
-          form.resetFields();
+          // form.resetFields();
         },
-        onCancel: () => {},
+        onCancel: () => { },
       });
     }
   };
@@ -768,8 +769,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-            ? "Chuyển khoản"
-            : "Thẻ"}
+              ? "Chuyển khoản"
+              : "Thẻ"}
         </Button>
       ),
     },
@@ -796,7 +797,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }, 0) +
       shipFee -
       voucher.discountPrice;
-    setTotalMoneyPayment(total);
+    setTotalMoneyPayment(Math.round(total));
   };
   const handleOkPayMent = () => {
     setIsModalPayMentOpen(false);
@@ -817,6 +818,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       size: product.nameSize,
       quantity: product.quantity,
       price: product.price,
+      promotion: product.promotion,
     }));
     var newVoucher = [];
     if (voucher.idVoucher != "") {
@@ -871,8 +873,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       address: addressuser,
       userName: billRequest.userName,
       itemDiscount: voucher.discountPrice,
-      totalMoney: totalBill,
+      totalMoney: Math.round(totalBill),
       note: billRequest.note,
+      email:billRequest.email,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
       moneyShip: shipFee,
@@ -895,20 +898,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         billRequest.userName != ""
       ) {
         if (totalBill > 0) {
-          if (totaPayMent >= totalBill) {
+          if (Math.round(totaPayMent) >= Math.round(totalBill)) {
             Modal.confirm({
               title: "Xác nhận",
               content: "Bạn có xác nhận đặt hàng không?",
               okText: "Đồng ý",
               cancelText: "Hủy",
               onOk: async () => {
-                await BillApi.createBillWait(data).then((res) => {
-                  toast.success("Đặt hàng thành công");
-                  removePane(targetKey, invoiceNumber, items);
-                  form.resetFields();
-                }).catch((error) =>{
-                  toast.error(error.response.data.message);
-                })
+                await BillApi.createBillWait(data)
+                  .then((res) => {
+                    toast.success("Xuất hóa đơn thành công");
+                    removePane(targetKey, invoiceNumber, items);
+                    form.resetFields();
+                  })
+                  .catch((error) => {
+                    toast.error(error.response.data.message);
+                  });
               },
               onCancel: () => {},
             });
@@ -923,19 +928,21 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (totaPayMent >= totalBill) {
+        if (Math.round(totaPayMent) >= Math.round(totalBill)) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
             okText: "Đồng ý",
             cancelText: "Hủy",
             onOk: async () => {
-              await BillApi.createBillWait(data).then((res) => {
-                removePane(targetKey, invoiceNumber, items);
-                toast.success("Đặt hàng thành công");
-              }).catch((error) =>{
-                toast.error(error.response.data.message);
-              })
+              await BillApi.createBillWait(data)
+                .then((res) => {
+                  removePane(targetKey, invoiceNumber, items);
+                  toast.success("Đặt hàng thành công");
+                })
+                .catch((error) => {
+                  toast.error(error.response.data.message);
+                });
             },
             onCancel: () => {},
           });
@@ -1000,7 +1007,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       title: "STT",
       dataIndex: "stt",
       key: "index",
-      render: ((value, item, index) =>   index + 1)
+      render: (value, item, index) => index + 1,
     },
     {
       title: "Mã ",
@@ -1102,6 +1109,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
 
+  useEffect(() => {
+    if (valueAddressShip != null) {
+      handleWardChange(valueAddressShip.children, valueAddressShip);
+    }
+  }, [isModalProductOpen]);
+
   const handleQuantityDecrease = (record) => {
     const updatedListSole = products.map((item) =>
       item.idSizeProduct === record.idSizeProduct
@@ -1113,18 +1126,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const handleQuantityChange = (value, record) => {
     // Ensure the value is at least 1
-        var max = products.find((item) => item.idSizeProduct === record.idSizeProduct)?.maxQuantity;
-         if (!Number.isInteger(value)) {
-        }else if (value > max) {
-        }else{
-          const newQuantity = Math.max(value, 1);
-          const updatedListSole = products.map((item) =>
-            item.idSizeProduct === record.idSizeProduct
-              ? { ...item, quantity: newQuantity }
-              : item
-          );
-          setProducts(updatedListSole);
-        }
+    var max = products.find(
+      (item) => item.idSizeProduct === record.idSizeProduct
+    )?.maxQuantity;
+    if (!Number.isInteger(value)) {
+    } else if (value > max) {
+    } else {
+      const newQuantity = Math.max(value, 1);
+      const updatedListSole = products.map((item) =>
+        item.idSizeProduct === record.idSizeProduct
+          ? { ...item, quantity: newQuantity }
+          : item
+      );
+      setProducts(updatedListSole);
+    }
   };
 
   const handleQuantityIncrease = (record) => {
@@ -1195,6 +1210,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               (res.data.data.price * (100 - res.data.data.promotion)) / 100,
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
+            promotion: res.data.data.promotion,
           };
           setProducts((prevProducts) => [...prevProducts, newProduct]);
           toast.success("Thêm sản phẩm thành công ");
@@ -1404,82 +1420,38 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     return formatter.format(value);
   };
 
-  //  open modal when payment vnpay
-  const [isModalOpenVnpay, setIsModalOpenVnpay] = useState(false);
-  const showModal = (e) => {
-    setIsModalOpenVnpay(true);
-  };
-  const handleOk = () => {
-    setIsModalOpenVnpay(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpenVnpay(false);
-  };
-  const [vnp_TransactionNo, setVnp_TransactionNo] = useState("");
-  const changeVnp_TransactionNo = (e, value) => {
-    setVnp_TransactionNo(value);
-  };
-
-  const submitCodeTransaction = async (e) => {
-    var data = {
-      actionDescription: "",
-      method: "CHUYEN_KHOAN",
-      totalMoney: totalMoneyPayMent,
-      status: "THANH_TOAN",
-      vnp_TransactionNo: vnp_TransactionNo,
-    };
-    var dataPaymentVnPay = {
-      vnp_Amount: totalMoneyPayMent,
-      vnp_ResponseCode: "00",
-      vnp_TxnRef: billRequest.code,
-      vnp_OrderInfo: "thanh toan",
-      vnp_TransactionNo: vnp_TransactionNo,
-    };
-    var createDataPayment = [...dataPayment, data];
-    Modal.confirm({
-      title: "Xác nhận",
-      content: "Bạn có xác nhận không?",
-      okText: "Đồng ý",
-      cancelText: "Hủy",
-      onOk: async () => {
-        PaymentsMethodApi.checkPaymentVnPay(dataPaymentVnPay).then((res) => {});
-        updateBillWhenSavePayMent(createDataPayment);
-        setDataPayMent([...dataPayment, data]);
-      },
-      onCancel: () => {},
-    });
-
-    handleCancel();
-    setTotalMoneyPayment("");
-    form.resetFields();
-    setVnp_TransactionNo("");
-    formCheckCodeVnPay.resetFields();
-  };
-
+  //   payment vnpay
+ 
   const submitCodeTransactionNext = (e) => {
+    var totalBill =
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) - voucher.discountPrice;
+    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.totalMoney;
+    }, 0);
     const data = {
-      vnp_Ammount: totalMoneyPayMent,
+      vnp_Ammount: Math.round(totalBill - totaPayMent),
       vnp_TxnRef: billRequest.code,
     };
+    localStorage.setItem("code", billRequest.code);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
       setPayMentVnPay(true);
       window.open(res.data.data, "_self");
     });
-    updateBillWhenSavePayMent([...dataPayment]);
+
     setTotalMoneyPayment("");
     form.resetFields();
-    setVnp_TransactionNo("");
     formCheckCodeVnPay.resetFields();
   };
 
-  function checkQuantity(input) {
-    let max = input.getAttribute("max");
-     if (!Number.isInteger(input.value)) {
-        input.value = input.id;
-    }else if (input.value > max) {
-        input.value = input.id;
-    }
-}
+  const getPromotionStyle = (promotion) => {
+    return promotion >= 50 ? { color: "white" } : { color: "#000000" };
+  };
+  const getPromotionColor = (promotion) => {
+    return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
+  };
+
   // open modal when payment vnpay
   return (
     <div style={{ width: "100%" }}>
@@ -1527,7 +1499,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-        {console.log(products)}
+
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
@@ -1631,7 +1603,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   {index + 1}
                 </Col>
                 <Col span={4}>
-                  <img
+                  {/* <img
                     src={item.image}
                     alt="Ảnh sản phẩm"
                     style={{
@@ -1640,7 +1612,66 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       height: "110px",
                       marginLeft: "10px",
                     }}
-                  />
+                  /> */}
+                  <div
+                    style={{ position: "relative", display: "inline-block" }}
+                  >
+                    <img
+                      src={item.image}
+                      alt="Ảnh sản phẩm"
+                      style={{
+                        width: "100px",
+                        borderRadius: "10%",
+                        height: "100px",
+                      }}
+                    />
+                    {item.promotion !== null && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          right: "0px",
+                          padding: "0px",
+                          cursor: "pointer",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faBookmark}
+                          style={{
+                            ...getPromotionColor(item.promotion),
+                            fontSize: "3.5em",
+                          }}
+                        />
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                            left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          {`${item.promotion}%`}
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "60%",
+                            left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          Giảm
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </Col>
                 <Col span={7}>
                   <Row>
@@ -1657,11 +1688,28 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     </span>{" "}
                   </Row>
                   <Row>
+                    {item.promotion != null ? (
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          marginLeft: "15px",
+                          marginTop: "1px",
+                        }}
+                      >
+                        <del>
+                          {formatCurrency(
+                            item.price / (1 - item.promotion / 100)
+                          )}
+                        </del>
+                      </span>
+                    ) : (
+                      <span></span>
+                    )}
                     <span
                       style={{
                         color: "red",
                         fontWeight: "500",
-                        marginLeft: "15px",
+                        marginLeft: "5px",
                       }}
                     >
                       {item.price >= 1000
@@ -1702,7 +1750,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     max={item.maxQuantity}
                     style={{ margin: "0 5px" }}
                     value={item.quantity}
-                    onChange={(value) => {handleQuantityChange(value, item)}}
+                    onChange={(value) => {
+                      handleQuantityChange(value, item);
+                    }}
                   />
 
                   <Button
@@ -1891,14 +1941,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
-                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                              if (
+                                !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                  value
+                                )
+                              ) {
                                 return Promise.reject(
                                   "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                                 );
                               }
-              
+
                               return Promise.resolve();
                             },
                           },
@@ -1940,7 +1996,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
                               return Promise.resolve();
                             },
@@ -1968,6 +2026,37 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     <Col span={24}>
                       <Form.Item
                         label=""
+                        name="email"
+                        style={{ marginBottom: "20px" }}
+                        rules={[
+                          {
+                            pattern:
+                              /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                            message: "Email không đúng định dạng",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Nhập email"
+                          style={{ width: "90%", height: "39px" }}
+                          onChange={(e) =>
+                            ChangeBillRequest("email", e.target.value)
+                          }
+                          defaultValue={billRequest.email}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      width: "100%",
+                      marginLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col span={24}>
+                      <Form.Item
+                        label=""
                         name="detail"
                         style={{ marginBottom: "20px" }}
                         rules={[
@@ -1978,7 +2067,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
                               return Promise.resolve();
                             },
@@ -1986,14 +2077,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                           {
                             validator: (_, value) => {
                               if (value && value.trim() === "") {
-                                return Promise.reject("Không được chỉ nhập khoảng trắng");
+                                return Promise.reject(
+                                  "Không được chỉ nhập khoảng trắng"
+                                );
                               }
-                              if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                              if (
+                                !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                  value
+                                )
+                              ) {
                                 return Promise.reject(
                                   "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                                 );
                               }
-              
+
                               return Promise.resolve();
                             },
                           },
@@ -2421,7 +2518,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
               <Button
                 type="primary"
-                style={{ backgroundColor: "black", fontWeight: "500" , height:"40px"}}
+                style={{
+                  backgroundColor: "black",
+                  fontWeight: "500",
+                  height: "40px",
+                }}
                 onClick={(e) => orderBill(e)}
               >
                 {isOpenDelivery == true
@@ -2733,33 +2834,35 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-            {optionsPayMent.map((item) => (
-              <Col span={8} style={{ marginTop: "10px" }}>
-                <Button
-                  type="primary"
-                  onClick={(e) => addPayMent(e, item.value)}
-                  style={{
-                    margin: "0 5px",
-                    borderRadius: "25px",
-                    width: "98%",
-                    alignItems: "center",
-                  }}
-                  disabled={
-                    item.value != "TIEN_MAT"
-                      ? item.value != "TIEN_MAT" &&
-                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
-                        ? true
-                        : false
-                      : item.value == "TIEN_MAT" &&
-                        (totalMoneyPayMent < 1000 || totalMoneyPayMent == "")
-                      ? true
-                      : false
-                  }
-                >
-                  {item.label}
-                </Button>
-              </Col>
-            ))}
+          <Col span={12} style={{ marginTop: "10px" }}>
+              <Button
+                type="primary"
+                onClick={(e) => addPayMent(e, "TIEN_MAT")}
+                style={{
+                  margin: "0 5px",
+                  borderRadius: "25px",
+                  width: "98%",
+                  alignItems: "center",
+                }}
+                disabled={totalMoneyPayMent < 1000 ? true : false}
+              >
+                Tiền mặt
+              </Button>
+            </Col>
+            <Col span={12} style={{ marginTop: "10px" }}>
+              <Button
+                type="primary"
+                onClick={(e) => addPayMent(e, "CHUYEN_KHOAN")}
+                style={{
+                  margin: "0 5px",
+                  borderRadius: "25px",
+                  width: "98%",
+                  alignItems: "center",
+                }}
+              >
+                Chuyển khoản
+              </Button>
+            </Col>
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
@@ -2861,66 +2964,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           </Row>
         </Form>
       </Modal>
-
-      {/* begin modal input code payment when vnpay */}
-      <Modal
-        title="Basic Modal"
-        open={isModalOpenVnpay}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={null}
-        cancelText={"huỷ"}
-        okText={"Xác nhận"}
-      >
-        <Row style={{ width: "100%" }}>
-          <Form
-            style={{ width: "100%" }}
-            form={formCheckCodeVnPay}
-            ref={formRef}
-          >
-            <Col span={24}>
-              {" "}
-              <Form.Item label="" name="price" style={{ marginBottom: "20px" }}>
-                <Input
-                  thousandSeparator={true}
-                  placeholder="nhập mã giao dịch"
-                  style={{
-                    width: "100%",
-                    position: "relative",
-                    height: "37px",
-                  }}
-                  defaultValue={vnp_TransactionNo}
-                  onChange={(e) => {
-                    changeVnp_TransactionNo(e, e.target.value);
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Form>
-        </Row>
-        <Row style={{ width: "100%" }}>
-          <Col span={10}></Col>
-          <Col span={6}>
-            <Button
-              type="primary"
-              onClick={(e) => submitCodeTransactionNext(e)}
-            >
-              Chuyển hướng
-            </Button>
-          </Col>
-          <Col span={2}></Col>
-          <Col span={6}>
-            <Button
-              type="primary"
-              disabled={vnp_TransactionNo.length == 0}
-              onClick={(e) => submitCodeTransaction(e)}
-            >
-              Xác nhận
-            </Button>
-          </Col>
-        </Row>
-      </Modal>
-      {/* end modal input code payment when vnpay */}
 
       {/* end modal payment  */}
     </div>

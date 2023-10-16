@@ -48,12 +48,15 @@ import { useAppDispatch, useAppSelector } from "../src/app/hook";
 import { VoucherApi } from "../src/api/employee/voucher/Voucher.api";
 import { UpdateVoucher, GetVoucher } from "../src/app/reducer/Voucher.reducer";
 import { PromotionApi } from "../src/api/employee/promotion/Promotion.api";
+import Login from "./pages/customer/login/Login";
 import {
   UpdatePromotion,
   GetPromotion,
 } from "../src/app/reducer/Promotion.reducer";
 import dayjs from "dayjs";
 import { GetLoading } from "./app/reducer/Loading.reducer";
+import DetailBillClinet from "./pages/customer/bill/DetailBillClinet";
+import SearchBill from "./pages/customer/bill/SearchBill";
 function App() {
   const dispatch = useAppDispatch();
   const [listVoucher, setListVoucher] = useState([]);
@@ -155,12 +158,32 @@ function App() {
             element={<Navigate replace to="/login-management" />}
           />
           <Route
+            path="/login"
+            element={
+              <GuestGuard>
+                    <Login />
+              </GuestGuard>
+            }
+          />
+          <Route
             path="/home"
             element={
               <GuestGuard>
                 <CartProvider>
                   <DashBoardCustomer>
                     <Home />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/bill/:code/:phoneNumber"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <DetailBillClinet />
                   </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>
@@ -420,6 +443,18 @@ function App() {
                   <CustomerManagement />
                 </DashBoardEmployee>
               </AuthGuard>
+            }
+          />
+           <Route
+            path="/sreach-bill"
+            element={
+              <GuestGuard>
+              <CartProvider>
+                <DashBoardCustomer>
+                  <SearchBill />
+                </DashBoardCustomer>
+              </CartProvider>
+            </GuestGuard>
             }
           />
           <Route
