@@ -18,5 +18,6 @@ public class InvoiceItemResponse {
     private String priceVn;
     private String sum;
     private Integer promotion;
+    private String priceBeforePromotion;
 
 }

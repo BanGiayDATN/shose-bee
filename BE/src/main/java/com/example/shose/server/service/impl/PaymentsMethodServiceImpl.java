@@ -4,11 +4,9 @@ import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
 import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
-import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
-import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
@@ -100,7 +98,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.DA_THANH_TOAN);
-            billHistory.setActionDescription(request.getActionDescription());
+            billHistory.setActionDescription("Thanh toán hóa đơn");
             billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
             billRepository.save(bill.get());
@@ -197,6 +195,19 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setEmployees(account.get());
             paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
             paymentsMethodRepository.save(paymentsMethod);
+
+            List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
+            boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
+            if (checkBill) {
+                bill.get().setStatusBill(StatusBill.THANH_CONG);
+                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                billRepository.save(bill.get());
+            } else {
+                bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+//                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                billRepository.save(bill.get());
+            }
+            billRepository.save(bill.get());
             return true;
         }
         return false;

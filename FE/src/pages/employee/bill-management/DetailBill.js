@@ -9,34 +9,32 @@ import {
   Select,
   Table,
 } from "antd";
-import TimeLine from "./TimeLine";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { BillApi } from "../../../api/employee/bill/bill.api";
 import {
-  addPaymentsMethod,showModalBill,
+  addPaymentsMethod,
   addStatusPresent,
   getBill,
   getBillHistory,
   getPaymentsMethod,
-  getProductInBillDetail,
+  getProductInBillDetail
 } from "../../../app/reducer/Bill.reducer";
-import moment from "moment";
-import { useState } from "react";
-import { BillApi } from "../../../api/employee/bill/bill.api";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import React from "react";
+import TimeLine from "./TimeLine";
 
-import { useParams } from "react-router";
-import { addBillHistory } from "../../../app/reducer/Bill.reducer";
-import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
-import "./detail.css";
+import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TextArea from "antd/es/input/TextArea";
+import NumberFormat from "react-number-format";
+import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import NumberFormat from "react-number-format";
-import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import { AddressApi } from "../../../api/customer/address/address.api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import { addBillHistory } from "../../../app/reducer/Bill.reducer";
+import "./detail.css";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -202,7 +200,7 @@ function DetailBill() {
           dispatch(addBillHistory(history));
         });
         setIsModalCanCelOpen(false);
-        toast("Hủy hóa đơn thành công");
+        toast.success("Hủy hóa đơn thành công");
       },
       onCancel: () => {
         setIsModalCanCelOpen(false);
@@ -257,7 +255,7 @@ function DetailBill() {
         await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
           dispatch(getBillHistory(res.data.data));
         });
-        toast("Thanh toán thành công");
+        toast.success("Thanh toán thành công");
       },
       onCancel: () => {
         setIsModalOpenChangeStatus(false);
@@ -305,7 +303,7 @@ function DetailBill() {
             dispatch(getBillHistory(res.data.data));
             console.log(res.data.data);
           });
-          toast("Thanh toán thành công");
+          toast.success("Thanh toán thành công");
           setIsModalPayMentOpen(false);
           setStatusBill({
             actionDescription: "",
@@ -429,7 +427,7 @@ function DetailBill() {
             }
             dispatch(addStatusPresent(index));
           });
-          toast("Thay đổi hóa đơn thành công");
+          toast.success("Thay đổi hóa đơn thành công");
           setIsModalBillOpen(false);
         },
         onCancel: () => {
@@ -512,7 +510,7 @@ function DetailBill() {
 
   const handleOkRefundProduct = () => {
     if (quantity < 1) {
-      toast("vui lòng nhập số lượng lớn hơn 0 ");
+      toast.warning("vui lòng nhập số lượng lớn hơn 0 ");
     } else {
       var listProduct = [...detailProductInBill];
       var index = listProduct.findIndex((item) => item.id == idProductInBill);
@@ -541,7 +539,7 @@ function DetailBill() {
             note: refundProduct.note,
           };
           await BillApi.refundProduct(data).then((res) => {
-            toast("Hoàn hàng thành công");
+            toast.success("Hoàn hàng thành công");
           });
           await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
             dispatch(getProductInBillDetail(res.data.data));
@@ -617,7 +615,7 @@ function DetailBill() {
 
   const handleOkUpdateProduct = () => {
     if (quantity < 1 && quantity < detaiProduct.quantity) {
-      toast(
+      toast.warning(
         "vui lòng nhập số lượng lớn hơn 0 và nhỏ hơn " + detaiProduct.quantity
       );
     } else {
@@ -650,7 +648,7 @@ function DetailBill() {
             };
             await BillApi.updateProductInBill(idProductInBill, data).then(
               (res) => {
-                toast("Thay đổi thành công");
+                toast.success("Thay đổi thành công");
               }
             );
             await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
@@ -1208,7 +1206,7 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    // span={statusPresent < 6 ? 7 : 0}
+                    span={statusPresent < 6 ? 7 : 0}
                   >
                     {statusPresent < 6  ? (
                       <Button
@@ -1226,18 +1224,6 @@ function DetailBill() {
                     ) : (
                       <div></div>
                     )}
-                    <Button
-                        type="primary"
-                        className="btn btn-primary"
-                        onClick={(e) => xuatPdf(e)}
-                        style={{
-                          fontSize: "medium",
-                          fontWeight: "500",
-                          marginLeft: "20px",
-                        }}
-                      >
-                        Xuất hóa đơn
-                      </Button>
                   </Col>
                   <Col span={statusPresent < 2 ? 6 : 0}>
                     {statusPresent < 2 ? (
@@ -1816,8 +1802,23 @@ function DetailBill() {
                     </span>{" "}
                   </Row>
                   <Row>
-                    <span style={{ color: "red", fontWeight: "500" }}>
-                      {formatCurrency(item.price)}
+                    {
+                      item.promotion != null ? (<span style={{fontSize: '12px',marginTop: "4px"}}>
+                      <del>
+                      {formatCurrency(item.price /(1-item.promotion/100))}
+                      </del>
+                  </span>): <span></span>
+                    }
+                    <span
+                      style={{
+                        color: "red",
+                        fontWeight: "500",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {item.price >= 1000
+                        ? formatCurrency(item.price)
+                        : item.price + " VND"}
                     </span>{" "}
                   </Row>
                   <Row>

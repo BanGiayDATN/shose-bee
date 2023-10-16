@@ -7,6 +7,8 @@ import com.example.shose.server.util.ResponseObject;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +35,13 @@ public class BillClientRestController {
         return new ResponseObject(billService.createBillAccountOnlineRequest(request));
     }
 
+    @GetMapping("/{code}/{phoneNumber}")
+    public ResponseObject create(@PathVariable("code") String code, @PathVariable("phoneNumber") String phoneNumber)  {
+        return new ResponseObject(billService.findByCode(code, phoneNumber));
+    }
+    @GetMapping("/detail/{id}")
+    public ResponseObject detail(@PathVariable("id") String id){
+        return  new ResponseObject(billService.detail(id));
+    }
 
 }

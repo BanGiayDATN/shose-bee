@@ -168,4 +168,5 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                           """, nativeQuery = true)
     List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
     Optional<Bill> findByCode(String code);
+    Optional<Bill> findByCodeAndPhoneNumber(String code, String phoneNumber);
 }

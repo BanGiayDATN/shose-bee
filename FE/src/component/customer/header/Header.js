@@ -108,7 +108,7 @@ function SalesHeader() {
       icon: <FileSearchOutlined />,
       className: "title-header",
       title: "Tra cứu đơn hàng",
-      to:"#"
+      to:"/sreach-bill"
     },
     {
       classIcon: "header-icon",

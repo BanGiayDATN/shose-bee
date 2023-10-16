@@ -29,6 +29,7 @@ public class InvoiceResponse {
     private boolean method;
     private boolean typeBill;
     private String date;
+    private Integer quantity;
     private String change;
     private List<InvoiceItemResponse> items;
     private List<InvoicePaymentResponse> paymentsMethodRequests;
