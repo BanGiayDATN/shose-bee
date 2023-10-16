@@ -213,22 +213,6 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         return false;
     }
 
-    public static void main(String[] args) {
-        String chuoi = "260000000";
-
-        // Sử dụng hàm RIGHT()
-        String kq1 = chuoi.substring(0, chuoi.length() - 2);
-        System.out.println(kq1); // 2000
-
-        // Sử dụng hàm TRIM() và RIGHT()
-        String kq2 = chuoi.trim().substring(0, chuoi.length() - 4);
-        System.out.println(kq2); // 2000
-
-        // Sử dụng hàm SEARCH() và LEFT()
-//        String kq = chuoi.substring(0, chuoi.length() - SEARCH("0", chuoi) - 1);
-//        System.out.println(kết quả3); // 2000
-    }
-
     @Override
     public boolean changeQuantityProduct(QuantityProductPaymentRequest request) {
         for (BillDetailOnline x : request.getBillDetail()) {
@@ -271,6 +255,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             ProductDetail productDetail = productDetailRepository.findById(item.getIdProductDetail()).get();
             if (productDetail.getQuantity() < item.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
             productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
             productDetailRepository.save(productDetail);
