@@ -520,6 +520,7 @@ public class BillServiceImpl implements BillService {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
                 createFilePdf(id,requests);
             } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
+                createFilePdf(id,requests);
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
@@ -721,6 +722,9 @@ public class BillServiceImpl implements BillService {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = getInvoiceResponse(optional.get());
+        if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
+            invoice.setTypeBill(true);
+        }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
         exportFilePdfFormHtml.htmlToPdf(finalHtml,request, optional.get().getCode());
@@ -768,7 +772,8 @@ public class BillServiceImpl implements BillService {
                 .note(bill.getNote())
                 .moneyShip(formatter.format(bill.getMoneyShip()))
                 .build();
-        if(bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount()).compareTo(BigDecimal.ZERO) > 0){
+        List<String> findAllPayMentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
+        if(bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount()).compareTo(BigDecimal.ZERO) > 0 ){
             invoice.setTotalBill(formatter.format(bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount())));
         }else{
             invoice.setTotalBill("0 đ");
@@ -806,8 +811,8 @@ public class BillServiceImpl implements BillService {
         invoice.setPaymentsMethodRequests(paymentsMethodRequests);
         invoice.setItems(items);
 
-        List<String> findAllPayMentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
-        if(findAllPayMentByIdBillAndMethod.size() > 0){
+
+        if(findAllPayMentByIdBillAndMethod.size() > 0 ){
             invoice.setMethod(true);
         }else{
             invoice.setMethod(false);
