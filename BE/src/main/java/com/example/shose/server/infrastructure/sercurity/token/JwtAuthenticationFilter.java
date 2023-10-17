@@ -1,41 +1,62 @@
 package com.example.shose.server.infrastructure.sercurity.token;
 
+import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsService;
+import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsServiceImpl;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-public class JwtAuthenticationFilter  extends OncePerRequestFilter {
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final TokenProvider jwtTokenProvider;
+    private final JwtSerrvice jwtSerrvice;
 
-    @Autowired
-    private TokenService tokenService;
-
-    public JwtAuthenticationFilter(TokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final AccountDetalsService accountDetalsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        String token = jwtTokenProvider.resolveToken(request);
-//        String refreshToken = tokenService.getCachedValue();
-//        if (refreshToken != null) {
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentica = jwtTokenProvider.getAuthentication(token);
-            if (authentica != null) {
-                SecurityContextHolder.getContext().setAuthentication(authentica);
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
+
+        final String authheader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEamil;
+        if (StringUtils.isEmpty(authheader) || !org.apache.commons.lang3.StringUtils.startsWith(authheader, "Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        jwt = authheader.substring(7);
+        userEamil = jwtSerrvice.extractUserName(jwt);
+
+        if (StringUtils.isNotEmpty(userEamil) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = accountDetalsService.userDetailsService().loadUserByUsername(userEamil);
+
+            if (jwtSerrvice.isTokenValid(jwt, userDetails)) {
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
+                token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                securityContext.setAuthentication(token);
+                SecurityContextHolder.setContext(securityContext);
             }
-//            }
         }
         filterChain.doFilter(request, response);
-    }
 
+    }
 }

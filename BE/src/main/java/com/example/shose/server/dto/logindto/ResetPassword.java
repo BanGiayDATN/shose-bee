@@ -1,4 +1,4 @@
-package com.example.shose.server.infrastructure.sercurity.logindto;
+package com.example.shose.server.dto.logindto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

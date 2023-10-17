@@ -5,6 +5,7 @@ import com.example.shose.server.dto.response.account.AccountResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
 import com.example.shose.server.entity.User;
+import com.example.shose.server.infrastructure.constant.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +44,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email")
     Optional<Account> findByEmail(String email);
+
+    @Query("SELECT a FROM Account a WHERE a.roles = :role")
+    Optional<Account> findByRole(@Param("role") String role);
+
 }

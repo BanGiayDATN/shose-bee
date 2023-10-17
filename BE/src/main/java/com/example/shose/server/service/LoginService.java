@@ -1,8 +1,8 @@
 package com.example.shose.server.service;
 
 import com.example.shose.server.entity.Account;
-import com.example.shose.server.infrastructure.sercurity.logindto.LoginRequest;
-import com.example.shose.server.infrastructure.sercurity.logindto.ResetPassword;
+import com.example.shose.server.dto.logindto.LoginRequest;
+import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.dto.response.LoginResponse;
 
 public interface LoginService {
