@@ -188,7 +188,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef());
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
-            paymentsMethod.setDescription(response.getVnp_OrderInfo());
+            paymentsMethod.setDescription("Thanh toán thành công");
             paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount().substring(0, response.getVnp_Amount().length() - 2)));
             paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
             paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);

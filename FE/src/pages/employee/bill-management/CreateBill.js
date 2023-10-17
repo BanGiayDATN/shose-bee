@@ -121,11 +121,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }, [keyTab]);
 
   const updateBill = () => {
+    localStorage.setItem("code", billRequest.code);
     var newProduct = products.map((product) => ({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
       price: product.price,
+      promotion: product.promotion,
     }));
     var newVoucher = [];
     if (voucher.idVoucher != "") {
@@ -183,6 +185,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   };
 
   const updateBillWhenSavePayMent = (dataPaymentRequest) => {
+    localStorage.setItem("code", billRequest.code);
     if (dataPaymentRequest != [undefined]) {
       var newProduct = products.map((product) => ({
         idProduct: product.idProduct,
@@ -237,7 +240,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         code: code,
         openDelivery: isOpenDelivery,
       };
-      console.log(data);
       BillApi.updateBillWait(data).then((res) => {});
     }
   };
@@ -320,6 +322,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         totalMoney: res.data.data.totalMoney,
         note: res.data.data.note,
         moneyShip: res.data.data.moneyShip,
+        email: res.data.data.email,
         billDetailRequests: [],
         vouchers: [],
         code: res.data.data.code,
@@ -341,16 +344,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       setAccountUser(res.data.data);
     });
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
-      console.log("VoucherDetailApi");
-      console.log(res.data.data);
       if (res.data.data != null) {
         setVoucher({
-          idVoucher: res.data.data.id,
-          beforPrice: res.data.data.beforPrice,
-          afterPrice: res.data.data.afterPrice,
-          discountPrice: res.data.data.discountPrice,
-        });
-        console.log({
           idVoucher: res.data.data.id,
           beforPrice: res.data.data.beforPrice,
           afterPrice: res.data.data.afterPrice,
@@ -629,6 +624,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       phoneNumber: record.phoneNumber,
       userName: record.fullName,
       idUser: record.id,
+      email: record.email
     });
     // dispatch(addUserBillWait(record));
     setAccountUser(record);
@@ -726,7 +722,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         cancelText: "Hủy",
         onOk: async () => {
           setDataPayMent([...dataPayment, data]);
-          // updateBillWhenSavePayMent([...dataPayment, data]);
+          updateBillWhenSavePayMent([...dataPayment, data]);
           setTotalMoneyPayment("");
           // form.resetFields();
         },
@@ -898,7 +894,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         billRequest.userName != ""
       ) {
         if (totalBill > 0) {
-          if (Math.round(totaPayMent) >= Math.round(totalBill)) {
+          if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee)) {
             Modal.confirm({
               title: "Xác nhận",
               content: "Bạn có xác nhận đặt hàng không?",
@@ -928,7 +924,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (Math.round(totaPayMent) >= Math.round(totalBill)) {
+        if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee)) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
@@ -1693,7 +1689,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         style={{
                           fontSize: "12px",
                           marginLeft: "15px",
-                          marginTop: "1px",
+                          marginTop: "4px",
                         }}
                       >
                         <del>
@@ -1709,7 +1705,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       style={{
                         color: "red",
                         fontWeight: "500",
-                        marginLeft: "5px",
+                        marginLeft: "15px",
                       }}
                     >
                       {item.price >= 1000
