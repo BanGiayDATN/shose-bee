@@ -244,6 +244,9 @@ public class BillServiceImpl implements BillService {
             if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
             }
+            if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
+            }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             if(billDetailRequest.getPromotion() != null){
                 billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
@@ -385,6 +388,9 @@ public class BillServiceImpl implements BillService {
             }
             if (productDetail.get().getQuantity() < billDetailRequest.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             if(billDetailRequest.getPromotion() != null){
@@ -602,6 +608,9 @@ public class BillServiceImpl implements BillService {
             if (productDetail.getQuantity() < x.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
             }
+            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
+            }
             BillDetail billDetail = BillDetail.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
                     .productDetail(productDetail)
@@ -663,6 +672,9 @@ public class BillServiceImpl implements BillService {
             ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
             if (productDetail.getQuantity() < x.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
             BillDetail billDetail = BillDetail.builder()
                     .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
