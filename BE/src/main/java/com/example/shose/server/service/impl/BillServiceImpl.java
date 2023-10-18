@@ -47,7 +47,6 @@ import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
-import com.example.shose.server.repository.CustomerRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.UserReposiory;
@@ -163,8 +162,9 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
-        return billRepository.findAllBillAtCounterAndStatusNewBill(request);
+    public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id,FindNewBillCreateAtCounterRequest request) {
+        Optional<Account> user = accountRepository.findById(id);
+        return billRepository.findAllBillAtCounterAndStatusNewBill(id,user.get().getRoles().name(), request);
     }
 
     @Override

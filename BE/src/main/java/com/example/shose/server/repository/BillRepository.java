@@ -72,10 +72,11 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          OR bi.user_name LIKE :#{#request.key}
                          OR bi.code LIKE :#{#request.key}
                          OR bi.phone_number LIKE :#{#request.key})
+               AND ( :role = 'ADMIN' OR bi.id_employees = :id )
                GROUP BY   bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name ) ,   bi.status_bill, bi.total_money, bi.item_discount 
                 ORDER BY bi.created_date ASC          
                 """, nativeQuery = true)
-        List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
+        List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(@Param("id") String id,@Param("role") String role, FindNewBillCreateAtCounterRequest request);
 
         @Query(value = """
                 SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
