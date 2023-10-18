@@ -161,15 +161,15 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       statusPayMents = "TRA_SAU";
     }
     var data = {
-      phoneNumber: billRequest.phoneNumber,
-      address: addressuser,
-      userName: billRequest.userName,
+      phoneNumber: billRequest.phoneNumber.trim(),
+      address: addressuser.trim(),
+      userName: billRequest.userName.trim(),
       itemDiscount: voucher.discountPrice,
       totalMoney: Math.round(totalBill),
-      note: billRequest.note,
+      note: billRequest.note.trim(),
       statusPayMents: statusPayMents,
       typeBill: typeBill,
-      email:billRequest.email,
+      email:billRequest.email.trim(),
       moneyShip: shipFee,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
@@ -222,15 +222,15 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         statusPayMents = "TRA_SAU";
       }
       var data = {
-        phoneNumber: billRequest.phoneNumber,
-        address: addressuser,
-        userName: billRequest.userName,
+        phoneNumber: billRequest.phoneNumber.trim(),
+        address: addressuser.trim(),
+        userName: billRequest.userName.trim(),
         itemDiscount: voucher.discountPrice,
         totalMoney: Math.round(totalBill),
-        note: billRequest.note,
+        note: billRequest.note.trim(),
         statusPayMents: statusPayMents,
         typeBill: typeBill,
-        email:billRequest.email,
+        email:billRequest.email.trim(),
         moneyShip: shipFee,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
@@ -865,13 +865,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       statusPayMents = "TRA_SAU";
     }
     var data = {
-      phoneNumber: billRequest.phoneNumber,
-      address: addressuser,
-      userName: billRequest.userName,
+      phoneNumber: billRequest.phoneNumber.trim(),
+      address: addressuser.trim(),
+      userName: billRequest.userName.trim(),
       itemDiscount: voucher.discountPrice,
       totalMoney: Math.round(totalBill),
-      note: billRequest.note,
-      email:billRequest.email,
+      note: billRequest.note.trim(),
+      email:billRequest.email.trim(),
       statusPayMents: statusPayMents,
       typeBill: typeBill,
       moneyShip: shipFee,
@@ -914,13 +914,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               onCancel: () => {},
             });
           } else {
-            toast("vui lòng thanh toán hóa đơn");
+            toast.warning("vui lòng thanh toán hóa đơn");
           }
         } else {
-          toast("vui lòng chọn sản phẩm");
+          toast.warning("vui lòng chọn sản phẩm");
         }
       } else {
-        toast("Vui lòng nhập thông tin giao hàng");
+        toast.warning("Vui lòng nhập thông tin giao hàng");
       }
     } else {
       if (totalBill > 0) {
@@ -943,10 +943,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             onCancel: () => {},
           });
         } else {
-          toast("vui lòng thanh toán hóa đơn");
+          toast.warning("vui lòng thanh toán hóa đơn");
         }
       } else {
-        toast("vui lòng chọn sản phẩm");
+        toast.warning("vui lòng chọn sản phẩm");
       }
     }
   };
@@ -2072,11 +2072,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                           },
                           {
                             validator: (_, value) => {
-                              if (value && value.trim() === "") {
-                                return Promise.reject(
-                                  "Không được chỉ nhập khoảng trắng"
-                                );
-                              }
+                              // if (value && value.trim() === "") {
+                              //   return Promise.reject(
+                              //     "Không được chỉ nhập khoảng trắng"
+                              //   );
+                              // }
                               if (
                                 !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
                                   value
