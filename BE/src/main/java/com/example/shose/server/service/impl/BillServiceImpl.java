@@ -293,6 +293,11 @@ public class BillServiceImpl implements BillService {
                 .employees(account.get())
                 .typeBill(TypeBill.OFFLINE)
                 .statusBill(StatusBill.TAO_HOA_DON)
+                .userName("")
+                .note("")
+                .address("")
+                .phoneNumber("")
+                .email("")
                 .code("HD" + RandomStringUtils.randomNumeric(6))
                 .itemDiscount(new BigDecimal("0"))
                 .totalMoney(new BigDecimal("0"))
@@ -721,7 +726,7 @@ public class BillServiceImpl implements BillService {
     public boolean createFilePdf(String idBill, HttpServletRequest request) {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
-        InvoiceResponse invoice = getInvoiceResponse(optional.get());
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
             invoice.setTypeBill(true);
         }
@@ -744,7 +749,7 @@ public class BillServiceImpl implements BillService {
         //     begin   create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
-        InvoiceResponse invoice = getInvoiceResponse(optional.get());
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
         if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
@@ -755,77 +760,7 @@ public class BillServiceImpl implements BillService {
         return true;
     }
 
-    private InvoiceResponse getInvoiceResponse(Bill bill){
-
-        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(bill.getId());
-        List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill);
-        List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill);
-
-        NumberFormat formatter = exportFilePdfFormHtml.formatCurrency();
-        InvoiceResponse invoice = InvoiceResponse.builder()
-                .phoneNumber(bill.getPhoneNumber())
-                .address(bill.getAddress())
-                .userName(bill.getUserName())
-                .code(bill.getCode())
-                .itemDiscount(formatter.format(bill.getItemDiscount()))
-                .totalMoney(formatter.format(bill.getTotalMoney()))
-                .note(bill.getNote())
-                .moneyShip(formatter.format(bill.getMoneyShip()))
-                .build();
-        List<String> findAllPayMentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
-        if(bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount()).compareTo(BigDecimal.ZERO) > 0 ){
-            invoice.setTotalBill(formatter.format(bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount())));
-        }else{
-            invoice.setTotalBill("0 đ");
-        }
-        if(billDetailRepository.quantityProductByIdBill(bill.getId()) != null){
-            invoice.setQuantity(Integer.valueOf(billDetailRepository.quantityProductByIdBill(bill.getId())));
-        }
-        List<InvoiceItemResponse> items = new ArrayList<>();
-        billDetailResponses.forEach(billDetailRequest -> {
-            InvoiceItemResponse invoiceItemResponse = InvoiceItemResponse.builder()
-                    .sum(formatter.format(billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))))
-                    .name(billDetailRequest.getProductName())
-                    .priceVn(formatter.format(billDetailRequest.getPrice()))
-                    .quantity(billDetailRequest.getQuantity())
-                    .promotion(billDetailRequest.getPromotion())
-                    .build();
-            if(billDetailRequest.getPromotion() != null){
-                invoiceItemResponse.setPriceBeforePromotion(formatter.format(billDetailRequest.getPrice().multiply(BigDecimal.ONE.subtract(new BigDecimal(billDetailRequest.getPromotion()).divide(BigDecimal.valueOf(100))))));
-            }
-            items.add(invoiceItemResponse);
-        });
-        List<InvoicePaymentResponse> paymentsMethodRequests = new ArrayList<>();
-
-        paymentsMethods.forEach(item -> {
-            InvoicePaymentResponse invoicePaymentResponse = InvoicePaymentResponse.builder()
-                    .total(formatter.format(item.getTotalMoney()))
-                    .method(item.getMethod() == StatusMethod.TIEN_MAT ? "Tiền mặt" : item.getMethod() == StatusMethod.CHUYEN_KHOAN ? "Chuyển khoản": "Thẻ")
-                    .vnp_TransactionNo(item.getVnp_TransactionNo())
-                    .build();
-            paymentsMethodRequests.add(invoicePaymentResponse);
-        });
-        BigDecimal totalPayMnet = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.getId());
-        invoice.setTotalPayment(formatter.format(totalPayMnet));
-        invoice.setChange(formatter.format(totalPayMnet.subtract(bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount()))));
-        invoice.setPaymentsMethodRequests(paymentsMethodRequests);
-        invoice.setItems(items);
-
-
-        if(findAllPayMentByIdBillAndMethod.size() > 0 ){
-            invoice.setMethod(true);
-        }else{
-            invoice.setMethod(false);
-        }
-        invoice.setTypeBill(false);
-        Date date = new Date(bill.getCreatedDate());
-
-        SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        String formattedDate = formatterDate.format(date);
-        invoice.setDate(formattedDate);
-        return invoice;
-    }
-    private void sendMail(InvoiceResponse invoice, String url, String email){
+    public void sendMail(InvoiceResponse invoice, String url, String email){
         String finalHtmlSendMail = null;
         Context dataContextSendMail = exportFilePdfFormHtml.setDataSendMail(invoice, url);
         finalHtmlSendMail = springTemplateEngine.process("templateBillSendMail", dataContextSendMail);

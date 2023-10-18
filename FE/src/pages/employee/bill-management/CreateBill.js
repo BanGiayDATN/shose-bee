@@ -823,7 +823,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var totalBill =
       products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) - voucher.discountPrice;
+      }, 0) ;
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
@@ -894,7 +894,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         billRequest.userName != ""
       ) {
         if (totalBill > 0) {
-          if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee)) {
+          if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee- voucher.discountPrice)) {
             Modal.confirm({
               title: "Xác nhận",
               content: "Bạn có xác nhận đặt hàng không?",
@@ -924,7 +924,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee)) {
+        if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee- voucher.discountPrice)) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
@@ -1422,12 +1422,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var totalBill =
       products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) - voucher.discountPrice;
+      }, 0) ;
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
     const data = {
-      vnp_Ammount: Math.round(totalBill - totaPayMent),
+      vnp_Ammount: Math.round((totalBill + shipFee - voucher.discountPrice) - totaPayMent),
       vnp_TxnRef: billRequest.code,
     };
     localStorage.setItem("code", billRequest.code);
