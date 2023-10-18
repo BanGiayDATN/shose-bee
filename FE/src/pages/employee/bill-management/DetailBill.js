@@ -90,6 +90,13 @@ function DetailBill() {
     BillApi.fetchDetailBill(id).then((res) => {
       dispatch(getBill(res.data.data));
       console.log(res.data.data);
+      setBillRequest({
+        name: res.data.data.userName,
+        phoneNumber: res.data.data.phoneNumber,
+        address: res.data.data.address,
+        moneyShip: res.data.data.moneyShip,
+        note: res.data.data.note,
+      })
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
       );
@@ -390,17 +397,10 @@ function DetailBill() {
       .filter((key) => key !== "note" && key !== "address")
       .every((key) => billRequest[key] !== "");
   };
-  const checkNotEmptyAddress = () => {
-    return (
-      Object.keys(address).filter((key) => address[key] !== "").length ===
-      Object.keys(address).length - 1
-    );
-  };
+
   const handleOkBill = () => {
-    var addressuser = "";
-    console.log(checkNotEmptyBill());
-    console.log(!checkNotEmptyBill());
-    if (!checkNotEmptyAddress()) {
+    var addressuser = billRequest.address;
+    if (address.detail != '' && address.wards != '' && address.district != '' && address.city != '') {
       addressuser =
         address.detail +
         ", " +
@@ -410,9 +410,8 @@ function DetailBill() {
         ", " +
         address.city;
     }
-    setBillRequest({ ...billRequest, address: addressuser });
     const data = {
-      name: billRequest.name.trim(),
+      name: String(billRequest.name).trim(),
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim() ,
       moneyShip: shipFee,
