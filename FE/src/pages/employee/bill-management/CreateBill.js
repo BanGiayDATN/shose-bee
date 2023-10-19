@@ -2946,7 +2946,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               )}
             </Col>
           </Row>
-          <Row style={{ width: "100%", margin: "10px 0 " }}>
+{isOpenDelivery ? (<Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
@@ -2998,7 +2998,56 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         voucher.discountPrice)
                   )}
             </Col>
-          </Row>
+          </Row>):(<Row style={{ width: "100%", margin: "10px 0 " }}>
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+              {dataPayment.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.totalMoney;
+              }, 0) <
+              products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
+              }, 0)  -
+                voucher.discountPrice
+                ? "Tiền thiếu"
+                : "Tiền thừa"}
+            </Col>
+            <Col
+              span={16}
+              align={"end"}
+              style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
+            >
+              {dataPayment.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.totalMoney;
+              }, 0) <
+              products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
+              }, 0) -
+                voucher.discountPrice
+                ? formatCurrency(
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) -
+                      voucher.discountPrice -
+                      dataPayment.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.totalMoney;
+                      }, 0)
+                  )
+                : formatCurrency(
+                    dataPayment.reduce((accumulator, currentValue) => {
+                      return accumulator + currentValue.totalMoney;
+                    }, 0) -
+                      (products.reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0) -
+                        voucher.discountPrice)
+                  )}
+            </Col>
+          </Row>)}
+          
         </Form>
       </Modal>
 
