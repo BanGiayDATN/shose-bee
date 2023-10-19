@@ -13,8 +13,6 @@ import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
-import com.example.shose.server.dto.response.bill.InvoiceItemResponse;
-import com.example.shose.server.dto.response.bill.InvoicePaymentResponse;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
@@ -63,13 +61,11 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,6 +186,9 @@ public class BillServiceImpl implements BillService {
             }
 
             productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+            if( productDetail.get().getStatus() == Status.HET_SAN_PHAM){
+                productDetail.get().setStatus(Status.DANG_SU_DUNG);
+            }
             productDetailRepository.save(productDetail.get());
         });
         billHistoryRepository.deleteAllByIdBill(optional.get().getId());
@@ -253,6 +252,9 @@ public class BillServiceImpl implements BillService {
             }
             billDetailRepository.save(billDetail);
             productDetail.get().setQuantity(productDetail.get().getQuantity() - billDetailRequest.getQuantity());
+            if (productDetail.get().getQuantity() == 0) {
+                productDetail.get().setStatus(Status.HET_SAN_PHAM);
+            }
             productDetailRepository.save(productDetail.get());
         });
         request.getVouchers().forEach(voucher -> {
@@ -287,8 +289,6 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill CreateCodeBill(String idEmployees) {
         Optional<Account> account = accountRepository.findById(idEmployees);
-//        if (account.get().getRoles() == Roles.USER) {
-//        }
         Bill bill = Bill.builder()
                 .employees(account.get())
                 .typeBill(TypeBill.OFFLINE)
@@ -330,6 +330,9 @@ public class BillServiceImpl implements BillService {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
             productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+            if( productDetail.get().getStatus() == Status.HET_SAN_PHAM){
+                productDetail.get().setStatus(Status.DANG_SU_DUNG);
+            }
             productDetailRepository.save(productDetail.get());
         });
         billHistoryRepository.deleteAllByIdBill(optional.get().getId());
@@ -625,6 +628,9 @@ public class BillServiceImpl implements BillService {
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
             productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
+            if (productDetail.getQuantity() == 0) {
+                productDetail.setStatus(Status.HET_SAN_PHAM);
+            }
             productDetailRepository.save(productDetail);
         }
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
@@ -691,6 +697,9 @@ public class BillServiceImpl implements BillService {
             billDetailRepository.save(billDetail);
 
             productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
+            if (productDetail.getQuantity() == 0) {
+                productDetail.setStatus(Status.HET_SAN_PHAM);
+            }
             productDetailRepository.save(productDetail);
         }
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()

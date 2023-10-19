@@ -230,6 +230,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         for (BillDetailOnline x : request.getBillDetail()) {
             ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
             productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
+            if( productDetail.getStatus() == Status.HET_SAN_PHAM){
+                productDetail.setStatus(Status.DANG_SU_DUNG);
+            }
             productDetailRepository.save(productDetail);
         }
         return true;
@@ -272,6 +275,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
             productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
+            if (productDetail.getQuantity() == 0) {
+                productDetail.setStatus(Status.HET_SAN_PHAM);
+            }
             productDetailRepository.save(productDetail);
         });
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
