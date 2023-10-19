@@ -160,6 +160,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (traSau) {
       statusPayMents = "TRA_SAU";
     }
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
@@ -170,7 +174,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       statusPayMents: statusPayMents,
       typeBill: typeBill,
       email:billRequest.email.trim(),
-      moneyShip: shipFee,
+      moneyShip: ship,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
@@ -221,6 +225,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       if (traSau) {
         statusPayMents = "TRA_SAU";
       }
+      var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
       var data = {
         phoneNumber: billRequest.phoneNumber.trim(),
         address: addressuser.trim(),
@@ -231,7 +239,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         statusPayMents: statusPayMents,
         typeBill: typeBill,
         email:billRequest.email.trim(),
-        moneyShip: shipFee,
+        moneyShip: ship,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
         vouchers: newVoucher,
@@ -864,6 +872,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (traSau) {
       statusPayMents = "TRA_SAU";
     }
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
@@ -874,7 +886,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       email:billRequest.email.trim(),
       statusPayMents: statusPayMents,
       typeBill: typeBill,
-      moneyShip: shipFee,
+      moneyShip: ship,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
@@ -1426,8 +1438,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     const data = {
-      vnp_Ammount: Math.round((totalBill + shipFee - voucher.discountPrice) - totaPayMent),
+      vnp_Ammount: Math.round((totalBill + ship - voucher.discountPrice) - totaPayMent),
       vnp_TxnRef: billRequest.code,
     };
     localStorage.setItem("code", billRequest.code);
@@ -2490,7 +2506,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   Tổng tiền:
                 </span>{" "}
               </Col>
-              <Col
+                   {
+                    isOpenDelivery ? (
+                       <Col
                 span={10}
                 style={{
                   color: "red",
@@ -2500,6 +2518,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 }}
                 align={"end"}
               >
+                 
                 {formatCurrency(
                   products.reduce((accumulator, currentValue) => {
                     return (
@@ -2510,6 +2529,28 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     voucher.discountPrice
                 )}
               </Col>
+                    ) : (  <Col
+                span={10}
+                style={{
+                  color: "red",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                }}
+                align={"end"}
+              >
+                 
+                {formatCurrency(
+                  products.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0)  -
+                    voucher.discountPrice
+                )}
+              </Col>)
+                  }
+             
             </Row>
             <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
               <Button
