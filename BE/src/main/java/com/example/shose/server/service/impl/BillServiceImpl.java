@@ -770,12 +770,13 @@ public class BillServiceImpl implements BillService {
     }
 
     public void sendMail(InvoiceResponse invoice, String url, String email){
-        String finalHtmlSendMail = null;
-        Context dataContextSendMail = exportFilePdfFormHtml.setDataSendMail(invoice, url);
-        finalHtmlSendMail = springTemplateEngine.process("templateBillSendMail", dataContextSendMail);
-        String subject = "Biên lai thanh toán ";
-        sendEmailService.sendBill(email,subject,finalHtmlSendMail);
-
+        if(email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+            String finalHtmlSendMail = null;
+            Context dataContextSendMail = exportFilePdfFormHtml.setDataSendMail(invoice, url);
+            finalHtmlSendMail = springTemplateEngine.process("templateBillSendMail", dataContextSendMail);
+            String subject = "Biên lai thanh toán ";
+            sendEmailService.sendBill(email,subject,finalHtmlSendMail);
+        }
     }
 
 }
