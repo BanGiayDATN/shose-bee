@@ -139,5 +139,4 @@ public class CustomerRestController {
     public ResponseObject getOneByPhoneNumber(@PathVariable("phoneNumber") String phoneNumber) {
         return new ResponseObject(customerService.getOneByPhoneNumber(phoneNumber));
     }
-
 }

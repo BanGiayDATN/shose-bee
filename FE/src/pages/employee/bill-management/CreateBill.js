@@ -120,6 +120,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [form] = Form.useForm();
   const [formCheckCodeVnPay] = Form.useForm();
   const [formAddUser] = Form.useForm();
+  const [addressId, setAddressId] = useState([]);
 
   const onChangeAddress = (fileName, value) => {
     setAddress({ ...address, [fileName]: value });
@@ -253,7 +254,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         openDelivery: isOpenDelivery,
       };
       console.log(data)
-      BillApi.updateBillWait(data).then((res) => {});
+      BillApi.updateBillWait(data).then((res) => { });
     }
   };
 
@@ -613,8 +614,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
       const addressData = res.data.data;
       const formValues = {
-        phoneNumber: record.phoneNumber,
-        name: record.fullName,
+
       };
       if (addressData) {
         setAddress({
@@ -623,13 +623,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           wards: addressData.ward,
           detail: addressData.line,
         });
+
         addressFull(
           addressData.provinceId,
           addressData.toDistrictId,
           addressData.wardCode
         );
-        formValues.name = addressData.user.fullName;
-        formValues.phoneNumber = addressData.user.phoneNumber;
+        setAddressId({
+          provinceId: addressData.provinceId,
+          toDistrictId: addressData.toDistrictId,
+          wardCode: addressData.wardCode
+        })
+
+        formValues.name = addressData.fullName;
+        formValues.phoneNumber = addressData.phoneNumber;
         formValues.city = addressData.province;
         formValues.district = addressData.district;
         formValues.wards = addressData.ward;
@@ -821,7 +828,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   // enad modal thanh toán
 
   const openDelivery = (e) => {
-    setShipFee(0);
+    setShipFee(0)
     setIsOpenDelivery(!isOpenDelivery);
   };
   const items = useSelector((state) => state.bill.billWaits.value);
@@ -1249,15 +1256,15 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     },
     {
       title: "Họ tên",
-      dataIndex: "fullname",
-      key: "fullname",
-      sorter: (a, b) => a.fullname.localeCompare(b.fullname),
+      dataIndex: "fullName",
+      key: "fullName",
+      sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
     {
       title: "Số điện thoại",
-      dataIndex: "phonenumber",
-      key: "phonenumber",
-      sorter: (a, b) => a.phonenumber.localeCompare(b.phonenumber),
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+      sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
     },
     {
       title: "Địa chỉ",
@@ -1327,8 +1334,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       detail: record.line,
     });
     form.setFieldsValue({
-      phoneNumber: record.phonenumber,
-      name: record.fullname,
+      phoneNumber: record.phoneNumber,
+      name: record.fullName,
       city: record.province,
       district: record.district,
       wards: record.ward,
@@ -1339,7 +1346,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const addressFull = (provinceId, toDistrictId, wardCode) => {
     AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
-      setShipFee(res.data.data.total);
+        setShipFee(res.data.data.total);
     });
     AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
       const leadtimeInSeconds = res.data.data.leadtime;
@@ -1504,12 +1511,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
   }
 
-const getPromotionStyle = (promotion) => {
-  return promotion >= 50 ? { color: "white" } : { color: "#000000" };
-};
-const getPromotionColor = (promotion) => {
-  return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
-};
+  const getPromotionStyle = (promotion) => {
+    return promotion >= 50 ? { color: "white" } : { color: "#000000" };
+  };
+  const getPromotionColor = (promotion) => {
+    return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
+  };
   // open modal when payment vnpay
   return (
     <div style={{ width: "100%" }}>
@@ -1672,58 +1679,58 @@ const getPromotionColor = (promotion) => {
                     }}
                   /> */}
                   <div style={{ position: "relative", display: "inline-block" }}>
-          <img
-            src={item.image}
-            alt="Ảnh sản phẩm"
-            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
-          />
-          {item.promotion !== null && (
-            <div
-              style={{
-                position: "absolute",
-                top: "0px",
-                right: "0px",
-                padding: "0px",
-                cursor: "pointer",
-                borderRadius: "50%",
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faBookmark}
-                style={{
-                  ...getPromotionColor(item.promotion),
-                  fontSize: "3.5em",
-                }}
-              />
-              <span
-                style={{
-                  position: "absolute",
-                  top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
-                  left: "50%", // Để "50%" nằm chính giữa biểu tượng
-                  transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
-                  fontSize: "0.8em",
-                  fontWeight: "bold",
-                  ...getPromotionStyle(item.promotion),
-                }}
-              >
-                {`${item.promotion}%`}
-              </span>
-              <span
-                style={{
-                  position: "absolute",
-                  top: "60%", 
-                  left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
-                  transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
-                  fontSize: "0.8em",
-                  fontWeight: "bold",
-                  ...getPromotionStyle(item.promotion),
-                }}
-              >
-                Giảm
-              </span>
-            </div>
-          )}
-        </div>
+                    <img
+                      src={item.image}
+                      alt="Ảnh sản phẩm"
+                      style={{ width: "100px", borderRadius: "10%", height: "100px" }}
+                    />
+                    {item.promotion !== null && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          right: "0px",
+                          padding: "0px",
+                          cursor: "pointer",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faBookmark}
+                          style={{
+                            ...getPromotionColor(item.promotion),
+                            fontSize: "3.5em",
+                          }}
+                        />
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                            left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          {`${item.promotion}%`}
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "60%",
+                            left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          Giảm
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </Col>
                 <Col span={7}>
                   <Row>
@@ -3007,7 +3014,7 @@ const getPromotionColor = (promotion) => {
 
       {/* end modal payment  */}
     </div>
-    );
-  }
+  );
+}
 
 export default CreateBill;
