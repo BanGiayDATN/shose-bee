@@ -9,6 +9,7 @@ import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
+import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.repository.*;
 import com.itextpdf.html2pdf.ConverterProperties;
@@ -162,6 +163,7 @@ public class ExportFilePdfFormHtml {
             InvoicePaymentResponse invoicePaymentResponse = InvoicePaymentResponse.builder()
                     .total(formatter.format(item.getTotalMoney()))
                     .method(item.getMethod() == StatusMethod.TIEN_MAT ? "Tiền mặt" : item.getMethod() == StatusMethod.CHUYEN_KHOAN ? "Chuyển khoản": "Thẻ")
+                    .status(item.getStatus() == StatusPayMents.THANH_TOAN ? "Thanh toán" : item.getStatus() == StatusPayMents.TRA_SAU ? "Trả sau" : "Hoàn tiền" )
                     .vnp_TransactionNo(item.getVnp_TransactionNo())
                     .build();
             paymentsMethodRequests.add(invoicePaymentResponse);
