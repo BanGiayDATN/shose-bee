@@ -924,7 +924,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee- voucher.discountPrice)) {
+        if (Math.round(totaPayMent) >= Math.round(totalBill - voucher.discountPrice)) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
