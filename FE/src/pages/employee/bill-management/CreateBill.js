@@ -435,6 +435,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ).then((res) => {
         setShipFee(res.data.data.total);
       });
+      if(traSau){
+        loadPayMentTraSau()
+      }
     }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
@@ -676,7 +679,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     setTraSau(!traSau);
     var check = !traSau;
     if (check) {
-      var total =
+      loadPayMentTraSau()
+    } else {
+      setDataPayMent([]);
+    }
+  };
+  const loadPayMentTraSau = () => {
+    var total =
         products.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.price * currentValue.quantity;
         }, 0) +
@@ -691,10 +700,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         },
       ];
       setDataPayMent(list);
-    } else {
-      setDataPayMent([]);
-    }
-  };
+  }
   const formRef = React.useRef(null);
 
   const addPayMent = (e, method) => {
@@ -862,6 +868,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var statusPayMents = "THANH_TOAN";
     if (traSau) {
       statusPayMents = "TRA_SAU";
+
     }
     var ship = 0
     if(isOpenDelivery){
@@ -1312,6 +1319,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const selectedAddress = (record) => {
     setIsModalAddressOpen(false);
+    console.log(record);
     setListInfoUser(record);
     setAddress({
       city: record.province,
@@ -1320,8 +1328,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       detail: record.line,
     });
     form.setFieldsValue({
-      phoneNumber: record.phonenumber,
-      name: record.fullname,
+      phoneNumber: record.phoneNumber,
+      name: record.fullName,
       city: record.province,
       district: record.district,
       wards: record.ward,
@@ -1333,6 +1341,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const addressFull = (provinceId, toDistrictId, wardCode) => {
     AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
         setShipFee(res.data.data.total);
+        if(traSau){
+          loadPayMentTraSau()
+        }
     });
     AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
       const leadtimeInSeconds = res.data.data.leadtime;
@@ -2774,6 +2785,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       message: "Vui lòng nhập tên khách hàng",
                     },
                     { max: 30, message: "Tên khách hàng tối đa 30 ký tự" },
+                    {
+                      validator: (_, value) => {
+                        if (value && value.trim() === "") {
+                          return Promise.reject("Không được chỉ nhập khoảng trắng");
+                        }
+                        if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                          return Promise.reject(
+                            "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                          );
+                        }
+        
+                        return Promise.resolve();
+                      },
+                    },
                   ]}
                 >
                   <Input className="input-item" placeholder="Tên khách hàng" />
