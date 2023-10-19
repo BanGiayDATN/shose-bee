@@ -160,6 +160,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (traSau) {
       statusPayMents = "TRA_SAU";
     }
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
@@ -170,7 +174,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       statusPayMents: statusPayMents,
       typeBill: typeBill,
       email:billRequest.email.trim(),
-      moneyShip: shipFee,
+      moneyShip: ship,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
@@ -221,6 +225,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       if (traSau) {
         statusPayMents = "TRA_SAU";
       }
+      var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
       var data = {
         phoneNumber: billRequest.phoneNumber.trim(),
         address: addressuser.trim(),
@@ -231,7 +239,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         statusPayMents: statusPayMents,
         typeBill: typeBill,
         email:billRequest.email.trim(),
-        moneyShip: shipFee,
+        moneyShip: ship,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
         vouchers: newVoucher,
@@ -793,12 +801,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     },
   ];
   const showModalPayMent = (e) => {
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     setIsModalPayMentOpen(true);
     var total =
       products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
       }, 0) +
-      shipFee -
+      ship -
       voucher.discountPrice;
     setTotalMoneyPayment(Math.round(total));
   };
@@ -871,6 +883,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (traSau) {
       statusPayMents = "TRA_SAU";
     }
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
@@ -881,7 +897,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       email:billRequest.email.trim(),
       statusPayMents: statusPayMents,
       typeBill: typeBill,
-      moneyShip: shipFee,
+      moneyShip: ship,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
@@ -931,7 +947,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee- voucher.discountPrice)) {
+        if (Math.round(totaPayMent) >= Math.round(totalBill - voucher.discountPrice)) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
@@ -1433,8 +1449,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     const data = {
-      vnp_Ammount: Math.round((totalBill + shipFee - voucher.discountPrice) - totaPayMent),
+      vnp_Ammount: Math.round((totalBill + ship - voucher.discountPrice) - totaPayMent),
       vnp_TxnRef: billRequest.code,
     };
     localStorage.setItem("code", billRequest.code);
@@ -2506,7 +2526,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   Tổng tiền:
                 </span>{" "}
               </Col>
-              <Col
+                   {
+                    isOpenDelivery ? (
+                       <Col
                 span={10}
                 style={{
                   color: "red",
@@ -2516,6 +2538,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 }}
                 align={"end"}
               >
+                 
                 {formatCurrency(
                   products.reduce((accumulator, currentValue) => {
                     return (
@@ -2526,6 +2549,28 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     voucher.discountPrice
                 )}
               </Col>
+                    ) : (  <Col
+                span={10}
+                style={{
+                  color: "red",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                }}
+                align={"end"}
+              >
+                 
+                {formatCurrency(
+                  products.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator + currentValue.price * currentValue.quantity
+                    );
+                  }, 0)  -
+                    voucher.discountPrice
+                )}
+              </Col>)
+                  }
+             
             </Row>
             <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
               <Button
@@ -2921,7 +2966,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               )}
             </Col>
           </Row>
-          <Row style={{ width: "100%", margin: "10px 0 " }}>
+{isOpenDelivery ? (<Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
               {dataPayment.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue.totalMoney;
@@ -2973,7 +3018,56 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         voucher.discountPrice)
                   )}
             </Col>
-          </Row>
+          </Row>):(<Row style={{ width: "100%", margin: "10px 0 " }}>
+            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+              {dataPayment.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.totalMoney;
+              }, 0) <
+              products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
+              }, 0)  -
+                voucher.discountPrice
+                ? "Tiền thiếu"
+                : "Tiền thừa"}
+            </Col>
+            <Col
+              span={16}
+              align={"end"}
+              style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
+            >
+              {dataPayment.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.totalMoney;
+              }, 0) <
+              products.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.price * currentValue.quantity;
+              }, 0) -
+                voucher.discountPrice
+                ? formatCurrency(
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) -
+                      voucher.discountPrice -
+                      dataPayment.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.totalMoney;
+                      }, 0)
+                  )
+                : formatCurrency(
+                    dataPayment.reduce((accumulator, currentValue) => {
+                      return accumulator + currentValue.totalMoney;
+                    }, 0) -
+                      (products.reduce((accumulator, currentValue) => {
+                        return (
+                          accumulator +
+                          currentValue.price * currentValue.quantity
+                        );
+                      }, 0) -
+                        voucher.discountPrice)
+                  )}
+            </Col>
+          </Row>)}
+          
         </Form>
       </Modal>
 
