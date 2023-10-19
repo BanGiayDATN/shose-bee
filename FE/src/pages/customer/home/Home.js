@@ -29,7 +29,6 @@ function Home() {
     if (firstCategoryId !== null) {
       getProductDetailByCategory(firstCategoryId);
     }
-    
   }, [firstCategoryId]);
 
   useEffect(() => {
@@ -86,7 +85,7 @@ function Home() {
     ProductDetailClientApi.getDetailProductNew(page).then(
       (res) => {
         setListProductDetail(res.data.data.data);
-        setTotalPagesProduct(res.data.data.totalPages );
+        setTotalPagesProduct(res.data.data.totalPages);
       },
       (err) => {
         console.log(err);
@@ -97,7 +96,7 @@ function Home() {
     ProductDetailClientApi.getDetailProductSellMany(page).then(
       (res) => {
         setListProductDetail(res.data.data.data);
-        setTotalPagesProduct(res.data.data.totalPages );
+        setTotalPagesProduct(res.data.data.totalPages);
       },
       (err) => {
         console.log(err);
@@ -109,7 +108,7 @@ function Home() {
     ProductDetailClientApi.getDetailProductHavePromotion(page).then(
       (res) => {
         setListProductDetail(res.data.data.data);
-        setTotalPagesProduct(res.data.data.totalPages );
+        setTotalPagesProduct(res.data.data.totalPages);
       },
       (err) => {
         console.log(err);
@@ -117,14 +116,14 @@ function Home() {
     );
   };
   const handlePageChange = (page) => {
-    if(keyTab === "1"){
+    if (keyTab === "1") {
       getDetailProductNew(page - 1);
-    }else if(keyTab === "2"){
+    } else if (keyTab === "2") {
       getDetailProductSellMany(page - 1);
-    }else{
+    } else {
       getDetailProductHavePromotion(page - 1);
     }
-    
+
     setCurrentPage(page);
   };
   const getDetailProduct = (keyTab) => {
@@ -189,9 +188,9 @@ function Home() {
   return (
     <div className="home">
       <div className="banner">
-      <div className="img-banner-home">
-        <img className="img-banner-home-shoes" src={banner1} alt="..." />
-      </div>
+        <div className="img-banner-home">
+          <img className="img-banner-home-shoes" src={banner1} alt="..." />
+        </div>
       </div>
       <div>
         <Row justify="center">
@@ -307,7 +306,7 @@ function Home() {
             <Pagination
               defaultCurrent={1}
               current={currentPage}
-              total={totalPagesProduct*10}
+              total={totalPagesProduct * 10}
               onChange={handlePageChange}
             />
           </Col>

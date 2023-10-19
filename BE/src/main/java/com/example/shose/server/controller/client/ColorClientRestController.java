@@ -1,6 +1,7 @@
 package com.example.shose.server.controller.client;
 
-import com.example.shose.server.service.CategoryService;
+import com.example.shose.server.service.ColorService;
+import com.example.shose.server.service.SoleService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,18 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/client/category")
-public class
-CategoryClientRestController {
+@RequestMapping("/client/color")
+public class ColorClientRestController {
     @Autowired
-    private CategoryService categoryService;
+    private ColorService colorService;
 
-    @GetMapping()
-    public ResponseObject getAll() {
-        return new ResponseObject(categoryService.getAll());
-    }
     @GetMapping("/in-product-detail")
-    public ResponseObject getCategoryInProductDetail() {
-        return new ResponseObject(categoryService.getCategoryInProductDetail());
+    public ResponseObject getColorInProductDetail() {
+        return new ResponseObject(colorService.getColorInProductDetail());
     }
 }

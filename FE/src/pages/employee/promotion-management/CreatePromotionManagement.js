@@ -316,7 +316,7 @@ function CreateVoucherManagement() {
                   style={{
                     position: "absolute",
                     top: -10,
-                    left: 0,
+                    right: 100,
                     fontSize: "11px",
                     color: "black", // Màu của văn bản
                     zIndex: 1, // Đặt độ sâu trên cùng

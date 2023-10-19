@@ -1,5 +1,7 @@
 package com.example.shose.server.repository;
 
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysConvertRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
@@ -355,4 +357,50 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """,nativeQuery = true)
     List<ListSizeOfItemCart> listSizeByProductAndColor(@Param("idProduct") String idProduct, @Param("codeColor") String codeColor);
 
+    @Query(value = """
+            SELECT
+                p.id as idProduct,
+                pd.id as idProductDetail,
+                REPLACE(cl.code, '#', '%23') as codeColor,
+                s.name as nameSize,
+                GROUP_CONCAT(i.name) as image,
+                p.name as nameProduct,
+                pd.price as price,
+                promotion_summary.valuePromotion as valuePromotion,
+                pd.created_date as createdDate
+            
+            FROM product_detail pd
+                     LEFT JOIN (
+                SELECT
+                    pd.id as pd_id,
+                    SUM(po.value) as valuePromotion,
+                    ppd.status as status
+                FROM product_detail pd
+                         LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                         LEFT JOIN promotion po ON po.id = ppd.id_promotion
+                       WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+                GROUP BY pd.id , ppd.status
+            ) promotion_summary ON pd.id = promotion_summary.pd_id
+                     LEFT JOIN  product p ON pd.id_product = p.id
+                     LEFT JOIN  color cl ON cl.id = pd.id_color
+                     LEFT JOIN  size s ON s.id = pd.id_size
+                     LEFT JOIN  sole sl ON s.id = pd.id_sole
+                     LEFT JOIN material m ON pd.id_material = m.id
+                     LEFT JOIN category ct ON pd.id_category = ct.id
+                     LEFT JOIN brand b ON pd.id_brand = b.id
+                     LEFT JOIN image i ON i.id_product_detail = pd.id
+            where 
+                 ( :#{#req.nameSizes} IS NULL OR s.name in (:#{#req.nameSizes}) )
+                AND  ( :#{#res.color} IS NULL OR :#{#res.color} ='' OR cl.name in (:#{#req.colors}))
+                AND  ( :#{#res.brand} IS NULL OR :#{#res.brand} ='' OR b.name in (:#{#req.brands}))
+                AND  ( :#{#res.material} IS NULL OR :#{#res.material} =''  OR m.name in (:#{#req.materials}) ) 
+                AND  ( :#{#res.sole} IS NULL OR :#{#res.sole} ='' OR sl.name in (:#{#req.soles}))
+                AND  ( :#{#res.category} IS NULL OR :#{#res.category} ='' OR ct.name in (:#{#req.categorys}) )
+                AND  ( :#{#res.status} IS NULL OR :#{#res.status} =''  OR pd.status in (:#{#req.statuss}) )
+                AND  ( :#{#res.gender} IS NULL OR :#{#res.gender} ='' OR pd.gender LIKE :#{#req.gender} )
+                AND  ( :#{#res.minPrice} IS NULL OR :#{#res.minPrice} ='' OR pd.price >= :#{#req.minPrice} ) 
+                AND  ( :#{#res.maxPrice} IS NULL  OR :#{#res.maxPrice} = '' OR  pd.price <= :#{#req.maxPrice} )
+            group by pd.id
+                """, nativeQuery = true)
+    Page<GetProductDetail> getProductDetailByCategorys(Pageable pageable, @Param("req") FindProductDetailByCategorysConvertRequest req,@Param("res") FindProductDetailByCategorysRequest res);
 }
