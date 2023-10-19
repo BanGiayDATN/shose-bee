@@ -61,4 +61,5 @@ public interface ProductDetailService {
     List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);
 
     Page<GetProductDetail> getProductDetailByCategorys(FindProductDetailByCategorysRequest request,Pageable pageable);
+    ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request);
 }

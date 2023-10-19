@@ -2,25 +2,18 @@ package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
-import com.example.shose.server.dto.request.productdetail.CreateSizeData;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
-import com.example.shose.server.dto.response.ImageResponse;
-import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
 import com.example.shose.server.service.ProductDetailService;
-import com.example.shose.server.util.FormUtils;
 import com.example.shose.server.util.ResponseObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -111,6 +103,10 @@ public class ProductDetailRestController {
         return new ResponseObject(productDetailService.findAllByIdProduct(id));
     }
 
+    @GetMapping("/ok")
+    public ResponseObject test(final CreateProductDetailRequest request) {
+        return new ResponseObject(productDetailService.checkQuantityAndPriceByProducDetailByAll(request));
+    }
 
 
 }

@@ -3,6 +3,10 @@ import { Modal, Input, Button, Form, Row, Col, Table } from "antd";
 import "../dashboard/style-dashboard.css";
 import { CChart } from "@coreui/react-chartjs";
 import { StatisticalApi } from "../../../api/employee/statistical/statistical.api";
+import * as am5 from "@amcharts/amcharts5";
+import * as am5xy from "@amcharts/amcharts5/xy";
+import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+import * as am5percent from "@amcharts/amcharts5/percent";
 const DashBoard = () => {
   const [totalBillMonth, setTotalBillMonth] = useState(0);
   const [totalBillAmoutMonth, setTotalBillAmoutMonth] = useState(0);
@@ -46,9 +50,6 @@ const DashBoard = () => {
           ...dataBestSell,
           stt: index + 1,
         }));
-        // const data = res.data.data;
-        console.log(res.data.data);
-        console.log(data);
         setListSellingProduct(data);
       },
       (err) => {
@@ -59,6 +60,38 @@ const DashBoard = () => {
       (res) => {
         const data = res.data.data;
         setDataPie(data);
+        // drawChartPie(data)
+        const statusMapping = {
+          TAO_HOA_DON: "Tạo hóa đơn",
+          CHO_XAC_NHAN: "Chờ xác nhận",
+          CHO_VAN_CHUYEN: "Chờ vận chuyển",
+          VAN_CHUYEN: "vận chuyển",
+          DA_THANH_TOAN: "Đã thanh toán",
+          THANH_CONG: "Thành công",
+          TRA_HANG: "Trả hàng",
+          DA_HUY: "Đã Hủy",
+        };
+
+        const statusColors = {
+          TAO_HOA_DON: "#E46651",
+          CHO_XAC_NHAN: "#00D8FF",
+          CHO_VAN_CHUYEN: "#FFCE56",
+          VAN_CHUYEN: "#9C27B0",
+          DA_THANH_TOAN: "#41B883",
+          THANH_CONG: "#4CAF50",
+          TRA_HANG: "##FF5733",
+          DA_HUY: "#DD1B16",
+        };
+
+        const newDataPie = data.map(item => ({
+          category: statusMapping[item.statusBill] || item.statusBill, // Sử dụng mapping hoặc giữ nguyên nếu không tìm thấy
+          value: item.totalStatusBill,
+          color: statusColors[item.statusBill] || item.statusBill,
+        }));
+        drawChartPie(newDataPie)
+        // const chartPieLabels = data.map((item) => statusMapping[item.statusBill]);
+        // const chartPieData = data.map((item) => item.totalStatusBill);
+        // const chartPieColor = data.map((item) => statusColors[item.statusBill]);
       },
       (err) => {
         console.log(err);
@@ -68,6 +101,7 @@ const DashBoard = () => {
       (res) => {
         const data = res.data.data;
         setDataColumn(data);
+        drawChart(data);
       },
       (err) => {
         console.log(err);
@@ -85,6 +119,151 @@ const DashBoard = () => {
       currencyDisplay: "code",
     });
     return formatter.format(value);
+  };
+
+  const drawChartPie = (data) => {
+    am5.array.each(am5.registry.rootElements, function (root) {
+      if (root) {
+        if (root.dom.id == "chartdivPie") {
+          root.dispose();
+        }
+      }
+    });
+  
+    let root = am5.Root.new("chartdivPie");
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+  
+    // Create chart
+    var chart = root.container.children.push(am5percent.PieChart.new(root, {
+      layout: root.verticalLayout
+    }));
+  
+    // Create series
+    var series = chart.series.push(am5percent.PieSeries.new(root, {
+      valueField: "value",
+      categoryField: "category"
+    }));
+  
+    // Gán dữ liệu đã được cập nhật cho series
+    series.data.setAll(data);
+  
+    // Create legend
+    var legend = chart.children.push(am5.Legend.new(root, {
+      centerX: am5.percent(50),
+      x: am5.percent(50),
+      marginTop: 15,
+      marginBottom: 15
+    }));
+  
+    legend.data.setAll(series.dataItems);
+  
+    // Play initial series animation
+    series.appear(1000, 100);
+  }
+  
+  const drawChart = (dataX) => {
+    am5.array.each(am5.registry.rootElements, function (root) {
+      if (root) {
+        if (root.dom.id == "chartdivChart") {
+          root.dispose();
+        }
+      }
+    });
+
+    let root = am5.Root.new("chartdivChart");
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+
+    // Create chart
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+      panX: false,
+      panY: false,
+      wheelX: "panX",
+      wheelY: "zoomX"
+    }));
+
+
+    // Add cursor
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+    var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+      behavior: "zoomX"
+    }));
+    cursor.lineY.set("visible", false);
+
+    var date = new Date();
+    date.setHours(0, 0, 0, 0);
+    var value = 100;
+
+    function generateData() {
+      value = Math.round((Math.random() * 10 - 5) + value);
+      am5.time.add(date, "day", 1);
+      return {
+        date: date.getTime(),
+        value: value
+      };
+    }
+
+    function generateDatas(count) {
+      var data = [];
+      for (var i = 0; i < count; ++i) {
+        data.push(generateData());
+      }
+      return data;
+    }
+
+
+    // Create axes
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+    var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+      maxDeviation: 0,
+      baseInterval: {
+        timeUnit: "day",
+        count: 1
+      },
+      renderer: am5xy.AxisRendererX.new(root, {
+        minGridDistance: 60
+      }),
+      tooltip: am5.Tooltip.new(root, {})
+    }));
+
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+      renderer: am5xy.AxisRendererY.new(root, {})
+    }));
+
+
+    // Add series
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+      name: "Series",
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: "totalBillDate",
+      valueXField: "billDate",
+      tooltip: am5.Tooltip.new(root, {
+        labelText: "Hóa đơn: {valueY}"
+      })
+    }));
+
+    series.columns.template.setAll({ strokeOpacity: 0 })
+
+    // Add scrollbar
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/
+    chart.set("scrollbarX", am5.Scrollbar.new(root, {
+      orientation: "horizontal"
+    }));
+    var data = generateDatas(50);
+    series.data.setAll(dataX);
+    console.log(dataX);
+
+    // Make stuff animate on load
+    // https://www.amcharts.com/docs/v5/concepts/animations/
+    series.appear(1000);
+    chart.appear(1000, 100);
+
   };
 
   const columns = [
@@ -140,48 +319,23 @@ const DashBoard = () => {
   const getRowClassName = (record, index) => {
     return index % 2 === 0 ? "even-row" : "odd-row";
   };
-  const statusMapping = {
-    TAO_HOA_DON: "Tạo hóa đơn",
-    CHO_XAC_NHAN: "Chờ xác nhận",
-    CHO_VAN_CHUYEN: "Chờ vận chuyển",
-    VAN_CHUYEN: "vận chuyển",
-    DA_THANH_TOAN: "Đã thanh toán",
-    THANH_CONG: "Thành công",
-    TRA_HANG: "Trả hàng",
-    DA_HUY: "Đã Hủy",
-  };
 
-  const statusColors = {
-    TAO_HOA_DON: "#E46651",
-    CHO_XAC_NHAN: "#00D8FF",
-    CHO_VAN_CHUYEN: "#FFCE56",
-    VAN_CHUYEN: "#9C27B0",
-    DA_THANH_TOAN: "#41B883",
-    THANH_CONG: "#4CAF50",
-    TRA_HANG: "##FF5733",
-    DA_HUY: "#DD1B16",
-  };
 
-  const chartPieLabels = dataPie.map((item) => statusMapping[item.statusBill]);
-  const chartPieData = dataPie.map((item) => item.totalStatusBill);
-  const chartPieColor = dataPie.map((item) => statusColors[item.statusBill]);
+  // const dateMap = {};
+  // dataColumn.forEach((item) => {
+  //   const date = new Date(Number(item.billDate));
+  //   const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+  //     }/${date.getFullYear()}`;
 
-  const dateMap = {};
-  dataColumn.forEach((item) => {
-    const date = new Date(Number(item.billDate));
-    const formattedDate = `${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()}`;
+  //   if (dateMap[formattedDate]) {
+  //     dateMap[formattedDate] += item.totalBillDate;
+  //   } else {
+  //     dateMap[formattedDate] = item.totalBillDate;
+  //   }
+  // });
 
-    if (dateMap[formattedDate]) {
-      dateMap[formattedDate] += item.totalBillDate;
-    } else {
-      dateMap[formattedDate] = item.totalBillDate;
-    }
-  });
-
-  const chartLabels = Object.keys(dateMap);
-  const chartData = Object.values(dateMap);
+  // const chartLabels = Object.keys(dateMap);
+  // const chartData = Object.values(dateMap);
 
   const handleStartDateChange = (event) => {
     const startDate = event.target.value;
@@ -202,6 +356,7 @@ const DashBoard = () => {
       (res) => {
         const data = res.data.data;
         setDataColumn(data);
+        drawChart(data)
       },
       (err) => {
         console.log(err);
@@ -209,6 +364,7 @@ const DashBoard = () => {
     );
   };
   return (
+
     <div>
       <div
         className="content-wrapper"
@@ -229,7 +385,7 @@ const DashBoard = () => {
           THỐNG KÊ
         </span>
       </div>
-      <div>
+      <div> 
         <Row className="row-header">
           <Col span={7} className="col-header">
             <div className="content-header">
@@ -287,68 +443,12 @@ const DashBoard = () => {
                 />
               </div>
             </div>
-            <div>
-              <CChart
-                type="bar"
-                data={{
-                  labels: chartLabels,
-                  datasets: [
-                    {
-                      label: "Hóa đơn",
-                      backgroundColor: "#3b5e96", // Màu xanh dương
-                      data: chartData,
-                      barThickness: 60,
-                    },
-                  ],
-                }}
-                labels="months"
-                options={{
-                  plugins: {
-                    legend: {
-                      labels: {
-                        color: "#333", // Màu văn bản
-                        font: {
-                          size: 15,
-                        },
-                      },
-                    },
-                    tooltip: {
-                      position: "nearest", // Hiển thị tooltip ở vị trí gần nhất
-                      mode: "index", // Hiển thị tooltip dựa trên vị trí chỉ mục của dữ liệu
-                      intersect: true, // Chỉ hiển thị một tooltip
-                    },
-                  },
-                  scales: {
-                    x: {
-                      grid: {
-                        color: "#f2f2f2", // Màu dòng lưới x
-                      },
-                      ticks: {
-                        color: "#555", // Màu số trên trục x
-                      },
-                    },
-                    y: {
-                      grid: {
-                        color: "#f2f2f2", // Màu dòng lưới y
-                      },
-                      ticks: {
-                        color: "#555", // Màu số trên trục y
-                      },
-                    },
-                  },
-                  layout: {
-                    padding: {
-                      left: 50, // Khoảng cách từ biểu đồ đến mép trái
-                      right: 20, // Khoảng cách từ biểu đồ đến mép phải
-                      top: 100, // Khoảng cách từ biểu đồ đến phía trên
-                      bottom: 20, // Khoảng cách từ biểu đồ đến phía dưới
-                    },
-                  },
-                }}
-                style={{ width: "1100px", height: "460px" }} // Kích thước của biểu đồ
-              />
+            <div style={{ marginLeft: "50px" }} >
+              <div id="chartdivChart">
+              </div>
             </div>
           </div>
+
         </Row>
         <Row className="row-footer">
           <Col className="row-footer-left">
@@ -369,7 +469,10 @@ const DashBoard = () => {
             <h2 style={{ textAlign: "center", margin: " 3%" }}>
               Trạng thái đơn hàng
             </h2>
-            <CChart
+            <div id="chartdivPie">
+
+            </div>
+            {/* <CChart
               type="doughnut"
               className="chart-container"
               data={{
@@ -396,11 +499,12 @@ const DashBoard = () => {
                   },
                 },
               }}
-            />
+            /> */}
           </Col>
         </Row>
       </div>
     </div>
+
   );
 };
 

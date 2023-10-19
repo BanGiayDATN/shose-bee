@@ -50,7 +50,7 @@ public interface ColorRepository extends JpaRepository<Color, String> {
     List<Color> getAllCode ();
 
     @Query(value = """
-            select REPLACE(c.code, '#', '%23'),c.name from color c
+            select REPLACE(c.code, '#', '%23') as code,c.name as name from color c
             where c.id in (select pd.id_color from product_detail pd)
             group by c.code,c.name
             """, nativeQuery = true)

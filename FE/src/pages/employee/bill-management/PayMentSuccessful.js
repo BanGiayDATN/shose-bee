@@ -1,17 +1,13 @@
-import { Row } from "antd";
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "./style-payment-success.css";
-import logo from "./../../../assets/images/logo_client.png";
-import { white } from "color-name";
-import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import {
   faSquareCheck,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import logo from "./../../../assets/images/logo_client.png";
+import "./style-payment-success.css";
 
 const getUrlVars = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -84,9 +80,9 @@ function PayMentSuccessful() {
     setAmount(getAmount());
     PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {});
   }, []);
-  setTimeout(() => {
-    window.open("http://localhost:3000/sale-counter", "_self");
-  }, 10000);
+  // setTimeout(() => {
+  //   window.open("http://localhost:3000/sale-counter", "_self");
+  // }, 10000);
   return (
     <>
       <div className="header-payment-success">
@@ -107,9 +103,9 @@ function PayMentSuccessful() {
             />
             <h1>Thanh toán thành công</h1>
             <div style={{ marginTop: "5%" }}>
-              Tổng thanh toán: {formatCurrency(amount)}
+              Tổng thanh toán: {formatCurrency(amount /100)}
             </div>
-            <Link to="/sale">Tiếp tục mua</Link>
+            <Link to="/sale-counter">Tiếp tục bán hàng</Link>
           </div>
         ) : (
           <div className="content-payment-success">
@@ -120,7 +116,7 @@ function PayMentSuccessful() {
             <h1>Thanh toán thất bại</h1>
             <div>
               <Link style={{ marginLeft: "10px" }} to="/sale-counter">
-                Tiếp tục mua
+                Tiếp tục bán hàng
               </Link>
             </div>
           </div>
