@@ -794,12 +794,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     },
   ];
   const showModalPayMent = (e) => {
+    var ship = 0
+    if(isOpenDelivery){
+      ship = shipFee
+    }
     setIsModalPayMentOpen(true);
     var total =
       products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
       }, 0) +
-      shipFee -
+      ship -
       voucher.discountPrice;
     setTotalMoneyPayment(Math.round(total));
   };
@@ -812,7 +816,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   // enad modal thanh toán
 
   const openDelivery = (e) => {
-    setShipFee(0);
+    // setShipFee(0);
     setIsOpenDelivery(!isOpenDelivery);
   };
   const items = useSelector((state) => state.bill.billWaits.value);
