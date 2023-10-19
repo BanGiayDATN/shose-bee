@@ -36,15 +36,9 @@ import ModalQRScanner from "../product-management/modal/ModalQRScanner";
 import "./create-bill.css";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import "./style-bill.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 
-function generateUniqueRandomNumber(length) {
-  const numbers = new Set();
-  while (numbers.size < length) {
-    const number = generateRandomNumber(length);
-    numbers.add(number);
-  }
-  return numbers.values().next().value;
-}
 
 function generateRandomNumber(length) {
   const digits = Array(length).fill("0");
@@ -77,20 +71,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     email: "",
   });
 
-  var optionsPayMent = [
-    {
-      value: "TIEN_MAT",
-      label: "Tiền mặt",
-    },
-    {
-      value: "CHUYEN_KHOAN",
-      label: "Chuyển khoản",
-    },
-    {
-      value: "THE",
-      label: "Thẻ",
-    },
-  ];
 
   const [address, setAddress] = useState({
     city: "",
