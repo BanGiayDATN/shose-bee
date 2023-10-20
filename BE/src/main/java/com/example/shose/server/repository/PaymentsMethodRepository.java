@@ -60,7 +60,8 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod, 
     @Query(value = """
                     SELECT id  FROM payments_method
                     WHERE id_bill = :idBill
-                    AND method = 'TIEN_MAT'
+                    AND method = 'TIEN_MAT' 
+                    AND status = 'TRA_SAU' 
                     """, nativeQuery = true)
     List<String> findAllPayMentByIdBillAndMethod(@Param("idBill") String idBill);
 
