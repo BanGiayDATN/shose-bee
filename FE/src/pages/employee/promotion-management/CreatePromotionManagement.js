@@ -1,7 +1,4 @@
-import {
-  faBookmark,
-  faEye
-} from "@fortawesome/free-solid-svg-icons";
+import { faBookmark, faEye } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Col,
@@ -147,7 +144,7 @@ function CreateVoucherManagement() {
   };
   const handleSubmit = () => {
     const isFormValid =
-    formData.code &&
+      formData.code &&
       formData.name &&
       formData.value &&
       formData.startDate &&
@@ -303,22 +300,26 @@ function CreateVoucherManagement() {
             }}
           >
             {record.value !== null && (
-              <div style={{ position: "relative", display: "inline-block" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  display: "inline-block",
+                  right: 0,
+                }}
+              >
                 <FontAwesomeIcon
                   icon={faBookmark}
                   style={{
                     fontSize: "3em",
-                    color: "#ffcc00",
-                    marginTop: -10,
+                    color: record.value > 50 ? "red" : "#ffcc00",
                   }}
                 />
                 <span
                   style={{
                     position: "absolute",
-                    top: -10,
-                    right: 100,
+                    right: 0,
                     fontSize: "11px",
-                    color: "black", // Màu của văn bản
+                    color: record.value > 50 ? "white" : "black", // Màu của văn bản
                     zIndex: 1, // Đặt độ sâu trên cùng
                     textAlign: "center",
                   }}

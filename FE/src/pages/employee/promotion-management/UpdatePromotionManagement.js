@@ -1,7 +1,4 @@
-import {
-  faBookmark,
-  faEye
-} from "@fortawesome/free-solid-svg-icons";
+import { faBookmark, faEye } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Col,
@@ -16,7 +13,6 @@ import {
   Table,
 } from "antd";
 import React, { useEffect, useState } from "react";
-
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
@@ -198,7 +194,7 @@ function UpdatePromotionManagement() {
   const handleSubmit = (ids) => {
     console.log(formData);
     const isFormValid =
-     formData.code &&
+      formData.code &&
       formData.name &&
       formData.value &&
       formData.startDate &&
@@ -342,29 +338,33 @@ function UpdatePromotionManagement() {
             }}
           >
             {record.value !== null && (
-             <div style={{ position: "relative", display: "inline-block" }}>
-             <FontAwesomeIcon
-               icon={faBookmark}
-               style={{
-                 fontSize: "3em",
-                 color: "#ffcc00",
-                 marginTop:-10,
-               }}
-             />
-             <span
-               style={{
-                position: "absolute",
-                top: -10,
-                left: 0,
-                fontSize: "11px",
-                color: "black", // Màu của văn bản
-                zIndex: 1, // Đặt độ sâu trên cùng
-                textAlign:"center",
-               }}
-             >
-               Giảm {record.value}%
-             </span>
-           </div>
+              <div
+                style={{
+                  position: "absolute",
+                  display: "inline-block",
+                  right: 0,
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "3em",
+                    color: record.value > 50 ? "red" : "#ffcc00",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    fontSize: "11px",
+                    color: record.value > 50 ? "white" : "black", // Màu của văn bản
+                    zIndex: 1, // Đặt độ sâu trên cùng
+                    textAlign: "center",
+                  }}
+                >
+                  Giảm {record.value}%
+                </span>
+              </div>
             )}
           </div>
         </div>
@@ -548,16 +548,16 @@ function UpdatePromotionManagement() {
                       />
                     )}
                     {field.type === "select" && (
-            
-                        <Input
+                      <Input
                         disable
-                          className="status"
-                          name="status"
-                          value={formData["status"] === "DANG_SU_DUNG" ? "Còn hạn" : "Hết hạn" || ""}
-                      
-                        >
-                        </Input>
-                    
+                        className="status"
+                        name="status"
+                        value={
+                          formData["status"] === "DANG_SU_DUNG"
+                            ? "Còn hạn"
+                            : "Hết hạn" || ""
+                        }
+                      ></Input>
                     )}
 
                     {field.type !== "date" &&
