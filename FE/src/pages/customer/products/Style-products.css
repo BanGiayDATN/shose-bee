@@ -5,7 +5,7 @@
 }
 .box-products {
   width: 75%;
-  /* width: 1000px; */
+  height: 940px;
   display: grid; /* Sử dụng CSS Grid để quản lý bố trí */
   grid-template-columns: repeat(3, 0.1fr); /* 4 CardItem trong một hàng */
   grid-gap: 0px; /* Khoảng cách giữa các CardItem */

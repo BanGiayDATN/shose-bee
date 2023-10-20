@@ -39,23 +39,28 @@ const categoryStatus = [
 const categoryPrice = [
   {
     name: "Dưới 500 nghìn",
-    value: "duoi 500 nghin",
+    minPrice: "0",
+    maxPrice: "500000"
   },
   {
     name: "500 nghìn - 1 triệu",
-    value: "moi",
+    minPrice: "500000",
+    maxPrice: "1000000"
   },
   {
     name: "1 triệu - 2 triệu",
-    value: "moi",
+    minPrice: "1000000",
+    maxPrice: "2000000"
   },
   {
     name: "2 triệu - 3 triệu",
-    value: "moi",
+    minPrice: "2000000",
+    maxPrice: "3000000"
   },
   {
     name: "Trên 3 triệu",
-    value: "moi",
+    minPrice: "3000000",
+    maxPrice: "1000000000"
   },
 ];
 
@@ -69,8 +74,8 @@ function Products() {
   const [listColor, setListColor] = useState([]);
   const [formSearch, setFormSearch] = useState({
     gender: "",
-    // size: "",
   });
+  const [isChecked, setIsChecked] = useState({});
   useEffect(() => {
     BrandApi.getBrandInProductDetail().then((res) => {
       setListBrand(res.data.data);
@@ -106,37 +111,93 @@ function Products() {
   const categorys = [
     {
       label: "Trạng thái",
+      name: "status",
       children: categoryStatus,
     },
     {
       label: "Chọn mức giá",
+      name: "price",
       children: categoryPrice,
     },
     {
       label: "Thương hiệu",
+      name: "brand",
       children: listBrand,
     },
     {
       label: "Dòng sản phẩm",
+      name: "category",
       children: listCategory,
     },
     {
       label: "Chất liệu",
+      name: "material",
       children: listMaterial,
     },
     {
       label: "Kích thước",
+      name: "nameSize",
       children: listSize,
     },
     {
       label: "Đế giày",
+      name: "sole",
       children: listSole,
     },
     {
       label: "Màu",
+      name: "color",
       children: listColor,
     },
   ];
+
+
+
+  // const changeFomSearch = (name, value, isChecked) => {
+  //   console.log(name,value,isChecked);
+  //   setIsChecked((prevStates) => ({
+  //     ...prevStates,
+  //     [value]: isChecked,
+  //   }));
+
+  //   if (isChecked) {
+  //     setFormSearch((prev) => ({
+  //       ...prev,
+  //       [name]: value
+  //     }))
+  //   } else {
+  //     setFormSearch((prev) => prev.filter((item)=>item !== value))
+
+  //   }
+  // };
+
+  const changeFomSearch = (name, value, isChecked) => {
+    setIsChecked((prevStates) => ({
+      ...prevStates,
+      [name]: {
+        ...prevStates[name],
+        [value]: isChecked,
+      },
+    }));
+
+    setFormSearch((prev) => {
+      if (isChecked) {
+        return {
+          ...prev,
+          [name]: prev[name] ? `${prev[name]},${value}` : value,
+        };
+      } else {
+        const updatedValue = prev[name]
+          .split(',')
+          .filter((item) => item !== value)
+          .join(',');
+        return {
+          ...prev,
+          [name]: updatedValue,
+        };
+      }
+    });
+  };
   return (
     <React.Fragment>
       <Row>
@@ -150,9 +211,8 @@ function Products() {
               {categoryGender.map((item, index) => (
                 <>
                   <li
-                    className={`sub-gender ${
-                      formSearch["gender"] === item.value ? "clicked" : ""
-                    }`}
+                    className={`sub-gender ${formSearch["gender"] === item.value ? "clicked" : ""
+                      }`}
                     onClick={() => changeFormSearch("gender", item.value)}
                   >
                     {item.name}
@@ -186,7 +246,16 @@ function Products() {
                   <ul>
                     {item.children.map((child, childIndex) => (
                       <li key={childIndex} className="child-category">
-                        <Checkbox /> {child.name}
+                        {/* <Checkbox checked={isChecked[child.name] || false} onChange={
+                         (e)=> changeFomSearch(item.name,child.name,e.target.checked)
+                        } /> {child.name} */}
+
+                        <Checkbox
+                          checked={isChecked[item.name]?.[child.name] || false}
+                          onChange={(e) =>
+                            changeFomSearch(item.name, child.name, e.target.checked)
+                          }
+                        /> {child.name}
                       </li>
                     ))}
                   </ul>
@@ -205,4 +274,12 @@ function Products() {
   );
 }
 
+{/* <Checkbox
+value={item.jobCode}
+checked={isChecked[item.jobCode] || false}
+onChange={(e) => {
+  changeJobNames(item.jobCode, e.target.checked);
+}}
+style={{fontSize:18,fontWeight:600}}
+>   {item.jobName}</Checkbox> */}
 export default Products;
