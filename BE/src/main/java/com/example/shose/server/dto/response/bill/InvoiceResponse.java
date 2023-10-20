@@ -26,6 +26,7 @@ public class InvoiceResponse {
     private String moneyShip;
     private String totalBill;
     private String totalPayment;
+    private boolean checkShip;
     private String ship;
     private boolean method;
     private boolean typeBill;

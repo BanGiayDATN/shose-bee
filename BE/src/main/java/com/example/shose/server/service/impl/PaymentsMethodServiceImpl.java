@@ -207,7 +207,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setEmployees(account.get());
             paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
             paymentsMethodRepository.save(paymentsMethod);
-            createFilePdfAtCounter(bill.get().getId(), requests);
+
             List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
             boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
             if (checkBill) {
@@ -220,6 +220,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 billRepository.save(bill.get());
             }
             billRepository.save(bill.get());
+            createFilePdfAtCounter(bill.get().getId(), requests);
             return true;
         }
         return false;
@@ -343,11 +344,13 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-        Context dataContext = exportFilePdfFormHtml.setData(invoice);
-        finalHtml = springTemplateEngine.process("templateBill", dataContext);
+
         if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
+            invoice.setCheckShip(true);
             sendMail(invoice, "http://localhost:3000/bill/"+ optional.get().getCode()+"/"+optional.get().getPhoneNumber(), optional.get().getEmail());
         }
+        Context dataContext = exportFilePdfFormHtml.setData(invoice);
+        finalHtml = springTemplateEngine.process("templateBill", dataContext);
         exportFilePdfFormHtml.htmlToPdf(finalHtml,request, optional.get().getCode());
 //     end   create file pdf
         return true;

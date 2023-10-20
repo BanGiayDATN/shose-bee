@@ -132,6 +132,7 @@ public class ExportFilePdfFormHtml {
                 .itemDiscount(formatter.format(bill.getItemDiscount()))
                 .totalMoney(formatter.format(bill.getTotalMoney()))
                 .note(bill.getNote())
+                .checkShip(false)
                 .moneyShip(formatter.format(bill.getMoneyShip()))
                 .build();
         List<String> findAllPayMentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());

@@ -738,6 +738,7 @@ public class BillServiceImpl implements BillService {
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
             invoice.setTypeBill(true);
+            invoice.setCheckShip(true);
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
@@ -759,11 +760,12 @@ public class BillServiceImpl implements BillService {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-        Context dataContext = exportFilePdfFormHtml.setData(invoice);
-        finalHtml = springTemplateEngine.process("templateBill", dataContext);
         if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
+            invoice.setCheckShip(true);
             sendMail(invoice, "http://localhost:3000/bill/"+ optional.get().getCode()+"/"+optional.get().getPhoneNumber(), optional.get().getEmail());
         }
+        Context dataContext = exportFilePdfFormHtml.setData(invoice);
+        finalHtml = springTemplateEngine.process("templateBill", dataContext);
         exportFilePdfFormHtml.htmlToPdf(finalHtml,request, optional.get().getCode());
 //     end   create file pdf
         return true;
