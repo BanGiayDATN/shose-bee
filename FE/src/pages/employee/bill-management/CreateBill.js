@@ -677,6 +677,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var check = !traSau;
     if (check) {
       // loadPayMentTraSau()
+       setDataPayMent([]);
     } else {
       setDataPayMent([]);
     }
