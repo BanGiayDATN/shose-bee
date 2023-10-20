@@ -427,22 +427,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     // số lượng sản phầm lớn hơn 2 free ship
     if (totalQuantity > 2) {
       setShipFee(0);
-       if(traSau){
-        var total =
-        products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0)  -
-        voucher.discountPrice;
-      var list = [
-        {
-          actionDescription: "",
-          method: "TIEN_MAT",
-          totalMoney: total,
-          status: "TRA_SAU",
-        },
-      ];
-      setDataPayMent(list);
-      }
+
     } else {
       AddressApi.fetchAllMoneyShip(
         valueWard.valueDistrict,
@@ -450,23 +435,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         totalQuantity
       ).then((res) => {
         setShipFee(res.data.data.total);
-         var total =
-        products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0) +
-        res.data.data.total -
-        voucher.discountPrice;
-      var list = [
-        {
-          actionDescription: "",
-          method: "TIEN_MAT",
-          totalMoney: total,
-          status: "TRA_SAU",
-        },
-      ];
-      setDataPayMent(list);
-      });
-     
     }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
@@ -708,7 +676,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     setTraSau(!traSau);
     var check = !traSau;
     if (check) {
-      loadPayMentTraSau()
+      // loadPayMentTraSau()
     } else {
       setDataPayMent([]);
     }
@@ -903,6 +871,23 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if(isOpenDelivery){
       ship = shipFee
     }
+    var dataPayMentTraSau = dataPayment
+    if(traSau){
+      var total =
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) + ship  -
+      voucher.discountPrice;
+      dataPayMentTraSau = [
+      {
+        actionDescription: "",
+        method: "TIEN_MAT",
+        totalMoney: total,
+        status: "TRA_SAU",
+      },
+    ];
+    totaPayMent = total
+    }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
@@ -915,7 +900,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       typeBill: typeBill,
       moneyShip: ship,
       billDetailRequests: newProduct,
-      paymentsMethodRequests: dataPayment,
+      paymentsMethodRequests: dataPayMentTraSau,
       vouchers: newVoucher,
       idUser: idAccount,
       deliveryDate: dayShip,
@@ -2372,7 +2357,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             <Row style={{ margin: "20px 0 ", width: "100%" }}>
               <Col span={7}>Khách thanh toán</Col>
               <Col span={2}>
-                <Button onClick={showModalPayMent}>
+                <Button onClick={showModalPayMent} disabled={traSau}>
                   <MdOutlinePayment></MdOutlinePayment>
                 </Button>
               </Col>
