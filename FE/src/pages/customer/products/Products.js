@@ -163,26 +163,36 @@ function Products() {
                 </>
               ))}
             </ul>
-            <ul>
-              <li style={{ listStyle: "none", borderBottom: "1px solid grey" }}>
-                <label>Trạng thái</label>
-                <ul className="category-status">
-                  {categoryStatus.map((item, index) => (
-                    <>
-                      <li
-                        className={`sub-status ${
-                          formSearch["status"] === item.value ? "clicked" : ""
-                        }`}
-                        onClick={() => changeFormSearch("gender", item.value)}
-                      >
-                        <Checkbox /> {item.name}
+
+            <ul className="categorys">
+              {categorys.map((item, index) => (
+                <li
+                  key={index}
+                  className={
+                    index < categorys.length - 1
+                      ? "box-category"
+                      : "box-category-end"
+                  }
+                >
+                  <label
+                    style={{
+                      color: "#ff4400",
+                      fontSize: "20px",
+                      paddingBottom: 20,
+                    }}
+                  >
+                    {item.label}
+                  </label>
+                  <ul>
+                    {item.children.map((child, childIndex) => (
+                      <li key={childIndex} className="child-category">
+                        <Checkbox /> {child.name}
                       </li>
-                    </>
-                  ))}
-                </ul>
-              </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
             </ul>
-            {/* </Menu> */}
           </div>
           <div className="box-products">
             {list.map((item, index) => (
