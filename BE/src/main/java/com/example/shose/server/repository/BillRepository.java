@@ -7,6 +7,7 @@ import com.example.shose.server.dto.response.statistical.StatisticalBestSellingP
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalProductDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalStatusBillResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.request.bill.BillRequest;
@@ -167,5 +168,19 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     ORDER BY completion_date ASC;
                           """, nativeQuery = true)
     List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
+
+    @Query(value = """
+    SELECT
+         b.completion_date AS billDate,
+         SUM(bd.quantity) AS totalProductDate
+    FROM
+         bill_detail bd
+    JOIN bill b on bd.id_bill = b.id
+    WHERE   (b.completion_date >= :#{#req.startDate} AND b.completion_date <= :#{#req.endDate} )
+        AND (b.status_bill like 'THANH_CONG')
+    GROUP BY billDate
+    ORDER BY b.completion_date ASC;
+                          """, nativeQuery = true)
+    List<StatisticalProductDateResponse> getAllStatisticalProductDate(@Param("req") FindBillDateRequest req);
     Optional<Bill> findByCode(String code);
 }
