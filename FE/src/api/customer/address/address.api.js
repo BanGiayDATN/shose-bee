@@ -68,6 +68,13 @@ export class AddressApi {
   };
 
   static fetchAllMoneyShip = (to_district_id, to_ward_code, quantity) => {
+    let quantityProducts = 0;
+    if(quantity == "" || quantity == null || quantity == undefined) {
+      quantityProducts = 1;
+    }else{
+      quantityProducts = quantity;
+    }
+
     return requestAdress({
       method: "GET",
       headers: {
@@ -82,9 +89,9 @@ export class AddressApi {
         from_district_id: 1485,
         to_district_id: to_district_id,
         to_ward_code: to_ward_code,
-        height: 11 * quantity,
+        height: 11 * quantityProducts,
         length: 28,
-        weight: 300 * quantity,
+        weight: 300 * quantityProducts,
         width: 16,
       },
     });

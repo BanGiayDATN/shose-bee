@@ -567,6 +567,15 @@ public class DBGenerator implements CommandLineRunner {
         BillDetail billDetail17 = BillDetail.builder().bill(bill13).statusBill(StatusBill.THANH_CONG).productDetail(productDetail9).quantity(3).price(productDetail9.getPrice()).build();
         BillDetail billDetail18 = BillDetail.builder().bill(bill14).statusBill(StatusBill.THANH_CONG).productDetail(productDetail2).quantity(2).price(productDetail2.getPrice()).build();
         BillDetail billDetail19 = BillDetail.builder().bill(bill12).statusBill(StatusBill.THANH_CONG).productDetail(productDetail2).quantity(1).price(productDetail2.getPrice()).build();
+        BillDetail billDetail20 = BillDetail.builder().bill(bill13).statusBill(StatusBill.THANH_CONG).productDetail(productDetail2).quantity(4).price(productDetail2.getPrice()).build();
+        BillDetail billDetail21 = BillDetail.builder().bill(bill14).statusBill(StatusBill.THANH_CONG).productDetail(productDetail3).quantity(2).price(productDetail2.getPrice()).build();
+        BillDetail billDetail22 = BillDetail.builder().bill(bill15).statusBill(StatusBill.THANH_CONG).productDetail(productDetail4).quantity(6).price(productDetail4.getPrice()).build();
+        BillDetail billDetail23 = BillDetail.builder().bill(bill16).statusBill(StatusBill.THANH_CONG).productDetail(productDetail6).quantity(2).price(productDetail6.getPrice()).build();
+        BillDetail billDetail24 = BillDetail.builder().bill(bill17).statusBill(StatusBill.THANH_CONG).productDetail(productDetail4).quantity(3).price(productDetail4.getPrice()).build();
+        BillDetail billDetail25 = BillDetail.builder().bill(bill18).statusBill(StatusBill.THANH_CONG).productDetail(productDetail5).quantity(8).price(productDetail5.getPrice()).build();
+        BillDetail billDetail26 = BillDetail.builder().bill(bill19).statusBill(StatusBill.THANH_CONG).productDetail(productDetail8).quantity(2).price(productDetail8.getPrice()).build();
+        BillDetail billDetail27 = BillDetail.builder().bill(bill19).statusBill(StatusBill.THANH_CONG).productDetail(productDetail2).quantity(4).price(productDetail2.getPrice()).build();
+
         billDetailRepository.save(billDetail);
         billDetailRepository.save(billDetail1);
         billDetailRepository.save(billDetail2);
@@ -587,6 +596,14 @@ public class DBGenerator implements CommandLineRunner {
         billDetailRepository.save(billDetail17);
         billDetailRepository.save(billDetail18);
         billDetailRepository.save(billDetail19);
+        billDetailRepository.save(billDetail20);
+        billDetailRepository.save(billDetail21);
+        billDetailRepository.save(billDetail22);
+        billDetailRepository.save(billDetail23);
+        billDetailRepository.save(billDetail24);
+        billDetailRepository.save(billDetail25);
+        billDetailRepository.save(billDetail26);
+        billDetailRepository.save(billDetail27);
 
         BillHistory billHistory = BillHistory.builder().statusBill(StatusBill.TAO_HOA_DON).bill(bill1)
                 .build();

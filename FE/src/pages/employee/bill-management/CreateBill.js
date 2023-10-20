@@ -103,6 +103,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [form] = Form.useForm();
   const [formCheckCodeVnPay] = Form.useForm();
   const [formAddUser] = Form.useForm();
+  const [addressId, setAddressId] = useState([]);
 
   const onChangeAddress = (fileName, value) => {
     setAddress({ ...address, [fileName]: value });
@@ -609,13 +610,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           wards: addressData.ward,
           detail: addressData.line,
         });
+
         addressFull(
           addressData.provinceId,
           addressData.toDistrictId,
           addressData.wardCode
         );
-        formValues.name = addressData.user.fullName;
-        formValues.phoneNumber = addressData.user.phoneNumber;
+        setAddressId({
+          provinceId: addressData.provinceId,
+          toDistrictId: addressData.toDistrictId,
+          wardCode: addressData.wardCode
+        })
+
+        formValues.name = addressData.fullName;
+        formValues.phoneNumber = addressData.phoneNumber;
         formValues.city = addressData.province;
         formValues.district = addressData.district;
         formValues.wards = addressData.ward;
@@ -808,7 +816,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   // enad modal thanh toán
 
   const openDelivery = (e) => {
-    setShipFee(0);
+    setShipFee(0)
     setIsOpenDelivery(!isOpenDelivery);
   };
   const items = useSelector((state) => state.bill.billWaits.value);
@@ -1243,15 +1251,15 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     },
     {
       title: "Họ tên",
-      dataIndex: "fullname",
-      key: "fullname",
-      sorter: (a, b) => a.fullname.localeCompare(b.fullname),
+      dataIndex: "fullName",
+      key: "fullName",
+      sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
     {
       title: "Số điện thoại",
-      dataIndex: "phonenumber",
-      key: "phonenumber",
-      sorter: (a, b) => a.phonenumber.localeCompare(b.phonenumber),
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+      sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
     },
     {
       title: "Địa chỉ",
@@ -1321,8 +1329,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       detail: record.line,
     });
     form.setFieldsValue({
-      phoneNumber: record.phonenumber,
-      name: record.fullname,
+      phoneNumber: record.phoneNumber,
+      name: record.fullName,
       city: record.province,
       district: record.district,
       wards: record.ward,
@@ -1333,7 +1341,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const addressFull = (provinceId, toDistrictId, wardCode) => {
     AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
-      setShipFee(res.data.data.total);
+        setShipFee(res.data.data.total);
     });
     AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
       const leadtimeInSeconds = res.data.data.leadtime;
