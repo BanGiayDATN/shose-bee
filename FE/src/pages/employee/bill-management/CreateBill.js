@@ -427,6 +427,22 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     // số lượng sản phầm lớn hơn 2 free ship
     if (totalQuantity > 2) {
       setShipFee(0);
+       if(traSau){
+        var total =
+        products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0)  -
+        voucher.discountPrice;
+      var list = [
+        {
+          actionDescription: "",
+          method: "TIEN_MAT",
+          totalMoney: total,
+          status: "TRA_SAU",
+        },
+      ];
+      setDataPayMent(list);
+      }
     } else {
       AddressApi.fetchAllMoneyShip(
         valueWard.valueDistrict,
@@ -434,10 +450,23 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         totalQuantity
       ).then((res) => {
         setShipFee(res.data.data.total);
+         var total =
+        products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0) +
+        res.data.data.total -
+        voucher.discountPrice;
+      var list = [
+        {
+          actionDescription: "",
+          method: "TIEN_MAT",
+          totalMoney: total,
+          status: "TRA_SAU",
+        },
+      ];
+      setDataPayMent(list);
       });
-      if(traSau){
-        loadPayMentTraSau()
-      }
+     
     }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
