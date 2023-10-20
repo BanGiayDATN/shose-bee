@@ -435,7 +435,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         totalQuantity
       ).then((res) => {
         setShipFee(res.data.data.total);
-    }
+    })
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -1355,22 +1355,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const addressFull = (provinceId, toDistrictId, wardCode) => {
     AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
         setShipFee(res.data.data.total);
-           if(traSau){
-        var total =
-        products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0) + res.data.data.total  -
-        voucher.discountPrice;
-      var list = [
-        {
-          actionDescription: "",
-          method: "TIEN_MAT",
-          totalMoney: total,
-          status: "THANH_TOAN",
-        },
-      ];
-      setDataPayMent(list);
-      }
     });
     AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
       const leadtimeInSeconds = res.data.data.leadtime;
