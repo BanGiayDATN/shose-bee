@@ -435,7 +435,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         totalQuantity
       ).then((res) => {
         setShipFee(res.data.data.total);
-    })
+    })}
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
       valueWard.valueWard
