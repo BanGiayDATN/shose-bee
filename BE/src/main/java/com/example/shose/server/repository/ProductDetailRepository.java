@@ -401,7 +401,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 AND  ( :#{#res.gender} IS NULL OR :#{#res.gender} ='' OR pd.gender LIKE :#{#req.gender} )
                 AND  ( :#{#res.minPrice} IS NULL OR :#{#res.minPrice} ='' OR pd.price >= :#{#req.minPrice} ) 
                 AND  ( :#{#res.maxPrice} IS NULL  OR :#{#res.maxPrice} = '' OR  pd.price <= :#{#req.maxPrice} )
-            group by pd.id
+            group by pd.id,valuePromotion
                 """, nativeQuery = true)
     Page<GetProductDetail> getProductDetailByCategorys(Pageable pageable, @Param("req") FindProductDetailByCategorysConvertRequest req,@Param("res") FindProductDetailByCategorysRequest res);
 
