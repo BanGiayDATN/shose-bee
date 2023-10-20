@@ -55,6 +55,8 @@ import {
 } from "../src/app/reducer/Promotion.reducer";
 import dayjs from "dayjs";
 import { GetLoading } from "./app/reducer/Loading.reducer";
+import DetailBillClinet from "./pages/customer/bill/DetailBillClinet";
+import SearchBill from "./pages/customer/bill/SearchBill";
 function App() {
   const dispatch = useAppDispatch();
   const [listVoucher, setListVoucher] = useState([]);
@@ -167,6 +169,18 @@ function App() {
                 <CartProvider>
                   <DashBoardCustomer>
                     <Home />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/bill/:code/:phoneNumber"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <DetailBillClinet />
                   </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>
@@ -426,6 +440,18 @@ function App() {
                   <CustomerManagement />
                 </DashBoardEmployee>
               </AuthGuard>
+            }
+          />
+           <Route
+            path="/sreach-bill"
+            element={
+              <GuestGuard>
+              <CartProvider>
+                <DashBoardCustomer>
+                  <SearchBill />
+                </DashBoardCustomer>
+              </CartProvider>
+            </GuestGuard>
             }
           />
           <Route

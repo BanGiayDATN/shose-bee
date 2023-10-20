@@ -4,11 +4,9 @@ import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
 import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
-import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
-import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
@@ -100,7 +98,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.DA_THANH_TOAN);
-            billHistory.setActionDescription(request.getActionDescription());
+            billHistory.setActionDescription("Thanh toán hóa đơn");
             billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
             billRepository.save(bill.get());
@@ -197,25 +195,22 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setEmployees(account.get());
             paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
             paymentsMethodRepository.save(paymentsMethod);
+
+            List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
+            boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
+            if (checkBill) {
+                bill.get().setStatusBill(StatusBill.THANH_CONG);
+                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                billRepository.save(bill.get());
+            } else {
+                bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+//                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                billRepository.save(bill.get());
+            }
+            billRepository.save(bill.get());
             return true;
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        String chuoi = "260000000";
-
-        // Sử dụng hàm RIGHT()
-        String kq1 = chuoi.substring(0, chuoi.length() - 2);
-        System.out.println(kq1); // 2000
-
-        // Sử dụng hàm TRIM() và RIGHT()
-        String kq2 = chuoi.trim().substring(0, chuoi.length() - 4);
-        System.out.println(kq2); // 2000
-
-        // Sử dụng hàm SEARCH() và LEFT()
-//        String kq = chuoi.substring(0, chuoi.length() - SEARCH("0", chuoi) - 1);
-//        System.out.println(kết quả3); // 2000
     }
 
     @Override
@@ -260,6 +255,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             ProductDetail productDetail = productDetailRepository.findById(item.getIdProductDetail()).get();
             if (productDetail.getQuantity() < item.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
             productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
             productDetailRepository.save(productDetail);

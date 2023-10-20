@@ -6,15 +6,15 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
-//import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.security.Principal;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Currency;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author thangdt
@@ -30,6 +30,19 @@ public class ExportFilePdfFormHtml {
 
         data.put("invoice", invoice);
 
+        context.setVariables(data);
+
+        return context;
+    }
+
+    public Context setDataSendMail(InvoiceResponse invoice, String url) {
+
+        Context context = new Context();
+
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("invoice", invoice);
+        data.put("url", url);
         context.setVariables(data);
 
         return context;
