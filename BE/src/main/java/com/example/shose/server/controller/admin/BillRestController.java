@@ -67,7 +67,7 @@ public class BillRestController {
 
     @GetMapping("/details-invoices-counter")
     public ResponseObject findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
-        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(request));
+        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(userId, request));
     }
 
     @GetMapping("/count-paymet-post-paid/{id}")

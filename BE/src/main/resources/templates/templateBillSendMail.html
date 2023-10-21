@@ -98,6 +98,10 @@
         <td class="border-0 " ><strong>Giảm giá:</strong></td>
         <td class="border-0no-line text-end" float="right" th:text="${invoice.itemDiscount}">ádsadasd</td>
       </tr>
+      <tr th:if="${invoice.checkShip}">
+        <td class="border-0 " ><strong>Phí Ship:</strong></td>
+        <td class="border-0no-line text-end" float="right" th:text="${invoice.ship}"></td>
+      </tr>
       <tr>
         <td class="border-0 "><strong>Tổng thanh toán:</strong></td>
         <td class="border-0  text-end" float="right"  th:text="${(invoice.totalBill)}">
@@ -105,7 +109,7 @@
       </tr>
       <tr style="margin-top: 5px">
         <td class="border-0"></td>
-        <td class="border-0 " colspan="3"><strong  th:text="${'Tổng số lượng sản phẩm: '+invoice.items.size() + ' '}"></strong></td>
+        <td class="border-0 text-end" float="right" ><strong  th:text="${'Tổng số lượng sản phẩm: '+invoice.quantity + ' '}"></strong></td>
         </td>
       </tr>
       </tbody>
@@ -123,6 +127,7 @@
           <td th:text="${idex.index  + 1}"></td>
           <td class="text-center" th:text="${item.method}"></td>
           <td th:text="${item.total}" float="right"></td>
+          <td class="text-center" th:text="${item.status}"></td>
           <td class="text-center" float="right" th:text="${item.vnp_TransactionNo}"></td>
         </tr>
       </th:block>
@@ -147,8 +152,8 @@
   </div>
   <div style="font-size: 18px;margin-top: 20px; font-weight: 700; text-align: center; width: 100%">Cám ơn Quý khách đã sử dụng dịch vụ của Bee shose</div>
   <div >
-    <div class="" style="display: flex; justify-content: center; margin-top: 10px">Quý khách xem thông tin chi tiết đơn hàng </div></br>
-    <div class="" style="display: flex; justify-content: center">
+    <div class="" style="text-align: center; width: 100%">Quý khách xem thông tin chi tiết đơn hàng </div></br>
+    <div class="" style="text-align: center; width: 100%">
       <button style="    background-color: #e4641a;
     border: none;
     border-radius: 6px;

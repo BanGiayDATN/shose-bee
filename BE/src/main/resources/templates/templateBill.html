@@ -86,11 +86,11 @@
                     Tiền thu người nhận:
                 </div>
                 <div class="" style="font-size: 31px;
-           font-weight: bolder; margin-top: 10px;margin-left: 8%;" th:text="${(invoice.totalBill)}">
-                    <p class="" th:if="${invoice.method}" >
+           font-weight: bolder; margin-top: 10px;margin-left: 8%;" >
+                    <p class="" th:if="${invoice.method == true}" >
                         <span th:text="${(invoice.totalBill)}"></span>
                     </p>
-                    <p class="" th:if="${!invoice.method}" >
+                    <p class="" th:if="${invoice.method == false}" >
                         <span> 0 đ</span>
                     </p>
                 </div>
@@ -188,6 +188,13 @@
                         <td class="border-0 " style="font-size: 16px; font-weight: 500"><strong>Giảm giá:</strong></td>
                         <td class="border-0no-line text-end" float="right" style="font-size: 18px; font-weight: 600" th:text="${invoice.itemDiscount}">ádsadasd</td>
                     </tr>
+                    <tr th:if="${invoice.checkShip}">
+                        <td class="border-0"></td>
+                        <td class="border-0"></td>
+                        <td class="border-0 " style="font-size: 16px; font-weight: 500"><strong>Phí ship:</strong></td>
+                        <td class="border-0  text-end" float="right" style="font-size: 18px; font-weight: 600" th:text="${(invoice.ship)}">
+                        </td>
+                    </tr>
                     <tr>
                         <td class="border-0"></td>
                         <td class="border-0"></td>
@@ -216,6 +223,7 @@
                         <td th:text="${idex.index  + 1}"></td>
                         <td class="text-center" th:text="${item.method}"></td>
                         <td th:text="${item.total}" float="right"></td>
+                        <td class="text-center" th:text="${item.status}"></td>
                         <td class="text-center" float="right" th:text="${item.vnp_TransactionNo}"></td>
                     </tr>
                 </th:block>
