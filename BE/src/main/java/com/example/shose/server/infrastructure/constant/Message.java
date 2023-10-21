@@ -29,6 +29,7 @@ public enum Message {
     EMAIL_USER_EXIST("Email người dùng đã tồn tại"),
     PASSWORD_NOT_EXISTS("Password không đúng"),
     NOT_PAYMENT_PRODUCT("Sản phẩm đã dừng bán"),
+    ERROR_SQL("Thao tác quá nhiều lần"),
     NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán");
 
 
