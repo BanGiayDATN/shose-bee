@@ -300,7 +300,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         };
       });
       setProducts(data);
-    });
+    }).catch((error) => {
+        toast.error(error.response.data.message);
+      });
     BillApi.fetchDetailBill(id).then((res) => {
       setBillRequest({
         phoneNumber: res.data.data.phoneNumber,
@@ -316,7 +318,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         vouchers: [],
         code: res.data.data.code,
       });
-    });
+    }).catch((error) => {
+        toast.error(error.response.data.message);
+      });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
 
       const data = res.data.data.map((item) => {
@@ -331,7 +335,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     });
     AccountApi.getAccountUserByIdBill(id).then((res) => {
       setAccountUser(res.data.data);
-    });
+    }).catch((error) => {
+        toast.error(error.response.data.message);
+      });
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
       if (res.data.data != null) {
         setVoucher({
@@ -349,7 +355,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           discountPrice: 0,
         });
       }
-    });
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+      });
   }, []);
 
   useEffect(() => {
