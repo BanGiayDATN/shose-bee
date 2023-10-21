@@ -165,7 +165,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     };
     BillApi.updateBillWait(data).then((res) => {
       console.log(data);
-    });
+    }).catch((error) => {
+          toast.error(error.response.data.message);
+      });
   };
 
   const updateBillWhenSavePayMent = (dataPaymentRequest) => {
@@ -229,7 +231,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         openDelivery: isOpenDelivery,
       };
       console.log(data)
-      BillApi.updateBillWait(data).then((res) => {});
+      BillApi.updateBillWait(data).then((res) => {}).catch((error) => {
+            toast.error(error.response.data.message);
+      });
     }
   };
 
