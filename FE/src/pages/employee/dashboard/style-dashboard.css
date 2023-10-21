@@ -20,7 +20,7 @@
 .row-body {
   width: 99%;
   margin-left: 5px;
-  height: 700px;
+  height: 800px;
   margin-top: 65px;
   background-color: rgb(255, 255, 255);
   border-radius: 15px;
@@ -75,8 +75,8 @@
 
 #chartdivChart {
   width: 1130px;
-  height: 560px;
-  margin-left: 50px;
+  height: 590px;
+  margin-right: 50px;
 }
 
 #chartdivPie {
