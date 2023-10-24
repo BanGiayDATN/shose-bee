@@ -216,7 +216,6 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 billRepository.save(bill.get());
             } else {
                 bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
-//                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
                 billRepository.save(bill.get());
             }
             createFilePdfAtCounter(bill.get().getId(), requests);

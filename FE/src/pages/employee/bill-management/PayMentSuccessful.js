@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import logo from "./../../../assets/images/logo_client.png";
 import "./style-payment-success.css";
+import { Button } from "antd";
 
 const getUrlVars = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -66,23 +67,17 @@ function PayMentSuccessful() {
   };
   useEffect(() => {
     const param = new URLSearchParams(window.location.search);
-
-    // // chia chuỗi URL thành các phần tử
-    // const parts = url.split("?");
-
-    // lấy phần tử thứ hai
-    // const queryString = parts[1];
-
-    // in kết quả
-    // console.log(url);
     fetchData();
     setStatus(getTransactionStatus());
+    console.log(getTransactionStatus());
+    console.log(getTransactionStatus() == "00");
     setAmount(getAmount());
-    PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {});
+    PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {
+      setLoadLink(false)
+    });
   }, []);
-  // setTimeout(() => {
-  //   window.open("http://localhost:3000/sale-counter", "_self");
-  // }, 10000);
+  const [loadLink, setLoadLink] = useState(true)
+
   return (
     <>
       <div className="header-payment-success">
@@ -95,7 +90,7 @@ function PayMentSuccessful() {
           alignItems: "center",
         }}
       >
-        {status === "00" ? (
+        {status == "00" ? (
           <div className="content-payment-success">
             <FontAwesomeIcon
               className="icon-payment-success"
@@ -105,7 +100,7 @@ function PayMentSuccessful() {
             <div style={{ marginTop: "5%" }}>
               Tổng thanh toán: {formatCurrency(amount /100)}
             </div>
-            <Link to="/sale-counter">Tiếp tục bán hàng</Link>
+            <Button disabled={loadLink} style={{border: "none", backgroundColor: "#f5f5dc00", color: loadLink ? "#ccc": "#1677ff"}}><Link to="/sale-counter" >Tiếp tục bán hàng</Link></Button>
           </div>
         ) : (
           <div className="content-payment-success">
@@ -115,9 +110,7 @@ function PayMentSuccessful() {
             />
             <h1>Thanh toán thất bại</h1>
             <div>
-              <Link style={{ marginLeft: "10px" }} to="/sale-counter">
-                Tiếp tục bán hàng
-              </Link>
+            <Button disabled={loadLink} style={{border: "none", backgroundColor: "#f5f5dc00", color:  loadLink ? "#ccc": "#1677ff"}}><Link to="/sale-counter" >Tiếp tục bán hàng</Link></Button>
             </div>
           </div>
         )}

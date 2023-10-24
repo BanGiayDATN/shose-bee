@@ -180,7 +180,11 @@ function DetailBill() {
     setIsModalCanCelOpen(true);
   };
   const handleCanCelOk = () => {
+
     setIsModalCanCelOpen(false);
+ if (statusBill.actionDescription == "") {
+      toast.error("Vui lòng nhập mô tả");
+    } else {
     Modal.confirm({
       title: "Xác nhận",
       content: "Bạn có đồng ý hủy không?",
@@ -215,6 +219,7 @@ function DetailBill() {
         setIsModalCanCelOpen(false);
       },
     });
+  }
 
     setStatusBill({
       actionDescription: "",
@@ -1229,8 +1234,8 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent < 2 ? 6 : 0}>
-                    {statusPresent < 2 ? (
+                  <Col span={statusPresent < 5 ? 6 : 0}>
+                    {statusPresent < 5 ? (
                       <Button
                         type="danger"
                         onClick={() => showModalCanCel()}

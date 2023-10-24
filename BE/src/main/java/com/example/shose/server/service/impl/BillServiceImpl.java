@@ -568,6 +568,18 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(bill.get().getId());
+        billDetailResponse.forEach(item -> {
+            Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
+            if (!productDetail.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
+            if( productDetail.get().getStatus() == Status.HET_SAN_PHAM){
+                productDetail.get().setStatus(Status.DANG_SU_DUNG);
+            }
+            productDetailRepository.save(productDetail.get());
+        });
         return billRepository.save(bill.get());
     }
 
