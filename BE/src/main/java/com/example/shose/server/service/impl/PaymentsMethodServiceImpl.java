@@ -219,7 +219,6 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 //                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
                 billRepository.save(bill.get());
             }
-            billRepository.save(bill.get());
             createFilePdfAtCounter(bill.get().getId(), requests);
             return true;
         }

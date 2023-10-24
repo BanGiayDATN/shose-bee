@@ -165,7 +165,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     };
     BillApi.updateBillWait(data).then((res) => {
       console.log(data);
-    });
+    }).catch((error) => {
+          toast.error(error.response.data.message);
+      });
   };
 
   const updateBillWhenSavePayMent = (dataPaymentRequest) => {
@@ -229,7 +231,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         openDelivery: isOpenDelivery,
       };
       console.log(data)
-      BillApi.updateBillWait(data).then((res) => {});
+      BillApi.updateBillWait(data).then((res) => {}).catch((error) => {
+            toast.error(error.response.data.message);
+      });
     }
   };
 
@@ -300,7 +304,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         };
       });
       setProducts(data);
-    });
+    }).catch((error) => {
+        toast.error(error.response.data.message);
+      });
     BillApi.fetchDetailBill(id).then((res) => {
       setBillRequest({
         phoneNumber: res.data.data.phoneNumber,
@@ -316,7 +322,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         vouchers: [],
         code: res.data.data.code,
       });
-    });
+    }).catch((error) => {
+        toast.error(error.response.data.message);
+      });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
 
       const data = res.data.data.map((item) => {
@@ -331,7 +339,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     });
     AccountApi.getAccountUserByIdBill(id).then((res) => {
       setAccountUser(res.data.data);
-    });
+    }).catch((error) => {
+        toast.error(error.response.data.message);
+      });
     VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
       if (res.data.data != null) {
         setVoucher({
@@ -349,7 +359,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           discountPrice: 0,
         });
       }
-    });
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+      });
   }, []);
 
   useEffect(() => {
