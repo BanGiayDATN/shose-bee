@@ -3,7 +3,7 @@ import moment from "moment";
 import React from "react";
 import { AiFillCarryOut, AiFillFile } from "react-icons/ai";
 import { BiSolidTruck } from "react-icons/bi";
-import { BsFileEarmarkExcelFill } from "react-icons/bs";
+import { BsFileEarmarkExcelFill, BsFillFileEarmarkCheckFill } from "react-icons/bs";
 import { FaFileSignature } from "react-icons/fa";
 import { GiReturnArrow } from "react-icons/gi";
 import { MdPayment } from "react-icons/md";
@@ -17,6 +17,9 @@ function TimeLine({ listStatus, data, statusPresent }) {
     }
     else if(statusBill === "CHO_XAC_NHAN"){
       return FaFileSignature
+    }
+    else if(statusBill === "XAC_NHAN"){
+      return BsFillFileEarmarkCheckFill
     }
     else if(statusBill === "VAN_CHUYEN"){
       return BiSolidTruck
