@@ -221,7 +221,9 @@
                     <mainClass>com.example.shose.server.ServerApplication</mainClass> <!-- Thay thế bằng tên class chính của bạn -->
                 </configuration>
             </plugin>
+
         </plugins>
+        <finalName>spring-boot-docker</finalName>
     </build>
 
 </project>

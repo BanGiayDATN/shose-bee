@@ -1,7 +1,6 @@
 package com.example.shose.server.infrastructure.sercurity.token;
 
 import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsService;
-import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsServiceImpl;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,12 +34,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authheader = request.getHeader("Authorization");
         final String jwt;
         final String userEamil;
-        if (StringUtils.isEmpty(authheader) || !org.apache.commons.lang3.StringUtils.startsWith(authheader, "Bearer ")) {
-            filterChain.doFilter(request, response);
+
+        if (StringUtils.isEmpty(authheader) || !org.apache.commons.lang3.StringUtils.startsWith(authheader,"Bearer ")) {
+            logger.warn("JWT Token dose not begin with Bearer String");
             return;
         }
         jwt = authheader.substring(7);
         userEamil = jwtSerrvice.extractUserName(jwt);
+
 
         if (StringUtils.isNotEmpty(userEamil) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = accountDetalsService.userDetailsService().loadUserByUsername(userEamil);
