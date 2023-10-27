@@ -28,4 +28,7 @@ public class FindProductDetailByCategorysConvertRequest {
     private List<String> statuss;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
+    private String sellOff;
+    private String newProduct;
+
 }

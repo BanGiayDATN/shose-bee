@@ -29,4 +29,6 @@ public class FindProductDetailByCategorysRequest  {
     private String status;
     private BigDecimal minPrice;
     private  BigDecimal maxPrice;
+    private String sellOff;
+    private String newProduct;
 }

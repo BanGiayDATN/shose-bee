@@ -385,13 +385,13 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                      LEFT JOIN  product p ON pd.id_product = p.id
                      LEFT JOIN  color cl ON cl.id = pd.id_color
                      LEFT JOIN  size s ON s.id = pd.id_size
-                     LEFT JOIN  sole sl ON s.id = pd.id_sole
+                     LEFT JOIN  sole sl ON sl.id = pd.id_sole
                      LEFT JOIN material m ON pd.id_material = m.id
                      LEFT JOIN category ct ON pd.id_category = ct.id
                      LEFT JOIN brand b ON pd.id_brand = b.id
                      LEFT JOIN image i ON i.id_product_detail = pd.id
             where 
-                 ( :#{#req.nameSizes} IS NULL OR s.name in (:#{#req.nameSizes}) )
+                 ( :#{#res.nameSize} IS NULL OR :#{#res.nameSize} ='' OR s.name in (:#{#req.nameSizes}) )
                 AND  ( :#{#res.color} IS NULL OR :#{#res.color} ='' OR cl.name in (:#{#req.colors}))
                 AND  ( :#{#res.brand} IS NULL OR :#{#res.brand} ='' OR b.name in (:#{#req.brands}))
                 AND  ( :#{#res.material} IS NULL OR :#{#res.material} =''  OR m.name in (:#{#req.materials}) ) 
@@ -401,7 +401,9 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 AND  ( :#{#res.gender} IS NULL OR :#{#res.gender} ='' OR pd.gender LIKE :#{#req.gender} )
                 AND  ( :#{#res.minPrice} IS NULL OR :#{#res.minPrice} ='' OR pd.price >= :#{#req.minPrice} ) 
                 AND  ( :#{#res.maxPrice} IS NULL  OR :#{#res.maxPrice} = '' OR  pd.price <= :#{#req.maxPrice} )
-            group by pd.id,valuePromotion
+                AND  ( :#{#res.newProduct} IS NULL  OR :#{#res.newProduct} = '' OR DATE_FORMAT(FROM_UNIXTIME(pd.created_date / 1000), '%Y-%m-%d %H:%i:%s') between DATE_SUB(NOW(), INTERVAL 15 DAY)  and  NOW())
+                AND ( :#{#res.sellOff} IS NULL  OR :#{#res.sellOff} = '' OR promotion_summary.status =true)
+                GROUP BY pd.id,valuePromotion
                 """, nativeQuery = true)
     Page<GetProductDetail> getProductDetailByCategorys(Pageable pageable, @Param("req") FindProductDetailByCategorysConvertRequest req,@Param("res") FindProductDetailByCategorysRequest res);
 

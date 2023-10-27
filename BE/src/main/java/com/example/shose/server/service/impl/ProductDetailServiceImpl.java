@@ -349,6 +349,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 .gender(request.getGender())
                 .minPrice(request.getMinPrice())
                 .maxPrice(request.getMaxPrice())
+                .sellOff(request.getSellOff())
+                .newProduct(request.getNewProduct())
                 .build();
         return productDetailRepository.getProductDetailByCategorys(pageable,detail,request);
     }

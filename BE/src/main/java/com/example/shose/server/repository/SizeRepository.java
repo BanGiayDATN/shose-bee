@@ -58,6 +58,7 @@ public interface SizeRepository extends JpaRepository<Size, String> {
             select s.id,s.name from size s
             where s.id in (select pd.id_size from product_detail pd)
             group by s.id,s.name
+            order by s.name asc 
             """, nativeQuery = true)
     List<GetSizeInProductDetail> getSizeInProductDetail();
 }

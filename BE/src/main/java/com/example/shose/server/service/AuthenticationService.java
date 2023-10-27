@@ -9,6 +9,6 @@ public interface AuthenticationService {
 
     String signUp (SignUpRequets signUpRequets);
 
-    JwtAuhenticationResponse singIn(SigninRequest request);
+    JwtAuhenticationResponse singIn(SigninRequest request) ;
     JwtAuhenticationResponse refreshToken(RefreshTokenRequets refresh);
 }

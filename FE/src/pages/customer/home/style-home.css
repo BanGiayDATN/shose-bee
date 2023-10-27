@@ -193,9 +193,7 @@
 }
 .title-tabs-product {
   display: grid; /* Sử dụng CSS Grid để quản lý bố trí */
-  grid-template-columns: repeat(3, 1fr); /* 4 CardItem trong một hàng */
-  grid-gap: 20px 80px; /* Khoảng cách giữa các CardItem */
-  padding-left: auto;
+  grid-template-columns: repeat(4, 1fr); /* 4 CardItem trong một hàng */
 }
 .ant-tabs-content-holder {
   margin-top: 50px;

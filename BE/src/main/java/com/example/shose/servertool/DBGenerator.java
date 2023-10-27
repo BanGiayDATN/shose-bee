@@ -322,6 +322,66 @@ public class DBGenerator implements CommandLineRunner {
                 .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
+        ProductDetail productDetail13 = ProductDetail.builder().size(size).color(color).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail14= ProductDetail.builder().size(size2).color(color2).quantity(15)
+                .sole(sole2).category(category2).material(material2).brand(brand2).product(product1)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail15 = ProductDetail.builder().size(size5).color(color1).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail16 = ProductDetail.builder().size(size3).color(color5).quantity(15)
+                .sole(sole4).category(category3).material(material3).brand(brand).product(product1)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail17 = ProductDetail.builder().size(size7).color(color7).quantity(15)
+                .sole(sole3).category(category4).material(material2).brand(brand).product(product1)
+                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail18 = ProductDetail.builder().size(size2).color(color4).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail19 = ProductDetail.builder().size(size6).color(color6).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail20 = ProductDetail.builder().size(size8).color(color6).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail21 = ProductDetail.builder().size(size2).color(color).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail22 = ProductDetail.builder().size(size8).color(color7).quantity(20)
+                .sole(sole1).category(category).material(material).brand(brand).product(product2)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail23 = ProductDetail.builder().size(size).color(color1).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product2)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
+        ProductDetail productDetail24 = ProductDetail.builder().size(size).color(color7).quantity(15)
+                .sole(sole1).category(category).material(material).brand(brand).product(product3)
+                .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
+                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+                .build();
         productDetailRepository.save(productDetail1);
         productDetailRepository.save(productDetail2);
         productDetailRepository.save(productDetail3);
@@ -334,6 +394,18 @@ public class DBGenerator implements CommandLineRunner {
         productDetailRepository.save(productDetail10);
         productDetailRepository.save(productDetail11);
         productDetailRepository.save(productDetail12);
+        productDetailRepository.save(productDetail13);
+        productDetailRepository.save(productDetail14);
+        productDetailRepository.save(productDetail15);
+        productDetailRepository.save(productDetail16);
+        productDetailRepository.save(productDetail17);
+        productDetailRepository.save(productDetail18);
+        productDetailRepository.save(productDetail19);
+        productDetailRepository.save(productDetail20);
+        productDetailRepository.save(productDetail21);
+        productDetailRepository.save(productDetail22);
+        productDetailRepository.save(productDetail23);
+        productDetailRepository.save(productDetail24);
 
 
         //image
@@ -349,6 +421,18 @@ public class DBGenerator implements CommandLineRunner {
         Image image10 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail10).status(true).build();
         Image image11 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail11).status(true).build();
         Image image12 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail12).status(true).build();
+        Image image13 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail13).status(true).build();
+        Image image14 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail14).status(true).build();
+        Image image15 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail15).status(true).build();
+        Image image16 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail16).status(true).build();
+        Image image17 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa862z-avbTOzB2dRIfSWwt1-qkYp01v91gA&usqp=CAU").productDetail(productDetail17).status(true).build();
+        Image image18 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail18).status(true).build();
+        Image image19 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail19).status(true).build();
+        Image image20 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail20).status(true).build();
+        Image image21 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ZtafZviyMHQqvzaWG-HYYmsEqQM51r5A3Q&usqp=CAU").productDetail(productDetail21).status(true).build();
+        Image image22 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail22).status(true).build();
+        Image image23 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail23).status(true).build();
+        Image image24 = Image.builder().name("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1t1oEA4212-3N-gMoUhHK2tVcJRICAWexdQ&usqp=CAU").productDetail(productDetail24).status(true).build();
         imageRepository.save(image1);
         imageRepository.save(image2);
         imageRepository.save(image3);
@@ -361,6 +445,18 @@ public class DBGenerator implements CommandLineRunner {
         imageRepository.save(image10);
         imageRepository.save(image11);
         imageRepository.save(image12);
+        imageRepository.save(image13);
+        imageRepository.save(image14);
+        imageRepository.save(image15);
+        imageRepository.save(image16);
+        imageRepository.save(image17);
+        imageRepository.save(image18);
+        imageRepository.save(image19);
+        imageRepository.save(image20);
+        imageRepository.save(image21);
+        imageRepository.save(image22);
+        imageRepository.save(image23);
+        imageRepository.save(image24);
 
         User user1 = User.builder()
                 .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaIP8Lvis7vhRKgCFKfPoWTxrNE4HnQ18gdg&usqp=CAU")
