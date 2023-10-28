@@ -30,4 +30,6 @@ public interface VoucherDetailRepository extends JpaRepository<VoucherDetail,Str
                            LIMIT 1;
             """, nativeQuery = true)
     VoucherDetailCustomAtCountry getVoucherDetailByIdBill(@Param("id") String idBill);
+
+    List<VoucherDetail> findAllByBill(Bill bill);
 }
