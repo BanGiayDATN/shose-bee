@@ -34,12 +34,16 @@ function CardItem({ item, index }) {
     localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
   }, [cartLocal]);
   useEffect(() => {
-    console.log( now.format("HH:mm:ss DD-MM-YYYY"));
-    console.log(now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY"),dayjs.unix(item.createdDate/1000).format("HH:mm:ss DD-MM-YYYY"),  now.format("HH:mm:ss DD-MM-YYYY") );
+    console.log(now.format("HH:mm:ss DD-MM-YYYY"));
+    console.log(
+      now.subtract(15, "day").format("DD-MM-YYYY"),
+      dayjs.unix(item.createdDate / 1000).format("DD-MM-YYYY"),
+      now.format("DD-MM-YYYY")
+    );
   }, []);
 
   const addToCard = () => {
-    if(detailProduct.quantity === 0){
+    if (detailProduct.quantity === 0) {
       toast.error("Sản phẩm đã hết hàng", {
         autoClose: 3000,
       });
@@ -104,9 +108,7 @@ function CardItem({ item, index }) {
   const getDetailProduct = (idProductDetail) => {
     console.log(idProductDetail);
     console.log(detailProduct);
-    ProductDetailClientApi.getDetailProductOfClient(
-      idProductDetail
-    ).then(
+    ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
       (res) => {
         console.log(res.data.data);
         setDetailProduct(res.data.data);
@@ -164,9 +166,8 @@ function CardItem({ item, index }) {
       setCurrentImageIndex(currentImageIndex + 1);
     }
   };
-  const nowTimestamp = now.format("HH:mm:ss DD-MM-YYYY");
-const itemTimestamp = dayjs.unix(item.createdDate / 1000).format("HH:mm:ss DD-MM-YYYY");
-const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY");
+  const itemTimestamp = dayjs.unix(item.createdDate / 1000);
+  const nowTimestampReduce = now.subtract(15, "day");
   return (
     <>
       <div
@@ -189,15 +190,15 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
                     Giảm {parseInt(item.valuePromotion)}%
                   </div>
                 )}
-                {(nowTimestampReduce <= itemTimestamp || itemTimestamp <= nowTimestamp) && (
-                  <div className="new-product">
-                    Mới
-                  </div>
+                {nowTimestampReduce <= itemTimestamp && (
+                  <div className="new-product">Mới</div>
                 )}
               </div>
             </div>
             <div>
-              <p className="name-product">{item.nameProduct} - [{item.nameSize}]</p>
+              <p className="name-product">
+                {item.nameProduct} - [{item.nameSize}]
+              </p>
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
           </Link>
@@ -257,7 +258,7 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
                     className="color-product"
                     key={index}
                     style={{
-                      backgroundColor: detailProduct.codeColor
+                      backgroundColor: detailProduct.codeColor,
                     }}
                   ></div>
                 </div>
@@ -269,30 +270,26 @@ const nowTimestampReduce = now.subtract(15, 'day').format("HH:mm:ss DD-MM-YYYY")
               <div>
                 <div>Size:</div>
                 <div className="list-size-product" tabIndex="0">
-        
-                      <div
-                        className="size-product "
-                        key={index}
-                        tabIndex="0"
-                    
-                        style={
-                        { border: "1px solid black" }
-                        }
-                      >
-                        {detailProduct.nameSize}
-                      </div>
-                    
+                  <div
+                    className="size-product "
+                    key={index}
+                    tabIndex="0"
+                    style={{ border: "1px solid black" }}
+                  >
+                    {detailProduct.nameSize}
+                  </div>
                 </div>
               </div>
 
               <div>
-              <div style={{marginBottom:"10px",color:"black"}}>
-                  Số lượng tồn: <span style={{color:"#ff4400"}}>{detailProduct.quantity} sản phẩm</span>
+                <div style={{ marginBottom: "10px", color: "black" }}>
+                  Số lượng tồn:{" "}
+                  <span style={{ color: "#ff4400" }}>
+                    {detailProduct.quantity} sản phẩm
+                  </span>
                 </div>
               </div>
               <div className="add-to-card">
-
-                
                 <InputNumber
                   className="input-quantity-card"
                   name="quantity"

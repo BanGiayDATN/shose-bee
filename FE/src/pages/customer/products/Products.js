@@ -1,7 +1,383 @@
+import { Checkbox, Col, Menu, Row, Pagination } from "antd";
+import React from "react";
+import "./Style-products.css";
+import { useState } from "react";
+import { useEffect } from "react";
+import CardItem from "./../component/Card";
+import { ProductDetailClientApi } from "../../../api/customer/productdetail/productDetailClient.api";
+import { BrandApi } from "../../../api/employee/brand/Brand.api";
+import { ColorApi } from "../../../api/employee/color/Color.api";
+import { MaterialApi } from "../../../api/employee/material/Material.api";
+import { SoleApi } from "../../../api/employee/sole/sole.api";
+import { SizeApi } from "../../../api/employee/size/Size.api";
+import { CategoryApi } from "../../../api/employee/category/category.api";
+const categoryGender = [
+  {
+    name: "TẤT CẢ",
+    value: "",
+  },
+  {
+    name: "NAM",
+    value: "NAM",
+  },
+  {
+    name: "NỮ",
+    value: "NU",
+  },
+];
+
+const categorySellOff = [
+  {
+    label: "Sản phẩm giảm giá",
+    name: "sellOff",
+    value: "true",
+  },
+];
+const newProduct = [
+  {
+    label: "Sản phẩm mới",
+    name: "newProduct",
+    value: "true",
+  },
+];
+const categoryPrice = [
+  {
+    name: "Dưới 500 nghìn",
+    minPrice: "0",
+    maxPrice: "500000",
+  },
+  {
+    name: "500 nghìn - 1 triệu",
+    minPrice: "500000",
+    maxPrice: "1000000",
+  },
+  {
+    name: "1 triệu - 2 triệu",
+    minPrice: "1000000",
+    maxPrice: "2000000",
+  },
+  {
+    name: "2 triệu - 3 triệu",
+    minPrice: "2000000",
+    maxPrice: "3000000",
+  },
+  {
+    name: "Trên 3 triệu",
+    minPrice: "3000000",
+    maxPrice: "1000000000",
+  },
+];
+
 function Products() {
-    return ( <div>
-        diem11111
-    </div> );
+  const [list, setList] = useState([]);
+  const [listBrand, setListBrand] = useState([]);
+  const [listCategory, setListCategory] = useState([]);
+  const [listMaterial, setListMaterial] = useState([]);
+  const [listSize, setListSize] = useState([]);
+  const [listSole, setListSole] = useState([]);
+  const [listColor, setListColor] = useState([]);
+  const [totalPagesProduct, setTotalPagesProduct] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [formSearch, setFormSearch] = useState({
+    page: currentPage,
+    size: 15,
+    gender: "",
+  });
+  const [isChecked, setIsChecked] = useState({});
+  useEffect(() => {
+    BrandApi.getBrandInProductDetail().then((res) => {
+      setListBrand(res.data.data);
+    });
+    CategoryApi.getCategoryInProductDetail().then((res) => {
+      setListCategory(res.data.data);
+    });
+    MaterialApi.getMaterialInProductDetail().then((res) => {
+      setListMaterial(res.data.data);
+    });
+    SizeApi.getSizeInProductDetail().then((res) => {
+      setListSize(res.data.data);
+    });
+    SoleApi.getSoleInProductDetail().then((res) => {
+      setListSole(res.data.data);
+    });
+    ColorApi.getColorInProductDetail().then((res) => {
+      setListColor(res.data.data);
+      console.log(res.data.data);
+    });
+    console.log(formSearch);
+    ProductDetailClientApi.list(formSearch).then((res) => {
+      setList(res.data.data.data);
+      setTotalPagesProduct(res.data.data.totalPages);
+      console.log(res.data.data.data);
+    });
+  }, [formSearch]);
+
+  const changeFormSearch = (name, value) => {
+    setFormSearch((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handlePageChange = (page) => {
+    console.log(page);
+    setCurrentPage(page - 1);
+    changeFormSearch("page", page - 1);
+  };
+  const categorys = [
+    {
+      label: "Thương hiệu",
+      name: "brand",
+      children: listBrand,
+    },
+    {
+      label: "Dòng sản phẩm",
+      name: "category",
+      children: listCategory,
+    },
+    {
+      label: "Chất liệu",
+      name: "material",
+      children: listMaterial,
+    },
+    {
+      label: "Kích thước",
+      name: "nameSize",
+      children: listSize,
+    },
+    {
+      label: "Đế giày",
+      name: "sole",
+      children: listSole,
+    },
+  ];
+
+  const changeFomSearch = (name, value, isChecked) => {
+    setIsChecked((prevStates) => ({
+      ...prevStates,
+      [name]: {
+        ...prevStates[name],
+        [value]: isChecked,
+      },
+    }));
+
+    setFormSearch((prev) => {
+      if (isChecked) {
+        return {
+          ...prev,
+          [name]: prev[name] ? `${prev[name]},${value}` : value,
+        };
+      } else {
+        const updatedValue = prev[name]
+          .split(",")
+          .filter((item) => item !== value)
+          .join(",");
+        return {
+          ...prev,
+          [name]: updatedValue,
+        };
+      }
+    });
+  };
+  const changeColor = (name, value) => {
+    if (!formSearch.color || formSearch.color === "") {
+      setFormSearch((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      setFormSearch((prev) => {
+        if (!formSearch.color.split(",").includes(value)) {
+          return {
+            ...prev,
+            [name]: prev[name] ? `${prev[name]},${value}` : value,
+          }
+        } else {
+          const updatedValue = prev[name]
+            .split(",")
+            .filter((item) => item !== value)
+            .join(",");
+          return {
+            ...prev,
+            [name]: updatedValue,
+          };
+        }
+      });
+    }
+  };
+  return (
+    <React.Fragment>
+      <div className="products">
+        <Row>
+          <Col
+            lg={{ span: 16, offset: 4 }}
+            style={{ display: "flex", margin: "50px auto" }}
+          >
+            <div className="category-of-products">
+              {/* search by gender */}
+              <ul className="category-gender">
+                {categoryGender.map((item, index) => (
+                  <>
+                    <li
+                      className={`sub-gender ${
+                        formSearch["gender"] === item.value ? "clicked" : ""
+                      }`}
+                      onClick={() => changeFormSearch("gender", item.value)}
+                    >
+                      {item.name}
+                    </li>
+                    {index !== categoryGender.length - 1 && (
+                      <p style={{ color: "rgb(183, 188, 188)" }}>|</p>
+                    )}
+                  </>
+                ))}
+              </ul>
+              {/* search by status */}
+
+              <label
+                style={{
+                  color: "#ff4400",
+                  fontSize: "20px",
+                  paddingBottom: 20,
+                  fontWeight: 700,
+                  padding: 10,
+                }}
+              >
+                Trạng thái
+              </label>
+              <ul className="sell-off">
+                {categorySellOff.map((item, index) => (
+                  <>
+                    <li className="child-category">
+                      <Checkbox
+                        checked={isChecked[item.name]?.[item.value] || false}
+                        onChange={(e) =>
+                          changeFomSearch(
+                            item.name,
+                            item.value,
+                            e.target.checked
+                          )
+                        }
+                      />{" "}
+                      {item.label}
+                    </li>
+                  </>
+                ))}
+              </ul>
+
+              {/* search by new product */}
+
+              <ul className="new-product-search">
+                {newProduct.map((item, index) => (
+                  <>
+                    <li className="child-category">
+                      <Checkbox
+                        checked={isChecked[item.name]?.[item.value] || false}
+                        onChange={(e) =>
+                          changeFomSearch(
+                            item.name,
+                            item.value,
+                            e.target.checked
+                          )
+                        }
+                      />{" "}
+                      {item.label}
+                    </li>
+                  </>
+                ))}
+              </ul>
+
+              {/* search by categorys */}
+              <ul className="categorys">
+                {categorys.map((item, index) => (
+                  <li key={index} className="box-category">
+                    <label
+                      style={{
+                        color: "#ff4400",
+                        fontSize: "20px",
+                        paddingBottom: 20,
+                      }}
+                    >
+                      {item.label}
+                    </label>
+                    <ul>
+                      {item.children.map((child, childIndex) => (
+                        <li key={childIndex} className="child-category">
+                          <Checkbox
+                            checked={
+                              isChecked[item.name]?.[child.name] || false
+                            }
+                            onChange={(e) =>
+                              changeFomSearch(
+                                item.name,
+                                child.name,
+                                e.target.checked
+                              )
+                            }
+                          />{" "}
+                          {child.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+              {/* search by color */}
+              <ul className="category-color-search">
+                <label
+                  style={{
+                    color: "#ff4400",
+                    fontSize: "20px",
+                    fontWeight: 700,
+                  }}
+                >
+                  Màu
+                </label>
+                <div
+                  style={{ display: "flex", marginTop: 10, paddingLeft: 20 }}
+                >
+                  {listColor.map((item, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        backgroundColor: decodeURIComponent(item.code),
+                        width: "30px",
+                        height: "30px",
+                        marginRight: 5,
+                      }}
+                      className={formSearch.color && formSearch.color !== ''  &&(formSearch.color.split(",").includes(item.name) ? "item-color-search":"")}
+                      onClick={() => changeColor("color", item.name)}
+                    ></div>
+                  ))}
+                </div>
+              </ul>
+            </div>
+            <div className="box-products">
+              <div className="list-product">
+                {list.map((item, index) => (
+                  <CardItem item={item} index={index} />
+                ))}
+              </div>
+
+              <div
+                style={{
+                  marginTop: "30px",
+                  textAlign: "right",
+                  marginRight: 20,
+                }}
+              >
+                <Pagination
+                  defaultCurrent={1}
+                  current={currentPage + 1}
+                  total={totalPagesProduct * 10}
+                  onChange={handlePageChange}
+                />
+              </div>
+            </div>
+          </Col>
+        </Row>
+      </div>
+    </React.Fragment>
+  );
 }
 
 export default Products;

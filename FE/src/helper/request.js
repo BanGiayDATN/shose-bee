@@ -16,6 +16,7 @@ export const requestAdress = axios.create({
   baseURL: AppConfigAddress.apiUrl,
 });
 
+
 request.interceptors.request.use(
   (config) => {
     store.dispatch(SetLoadingTrue());

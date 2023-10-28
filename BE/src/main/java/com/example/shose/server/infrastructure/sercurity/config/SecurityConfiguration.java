@@ -39,8 +39,10 @@ public class SecurityConfiguration {
                 .and()
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
+
                         request -> request.requestMatchers("/login-v2/**" ,"/client/**").permitAll()
                                 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
+
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(

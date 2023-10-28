@@ -29,7 +29,7 @@ public class AuhenticationRestController {
     }
 
     @PostMapping("/singin")
-    public ResponseEntity<JwtAuhenticationResponse> singin (@RequestBody SigninRequest requets){
+    public ResponseEntity<JwtAuhenticationResponse> singin (@RequestBody SigninRequest requets)  {
         return ResponseEntity.ok(authenticationService.singIn(requets));
     }
 
