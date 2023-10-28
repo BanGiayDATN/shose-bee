@@ -15,4 +15,12 @@ export class LoginApi {
       params: filter,
     });
   };
+
+  static restPassword = (data) => {
+    return request({
+      method: "POST",
+      url: `/login-v2/reset-password`,
+      data: data,
+    });
+  };
 }

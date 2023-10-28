@@ -1,7 +1,6 @@
 package com.example.shose.server.infrastructure.sercurity.token;
 
 import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsService;
-import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsServiceImpl;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -55,9 +54,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 securityContext.setAuthentication(token);
                 SecurityContextHolder.setContext(securityContext);
+                jwtSerrvice.decodeTheToken(jwt,request);
             }
         }
         filterChain.doFilter(request, response);
-
     }
+
+
 }

@@ -55,14 +55,13 @@ const LoginManagement = () => {
           .then((res) => {
             setPasswordModalVisible(false);
             toast.success("Đổi mật khẩu thành công");
+            nav("/login-management");
           })
           .catch((err) => {
             console.log("Tài khoản hoặc mật khẩu không đúng");
           });
       })
-      .catch(() => {
-        // Xử lý khi người dùng từ chối xác nhận
-      });
+      .catch(() => {});
   };
 
   return (
