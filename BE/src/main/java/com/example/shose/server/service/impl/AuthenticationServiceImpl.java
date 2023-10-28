@@ -1,8 +1,10 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.sercurity.auth.JwtAuhenticationResponse;
 import com.example.shose.server.infrastructure.sercurity.auth.RefreshTokenRequets;
@@ -12,6 +14,7 @@ import com.example.shose.server.infrastructure.sercurity.token.JwtSerrvice;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.AuthenticationService;
+import com.example.shose.server.util.RandomNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +37,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtSerrvice jwtSerrvice;
 
+    private final SendEmailService sendEmailService;
+
     @Override
     public String signUp(SignUpRequets signUpRequets) {
         User user = new User();
@@ -52,10 +57,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public JwtAuhenticationResponse singIn(SigninRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getEmail(),request.getPassword()
+                request.getEmail(), request.getPassword()
         ));
         var account = accountRepository.findByEmail(request.getEmail())
-                .orElseThrow(()->new RestApiException("Email hoặc mật khẩu không hợp lệ."));
+                .orElseThrow(() -> new RestApiException("Email hoặc mật khẩu không hợp lệ."));
         var jwt = jwtSerrvice.genetateToken(account);
         var refreshToken = jwtSerrvice.genetateRefreshToken(new HashMap<>(), account);
 
@@ -69,13 +74,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuhenticationResponse refreshToken(RefreshTokenRequets refresh) {
         String userEmail = jwtSerrvice.extractUserName(refresh.getToken());
         Account account = accountRepository.findByEmail(userEmail).orElseThrow();
-        if(jwtSerrvice.isTokenValid(refresh.getToken(), account)){
-            var  jwt = jwtSerrvice.genetateToken(account);
+        if (jwtSerrvice.isTokenValid(refresh.getToken(), account)) {
+            var jwt = jwtSerrvice.genetateToken(account);
             return JwtAuhenticationResponse.builder()
                     .refreshToken(refresh.getToken())
                     .token(jwt)
                     .build();
         }
         return null;
+    }
+
+    @Override
+    public String resetPassword(ResetPassword resetPassword) {
+        var account = accountRepository.resetPassword(resetPassword.getEmailForgot(), resetPassword.getPhoneNumber());
+        if (account == null) {
+            throw new RestApiException("Không tìm thấy tài khoản.");
+        }
+        String password = String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber());
+        account.setPassword(passwordEncoder.encode(password));
+        accountRepository.save(account);
+        String subject = "Xin chào, bạn đã đổi mật khẩu thành công. ";
+        sendEmailService.sendEmailPasword(account.getEmail(),subject,password);
+        return "Đổi mật khẩu thành công.";
     }
 }

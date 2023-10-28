@@ -1,5 +1,6 @@
 package com.example.shose.server.controller;
 
+import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.infrastructure.sercurity.auth.JwtAuhenticationResponse;
 import com.example.shose.server.infrastructure.sercurity.auth.RefreshTokenRequets;
 import com.example.shose.server.infrastructure.sercurity.auth.SignUpRequets;
@@ -35,6 +36,11 @@ public class AuhenticationRestController {
     @PostMapping("/refresh")
     public ResponseEntity<JwtAuhenticationResponse> refreshToken (@RequestBody RefreshTokenRequets requets){
         return ResponseEntity.ok(authenticationService.refreshToken(requets));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword (@RequestBody ResetPassword resetPassword){
+        return ResponseEntity.ok(authenticationService.resetPassword(resetPassword));
     }
 
 }
