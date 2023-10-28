@@ -7,7 +7,6 @@ import {
   SetLoadingTrue,
 } from "../app/reducer/Loading.reducer";
 import { deleteToken, getToken } from "./useCookies";
-import { useNavigate } from "react-router";
 
 export const request = axios.create({
   baseURL: AppConfig.apiUrl,
