@@ -1,4 +1,5 @@
 import { request } from "../../../helper/request";
+
 export class CategoryApi {
   static fetchAll = (filter) => {
     return request({
@@ -23,7 +24,7 @@ export class CategoryApi {
     });
   };
 
-  static update = (id,data) => {
+  static update = (id, data) => {
     return request({
       method: "PUT",
       url: `/admin/category/${id}`,

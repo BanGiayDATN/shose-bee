@@ -97,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
         // tạo tài khoản cho khách hàng
         Account account = new Account();
         account.setUser(user);
-        account.setRoles(Roles.USER);
+        account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
         account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         account.setStatus(Status.DANG_SU_DUNG);
@@ -219,7 +219,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Account account = new Account();
         account.setUser(user);
-        account.setRoles(Roles.USER);
+        account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
         account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         account.setStatus(Status.DANG_SU_DUNG);

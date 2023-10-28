@@ -1,17 +1,17 @@
 import { request } from "../../../helper/request";
 export class LoginApi {
-  static authentication = (filter) => {
+  static authenticationIn = (data) => {
     return request({
-      method: "GET",
-      url: `/admin/login`,
-      params: filter,
+      method: "POST",
+      url: `/login-v2/singin`,
+      data: data,
     });
   };
 
-  static restPassword = (filter) => {
+  static authenticationUp = (filter) => {
     return request({
       method: "GET",
-      url: `/admin/login/rest-password`,
+      url: `/login-v2/singup`,
       params: filter,
     });
   };

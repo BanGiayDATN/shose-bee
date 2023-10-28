@@ -5,7 +5,7 @@ package com.example.shose.server.infrastructure.constant;
  */
 public enum Roles {
 
-    ADMIN,
-    USER,
-    NHAN_VIEN
+    ROLE_ADMIN,
+    ROLE_USER,
+    ROLE_EMLOYEE
 }

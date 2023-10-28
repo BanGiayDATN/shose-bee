@@ -1,7 +1,7 @@
 package com.example.shose.server.service.impl;
 
-import com.example.shose.server.dto.request.login.LoginRequest;
-import com.example.shose.server.dto.request.login.ResetPassword;
+import com.example.shose.server.dto.logindto.LoginRequest;
+import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.dto.response.LoginResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -54,5 +54,17 @@ public class LoginServiceImpl implements LoginService {
         sendEmailService.sendEmailPasword(account.getEmail(),subject,String.valueOf(randomNumber));
         LoginResponse response = new LoginResponse(account);
         return response;
+    }
+
+    @Override
+    public boolean add(Account account) {
+        try {
+            account.setPassword(passwordEncoder.encode(account.getPassword()));
+            accountRepository.save(account);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
