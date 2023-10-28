@@ -18,11 +18,10 @@ export const requestAdress = axios.create({
 
 request.interceptors.request.use((config) => {
   store.dispatch(SetLoadingTrue());
-  const token =
-    "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJmdWxsTmFtZSI6Ik5ndXnhu4VuIFbEg24gVmluaCIsImlkIjoiNDcxZTg3NzEtZTU4Yi00YTFiLWE0NzktNGUzOGZlNDk5ZWQyIiwiZW1haWwiOiJ2aW5obnZwaDEyQGdtYWlsLmNvbSIsImlhdCI6MTY5NzU0MDg2OSwiZXhwIjoxNjk4MTQ1NjY5fQ.8kkVzoBUsCFdL7h6hWL2L10umU07TKf6VMKdmr07Mdg";
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  // const token = Cookies.get("token");
+  // if (token) {
+  //   config.headers.Authorization = `Bearer ${token}`;
+  // }
   return config;
 });
 

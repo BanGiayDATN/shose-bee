@@ -189,7 +189,7 @@ function Products() {
         if (!formSearch.color.split(",").includes(value)) {
           return {
             ...prev,
-            [name]:  `${prev[name]},${value}` 
+            [name]: prev[name] ? `${prev[name]},${value}` : value,
           }
         } else {
           const updatedValue = prev[name]
@@ -321,6 +321,7 @@ function Products() {
                   </li>
                 ))}
               </ul>
+              {/* search by color */}
               <ul className="category-color-search">
                 <label
                   style={{
