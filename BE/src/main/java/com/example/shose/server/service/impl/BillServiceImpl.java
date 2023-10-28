@@ -191,6 +191,11 @@ public class BillServiceImpl implements BillService {
             }
             productDetailRepository.save(productDetail.get());
         });
+        voucherDetailRepository.findAllByBill(optional.get()).forEach(item -> {
+                Optional<Voucher> voucher = voucherRepository.findById(item.getVoucher().getId());
+                voucher.get().setQuantity(voucher.get().getQuantity() + 1);
+                voucherRepository.save(voucher.get());
+            });
         billHistoryRepository.deleteAllByIdBill(optional.get().getId());
         billDetailRepository.deleteAllByIdBill(optional.get().getId());
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
@@ -335,6 +340,11 @@ public class BillServiceImpl implements BillService {
                     productDetail.get().setStatus(Status.DANG_SU_DUNG);
                 }
                 productDetailRepository.save(productDetail.get());
+            });
+            voucherDetailRepository.findAllByBill(optional.get()).forEach(item -> {
+                Optional<Voucher> voucher = voucherRepository.findById(item.getVoucher().getId());
+                voucher.get().setQuantity(voucher.get().getQuantity() + 1);
+                voucherRepository.save(voucher.get());
             });
             billHistoryRepository.deleteAllByIdBill(optional.get().getId());
             billDetailRepository.deleteAllByIdBill(optional.get().getId());

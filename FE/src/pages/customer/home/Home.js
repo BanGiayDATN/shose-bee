@@ -14,7 +14,6 @@ import { CategoryClientApi } from "./../../../api/customer/category/categoryClie
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
 
 import CardItem from "../component/Card";
-import { Grid } from "react-virtualized";
 
 function Home() {
   const [listCategory, setListcategory] = useState([]);
@@ -25,35 +24,39 @@ function Home() {
   const [totalPagesProduct, setTotalPagesProduct] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const firstCategoryId = listCategory.length > 0 ? listCategory[0].id : null;
-  useEffect(() => {
-    if (firstCategoryId !== null) {
-      getProductDetailByCategory(firstCategoryId);
-    }
-    
-  }, [firstCategoryId]);
+  // useEffect(() => {
+  //   console.log(firstCategoryId);
+  //   if (firstCategoryId !== null) {
+  //     getProductDetailByCategory(firstCategoryId);
+  //   }
+  // }, [firstCategoryId]);
 
   useEffect(() => {
-    console.log(listProductDetail);
+    // console.log(listProductDetail);
   }, [listProductDetail]);
   useEffect(() => {
-    console.log(currentPage);
+    // console.log(currentPage);
   }, [currentPage]);
 
   useEffect(() => {
-    console.log(totalPagesProduct);
+    // console.log(totalPagesProduct);
   }, [totalPagesProduct]);
 
   useEffect(() => {
     getCategory();
-    console.log(listCategory);
+    // console.log(listCategory);
     setKeyTab("1");
-    console.log(firstCategoryId);
+    // console.log(firstCategoryId);
   }, []);
   useEffect(() => {
     getDetailProduct(keyTab);
   }, [keyTab]);
   useEffect(() => {
     console.log(listCategory);
+    console.log(firstCategoryId);
+    if (firstCategoryId !== null) {
+      getProductDetailByCategory(firstCategoryId);
+    }
   }, [listCategory]);
   useEffect(() => {
     console.log(listProductDetailByCategory);
@@ -86,7 +89,8 @@ function Home() {
     ProductDetailClientApi.getDetailProductNew(page).then(
       (res) => {
         setListProductDetail(res.data.data.data);
-        setTotalPagesProduct(res.data.data.totalPages );
+        setTotalPagesProduct(res.data.data.totalPages);
+        console.log(res.data.data.data);
       },
       (err) => {
         console.log(err);
@@ -97,7 +101,8 @@ function Home() {
     ProductDetailClientApi.getDetailProductSellMany(page).then(
       (res) => {
         setListProductDetail(res.data.data.data);
-        setTotalPagesProduct(res.data.data.totalPages );
+        setTotalPagesProduct(res.data.data.totalPages);
+        console.log(res.data.data.data);
       },
       (err) => {
         console.log(err);
@@ -109,7 +114,8 @@ function Home() {
     ProductDetailClientApi.getDetailProductHavePromotion(page).then(
       (res) => {
         setListProductDetail(res.data.data.data);
-        setTotalPagesProduct(res.data.data.totalPages );
+        setTotalPagesProduct(res.data.data.totalPages);
+        console.log(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -117,14 +123,14 @@ function Home() {
     );
   };
   const handlePageChange = (page) => {
-    if(keyTab === "1"){
+    if (keyTab === "1") {
       getDetailProductNew(page - 1);
-    }else if(keyTab === "2"){
+    } else if (keyTab === "2") {
       getDetailProductSellMany(page - 1);
-    }else{
+    } else {
       getDetailProductHavePromotion(page - 1);
     }
-    
+
     setCurrentPage(page);
   };
   const getDetailProduct = (keyTab) => {
@@ -142,15 +148,6 @@ function Home() {
 
   const itemsPerPage = 3;
   const [currentIndex, setCurrentIndex] = useState(0);
-  // useEffect(() => {
-  //   // Thiết lập một interval để tự động chuyển ảnh sau một khoảng thời gian
-  //   const intervalId = setInterval(() => {
-  //     next();
-  //   }, 10000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
-
-  //   // Xóa interval khi component unmount để tránh lỗi memory leak
-  //   return () => clearInterval(intervalId);
-  // }, [currentIndex]);
   const totalPages = Math.ceil(
     listProductDetailByCategory.length / itemsPerPage
   );
@@ -189,9 +186,9 @@ function Home() {
   return (
     <div className="home">
       <div className="banner">
-      <div className="img-banner-home">
-        <img className="img-banner-home-shoes" src={banner1} alt="..." />
-      </div>
+        <div className="img-banner-home">
+          <img className="img-banner-home-shoes" src={banner1} alt="..." />
+        </div>
       </div>
       <div>
         <Row justify="center">
@@ -307,7 +304,7 @@ function Home() {
             <Pagination
               defaultCurrent={1}
               current={currentPage}
-              total={totalPagesProduct*10}
+              total={totalPagesProduct * 10}
               onChange={handlePageChange}
             />
           </Col>

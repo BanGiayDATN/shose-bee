@@ -197,7 +197,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             if(findAllByVnpTransactionNo.size() > 0){
                 return false;
             }
-            Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef());
+            Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
             paymentsMethod.setDescription("Thanh toán thành công");

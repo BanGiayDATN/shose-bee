@@ -16,7 +16,7 @@ public interface GetProductDetail {
     @Value("#{target.codeColor}")
     String getCodeColor();
     @Value("#{target.nameSize}")
-    String getNameSize();
+    Integer getNameSize();
     @Value("#{target.image}")
     String getImage();
 
@@ -25,7 +25,6 @@ public interface GetProductDetail {
 
     @Value("#{target.price}")
     BigDecimal getPrice();
-
     @Value("#{target.valuePromotion}")
     String getValuePromotion();
     @Value("#{target.createdDate}")

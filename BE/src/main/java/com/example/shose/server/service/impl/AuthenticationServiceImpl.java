@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(), request.getPassword()
         ));
+
         var account = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RestApiException("Email hoặc mật khẩu không hợp lệ."));
         var jwt = jwtSerrvice.genetateToken(account);

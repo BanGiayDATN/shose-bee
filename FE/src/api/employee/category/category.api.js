@@ -31,4 +31,10 @@ export class CategoryApi {
       data: data,
     });
   };
+  static getCategoryInProductDetail = () => {
+    return request({
+      method: "GET",
+      url: `/client/category/in-product-detail`,
+    });
+  };
 }
