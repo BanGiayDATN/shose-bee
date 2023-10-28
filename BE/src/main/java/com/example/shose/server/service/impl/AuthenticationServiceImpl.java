@@ -1,5 +1,6 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.logindto.ChangePassword;
 import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
@@ -11,6 +12,7 @@ import com.example.shose.server.infrastructure.sercurity.auth.RefreshTokenRequet
 import com.example.shose.server.infrastructure.sercurity.auth.SignUpRequets;
 import com.example.shose.server.infrastructure.sercurity.auth.SigninRequest;
 import com.example.shose.server.infrastructure.sercurity.token.JwtSerrvice;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.AuthenticationService;
@@ -38,6 +40,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtSerrvice jwtSerrvice;
 
     private final SendEmailService sendEmailService;
+
+    private final ShoseSession shoseSession;
 
     @Override
     public String signUp(SignUpRequets signUpRequets) {
@@ -94,7 +98,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         account.setPassword(passwordEncoder.encode(password));
         accountRepository.save(account);
         String subject = "Xin chào, bạn đã đổi mật khẩu thành công. ";
-        sendEmailService.sendEmailPasword(account.getEmail(),subject,password);
+        sendEmailService.sendEmailPasword(account.getEmail(), subject, password);
         return "Đổi mật khẩu thành công.";
+    }
+
+    @Override
+    public String changePassword(ChangePassword changePassword) {
+        String emailUser = shoseSession.getEmail();
+        var account = accountRepository.getOneByEmail(emailUser);
+        if (passwordEncoder.matches(changePassword.getPassword(), account.getPassword())) {
+            String newPasswordEncoded = passwordEncoder.encode(changePassword.getNewPassword());
+            account.setPassword(newPasswordEncoded);
+            accountRepository.save(account);
+        } else {
+            throw new RestApiException("Mật khẩu hiện tại không đúng");
+        }
+        return "Đổi mật khẩu thành công";
     }
 }

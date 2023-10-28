@@ -16,17 +16,15 @@ export const requestAdress = axios.create({
   baseURL: AppConfigAddress.apiUrl,
 });
 
-request.interceptors.request.use(
-  (config) => {
-    store.dispatch(SetLoadingTrue());
-    const token = getToken();
-    if (config.headers && token) {
-      config.headers.Authorization = "Bearer " + token;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+request.interceptors.request.use((config) => {
+  store.dispatch(SetLoadingTrue());
+  const token = getToken();
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 request.interceptors.response.use(
   (response) => {

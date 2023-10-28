@@ -7,20 +7,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.net.HttpCookie;
 import java.security.Key;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 @Service
@@ -34,7 +28,7 @@ public class JwtSerrvice {
         claims.put("email", account.getUsername());
         claims.put("role", account.getRoles());
         claims.put("fullName", account.getUser().getFullName());
-
+        claims.put("avata", account.getUser().getAvata());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(account.getEmail())
@@ -49,6 +43,7 @@ public class JwtSerrvice {
         extractClaims.put("email", account.getUsername());
         extractClaims.put("role", account.getRoles());
         extractClaims.put("fullName", account.getUser().getFullName());
+        extractClaims.put("avata", account.getUser().getAvata());
         return Jwts.builder()
                 .setClaims(extractClaims)
                 .setSubject(account.getEmail())
@@ -92,25 +87,18 @@ public class JwtSerrvice {
     }
 
 
-    public Object decodeTheToken (String token , HttpServletRequest request){
+    public void decodeTheToken (String token , HttpServletRequest request){
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        String userName = claims.get("fullName", String.class);
-        String email = claims.get("email", String.class);
-        String id = claims.get("id", String.class);
-        String role = claims.get("role",String.class);
-
         HttpSession session = request.getSession();
         session.setAttribute("fullName", claims.get("fullName", String.class));
         session.setAttribute("email", claims.get("email", String.class));
         session.setAttribute("id", claims.get("id", String.class));
-        session.setAttribute("role", role);
-        return session;
+        session.setAttribute("role", claims.get("role",String.class));
     }
-
 
 }

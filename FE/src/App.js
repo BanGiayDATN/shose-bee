@@ -158,14 +158,6 @@ function App() {
             element={<Navigate replace to="/login-management" />}
           />
           <Route
-            path="/not-authorization"
-            element={
-              <GuestGuard>
-                <NotFound />
-              </GuestGuard>
-            }
-          />
-          <Route
             path="/login"
             element={
               <GuestGuard>

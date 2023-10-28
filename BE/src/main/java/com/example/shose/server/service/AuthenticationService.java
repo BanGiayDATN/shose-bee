@@ -1,5 +1,6 @@
 package com.example.shose.server.service;
 
+import com.example.shose.server.dto.logindto.ChangePassword;
 import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.infrastructure.sercurity.auth.JwtAuhenticationResponse;
 import com.example.shose.server.infrastructure.sercurity.auth.RefreshTokenRequets;
@@ -15,4 +16,7 @@ public interface AuthenticationService {
     JwtAuhenticationResponse refreshToken(RefreshTokenRequets refresh);
 
     String resetPassword(ResetPassword resetPassword);
+
+    String changePassword (ChangePassword changePassword);
+
 }
