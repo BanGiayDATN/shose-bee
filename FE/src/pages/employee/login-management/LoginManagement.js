@@ -6,7 +6,7 @@ import Logo from "../../../assets/images/logo_client.png";
 import { LoginApi } from "../../../api/employee/login/Login.api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
-import { setToken } from "../../../helper/useCookies";
+import { setToken, setUserToken } from "../../../helper/useCookies";
 const LoginManagement = () => {
   const [form] = Form.useForm();
   const nav = useNavigate();
@@ -26,6 +26,7 @@ const LoginManagement = () => {
     LoginApi.authenticationIn(values).then((res) => {
       toast.success("Đăng nhập thành công");
       setToken(res.data.token);
+      setUserToken(res.data.token);
       nav("/dashboard");
     });
   };
