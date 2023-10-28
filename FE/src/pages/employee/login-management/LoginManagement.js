@@ -7,7 +7,6 @@ import { LoginApi } from "../../../api/employee/login/Login.api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import { setToken } from "../../../helper/useCookies";
-import { setCookie } from "../../../helper/CookiesRequest";
 const LoginManagement = () => {
   const [form] = Form.useForm();
   const nav = useNavigate();
@@ -26,7 +25,6 @@ const LoginManagement = () => {
     setToken("");
     LoginApi.authenticationIn(values).then((res) => {
       toast.success("Đăng nhập thành công");
-      console.log(res.data.token);
       setToken(res.data.token);
       nav("/dashboard");
     });
