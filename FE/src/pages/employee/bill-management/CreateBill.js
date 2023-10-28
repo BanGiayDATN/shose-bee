@@ -1468,9 +1468,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if(isOpenDelivery){
       ship = shipFee
     }
+    // Lấy thời điểm hiện tại dạng long
+     const timeInMillis = now.getTime();
     const data = {
       vnp_Ammount: Math.round((totalBill + ship - voucher.discountPrice) - totaPayMent),
-      vnp_TxnRef: billRequest.code,
+      vnp_TxnRef: billRequest.code + "-"+ timeInMillis,
     };
     localStorage.setItem("code", billRequest.code);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
