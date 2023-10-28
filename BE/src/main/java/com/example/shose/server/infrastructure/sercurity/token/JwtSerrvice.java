@@ -29,6 +29,7 @@ public class JwtSerrvice {
 
         return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(account.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .signWith(getSiginKey(), SignatureAlgorithm.HS256)
@@ -42,6 +43,7 @@ public class JwtSerrvice {
         extractClaims.put("fullName", account.getUser().getFullName());
         return Jwts.builder()
                 .setClaims(extractClaims)
+                .setSubject(account.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 604800000))
                 .signWith(getSiginKey(), SignatureAlgorithm.HS256)

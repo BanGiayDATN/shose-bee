@@ -63,70 +63,70 @@ function App() {
   const [listPromotion, setListPromotion] = useState([]);
   const dataVoucher = useAppSelector(GetVoucher);
   const dataPromotion = useAppSelector(GetPromotion);
-  const updateItemList = (items, api, updateFunction) => {
-    const now = dayjs();
-    items.forEach((item) => {
-      const endDate = dayjs.unix(item.endDate / 1000);
-      const startDate = dayjs.unix(item.startDate / 1000);
+  // const updateItemList = (items, api, updateFunction) => {
+  //   const now = dayjs();
+  //   items.forEach((item) => {
+  //     const endDate = dayjs.unix(item.endDate / 1000);
+  //     const startDate = dayjs.unix(item.startDate / 1000);
 
-      if (endDate.isSame(now, "second") || startDate.isSame(now, "second")) {
-        api(item.id)
-          .then((res) => {
-            dispatch(updateFunction(res.data.data));
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    });
-  };
-  useEffect(() => {
-    if (dataVoucher != null) {
-      setListVoucher(dataVoucher);
-    }
-  }, [dataVoucher]);
+  //     if (endDate.isSame(now, "second") || startDate.isSame(now, "second")) {
+  //       api(item.id)
+  //         .then((res) => {
+  //           dispatch(updateFunction(res.data.data));
+  //         })
+  //         .catch((err) => {
+  //           console.log(err);
+  //         });
+  //     }
+  //   });
+  // };
+  // useEffect(() => {
+  //   if (dataVoucher != null) {
+  //     setListVoucher(dataVoucher);
+  //   }
+  // }, [dataVoucher]);
 
-  useEffect(() => {
-    if (dataPromotion != null) {
-      setListPromotion(dataPromotion);
-    }
-  }, [dataPromotion]);
+  // useEffect(() => {
+  //   if (dataPromotion != null) {
+  //     setListPromotion(dataPromotion);
+  //   }
+  // }, [dataPromotion]);
 
-  useEffect(() => {
-    VoucherApi.fetchAll("").then(
-      (res) => {
-        setListVoucher(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+  // useEffect(() => {
+  //   VoucherApi.fetchAll("").then(
+  //     (res) => {
+  //       setListVoucher(res.data.data);
+  //     },
+  //     (err) => {
+  //       console.log(err);
+  //     }
+  //   );
 
-    PromotionApi.fetchAll("").then(
-      (res) => {
-        setListPromotion(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-  }, []);
+  //   PromotionApi.fetchAll("").then(
+  //     (res) => {
+  //       setListPromotion(res.data.data);
+  //     },
+  //     (err) => {
+  //       console.log(err);
+  //     }
+  //   );
+  // }, []);
 
-  useEffect(() => {
-    const intervalVoucher = setInterval(() => {
-      updateItemList(listVoucher, VoucherApi.updateStatus, UpdateVoucher);
-    }, 1000);
+  // useEffect(() => {
+  //   const intervalVoucher = setInterval(() => {
+  //     updateItemList(listVoucher, VoucherApi.updateStatus, UpdateVoucher);
+  //   }, 1000);
 
-    return () => clearInterval(intervalVoucher);
-  }, [listVoucher]);
+  //   return () => clearInterval(intervalVoucher);
+  // }, [listVoucher]);
 
-  useEffect(() => {
-    const intervalPromotion = setInterval(() => {
-      updateItemList(listPromotion, PromotionApi.updateStatus, UpdatePromotion);
-    }, 1000);
+  // useEffect(() => {
+  //   const intervalPromotion = setInterval(() => {
+  //     updateItemList(listPromotion, PromotionApi.updateStatus, UpdatePromotion);
+  //   }, 1000);
 
-    return () => clearInterval(intervalPromotion);
-  }, [listPromotion]);
+  //   return () => clearInterval(intervalPromotion);
+  // }, [listPromotion]);
 
   const isLoading = useAppSelector(GetLoading);
 
@@ -158,10 +158,18 @@ function App() {
             element={<Navigate replace to="/login-management" />}
           />
           <Route
+            path="/not-authorization"
+            element={
+              <GuestGuard>
+                <NotFound />
+              </GuestGuard>
+            }
+          />
+          <Route
             path="/login"
             element={
               <GuestGuard>
-                    <Login />
+                <Login />
               </GuestGuard>
             }
           />
@@ -445,16 +453,16 @@ function App() {
               </AuthGuard>
             }
           />
-           <Route
+          <Route
             path="/sreach-bill"
             element={
               <GuestGuard>
-              <CartProvider>
-                <DashBoardCustomer>
-                  <SearchBill />
-                </DashBoardCustomer>
-              </CartProvider>
-            </GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <SearchBill />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
             }
           />
           <Route

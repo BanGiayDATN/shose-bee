@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Nguyễn Vinh
  */
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/admin/category")
+@CrossOrigin("*")
 public class CategoryRestController {
 
     @Autowired

@@ -61,6 +61,7 @@ const DashBoardEmployee = ({ children }) => {
               <FontAwesomeIcon icon={faChartLine} style={{ color: "white" }} />
             }
           >
+            
             <Link to="/dashboard">Thống Kê</Link>
           </Menu.Item>
           <Menu.Item

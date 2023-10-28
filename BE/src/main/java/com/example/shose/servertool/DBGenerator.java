@@ -381,9 +381,9 @@ public class DBGenerator implements CommandLineRunner {
         userReposiory.save(user2);
         userReposiory.save(user3);
 
-        Account account1 = Account.builder().user(user1).email(user1.getEmail()).password("123").roles(Roles.ADMIN).build();
-        Account account2 = Account.builder().user(user3).email(user2.getEmail()).password("123").roles(Roles.NHAN_VIEN).build();
-        Account account3 = Account.builder().user(user2).email(user3.getEmail()).password("123").roles(Roles.USER).build();
+        Account account1 = Account.builder().user(user1).email(user1.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account account2 = Account.builder().user(user3).email(user2.getEmail()).password("123").roles(Roles.ROLE_EMLOYEE).build();
+        Account account3 = Account.builder().user(user2).email(user3.getEmail()).password("123").roles(Roles.ROLE_USER).build();
         accountRepository.save(account1);
         accountRepository.save(account2);
         accountRepository.save(account3);
