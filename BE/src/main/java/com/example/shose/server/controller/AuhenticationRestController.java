@@ -1,5 +1,6 @@
 package com.example.shose.server.controller;
 
+import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.infrastructure.sercurity.auth.JwtAuhenticationResponse;
 import com.example.shose.server.infrastructure.sercurity.auth.RefreshTokenRequets;
 import com.example.shose.server.infrastructure.sercurity.auth.SignUpRequets;
@@ -8,6 +9,7 @@ import com.example.shose.server.service.AuthenticationService;
 import com.example.shose.server.util.ResponseObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,11 @@ public class AuhenticationRestController {
     @PostMapping("/refresh")
     public ResponseEntity<JwtAuhenticationResponse> refreshToken (@RequestBody RefreshTokenRequets requets){
         return ResponseEntity.ok(authenticationService.refreshToken(requets));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword (@RequestBody ResetPassword resetPassword){
+        return ResponseEntity.ok(authenticationService.resetPassword(resetPassword));
     }
 
 }

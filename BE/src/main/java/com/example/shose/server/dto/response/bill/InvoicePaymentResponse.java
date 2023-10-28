@@ -14,6 +14,7 @@ public class InvoicePaymentResponse {
 
     private String total;
     private String method;
+    private String status;
     private String vnp_TransactionNo;
 
 }

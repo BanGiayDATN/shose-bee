@@ -86,7 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Account employeeAccount = new Account();
         employeeAccount.setUser(user);
         employeeAccount.setEmail(user.getEmail());
-        employeeAccount.setRoles(Roles.NHAN_VIEN);
+        employeeAccount.setRoles(Roles.ROLE_EMLOYEE);
         employeeAccount.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         employeeAccount.setStatus(Status.DANG_SU_DUNG);
         accountRepository.save(employeeAccount); // add tài khoản vào database

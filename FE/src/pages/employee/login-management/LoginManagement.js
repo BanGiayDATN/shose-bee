@@ -5,8 +5,11 @@ import "./style-login-management.css";
 import Logo from "../../../assets/images/logo_client.png";
 import { LoginApi } from "../../../api/employee/login/Login.api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
+import { setToken, setUserToken } from "../../../helper/useCookies";
 const LoginManagement = () => {
   const [form] = Form.useForm();
+  const nav = useNavigate();
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
 
   const showPasswordModal = () => {
@@ -19,15 +22,13 @@ const LoginManagement = () => {
   };
 
   const onFinish = (values) => {
-    console.log("Success:", values);
-    LoginApi.authentication(values)
-      .then((res) => {
-        toast.success("Đăng nhập thành công");
-        window.location.href = "/dashboard";
-      })
-      .catch((err) => {
-        console.log("Tài khoản hoặc mật khẩu không đúng");
-      });
+    setToken("");
+    LoginApi.authenticationIn(values).then((res) => {
+      toast.success("Đăng nhập thành công");
+      setToken(res.data.token);
+      setUserToken(res.data.token);
+      nav("/dashboard");
+    });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -54,14 +55,13 @@ const LoginManagement = () => {
           .then((res) => {
             setPasswordModalVisible(false);
             toast.success("Đổi mật khẩu thành công");
+            nav("/login-management");
           })
           .catch((err) => {
             console.log("Tài khoản hoặc mật khẩu không đúng");
           });
       })
-      .catch(() => {
-        // Xử lý khi người dùng từ chối xác nhận
-      });
+      .catch(() => {});
   };
 
   return (

@@ -27,7 +27,7 @@ public interface BillService {
 
     List<UserBillResponse> getAllUserInBill();
 
-    List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
+    List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id,FindNewBillCreateAtCounterRequest request);
 
     Bill  saveOnline(CreateBillRequest request);
 

@@ -38,7 +38,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
-            WHERE a.roles='NHAN_VIEN'
+            WHERE a.roles='ROLE_EMLOYEE'
              AND  
               ( :#{#req.fullName} IS NULL 
                     OR :#{#req.fullName} LIKE '' 
@@ -81,7 +81,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                  a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
-            WHERE a.roles='USER'
+            WHERE a.roles='ROLE_USER'
              AND  
               ( :#{#req.fullName} IS NULL 
                     OR :#{#req.fullName} LIKE '' 
@@ -185,5 +185,4 @@ public interface UserReposiory extends JpaRepository<User, String> {
             WHERE u.phoneNumber = :phoneNumber
             """, nativeQuery = true)
     Optional<EmployeeResponse> getOneByPhoneNumber(@Param("phoneNumber") String phoneNumber);
-
 }

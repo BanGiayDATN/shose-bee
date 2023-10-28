@@ -1,12 +1,12 @@
 package com.example.shose.server.infrastructure.sercurity.token;
 
 import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsService;
-import com.example.shose.server.infrastructure.sercurity.config.AccountDetalsServiceImpl;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -28,9 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+           @NonNull HttpServletRequest request,
+           @NonNull HttpServletResponse response,
+           @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         final String authheader = request.getHeader("Authorization");
         final String jwt;
@@ -54,9 +54,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 securityContext.setAuthentication(token);
                 SecurityContextHolder.setContext(securityContext);
+                jwtSerrvice.decodeTheToken(jwt,request);
             }
         }
         filterChain.doFilter(request, response);
-
     }
+
+
 }

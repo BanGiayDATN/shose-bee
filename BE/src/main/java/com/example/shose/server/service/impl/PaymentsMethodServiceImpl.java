@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
 import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
+import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
@@ -11,7 +12,9 @@ import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.infrastructure.constant.*;
+import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
+import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
@@ -25,6 +28,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -56,7 +61,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     private BillHistoryRepository billHistoryRepository;
 
     @Autowired
-    private BillDetailRepository billDetailRepository;
+    private SpringTemplateEngine springTemplateEngine;
 
     @Autowired
     private ProductDetailRepository productDetailRepository;
@@ -66,6 +71,13 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Autowired
     private BillRepository billRepository;
+
+    @Autowired
+    private ExportFilePdfFormHtml exportFilePdfFormHtml;
+
+    @Autowired
+    private SendEmailService sendEmailService;
+
 
     private FormUtils formUtils = new FormUtils();
 
@@ -175,7 +187,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response) {
+    public boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response, HttpServletRequest requests) {
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -188,7 +200,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef());
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
-            paymentsMethod.setDescription(response.getVnp_OrderInfo());
+            paymentsMethod.setDescription("Thanh toán thành công");
             paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount().substring(0, response.getVnp_Amount().length() - 2)));
             paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
             paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
@@ -204,10 +216,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 billRepository.save(bill.get());
             } else {
                 bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
-//                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
                 billRepository.save(bill.get());
             }
-            billRepository.save(bill.get());
+            createFilePdfAtCounter(bill.get().getId(), requests);
             return true;
         }
         return false;
@@ -218,6 +229,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         for (BillDetailOnline x : request.getBillDetail()) {
             ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
             productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
+            if( productDetail.getStatus() == Status.HET_SAN_PHAM){
+                productDetail.setStatus(Status.DANG_SU_DUNG);
+            }
             productDetailRepository.save(productDetail);
         }
         return true;
@@ -260,6 +274,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
             productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
+            if (productDetail.getQuantity() == 0) {
+                productDetail.setStatus(Status.HET_SAN_PHAM);
+            }
             productDetailRepository.save(productDetail);
         });
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -317,5 +334,32 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VnPayConstant.vnp_Url + "?" + queryUrl;
         return paymentUrl;
+    }
+
+
+    public boolean createFilePdfAtCounter(String idBill, HttpServletRequest request) {
+        //     begin   create file pdf
+        String finalHtml = null;
+        Optional<Bill> optional = billRepository.findById(idBill);
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+
+        if(optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
+            invoice.setCheckShip(true);
+            sendMail(invoice, "http://localhost:3000/bill/"+ optional.get().getCode()+"/"+optional.get().getPhoneNumber(), optional.get().getEmail());
+        }
+        Context dataContext = exportFilePdfFormHtml.setData(invoice);
+        finalHtml = springTemplateEngine.process("templateBill", dataContext);
+        exportFilePdfFormHtml.htmlToPdf(finalHtml,request, optional.get().getCode());
+//     end   create file pdf
+        return true;
+    }
+
+    public void sendMail(InvoiceResponse invoice, String url, String email){
+        String finalHtmlSendMail = null;
+        Context dataContextSendMail = exportFilePdfFormHtml.setDataSendMail(invoice, url);
+        finalHtmlSendMail = springTemplateEngine.process("templateBillSendMail", dataContextSendMail);
+        String subject = "Biên lai thanh toán ";
+        sendEmailService.sendBill(email,subject,finalHtmlSendMail);
+
     }
 }
