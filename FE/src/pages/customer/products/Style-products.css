@@ -76,6 +76,13 @@
   padding: 0 10px;
   font-weight: 700;
   border-bottom: 1px dashed rgb(188, 188, 188);
+  margin-bottom: 10px;
+}
+.category-price{
+  list-style: none;
+  padding: 0 10px;
+  font-weight: 700;
+  border-bottom: 1px dashed rgb(188, 188, 188);
 }
 .item-color-search{
   border:3px #f47d52 solid;
