@@ -20,6 +20,7 @@ export const setUserToken = (token) => {
     email: decodedToken.email,
     role: decodedToken.role,
     fullName: decodedToken.fullName,
+    avata: decodedToken.avata,
     expirationTime: new Date(decodedToken.exp * 1000),
   };
   setCookie("user", JSON.stringify(user), 1);

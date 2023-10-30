@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,8 +32,9 @@ public class BillRestController {
     @Autowired
     private BillService billService;
 
-    @Value("${user}")
-    private String userId;
+
+    @Autowired
+    private ShoseSession shoseSession;
 
 
     @GetMapping
@@ -52,22 +54,22 @@ public class BillRestController {
 
     @PostMapping("")
     public ResponseObject save(@RequestBody CreateBillOfflineRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.save(userId,requests, request));
+        return  new ResponseObject(billService.save(shoseSession.getUserId(),requests, request));
     }
 
     @PutMapping("/change-status/{id}")
     public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.changedStatusbill(id, userId, request, requests));
+        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getUserId(), request, requests));
     }
 
     @PutMapping("/cancel-status/{id}")
     public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
-        return  new ResponseObject(billService.cancelBill(id, userId, request));
+        return  new ResponseObject(billService.cancelBill(id, shoseSession.getUserId(), request));
     }
 
     @GetMapping("/details-invoices-counter")
     public ResponseObject findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
-        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(userId, request));
+        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(shoseSession.getUserId(), request));
     }
 
     @GetMapping("/count-paymet-post-paid/{id}")
@@ -82,12 +84,12 @@ public class BillRestController {
 
     @PutMapping("/change-status-bill")
     public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request, HttpServletRequest requests) {
-        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, userId));
+        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, shoseSession.getUserId()));
     }
 
     @GetMapping("/code-bill")
     public ResponseObject CreateCodeBill() {
-        return  new ResponseObject(billService.CreateCodeBill(userId));
+        return  new ResponseObject(billService.CreateCodeBill(shoseSession.getUserId()));
     }
 
     @PutMapping("/update-bill-wait")
