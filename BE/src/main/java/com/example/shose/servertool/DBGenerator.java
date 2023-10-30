@@ -327,7 +327,7 @@ public class DBGenerator implements CommandLineRunner {
                 .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
                 .build();
-        ProductDetail productDetail14= ProductDetail.builder().size(size2).color(color2).quantity(15)
+        ProductDetail productDetail14 = ProductDetail.builder().size(size2).color(color2).quantity(15)
                 .sole(sole2).category(category2).material(material2).brand(brand2).product(product1)
                 .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
                 .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
@@ -460,7 +460,7 @@ public class DBGenerator implements CommandLineRunner {
 
         User user1 = User.builder()
                 .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaIP8Lvis7vhRKgCFKfPoWTxrNE4HnQ18gdg&usqp=CAU")
-                .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2000")).email("vinhnvph23845@fpt.edu.vn")
+                .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2000")).email("vinhnvph23849@fpt.edu.vn")
                 .gender(true).phoneNumber("0378530273").status(Status.DANG_SU_DUNG)
                 .build();
         User user2 = User.builder()
@@ -473,16 +473,65 @@ public class DBGenerator implements CommandLineRunner {
                 .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdt@fpt.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
                 .build();
+        User hao = User.builder()
+                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666367/cWpkaDhwaW90bTJoeTRtMnd2d20=/grid_landscape")
+                .fullName("Ngô Vũ Ngọc Hào").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("haonvnph23574@fpt.edu.vn")
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .build();
+        User diem = User.builder()
+                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698665394/bWJob2E4eGVqY2tvODU2a3owZW4=/grid_landscape")
+                .fullName("Đinh Khắc Diệm").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("diemdkph23701@fpt.edu.vn")
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .build();
+        User oanh = User.builder()
+                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
+                .fullName("Nguyễn Thi Phương Oanh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("oanhntpph26142@fpt.edu.vn")
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .build();
+        User tuThang = User.builder()
+                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666418/cmFqOGRqc2xvMWdlcHBscTdzMnA=/grid_landscape")
+                .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdtph27626@fpt.edu.vn")
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .build();
+        User vinh = User.builder()
+                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
+                .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("vinhnvph23845@fpt.edu.vn")
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .build();
+        User T_Nguyen = User.builder()
+                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
+                .fullName("Vũ Văn Nguyên").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/1998")).email("nguyenvv6@fe.edu.vn")
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .build();
+
         userReposiory.save(user1);
         userReposiory.save(user2);
         userReposiory.save(user3);
+        userReposiory.save(hao);
+        userReposiory.save(vinh);
+        userReposiory.save(oanh);
+        userReposiory.save(diem);
+        userReposiory.save(tuThang);
+        userReposiory.save(T_Nguyen);
 
         Account account1 = Account.builder().user(user1).email(user1.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
         Account account2 = Account.builder().user(user3).email(user2.getEmail()).password("123").roles(Roles.ROLE_EMLOYEE).build();
         Account account3 = Account.builder().user(user2).email(user3.getEmail()).password("123").roles(Roles.ROLE_USER).build();
+        Account accountHao = Account.builder().user(hao).email(hao.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountVinh = Account.builder().user(vinh).email(vinh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountTu = Account.builder().user(tuThang).email(tuThang.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountDiem = Account.builder().user(diem).email(diem.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountOanh = Account.builder().user(oanh).email(oanh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountT_Nguyen = Account.builder().user(T_Nguyen).email(T_Nguyen.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
         accountRepository.save(account1);
         accountRepository.save(account2);
         accountRepository.save(account3);
+        accountRepository.save(accountHao);
+        accountRepository.save(accountVinh);
+        accountRepository.save(accountOanh);
+        accountRepository.save(accountDiem);
+        accountRepository.save(accountTu);
+        accountRepository.save(accountT_Nguyen);
 
         Customer customer1 = Customer.builder().fullName("Hà Phương Na").phoneNumber("0951753852").email("phuongna@gmail.com").status(Status.DANG_SU_DUNG).build();
         customerRepository.save(customer1);

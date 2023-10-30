@@ -61,10 +61,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuhenticationResponse singIn(SigninRequest request) {
+
+        var check = accountRepository.getOneByEmail(request.getEmail());
+        if (check == null) {
+            throw new RestApiException("Tài khoản hoặc mật khẩu không đúng.");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), check.getPassword()) && check != null) {
+            throw new RestApiException("Tài khoản hoặc mật khẩu không đúng.");
+        }
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(), request.getPassword()
         ));
-
         var account = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RestApiException("Email hoặc mật khẩu không hợp lệ."));
         var jwt = jwtSerrvice.genetateToken(account);

@@ -287,7 +287,7 @@ const DashBoardEmployee = ({ children }) => {
             Hủy
           </Button>,
           <Button key="submit" type="primary" onClick={handleOk}>
-            Thêm
+            cập nhập
           </Button>,
         ]}
       >

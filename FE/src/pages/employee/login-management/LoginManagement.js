@@ -23,12 +23,14 @@ const LoginManagement = () => {
 
   const onFinish = (values) => {
     setToken("");
-    LoginApi.authenticationIn(values).then((res) => {
-      toast.success("Đăng nhập thành công");
-      setToken(res.data.token);
-      setUserToken(res.data.token);
-      nav("/dashboard");
-    });
+    LoginApi.authenticationIn(values)
+      .then((res) => {
+        toast.success("Đăng nhập thành công");
+        setToken(res.data.token);
+        setUserToken(res.data.token);
+        nav("/dashboard");
+      })
+      .catch((error) => {});
   };
 
   const onFinishFailed = (errorInfo) => {
