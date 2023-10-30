@@ -240,7 +240,6 @@ function Products() {
       };
       }
     })
-    console.log(name);
   }
   useEffect(() => {
     console.log( );

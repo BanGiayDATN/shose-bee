@@ -59,6 +59,7 @@ function PaymentAccount() {
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
 
+
   useEffect(() => {
 
     getAddressDefault(idAccount);
@@ -114,8 +115,9 @@ function PaymentAccount() {
     console.log(keyMethodPayment);
   }, [keyMethodPayment]);
 
-  const getAddressDefault = (idAccount) => {
-    AddressClientApi.getByAccountAndStatus(idAccount).then(
+  const getAddressDefault = (id) => {
+    console.log(id);
+    AddressClientApi.getByAccountAndStatus(id).then(
       (res) => {
         setAddressDefault(res.data.data);
         setUserId(res.data.data.userId)

@@ -57,6 +57,7 @@ import dayjs from "dayjs";
 import { GetLoading } from "./app/reducer/Loading.reducer";
 import DetailBillClinet from "./pages/customer/bill/DetailBillClinet";
 import SearchBill from "./pages/customer/bill/SearchBill";
+import Profile from "./pages/customer/profile/Profile";
 function App() {
   const dispatch = useAppDispatch();
   const [listVoucher, setListVoucher] = useState([]);
@@ -204,6 +205,18 @@ function App() {
                 <CartProvider>
                   <DashBoardCustomer>
                     <Products />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+             <Route
+            path="/profile"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Profile />
                   </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>
