@@ -3,7 +3,7 @@ import {
   FileSearchOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./style-header.css";
 function SalesHeader() {
@@ -11,7 +11,9 @@ function SalesHeader() {
   const idUser = localStorage.getItem("idAccount");
   const [openInfor, setOpenInfo] = useState(false);
 
-
+  useEffect(() => {
+    console.log(idUser);
+  }, [])
   const handleMenuHover = () => {
     setOpenInfo(true);
   };
@@ -52,34 +54,38 @@ function SalesHeader() {
   ];
   return (
     <div className="header">
-      <div className="content-header">
+      <div className="content-header-home">
         <Link to="/sreach-bill" className="title-header">
           <span className="header-icon"><FileSearchOutlined /></span>  Tra cứu đơn hàng
         </Link>
       </div>
 
-      <div className="content-header">
+      <div className="content-header-home">
         <Link to="#" className="title-header">
           <span className="header-icon"><EnvironmentOutlined /></span> Tìm kiếm cửa hàng
         </Link>
       </div>
-      <div className="content-header-account">
+      <div className="content-header-account"
+        onMouseEnter={handleMenuHover}
+        onMouseLeave={handleMenuLeave}
+      >
 
-        <Link to={idUser === null ? "/login" : "#"} className="title-header">
+        <Link to={idUser === null ? "/login" : "#"} className="title-header-account">
           <span className="header-icon"><UserOutlined /></span> {idUser === null ? "Đăng nhập" : "Thông tin"}
         </Link>
-
-        <ul className="dropdown-list">
-          <li className="dropdown-item">
-            Tài khoản của tôi
-          </li>
-          <li className="dropdown-item">
-            Đơn mua
-          </li>
-          <li className="dropdown-item">
-            Đăng xuất
-          </li>
-        </ul>
+        {openInfor && idUser !== null ? (
+          <ul className="dropdown-list" >
+            <li className="dropdown-item">
+              Tài khoản của tôi
+            </li>
+            <li className="dropdown-item">
+              Đơn mua
+            </li>
+            <li className="dropdown-item" onClick={logout}>
+              Đăng xuất
+            </li>
+          </ul>
+        ) : ""}
       </div>
 
 

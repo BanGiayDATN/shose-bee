@@ -37,31 +37,95 @@
   color: rgb(255, 255, 255);
   margin-right: 5px;
 }
-.content-header {
+.content-header-home {
+  height: 100%;
   display: flex;
   justify-content: center;
 }
 .content-header-account {
   position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.dropdown-list {
-  margin-top: 10%;
-  position: absolute;
-  width: 150px;
-  background-color: #ff6600;
+.title-header-account {
+  height: 100%;
+  color: white;
+  text-decoration: none;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 30px;
 }
-.dropdown-list::before {
+.title-header-account:hover {
+  color: #ff4400;
+}
+.title-header-account:hover .header-icon {
+  color: #ff4400;
+}
+
+.dropdown-item:first-child::before {
   content: "";
   position: absolute;
-  left: 1rem;
-  background-color: #ff6600;
+  top: 0;
+  left: 7rem;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid #ff6600;
-  transform:translateY(-100%);
+  border-bottom: 10px solid #ffffff;
+  transform: translateY(-100%);
+  transition: border-color 0.2s linear;
 }
+.dropdown-item:first-child:hover:before {
+  border-bottom-color: #f3f3f3;
+}
+.dropdown-list {
+  top: 100%;
+  left: -80%;
+  position: absolute;
+  width: 170px;
+  border-radius: 5px;
+  border: 1px solid rgb(233, 233, 233);
+  z-index: 1000;
+  animation: slideFromTop 0.5s ease-in-out;
+}
+
+@keyframes slideFromTop {
+  0% {
+    transform: translateY(-5%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.dropdown-list::before {
+  margin-top: -8%;
+  content: "";
+  height: 10%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: none;
+}
+
 .dropdown-item {
   list-style: none;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s linear;
+  font-weight: 400;
+}
+.dropdown-item:hover {
+  background-color: #f3f3f3;
+  color: #ff4400;
 }
 
 .option-container-infor {
