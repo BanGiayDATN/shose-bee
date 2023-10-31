@@ -23,7 +23,8 @@ public enum Message {
     PHONENUMBER_USER_EXIST("Số điện thoại người dùng đã tồn tại "),
     VOUCHER_NOT_USE("không thể sử dụng voucher"),
     STATUS_ADDRESS_EXIST("Trạng thái đang sử dụng đã được dùng cho địa chỉ khác"),
-
+    ACCOUNT_NOT_ROLE_CANCEL_BILL("Bạn không có quyền huỷ hoá đơn"),
+    ACCOUNT_IS_EXIT("Vui lòng đăng nhập"),
     EMAIL_USER_EXIST("Email người dùng đã tồn tại"),
     PASSWORD_NOT_EXISTS("Password không đúng"),
     NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán");
