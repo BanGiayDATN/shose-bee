@@ -1469,7 +1469,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ship = shipFee
     }
     // Lấy thời điểm hiện tại dạng long
-     const timeInMillis = now.getTime();
+     const timeInMillis = new Date().getTime();
     const data = {
       vnp_Ammount: Math.round((totalBill + ship - voucher.discountPrice) - totaPayMent),
       vnp_TxnRef: billRequest.code + "-"+ timeInMillis,
