@@ -2897,6 +2897,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         required: true,
                         message: "Vui lòng nhập số tiền",
                       },
+                      {
+      validator: (_, value) => {
+        if (value && value > 1000) {
+          return Promise.resolve();
+        }
+        return Promise.reject("Giá tiền phải lớn hơn 1000");
+      },
+    },
                     ]}
                   >
                     <NumberFormat
