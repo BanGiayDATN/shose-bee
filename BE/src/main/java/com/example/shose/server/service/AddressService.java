@@ -2,6 +2,7 @@ package com.example.shose.server.service;
 
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.FindAddressRequest;
+import com.example.shose.server.dto.request.address.UpdateAddressClientRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.response.address.AddressAccountResponse;
 import com.example.shose.server.dto.response.address.AddressResponse;
@@ -34,6 +35,9 @@ public interface AddressService {
 
     Address getAddressByUserIdAndStatus(String id, Status status);
     AddressAccountResponse getAddressByAccountIdAndStatus( String idAccount);
-    List<AddressAccountResponse> getListAddressByAcountId( String idAccount);
+    List<AddressAccountResponse> getListAddressByAccountId( String idAccount);
+
+    Address setDefault(String idAddress);
+    Address updateAddressClient(UpdateAddressClientRequest req);
 
 }

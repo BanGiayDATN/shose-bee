@@ -305,8 +305,7 @@ function Products() {
                             e.target.checked
                           )
                         }
-                      />{" "}
-                      {item.label}
+                      >{item.label}</Checkbox>
                     </li>
                   </>
                 ))}

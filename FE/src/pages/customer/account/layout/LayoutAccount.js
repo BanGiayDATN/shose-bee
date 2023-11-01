@@ -1,12 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style-layout-account.css"
 import avatar from "../../../../assets/images/logo sneaker 2.png";
 import { EditOutlined } from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faStore, faTags, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate, useParams } from "react-router";
+import { useLocation } from "react-router-dom";
 function LayoutAccount({ children }) {
-    const [id, setId] = useState(1);
+    const param = useLocation()
+    const [id, setId] = useState(0);
     const [idChild, setIdChild] = useState(1);
+    const page = useNavigate()
+    useEffect(() => {
+        switch (param.pathname) {
+            case "/profile":
+                setId(1);
+                setIdChild(1);
+                break;
+            case "/account-address":
+                setId(1);
+                setIdChild(2);
+                break;
+            case "/account-password":
+                setId(1);
+                setIdChild(3);
+                break;
+            case "/purchase":
+                setId(2);
+                break;
+            case "/notification":
+                setId(3);
+                break;
+            default:
+                setId(4);
+        }
+        console.log(id,idChild);
+    }, [])
     const openCateprofile = (id) => {
         setId(id)
         setIdChild(1)
@@ -29,12 +58,12 @@ function LayoutAccount({ children }) {
                 {
                     id: 2,
                     name: "Địa chỉ",
-                    page: "/address",
+                    page: "/account-address",
                 },
                 {
                     id: 3,
                     name: "Đổi mật khẩu",
-                    page: "/password",
+                    page: "/account-password",
                 }
             ]
         },
@@ -47,7 +76,7 @@ function LayoutAccount({ children }) {
         {
             id: 3,
             name: "Thông báo",
-            page: "/notifications",
+            page: "/notification",
             icon: <FontAwesomeIcon icon={faBell} style={{ color: "#ff4400" }} />,
         },
         {
@@ -76,7 +105,7 @@ function LayoutAccount({ children }) {
                         <>
                             <div key={index} className="box-title-category-account"
 
-                                onClick={() => openCateprofile(item.id)}>
+                                onClick={() => {openCateprofile(item.id); page(item.page)}}>
                                 <span style={{ width: "30px" }}>{item.icon}</span>
                                 <span
                                     style={{ color: id === 1 ? "black" : (id === item.id ? "#ff4400" : "black") }}
@@ -88,7 +117,7 @@ function LayoutAccount({ children }) {
                                 >
                                     {
                                         item.children.map((itemChild, indexChild) => (
-                                            <div className="title-child-category" key={indexChild} style={{ color: idChild === itemChild.id ? "#ff4400" : "gray" }} onClick={() => openCateChildProfile(itemChild.id)}>
+                                            <div className="title-child-category" key={indexChild} style={{ color: idChild === itemChild.id ? "#ff4400" : "gray" }} onClick={() => {openCateChildProfile(itemChild.id);page(itemChild.page)}}>
                                                 {itemChild.name}
                                             </div>
                                         ))

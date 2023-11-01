@@ -59,81 +59,117 @@ import DetailBillClinet from "./pages/customer/bill/DetailBillClinet";
 import SearchBill from "./pages/customer/bill/SearchBill";
 import Profile from "./pages/customer/account/profile/Profile";
 import LayoutAccount from "./pages/customer/account/layout/LayoutAccount";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import Address from "./pages/customer/account/address/Address";
+import Password from "./pages/customer/account/password/Password";
+import Purchase from "./pages/customer/account/purchase/Purchase";
+import Notification from "./pages/customer/account/notification/Notification";
+import RepoVoucher from "./pages/customer/account/voucher/Voucher";
 function App() {
+
+  const [showOnTop, setShowOnTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowOnTop(true);
+      } else {
+        setShowOnTop(false);
+      }
+    };
+
+    // Gắn sự kiện cuộn vào cửa sổ
+    window.addEventListener("scroll", handleScroll);
+
+    // Gỡ bỏ sự kiện cuộn khi component bị hủy
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const dispatch = useAppDispatch();
   const [listVoucher, setListVoucher] = useState([]);
   const [listPromotion, setListPromotion] = useState([]);
   const dataVoucher = useAppSelector(GetVoucher);
   const dataPromotion = useAppSelector(GetPromotion);
-  // const updateItemList = (items, api, updateFunction) => {
-  //   const now = dayjs();
-  //   items.forEach((item) => {
-  //     const endDate = dayjs.unix(item.endDate / 1000);
-  //     const startDate = dayjs.unix(item.startDate / 1000);
+  const updateItemList = (items, api, updateFunction) => {
+    const now = dayjs();
+    items.forEach((item) => {
+      const endDate = dayjs.unix(item.endDate / 1000);
+      const startDate = dayjs.unix(item.startDate / 1000);
 
-  //     if (endDate.isSame(now, "second") || startDate.isSame(now, "second")) {
-  //       api(item.id)
-  //         .then((res) => {
-  //           dispatch(updateFunction(res.data.data));
-  //         })
-  //         .catch((err) => {
-  //           console.log(err);
-  //         });
-  //     }
-  //   });
-  // };
-  // useEffect(() => {
-  //   if (dataVoucher != null) {
-  //     setListVoucher(dataVoucher);
-  //   }
-  // }, [dataVoucher]);
+      if (endDate.isSame(now, "second") || startDate.isSame(now, "second")) {
+        api(item.id)
+          .then((res) => {
+            dispatch(updateFunction(res.data.data));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
+  };
+  useEffect(() => {
+    if (dataVoucher != null) {
+      setListVoucher(dataVoucher);
+    }
+  }, [dataVoucher]);
 
-  // useEffect(() => {
-  //   if (dataPromotion != null) {
-  //     setListPromotion(dataPromotion);
-  //   }
-  // }, [dataPromotion]);
+  useEffect(() => {
+    if (dataPromotion != null) {
+      setListPromotion(dataPromotion);
+    }
+  }, [dataPromotion]);
 
-  // useEffect(() => {
-  //   VoucherApi.fetchAll("").then(
-  //     (res) => {
-  //       setListVoucher(res.data.data);
-  //     },
-  //     (err) => {
-  //       console.log(err);
-  //     }
-  //   );
+  useEffect(() => {
+    VoucherApi.fetchAll("").then(
+      (res) => {
+        setListVoucher(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
 
-  //   PromotionApi.fetchAll("").then(
-  //     (res) => {
-  //       setListPromotion(res.data.data);
-  //     },
-  //     (err) => {
-  //       console.log(err);
-  //     }
-  //   );
-  // }, []);
+    PromotionApi.fetchAll("").then(
+      (res) => {
+        setListPromotion(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, []);
 
-  // useEffect(() => {
-  //   const intervalVoucher = setInterval(() => {
-  //     updateItemList(listVoucher, VoucherApi.updateStatus, UpdateVoucher);
-  //   }, 1000);
+  useEffect(() => {
+    const intervalVoucher = setInterval(() => {
+      updateItemList(listVoucher, VoucherApi.updateStatus, UpdateVoucher);
+    }, 1000);
 
-  //   return () => clearInterval(intervalVoucher);
-  // }, [listVoucher]);
+    return () => clearInterval(intervalVoucher);
+  }, [listVoucher]);
 
-  // useEffect(() => {
-  //   const intervalPromotion = setInterval(() => {
-  //     updateItemList(listPromotion, PromotionApi.updateStatus, UpdatePromotion);
-  //   }, 1000);
+  useEffect(() => {
+    const intervalPromotion = setInterval(() => {
+      updateItemList(listPromotion, PromotionApi.updateStatus, UpdatePromotion);
+    }, 1000);
 
-  //   return () => clearInterval(intervalPromotion);
-  // }, [listPromotion]);
+    return () => clearInterval(intervalPromotion);
+  }, [listPromotion]);
 
   const isLoading = useAppSelector(GetLoading);
 
   return (
     <div className="App">
+      {showOnTop ? (<div className="button-on-top"
+        onClick={() => {
+          // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
+          window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn mượt lên đầu trang
+        }}
+      ><FontAwesomeIcon style={{ color: "white", fontSize: 20 }} icon={faArrowUp}
+        /></div>) : (null)}
+
       {isLoading && (
         <div className="loading-overlay">
           <div className="loading-logo">
@@ -157,7 +193,7 @@ function App() {
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
           <Route
             path="/"
-            element={<Navigate replace to="/login-management" />}
+            element={<Navigate replace to="/home"/>}
           />
           <Route
             path="/not-authorization"
@@ -211,14 +247,85 @@ function App() {
               </GuestGuard>
             }
           />
-             <Route
+          <Route
             path="/profile"
             element={
               <GuestGuard>
                 <CartProvider>
                   <DashBoardCustomer>
                     <LayoutAccount>
-                    <Profile />
+                      <Profile />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+
+          <Route
+            path="/account-address"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Address />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/account-password"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Password />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/purchase"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Purchase />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/notification"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Notification />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/repository-voucher"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <RepoVoucher />
                     </LayoutAccount>
                   </DashBoardCustomer>
                 </CartProvider>

@@ -2,6 +2,7 @@ package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.FindAddressRequest;
+import com.example.shose.server.dto.request.address.UpdateAddressClientRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.response.address.AddressAccountResponse;
 import com.example.shose.server.dto.response.address.AddressResponse;
@@ -139,8 +140,43 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressAccountResponse> getListAddressByAcountId(String idAccount) {
-        return addressRepository.getListAddressByAcountId(idAccount);
+    public List<AddressAccountResponse> getListAddressByAccountId(String idAccount) {
+        return addressRepository.getListAddressByAccountId(idAccount);
+    }
+
+    @Override
+    public Address setDefault(String idAddress) {
+        Optional<Address> optional = addressRepository.findById(idAddress);
+        if(!optional.isPresent()){
+            throw new RestApiException("Địa chỉ của khách không tồn tại");
+        }
+
+        Address address1 = addressRepository.getAddressDefault();
+        address1.setStatus(Status.KHONG_SU_DUNG);
+        addressRepository.save(address1);
+        Address address =  optional.get();
+        address.setStatus(Status.DANG_SU_DUNG);
+        return addressRepository.save(address);
+    }
+
+    @Override
+    public Address updateAddressClient(UpdateAddressClientRequest req) {
+        Optional<Address> optional = addressRepository.findById(req.getId());
+        if(!optional.isPresent()){
+            throw new RestApiException("Địa chỉ của khách không tồn tại");
+        }
+        Address address = optional.get();
+        address.setLine(req.getLine());
+        address.setDistrict(req.getDistrict());
+        address.setProvince(req.getProvince());
+        address.setWard(req.getWard());
+        address.setToDistrictId(req.getToDistrictId());
+        address.setProvinceId(req.getProvinceId());
+        address.setWardCode(req.getWardCode());
+        address.setFullName(req.getFullName());
+        address.setPhoneNumber(req.getPhoneNumber());
+
+        return addressRepository.save(address);
     }
 
 }

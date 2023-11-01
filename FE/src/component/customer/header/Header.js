@@ -4,10 +4,10 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./style-header.css";
 function SalesHeader() {
-
+const page = useNavigate()
   const idUser = localStorage.getItem("idAccount");
   const [openInfor, setOpenInfo] = useState(false);
 
@@ -29,29 +29,6 @@ function SalesHeader() {
     window.location.href = "/home"
   };
 
-  const fields = [
-    {
-      classIcon: "header-icon",
-      icon: <FileSearchOutlined />,
-      className: "title-header",
-      title: "Tra cứu đơn hàng",
-      to: "/sreach-bill"
-    },
-    {
-      classIcon: "header-icon",
-      icon: <EnvironmentOutlined />,
-      className: "title-header",
-      title: "Tìm kiếm cửa hàng",
-      to: "#"
-    },
-    {
-      classIcon: "header-icon",
-      icon: <UserOutlined />,
-      className: "title-header",
-      to: idUser === null ? "/login" : "#",
-      title: idUser === null ? "Đăng nhập" : "Thông tin",
-    },
-  ];
   return (
     <div className="header">
       <div className="content-header-home">
@@ -75,10 +52,10 @@ function SalesHeader() {
         </Link>
         {openInfor && idUser !== null ? (
           <ul className="dropdown-list" >
-            <li className="dropdown-item">
+            <li className="dropdown-item" onClick={()=> window.location.href = "/profile"}>
               Tài khoản của tôi
             </li>
-            <li className="dropdown-item">
+            <li className="dropdown-item" onClick={()=>  window.location.href = "/purchase"} >
               Đơn mua
             </li>
             <li className="dropdown-item" onClick={logout}>

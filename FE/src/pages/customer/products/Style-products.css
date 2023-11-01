@@ -87,3 +87,7 @@
 .item-color-search{
   border:3px #f47d52 solid;
 }
+:where(.css-dev-only-do-not-override-1m62vyb).ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #ff4400;
+  border-color: #ff4400;
+}

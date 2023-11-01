@@ -74,6 +74,7 @@ function Login() {
               <h1 style={{ marginBottom: 30 }}>Đăng nhập</h1>
 
               <Form.Item
+               name="email"
                 validateStatus={formErrors["email"] ? "error" : ""}
                 help={formErrors["email"] || ""}
               >

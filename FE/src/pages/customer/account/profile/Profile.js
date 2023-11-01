@@ -1,6 +1,7 @@
 import React from "react";
 import "./style-profile.css"
 import { Form, Radio } from "antd";
+import avatar from "../../../../assets/images/trending_banner03.jpg";
 function profile() {
     return (<React.Fragment>
         <div className="profile-account">
@@ -19,7 +20,7 @@ function profile() {
                     >
                         <Form.Item
                             label="Họ và tên">
-                            <input className="input-info-profile" />
+                            <input className="input-info-profile" placeholder="Điền họ và tên"/>
                         </Form.Item>
                         <Form.Item
                             label="Email">
@@ -39,23 +40,34 @@ function profile() {
                         >
                             <Radio.Group
                                 style={{ display: "flex" }}
+                                className="box-input-info-profile"
                             >
-                                <Radio>Nam</Radio>
-                                <Radio>Nam</Radio>
-                                <Radio>Khác</Radio>
+
+                                <Radio name="gender" value="Nam">Nam</Radio>
+                                <Radio name="gender" value="Nữ">Nữ</Radio>
+                                <Radio name="gender" value="Khác">Khác</Radio>
                             </Radio.Group>
 
                         </Form.Item>
                         <Form.Item
                             label="Ngày sinh">
-                            <select></select>
+                            <input className="input-date-of-birth-profile" type="date" />
                         </Form.Item>
+
                     </Form>
 
+                        <div style={{display:"flex",justifyContent:"center"}}>
+                            <div className="button-update-profile">
+                            Cập nhập
+                            </div>
+                        </div>
                 </div>
 
                 <div className="form-image-account">
-
+                    <img src={avatar} alt="..." className="img-form-edit-profile" />
+                    <div style={{display:"flex",justifyContent:"center"}}>
+                    <p className="button-upload-image-profile">Chọn ảnh</p>
+                    </div>
                 </div>
 
             </div>
