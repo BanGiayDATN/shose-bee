@@ -10,7 +10,7 @@ EXPOSE 8080
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
-RUN ./mvnw dependency:resolve
+#RUN ./mvnw dependency:resolve
 #
 COPY src src
 #

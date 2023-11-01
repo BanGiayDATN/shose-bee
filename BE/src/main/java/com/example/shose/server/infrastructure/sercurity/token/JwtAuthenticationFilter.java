@@ -34,9 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authheader = request.getHeader("Authorization");
         final String jwt;
         final String userEamil;
-
-        if (StringUtils.isEmpty(authheader) || !org.apache.commons.lang3.StringUtils.startsWith(authheader,"Bearer ")) {
-            logger.warn("JWT Token dose not begin with Bearer String");
+        if (StringUtils.isEmpty(authheader) || !org.apache.commons.lang3.StringUtils.startsWith(authheader, "Bearer ")) {
+            filterChain.doFilter(request, response);
             return;
         }
         jwt = authheader.substring(7);
