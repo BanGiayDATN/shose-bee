@@ -55,7 +55,7 @@ function Login() {
       console.log(res.data);
       setToken(res.data.token);
       setUserToken(res.data.token);
-      localStorage.setItem("idAccount",jwtDecode(res.data.token).id)
+      sessionStorage.setItem("idAccount",jwtDecode(res.data.token).id)
       console.log(jwtDecode(res.data.token));
       nav("/home");
     });

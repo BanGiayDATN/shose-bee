@@ -37,7 +37,7 @@ import dayjs from "dayjs";
 import { Header } from "antd/es/layout/layout";
 
 function Cart() {
-  const idAccountLocal = localStorage.getItem("idAccount");
+  const idAccountLocal = sessionStorage.getItem("idAccount");
   const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
   const [cart, setCart] = useState([]);
   const [chooseItemCart, setChooseItemCart] = useState([]);

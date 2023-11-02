@@ -23,7 +23,7 @@ function CardItem({ item, index }) {
     quantity: 0,
   });
 
-  const idAccountLocal = localStorage.getItem("idAccount");
+  const idAccountLocal = sessionStorage.getItem("idAccount");
   const [quantity, setQuantity] = useState(1);
   const [cartAccount, setCartAccount] = useState([]);
   const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];

@@ -80,6 +80,7 @@ public interface AddressRepository extends JpaRepository<Address, String> {
     List<Address> findAllAddressByStatus(@Param("status") Status status, @Param("idUser") String idUser);
     @Query("SELECT a FROM  Address a WHERE a.status ='DANG_SU_DUNG' ")
     Address getAddressDefault();
+
     @Query(value = """
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY a.last_modified_date DESC ) AS stt,

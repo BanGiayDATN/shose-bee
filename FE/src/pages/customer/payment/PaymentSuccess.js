@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
 import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 function PayMentSuccess() {
-  const idAccount = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
 const urlObject = new URL(window.location.href);
 const vnp_ResponseCode = urlObject.searchParams.get("vnp_ResponseCode");
 const vnp_Amount = urlObject.searchParams.get("vnp_Amount");

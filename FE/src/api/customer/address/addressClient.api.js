@@ -95,6 +95,23 @@ export class AddressClientApi {
       data: data
     });
   };
-
-
+  static createAddressClient = (data) => {
+    return request({
+      method: "POST",
+      url: `/client/address/create`,
+      data: data
+    });
+  };
+  static deleteAddressClient = (idAddress) => {
+    return request({
+      method: "DELETE",
+      url: `/client/address/delete/${idAddress}`,
+    });
+  };
+  static detailAddressClient = (idAddress) => {
+    return request({
+      method: "GET",
+      url: `/client/address/detail/${idAddress}`,
+    });
+  };
 }

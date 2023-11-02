@@ -8,7 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./style-header.css";
 function SalesHeader() {
 const page = useNavigate()
-  const idUser = localStorage.getItem("idAccount");
+  const idUser = sessionStorage.getItem("idAccount");
   const [openInfor, setOpenInfo] = useState(false);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const page = useNavigate()
 
 
   const logout = () => {
-    localStorage.removeItem("idAccount");
+    sessionStorage.removeItem("idAccount");
     window.location.href = "/home"
   };
 

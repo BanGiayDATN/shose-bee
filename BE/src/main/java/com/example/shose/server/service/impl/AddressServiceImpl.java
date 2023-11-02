@@ -1,9 +1,6 @@
 package com.example.shose.server.service.impl;
 
-import com.example.shose.server.dto.request.address.CreateAddressRequest;
-import com.example.shose.server.dto.request.address.FindAddressRequest;
-import com.example.shose.server.dto.request.address.UpdateAddressClientRequest;
-import com.example.shose.server.dto.request.address.UpdateAddressRequest;
+import com.example.shose.server.dto.request.address.*;
 import com.example.shose.server.dto.response.address.AddressAccountResponse;
 import com.example.shose.server.dto.response.address.AddressResponse;
 import com.example.shose.server.dto.response.address.AddressUserReponse;
@@ -18,6 +15,7 @@ import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -177,6 +175,48 @@ public class AddressServiceImpl implements AddressService {
         address.setPhoneNumber(req.getPhoneNumber());
 
         return addressRepository.save(address);
+    }
+
+    @Override
+    public Address createAddressClient(CreateAddressClientRequest req) {
+        AddressAccountResponse addressAccountResponse = addressRepository.getAddressByAccountIdAndStatus(req.getIdAccount());
+        System.out.println(addressAccountResponse);
+        if(addressAccountResponse == null){
+            throw new RestApiException("Địa chỉ của khách không tồn tại");
+        }
+        Optional<User> optional = userReposiory.findById(addressAccountResponse.getUserId());
+        if(!optional.isPresent()){
+            throw new RestApiException("Người dùng không tồn tại");
+        }
+        if(req.getStatus().equals(Status.DANG_SU_DUNG)){
+            Address address = addressRepository.getAddressDefault();
+            address.setStatus(Status.KHONG_SU_DUNG);
+            addressRepository.save(address);
+        }
+        Address address = Address.builder()
+                .user(optional.get())
+                .fullName(req.getFullName())
+                .phoneNumber(req.getPhoneNumber())
+                .status(req.getStatus())
+                .ward(req.getWard())
+                .wardCode(req.getWardCode())
+                .district(req.getDistrict())
+                .toDistrictId(req.getDistrictId())
+                .province(req.getProvince())
+                .provinceId(req.getProvinceId())
+                .line(req.getLine()).build();
+
+        return addressRepository.save(address);
+    }
+
+    @Override
+    public Address deleteAddressAccount(String id) {
+        Optional<Address> optional = addressRepository.findById(id);
+        if(!optional.isPresent()){
+            throw new RestApiException("Tài khoản của khách không tồn tại");
+        }
+        addressRepository.deleteById(id);
+        return optional.get();
     }
 
 }
