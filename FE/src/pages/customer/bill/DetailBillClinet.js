@@ -1,6 +1,7 @@
 import {
   Button,
   Col,
+  Form,
   Modal,
   Result,
   Row,
@@ -8,6 +9,7 @@ import {
 } from "antd";
 import TimeLine from "./TimeLine";
 import {
+  addBillHistory,
   addStatusPresent,
   getBill,
   getBillHistory,
@@ -26,6 +28,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { BillClientApi } from "../../../api/customer/bill/billClient.api";
 import { Link } from "react-router-dom";
+import { BillApi } from "../../../api/employee/bill/bill.api";
+import TextArea from "antd/es/input/TextArea";
+import { toast } from "react-toastify";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -48,6 +53,7 @@ function DetailBillClinet() {
   const bill = useSelector((state) => state.bill.bill.value);
   const statusPresent = useSelector((state) => state.bill.bill.status);
   const dispatch = useDispatch();
+  const [id, setId] = useState("")
   const [checkBillExit, setCheckBillExit] = useState(true)
 
   const formatCurrency = (value) => {
@@ -61,8 +67,6 @@ function DetailBillClinet() {
 
 
   useEffect(() => {
-    console.log(code);
-    console.log(phoneNumber)
     BillClientApi.fetchDetailBill(code,phoneNumber).then((res) => {
       dispatch(getBill(res.data.data));
       var index = listStatus.findIndex(
@@ -74,6 +78,7 @@ function DetailBillClinet() {
       if (res.data.data.statusBill == "DA_HUY") {
         index = 8;
       }
+      setId(res.data.data.id)
       dispatch(addStatusPresent(index));
       BillClientApi.fetchAllBillHistoryInBill(res.data.data.id).then((res) => {
         dispatch(getBillHistory(res.data.data));
@@ -255,7 +260,98 @@ function DetailBillClinet() {
   const getPromotionColor = (promotion) => {
     return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
   };
+// begin cancelBill
+const [statusBill, setStatusBill] = useState({
+  actionDescription: "",
+  method: "TIEN_MAT",
+  totalMoney: 0,
+  status: "THANH_TOAN",
+});
+const formRef = React.useRef(null);
+const onFinish = (values) => {
+  const priceValue = values.price;
+  console.log(priceValue);
+  const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ""));
+  values.price = numericPrice + "";
+  var data = statusBill;
+  data.totalMoney = values;
+  setStatusBill(data);
+  // setProductDetail(values);
+  console.log(statusBill);
+};
+const initialValues = {
+  status: "DANG_SU_DUNG",
+};
+const [form] = Form.useForm();
+const [isModalCanCelOpen, setIsModalCanCelOpen] = useState(false);
+const showModalCanCel = () => {
+  setIsModalCanCelOpen(true);
+};
+const handleCanCelOk = () => {
 
+  setIsModalCanCelOpen(false);
+if (statusBill.actionDescription == "") {
+    toast.error("Vui lòng nhập mô tả");
+  } else {
+  Modal.confirm({
+    title: "Xác nhận",
+    content: "Bạn có đồng ý hủy không?",
+    okText: "Đồng ý",
+    cancelText: "Hủy",
+    onOk: () => {
+      BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+        dispatch(getBill(res.data.data));
+        var index = listStatus.findIndex(
+          (item) => item.status == res.data.data.statusBill
+        );
+        if (res.data.data.statusBill == "TRA_HANG") {
+          index = 7;
+        }
+        if (res.data.data.statusBill == "DA_HUY") {
+          index = 8;
+        }
+        var history = {
+          stt: billHistory.length + 1,
+          statusBill: res.data.data.statusBill,
+          actionDesc: statusBill.actionDescription,
+          id: "",
+          createDate: new Date().getTime(),
+        };
+        dispatch(addStatusPresent(index));
+        dispatch(addBillHistory(history));
+      });
+      setIsModalCanCelOpen(false);
+      toast.success("Hủy hóa đơn thành công");
+    },
+    onCancel: () => {
+      setIsModalCanCelOpen(false);
+    },
+  });
+}
+
+  setStatusBill({
+    actionDescription: "",
+    method: "TIEN_MAT",
+    totalMoney: 0,
+    status: "THANH_TOAN",
+  });
+  form.resetFields();
+};
+const handleCanCelClose = () => {
+  setIsModalCanCelOpen(false);
+  form.resetFields();
+};
+const onChangeDescStatusBill = (fileName, value) => {
+  if (fileName === "totalMoney") {
+    setStatusBill({
+      ...statusBill,
+      [fileName]: parseFloat(value.replace(/[^0-9.-]+/g, "")),
+    });
+  } else {
+    setStatusBill({ ...statusBill, [fileName]: value });
+  }
+};
+// end  cancelBill
   return (
     <div>
       {checkBillExit ? (
@@ -283,6 +379,25 @@ function DetailBillClinet() {
           >
             <Row style={{ width: "100%" }}>
               <Col span={12}>
+              <Col span={statusPresent < 5 ? 6 : 0}>
+                    {statusPresent < 5 ? (
+                      <Button
+                        type="danger"
+                        onClick={() => showModalCanCel()}
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "500",
+                          marginLeft: "20px",
+                          backgroundColor: "red",
+                          color: "white",
+                        }}
+                      >
+                        Hủy
+                      </Button>
+                    ) : (
+                      <div></div>
+                    )}
+                  </Col>
               </Col>
               <Col span={12} align={"end"}>
                 <Button
@@ -716,6 +831,62 @@ function DetailBillClinet() {
           </Col>
         </Row>
       </Row>
+      <Modal
+                title="Hủy đơn hàng"
+                open={isModalCanCelOpen}
+                onOk={handleCanCelOk}
+                onCancel={handleCanCelClose}
+                  cancelText={"huỷ"}
+               okText={"Xác nhận"}
+              >
+                <Form
+                  onFinish={onFinish}
+                  ref={formRef}
+                  form={form}
+                  initialValues={initialValues}
+                >
+                  <Col span={24} style={{ marginTop: "20px" }}>
+                    <label className="label-bill">Mô Tả</label>
+
+                    <Form.Item
+                      label=""
+                      name="actionDescription"
+                      // style={{ fontWeight: "bold" }}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập mô tả",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.trim() === "") {
+                              return Promise.reject("Không được chỉ nhập khoảng trắng");
+                            }
+                            if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                              return Promise.reject(
+                                "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                              );
+                            }
+            
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                    >
+                      <TextArea
+                        rows={4}
+                        placeholder="Nhập mô tả"
+                        onChange={(e) =>
+                          onChangeDescStatusBill(
+                            "actionDescription",
+                            e.target.value.trim()
+                          )
+                        }
+                      />
+                    </Form.Item>
+                  </Col>
+                </Form>
+              </Modal>
       </>
       ) :( <Result 
       status="404"
@@ -727,6 +898,8 @@ function DetailBillClinet() {
         </Button>
       }
     />)}
+
+
      
     </div>
   );

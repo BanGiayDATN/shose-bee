@@ -24,4 +24,5 @@ export class AccountClientApi {
       data: data
     });
   };
+  
 }
