@@ -38,6 +38,7 @@
 .link-card-item {
   color: rgb(0, 0, 0);
   text-align: center;
+  cursor: pointer;
 }
 .link-card-item:hover {
   color: #ff4400;

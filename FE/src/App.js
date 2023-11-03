@@ -67,6 +67,7 @@ import Password from "./pages/customer/account/password/Password";
 import Purchase from "./pages/customer/account/purchase/Purchase";
 import Notification from "./pages/customer/account/notification/Notification";
 import RepoVoucher from "./pages/customer/account/voucher/Voucher";
+import SignUp from "./pages/customer/signup/SignUp";
 function App() {
 
   const [showOnTop, setShowOnTop] = useState(false);
@@ -204,6 +205,14 @@ function App() {
               </GuestGuard>
             }
           />
+           <Route
+            path="/signup"
+            element={
+              <GuestGuard>
+                <SignUp />
+              </GuestGuard>
+            }
+          />
           <Route
             path="/home"
             element={
@@ -246,7 +255,7 @@ function App() {
               <GuestGuard>
                 <CartProvider>
                   <DashBoardCustomer>
-                    <Products />
+                    <DetailProduct />
                   </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>

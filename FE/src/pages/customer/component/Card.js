@@ -2,17 +2,17 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, InputNumber, Modal, Row } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
 import "./style-card.css";
 
 function CardItem({ item, index }) {
+  const nav = useNavigate()
   const now = dayjs();
   const [modal, setModal] = useState(false);
   const [clickedIndex, setClickedIndex] = useState(-1);
-
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProductDetail: "",
@@ -177,7 +177,7 @@ function CardItem({ item, index }) {
         tabindex="0"
       >
         <div>
-          <Link className="link-card-item" to="/detail">
+          <div className="link-card-item" onClick= { ()=> nav(`/detail-product/${item.idProductDetail}`) }>
             <div className="box-img-product">
               <div
                 style={{
@@ -201,7 +201,7 @@ function CardItem({ item, index }) {
               </p>
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
-          </Link>
+          </div>
         </div>
         <div
           className="button-buy-now"
