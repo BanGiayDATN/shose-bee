@@ -189,14 +189,16 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     @Override
     public boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response, HttpServletRequest requests) {
         Optional<Account> account = accountRepository.findById(idEmployees);
+//        String h = Config.decode("OOVYIJVYUBGEZMREEZTJRFKHSLGVTJSE", response.getVnp_SecureHash());
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if(response.getVnp_ResponseCode().equals("00")){
+        if(Config.decodeHmacSha512(response.toParamsString(), response.getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
             List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(response.getVnp_TransactionNo());
             if(findAllByVnpTransactionNo.size() > 0){
                 return false;
             }
+
             Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef());
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
@@ -221,6 +223,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             createFilePdfAtCounter(bill.get().getId(), requests);
             return true;
         }
+        String h = response.toParamsString();
         return false;
     }
 
