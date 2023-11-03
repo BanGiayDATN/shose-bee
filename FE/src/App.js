@@ -44,6 +44,7 @@ import loading from "./../src/assets/images/s_discount_icon.png";
 import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
 import PayMentSuccess from "./pages/customer/payment/PaymentSuccess";
 import LoginManagement from "./pages/employee/login-management/LoginManagement";
+import DetailProduct from "./pages/customer/detailProduct/DetailProduct";
 import { useAppDispatch, useAppSelector } from "../src/app/hook";
 import { VoucherApi } from "../src/api/employee/voucher/Voucher.api";
 import { UpdateVoucher, GetVoucher } from "../src/app/reducer/Voucher.reducer";
@@ -193,7 +194,7 @@ function App() {
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
           <Route
             path="/"
-            element={<Navigate replace to="/home"/>}
+            element={<Navigate replace to="/home" />}
           />
           <Route
             path="/not-authorization"
@@ -237,6 +238,18 @@ function App() {
           />
           <Route
             path="/products"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Products />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/detail-product/:id"
             element={
               <GuestGuard>
                 <CartProvider>
