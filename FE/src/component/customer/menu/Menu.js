@@ -16,7 +16,7 @@ function HeaderMenu() {
   const [isOptionVisible, setOptionVisible] = useState(false);
   const [modal, setModal] = useState(false);
   const [activeField, setActiveField] = useState("");
-  const idAccountLocal = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
   const { totalQuantity } = useCart();
 
   const fields = [

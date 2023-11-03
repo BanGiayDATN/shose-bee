@@ -185,4 +185,5 @@ public interface UserReposiory extends JpaRepository<User, String> {
             WHERE u.phoneNumber = :phoneNumber
             """, nativeQuery = true)
     Optional<EmployeeResponse> getOneByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
 }

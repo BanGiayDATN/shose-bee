@@ -240,7 +240,6 @@ function Products() {
       };
       }
     })
-    console.log(name);
   }
   useEffect(() => {
     console.log( );
@@ -306,8 +305,7 @@ function Products() {
                             e.target.checked
                           )
                         }
-                      />{" "}
-                      {item.label}
+                      >{item.label}</Checkbox>
                     </li>
                   </>
                 ))}
@@ -459,5 +457,4 @@ function Products() {
     </React.Fragment>
   );
 }
-
 export default Products;

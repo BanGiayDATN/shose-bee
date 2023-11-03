@@ -57,7 +57,37 @@ import dayjs from "dayjs";
 import { GetLoading } from "./app/reducer/Loading.reducer";
 import DetailBillClinet from "./pages/customer/bill/DetailBillClinet";
 import SearchBill from "./pages/customer/bill/SearchBill";
+import Profile from "./pages/customer/account/profile/Profile";
+import LayoutAccount from "./pages/customer/account/layout/LayoutAccount";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import Address from "./pages/customer/account/address/Address";
+import Password from "./pages/customer/account/password/Password";
+import Purchase from "./pages/customer/account/purchase/Purchase";
+import Notification from "./pages/customer/account/notification/Notification";
+import RepoVoucher from "./pages/customer/account/voucher/Voucher";
 function App() {
+
+  const [showOnTop, setShowOnTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowOnTop(true);
+      } else {
+        setShowOnTop(false);
+      }
+    };
+
+    // Gắn sự kiện cuộn vào cửa sổ
+    window.addEventListener("scroll", handleScroll);
+
+    // Gỡ bỏ sự kiện cuộn khi component bị hủy
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const dispatch = useAppDispatch();
   const [listVoucher, setListVoucher] = useState([]);
   const [listPromotion, setListPromotion] = useState([]);
@@ -132,6 +162,14 @@ function App() {
 
   return (
     <div className="App">
+      {showOnTop ? (<div className="button-on-top"
+        onClick={() => {
+          // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
+          window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn mượt lên đầu trang
+        }}
+      ><FontAwesomeIcon style={{ color: "white", fontSize: 20 }} icon={faArrowUp}
+        /></div>) : (null)}
+
       {isLoading && (
         <div className="loading-overlay">
           <div className="loading-logo">
@@ -155,7 +193,7 @@ function App() {
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
           <Route
             path="/"
-            element={<Navigate replace to="/login-management" />}
+            element={<Navigate replace to="/home"/>}
           />
           <Route
             path="/login"
@@ -196,6 +234,91 @@ function App() {
                 <CartProvider>
                   <DashBoardCustomer>
                     <Products />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Profile />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+
+          <Route
+            path="/account-address"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Address />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/account-password"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Password />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/purchase"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Purchase />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/notification"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <Notification />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/repository-voucher"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <RepoVoucher />
+                    </LayoutAccount>
                   </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>

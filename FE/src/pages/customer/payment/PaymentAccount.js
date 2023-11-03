@@ -25,7 +25,7 @@ dayjs.extend(utc);
 function PaymentAccount() {
   const { updateTotalQuantity } = useCart();
   const { Option } = Select;
-  const idAccount = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
   const [listCity, setListCity] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [addressDefault, setAddressDefault] = useState({});
@@ -58,6 +58,7 @@ function PaymentAccount() {
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
+
 
   useEffect(() => {
 
@@ -114,8 +115,9 @@ function PaymentAccount() {
     console.log(keyMethodPayment);
   }, [keyMethodPayment]);
 
-  const getAddressDefault = (idAccount) => {
-    AddressClientApi.getByAccountAndStatus(idAccount).then(
+  const getAddressDefault = (id) => {
+    console.log(id);
+    AddressClientApi.getByAccountAndStatus(id).then(
       (res) => {
         setAddressDefault(res.data.data);
         setUserId(res.data.data.userId)

@@ -65,7 +65,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                   :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''
                   OR p.code LIKE %:#{#req.keyword}% 
                   OR p.name LIKE %:#{#req.keyword}%
-              ) and p.status = 'DANG_SU_DUNG'
+              ) and p.status = 'DANG_SU_DUNG' and p.id in (select pd.id_product from product_detail pd)
             ORDER BY p.last_modified_date DESC  
             """, nativeQuery = true)
     List<ProductUseRespone> getProductUse(@Param("req") FindProductUseRequest req);

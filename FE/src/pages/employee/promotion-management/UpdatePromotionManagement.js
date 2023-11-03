@@ -210,8 +210,8 @@ function UpdatePromotionManagement() {
         endDate: !formData.endDate
           ? "Vui lòng chọn ngày kết thúc"
           : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
+            ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+            : "",
       };
       setFormErrors(errors);
       return;
@@ -335,13 +335,13 @@ function UpdatePromotionManagement() {
               backgroundSize: "cover", // Đặt kích thước để hình ảnh bao phủ toàn bộ phần tử
               backgroundPosition: "center", // Đặt vị trí của hình ảnh là trung tâm
               borderRadius: "5px",
+              position: "relative",
             }}
           >
             {record.value !== null && (
               <div
                 style={{
                   position: "absolute",
-                  display: "inline-block",
                   right: 0,
                 }}
               >
@@ -628,18 +628,18 @@ function UpdatePromotionManagement() {
               rowSelection={rowSelection}
               dataSource={updatedList}
               pagination={{ pageSize: 5 }}
-              // onRow={(record) => ({
-              //   onClick: () => {
-              //     const newSelectedRowKeys = [...selectedRowKeys];
-              //     if (newSelectedRowKeys.includes(record.id)) {
-              //       const index = newSelectedRowKeys.indexOf(record.id);
-              //       newSelectedRowKeys.splice(index, 1);
-              //     } else {
-              //       newSelectedRowKeys.push(record.id);
-              //     }
-              //     setSelectedRowKeys(newSelectedRowKeys);
-              //   },
-              // })}
+            // onRow={(record) => ({
+            //   onClick: () => {
+            //     const newSelectedRowKeys = [...selectedRowKeys];
+            //     if (newSelectedRowKeys.includes(record.id)) {
+            //       const index = newSelectedRowKeys.indexOf(record.id);
+            //       newSelectedRowKeys.splice(index, 1);
+            //     } else {
+            //       newSelectedRowKeys.push(record.id);
+            //     }
+            //     setSelectedRowKeys(newSelectedRowKeys);
+            //   },
+            // })}
             />
           </Col>
           <Col>

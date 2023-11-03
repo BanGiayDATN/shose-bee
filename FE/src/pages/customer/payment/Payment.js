@@ -17,7 +17,7 @@ dayjs.extend(utc);
 function Payment() {
   const { updateTotalQuantity } = useCart();
   const { Option } = Select;
-  const idAccount = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
   const [listCity, setListCity] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);

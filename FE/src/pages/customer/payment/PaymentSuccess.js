@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
 import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 function PayMentSuccess() {
-  const idAccount = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
 const urlObject = new URL(window.location.href);
 const vnp_ResponseCode = urlObject.searchParams.get("vnp_ResponseCode");
 const vnp_Amount = urlObject.searchParams.get("vnp_Amount");
@@ -101,7 +101,7 @@ const formatMoney = (price) => {
        <FontAwesomeIcon className="icon-payment-fail" icon={faTriangleExclamation} />
            <h1>Thanh toán thất bại</h1>
          <div>
-         <Link to="/payment">Thử lại</Link>
+         <Link to={idAccount === null ? "/payment":"/payment-acc"}  >Thử lại</Link>
          <Link style={{marginLeft:"10px"}} to="/home">Tiếp tục mua</Link>
          </div>
          </div>
