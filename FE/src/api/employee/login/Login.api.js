@@ -23,4 +23,12 @@ export class LoginApi {
       data: data,
     });
   };
+
+  static changePassword = (data) => {
+    return request({
+      method: "POST",
+      url: `/login-v2/change-password`,
+      data: data,
+    });
+  };
 }
