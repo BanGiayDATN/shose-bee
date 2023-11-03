@@ -1469,7 +1469,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ship = shipFee
     }
     // Lấy thời điểm hiện tại dạng long
-     const timeInMillis = now.getTime();
+     const timeInMillis = new Date().getTime();
     const data = {
       vnp_Ammount: Math.round((totalBill + ship - voucher.discountPrice) - totaPayMent),
       vnp_TxnRef: billRequest.code + "-"+ timeInMillis,
@@ -2897,6 +2897,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         required: true,
                         message: "Vui lòng nhập số tiền",
                       },
+                      {
+      validator: (_, value) => {
+        if (value && value > 1000) {
+          return Promise.resolve();
+        }
+        return Promise.reject("Giá tiền phải lớn hơn 1000");
+      },
+    },
                     ]}
                   >
                     <NumberFormat

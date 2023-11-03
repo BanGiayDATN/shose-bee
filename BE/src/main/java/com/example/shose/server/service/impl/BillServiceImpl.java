@@ -568,8 +568,14 @@ public class BillServiceImpl implements BillService {
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
-        if (!account.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
+         if (!account.isPresent()) {
+            throw new RestApiException(Message.ACCOUNT_IS_EXIT);
+        }
+        if( account.get().getRoles() != Roles.ROLE_ADMIN && !bill.get().getEmployees().getId().equals(idEmployees)  ){
+            throw new RestApiException(Message.ACCOUNT_NOT_ROLE_CANCEL_BILL);
+        }
+        if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && account.get().getRoles() != Roles.ROLE_ADMIN){
+            throw new RestApiException(Message.ACCOUNT_NOT_ROLE_CANCEL_BILL);
         }
         bill.get().setStatusBill(StatusBill.DA_HUY);
         BillHistory billHistory = new BillHistory();
