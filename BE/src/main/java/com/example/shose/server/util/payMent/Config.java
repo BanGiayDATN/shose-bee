@@ -30,6 +30,18 @@ public class Config {
             return "";
         }
     }
+
+    public static boolean decodeHmacSha512(String message, String base64EncodedHmac, String secretKey) {
+        String hashDataServer = hmacSHA512(secretKey, message);
+        // So sánh HMAC tính toán với HMAC nhận được
+        if (hashDataServer.equals(base64EncodedHmac)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     public static String getIpAddress(HttpServletRequest request) {
         String ipAdress;
         try {
