@@ -1,20 +1,17 @@
 .products {
 }
 .category-of-products {
-  width: 25%;
   height: 2000px;
 }
 .box-products {
-  width: 75%;
+  margin-left: auto;
   margin-bottom: 50px;
 }
 .list-product {
-  width: 100%;
   display: grid; /* Sử dụng CSS Grid để quản lý bố trí */
   grid-template-columns: repeat(3, 0.1fr); /* 4 CardItem trong một hàng */
   grid-gap: 0px; /* Khoảng cách giữa các CardItem */
-  justify-content: center;
-  text-align: center;
+
 }
 .category-gender {
   width: 100%;

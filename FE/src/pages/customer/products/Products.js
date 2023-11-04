@@ -259,7 +259,7 @@ function Products() {
         <Row>
           <Col
             lg={{ span: 16, offset: 4 }}
-            style={{ display: "flex", margin: "50px auto" }}
+            style={{ display: "flex", justifyContent:"center" }}
           >
             <div className="category-of-products">
               {/* search by gender */}

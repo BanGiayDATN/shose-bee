@@ -73,6 +73,7 @@ function App() {
   const [showOnTop, setShowOnTop] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const handleScroll = () => {
       if (window.scrollY > 300) {
         setShowOnTop(true);
@@ -88,6 +89,7 @@ function App() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+  
   }, []);
 
   const dispatch = useAppDispatch();

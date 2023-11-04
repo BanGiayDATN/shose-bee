@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
 import { useParams } from "react-router";
 import { ProductDetailClientApi } from "../../../api/customer/productdetail/productDetailClient.api";
+import "./style-detail-product.css"
 import dayjs from "dayjs";
 
 function DetailProduct() {
@@ -70,15 +71,12 @@ function DetailProduct() {
             };
 
             setCartLocal((prev) => {
-                console.log(cartLocal);
                 const exists = prev.find(
                     (item) => item.idProductDetail === newCartItem.idProductDetail
                 );
                 if (!exists) {
-                    console.log("mới");
                     return [...prev, newCartItem];
                 } else {
-                    console.log("trùng");
                     return prev.map((item) =>
                         item.idProductDetail === newCartItem.idProductDetail
                             ? { ...item, quantity: item.quantity + newCartItem.quantity }
@@ -87,9 +85,6 @@ function DetailProduct() {
                 }
             });
             window.location.href = "/cart";
-            toast.success("Add cart không login", {
-                autoClose: 3000,
-            });
         } else {
             const newCartItem = {
                 idAccount: idAccountLocal,
@@ -100,17 +95,14 @@ function DetailProduct() {
 
             CartClientApi.addCart(newCartItem).then(
                 (res) => {
-                    console.log(res.data.data);
-                    // setListProductDetailByCategory(res.data.data);
+                    window.location.href = "/home";
+
                 },
                 (err) => {
                     console.log(err);
                 }
             );
-            window.location.href = "/cart";
-            toast.success("Add cart có login!", {
-                autoClose: 3000,
-            });
+
         }
     };
 
@@ -142,44 +134,79 @@ function DetailProduct() {
             setCurrentImageIndex(currentImageIndex + 1);
         }
     };
-    //   const itemTimestamp = dayjs.unix(item.createdDate / 1000);
-    //   const nowTimestampReduce = now.subtract(15, "day");
     return (<React.Fragment>
-        <div className="detail-product">
-            <div className="modal-detail-product">
-                <Row justify="center">
-                    <Col
-                        lg={{ span: 16, offset: 4 }}
-                        style={{ height: 500, paddingLeft: 20,display:"flex" }}
+        <div className="box-detail-product">
+            <Row>
+                <Col
+                    lg={{ span: 14, offset: 5 }}
+                    style={{ display: "flex", justifyContent: "center", padding: 50 }}
 
-                    >
+                >
+                    <div className="box-image-pd">
+                        <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                            <LeftOutlined
+                                className="button-prev-card-pd"
+                                onClick={previousImage}
+                            />
+                            <img
+                                className="img-detail-product-pd"
+                                src={detailProduct.image.split(",")[currentImageIndex]}
+                                alt="..."
+                            />
+                            <RightOutlined className="button-next-card-pd" onClick={nextImage} />
+                        </div>
 
-                   <div         style={{display:"flex" ,alignItems:"center"}}>
-                   <LeftOutlined
-                            className="button-prev-card"
-                            onClick={previousImage}
-                        />
-                        <img
-                            className="img-detail-product"
-                            src={detailProduct.image.split(",")[currentImageIndex]}
-                            alt="..."
-                        />
-                        <RightOutlined className="button-next-card" onClick={nextImage} />
-                   </div>
-                      <div>
-                      <h1 style={{color:"gray"}}>{detailProduct.nameProduct}</h1>
-                        <div className="price-product">
+
+                        <div className="box-info-detail">
+                            <div className="box-title-info-detail">
+                                THÔNG TIN CHI TIẾT
+                            </div>
+
+                            <ul className="ul-info-pd" style={{ padding: 20 }}>
+                                <li className="li-info-pd">
+                                    <span className="title-info-pd"> Tên sản phẩm</span>
+                                    <span className="content-info-pd"> {detailProduct.nameProduct}</span>
+                                </li>
+                                <li className="li-info-pd">
+                                    <span className="title-info-pd"> Giá</span>
+                                    <span className="content-info-pd"> {formatMoney(detailProduct.price)}</span>
+                                </li>
+                                <li className="li-info-pd">
+                                    <span className="title-info-pd"> Thương hiệu</span>
+                                    <span className="content-info-pd"> {detailProduct.nameBrand}</span>
+                                </li>
+                                <li className="li-info-pd">
+                                    <span className="title-info-pd"> Loại sản phẩm</span>
+                                    <span className="content-info-pd"> {detailProduct.nameCategory}</span>
+                                </li>
+                                <li className="li-info-pd">
+                                    <span className="title-info-pd"> Chất liệu</span>
+                                    <span className="content-info-pd"> {detailProduct.nameMaterial}</span>
+                                </li>
+                                <li className="li-info-pd">
+                                    <span className="title-info-pd"> Kích thước</span>
+                                    <span className="content-info-pd"> {detailProduct.nameSize}</span>
+                                </li>
+                                <li className="li-info-pd">
+                                    <span className="title-info-pd"> Đế giày</span>
+                                    <span className="content-info-pd"> {detailProduct.nameSole}</span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="box-info-pd" >
+                        <div className="name-pd">{detailProduct.nameProduct}</div>
+                        <div className="price-product-pd">
                             {" "}
                             Giá: {formatMoney(detailProduct.price)}
                         </div>
-                        <div>
-                            <div>
-                                ------------------------------------------------------------------------
-                            </div>
+                        <div className="box-color-pd">
+
                             <div>Màu:</div>
-                            <div className="list-color-detail">
+                            <div className="list-color-detail-pd">
                                 <div
-                                    className="color-product"
+                                    className="color-product-pd"
 
                                     style={{
                                         backgroundColor: detailProduct.codeColor,
@@ -188,14 +215,11 @@ function DetailProduct() {
                             </div>
                         </div>
 
-                        <div>
-                            ------------------------------------------------------------------------
-                        </div>
-                        <div>
+                        <div className="box-size-pd">
                             <div>Size:</div>
-                            <div className="list-size-product" tabIndex="0">
+                            <div className="list-size-product-pd" tabIndex="0">
                                 <div
-                                    className="size-product "
+                                    className="size-product-pd "
                                     tabIndex="0"
                                     style={{ border: "1px solid black" }}
                                 >
@@ -212,24 +236,24 @@ function DetailProduct() {
                                 </span>
                             </div>
                         </div>
-                        <div className="add-to-card">
+                        <div className="add-to-card-pd">
                             <InputNumber
-                                className="input-quantity-card"
+                                className="input-quantity-card-pd"
                                 name="quantity"
                                 type="number"
                                 disabled={detailProduct.quantity === 0}
                                 min={1}
+                                defaultValue={1}
                                 max={detailProduct.quantity}
                                 onChange={(value) => setQuantity(value)}
                             ></InputNumber>
-                            <div className="button-add-to-card" onClick={addToCard}>
+                            <div className="button-add-to-card-pd" onClick={addToCard}>
                                 Thêm vào Giỏ hàng
                             </div>
                         </div>
-                      </div>
-                    </Col>
-                </Row>
-            </div>
+                    </div>
+                </Col>
+            </Row>
         </div>
     </React.Fragment>);
 }
