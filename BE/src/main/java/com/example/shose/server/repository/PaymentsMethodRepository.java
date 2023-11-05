@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Nguyễn Vinh
@@ -70,4 +69,5 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod, 
                     WHERE id_bill = :idBill
                     """, nativeQuery = true)
     BigDecimal findTotalPayMnetByIdBill(@Param("idBill") String idBill);
+
 }

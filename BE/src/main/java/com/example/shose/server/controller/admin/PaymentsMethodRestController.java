@@ -69,5 +69,4 @@ public class PaymentsMethodRestController {
     return new ResponseObject(paymentsMethodService.paymentSuccess(userId, response, requests)) ;
     }
 
-
 }

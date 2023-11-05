@@ -51,6 +51,7 @@ import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.repository.VoucherDetailRepository;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
+import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.RandomNumberGenerator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -122,6 +123,9 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private ExportFilePdfFormHtml exportFilePdfFormHtml;
+
+    @Autowired
+    private PaymentsMethodService paymentsMethodService;
 
     @Override
     public List<BillResponse> getAll(BillRequest request) {
@@ -551,6 +555,7 @@ public class BillServiceImpl implements BillService {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             }
+            bill.get().setEmployees(account.get());
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
@@ -562,7 +567,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill cancelBill(String id, String idEmployees, ChangStatusBillRequest request) {
+    public Bill cancelBill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests) {
         Optional<Bill> bill = billRepository.findById(id);
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
@@ -596,6 +601,9 @@ public class BillServiceImpl implements BillService {
             }
             productDetailRepository.save(productDetail.get());
         });
+        if(!paymentsMethodService.refundVnpay(idEmployees, bill.get().getCode(), requests)){
+            throw new RestApiException(Message.ERROR_CANCEL_BILL);
+        }
         return billRepository.save(bill.get());
     }
 
