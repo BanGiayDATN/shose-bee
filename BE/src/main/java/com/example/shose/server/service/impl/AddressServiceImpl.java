@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.address.*;
 import com.example.shose.server.dto.response.address.AddressAccountResponse;
 import com.example.shose.server.dto.response.address.AddressResponse;
 import com.example.shose.server.dto.response.address.AddressUserReponse;
+import com.example.shose.server.dto.response.user.GetByAccountResponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.User;
@@ -179,22 +180,23 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address createAddressClient(CreateAddressClientRequest req) {
-        AddressAccountResponse addressAccountResponse = addressRepository.getAddressByAccountIdAndStatus(req.getIdAccount());
-        System.out.println(addressAccountResponse);
-        if(addressAccountResponse == null){
-            throw new RestApiException("Địa chỉ của khách không tồn tại");
-        }
-        Optional<User> optional = userReposiory.findById(addressAccountResponse.getUserId());
+        Optional<GetByAccountResponse> optional = userReposiory.getByAccount(req.getIdAccount());
         if(!optional.isPresent()){
+            throw new RestApiException("Người dùng không tồn tại");
+        }
+        Optional<User> user = userReposiory.findById(optional.get().getId());
+        if(!user.isPresent()){
             throw new RestApiException("Người dùng không tồn tại");
         }
         if(req.getStatus().equals(Status.DANG_SU_DUNG)){
             Address address = addressRepository.getAddressDefault();
-            address.setStatus(Status.KHONG_SU_DUNG);
-            addressRepository.save(address);
+            if(address != null){
+                address.setStatus(Status.KHONG_SU_DUNG);
+                addressRepository.save(address);
+            }
         }
         Address address = Address.builder()
-                .user(optional.get())
+                .user(user.get())
                 .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
                 .status(req.getStatus())

@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
+import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.User;
@@ -172,5 +173,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return optional.get();
     }
+
+
 
 }
