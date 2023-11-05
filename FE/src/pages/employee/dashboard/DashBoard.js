@@ -428,7 +428,7 @@ const DashBoard = () => {
 
     colorsSES12 = 0x9D92AF
     colorsSES22 = 0x0f105f
-    colorsSES21 = 0xF37021  
+    colorsSES21 = 0xF37021
     colorsSES11 = 0xFFD4A6
 
 
@@ -452,10 +452,10 @@ const DashBoard = () => {
       // https://www.amcharts.com/docs/v5/charts/xy-chart/
       let chart = root.container.children.push(
         am5xy.XYChart.new(root, {
-
-          panX: true,
+          panX: false,
           panY: false,
           wheelX: "panX",
+          wheelY: "zoomX",
           layout: root.verticalLayout
         })
       );
@@ -556,7 +556,7 @@ const DashBoard = () => {
         strokeOpacity: 1,
         opacity: 1
       });
-      
+
       series1.columns.template.setAll({
         width: am5.percent(40),
         tooltipY: am5.percent(30),
@@ -613,6 +613,7 @@ const DashBoard = () => {
       // Add cursor
       // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
       let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+        behavior: "zoomX"
       }));
       cursor.lineY.set("visible", false);
 
