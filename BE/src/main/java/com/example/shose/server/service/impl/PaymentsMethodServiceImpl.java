@@ -192,7 +192,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if(response.getVnp_ResponseCode().equals("00")){
+        if(Config.decodeHmacSha512(response.toParamsString(), response.getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
             List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(response.getVnp_TransactionNo());
             if(findAllByVnpTransactionNo.size() > 0){
                 return false;
