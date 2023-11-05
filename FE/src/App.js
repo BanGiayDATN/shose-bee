@@ -29,7 +29,6 @@ import VoucherManagement from "./pages/employee/voucher-management/VoucherManage
 import BillManagement from "./pages/employee/bill-management/BillManagement";
 import DetailBill from "./pages/employee/bill-management/DetailBill";
 import CreateBill from "./pages/employee/bill-management/CreateBill";
-import AddressManagement from "./pages/customer/address-management/AddressManagement";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import CustomerManagement from "./pages/employee/customer-management/CustomerManagement";
 import ModalCreateAccount from "./pages/employee/account-management/modal/ModalCreateAccount";
@@ -193,7 +192,7 @@ function App() {
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
           <Route
             path="/"
-            element={<Navigate replace to="/home"/>}
+            element={<Navigate replace to="/home" />}
           />
           <Route
             path="/login"
@@ -508,16 +507,6 @@ function App() {
               </AuthGuard>
             }
           />
-          <Route
-            path="/address"
-            element={
-              <AuthGuard>
-                <DashBoardEmployee>
-                  <AddressManagement />
-                </DashBoardEmployee>
-              </AuthGuard>
-            }
-          />{" "}
           <Route
             path="/staff-management"
             element={
