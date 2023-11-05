@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.QuickCreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
+import com.example.shose.server.dto.request.customer.UpdateInfoClient;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
@@ -30,6 +31,7 @@ public interface CustomerService {
     User update(UpdateCustomerRequest request,
                 UpdateAddressRequest addressRequest,
                 MultipartFile file);
+    User updateInfoClient(UpdateInfoClient request);
 
     Boolean delete(String id);
 
@@ -40,4 +42,6 @@ public interface CustomerService {
                      );
 
     EmployeeResponse getOneByPhoneNumber(String phoneNumber);
+
+
 }

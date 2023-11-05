@@ -1,5 +1,6 @@
 package com.example.shose.server.service;
 
+import com.example.shose.server.dto.request.customer.ChangePasswordRequest;
 import com.example.shose.server.dto.response.account.AccountResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
@@ -19,4 +20,7 @@ public interface AccountService {
 
     List<SimpleEmployeeResponse> getAllSimpleEntityEmployess();
 
+    Account changePassword(ChangePasswordRequest request);
+
+    Account getAccountById(String id);
 }

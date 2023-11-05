@@ -122,7 +122,7 @@ function Login() {
               <GooglePlusOutlined  style={{fontSize:30,marginRight:10}}/> Google
               </div>
               <div style={{color:"grey"}}>
-                Bạn mới biết đến BeeSneaker? <Link className="register" to="#">Đăng ký</Link>
+                Bạn mới biết đến BeeSneaker? <Link className="register" to="/signup">Đăng ký</Link>
               </div>
             </div>
           </div>
