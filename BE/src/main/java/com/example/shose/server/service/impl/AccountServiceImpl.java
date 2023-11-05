@@ -1,5 +1,6 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.request.customer.ChangePasswordRequest;
 import com.example.shose.server.dto.response.account.AccountResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Nguyễn Vinh
@@ -24,8 +26,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
-
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private UserReposiory userReposiory;
 
@@ -51,6 +53,32 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<SimpleEmployeeResponse> getAllSimpleEntityEmployess() {
         return accountRepository.getAllSimpleEntityEmployess();
+    }
+
+    @Override
+    public Account changePassword(ChangePasswordRequest request) {
+        Optional<Account> optional = accountRepository.findById(request.getId());
+        if (!optional.isPresent()) {
+            throw new RestApiException("Tài khoản không tồn tại");
+        }
+        if(!request.getNewPassword().equals(request.getConfirmPassword())){
+            throw new RestApiException("Mật khẩu không khớp");
+        }
+        if (passwordEncoder.matches(request.getNewPassword(), optional.get().getPassword())) {
+            throw new RestApiException("Mật khẩu giống với trước");
+        }
+        Account account = optional.get();
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        return accountRepository.save(account);
+    }
+
+    @Override
+    public Account getAccountById(String id) {
+        Optional<Account> optional = accountRepository.findById(id);
+        if(!optional.isPresent()){
+            throw new RestApiException("Tài khoản không tồn tại");
+        }
+        return optional.get();
     }
 
 

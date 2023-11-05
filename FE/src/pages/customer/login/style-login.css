@@ -160,6 +160,9 @@ transition: 0.3 ease;
     place-items: center;
     border-radius: 5px;
     cursor: pointer;
+    &:hover{
+        background-color: #ff4400;
+    }
 }
 .box-forgot-pass{
     width: 350px;

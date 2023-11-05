@@ -43,6 +43,7 @@ import loading from "./../src/assets/images/s_discount_icon.png";
 import PayMentSuccessful from "./pages/employee/bill-management/PayMentSuccessful";
 import PayMentSuccess from "./pages/customer/payment/PaymentSuccess";
 import LoginManagement from "./pages/employee/login-management/LoginManagement";
+import DetailProduct from "./pages/customer/detailProduct/DetailProduct";
 import { useAppDispatch, useAppSelector } from "../src/app/hook";
 import { VoucherApi } from "../src/api/employee/voucher/Voucher.api";
 import { UpdateVoucher, GetVoucher } from "../src/app/reducer/Voucher.reducer";
@@ -66,10 +67,12 @@ import Purchase from "./pages/customer/account/purchase/Purchase";
 import Notification from "./pages/customer/account/notification/Notification";
 import RepoVoucher from "./pages/customer/account/voucher/Voucher";
 import Policy from "./pages/customer/policy/Policy";
+import SignUp from "./pages/customer/signup/SignUp";
 function App() {
   const [showOnTop, setShowOnTop] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const handleScroll = () => {
       if (window.scrollY > 300) {
         setShowOnTop(true);
@@ -197,15 +200,20 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
-          <Route
-            path="/"
-            element={<Navigate replace to="/home"/>}
-          />
+          <Route path="/" element={<Navigate replace to="/home" />} />
           <Route
             path="/login"
             element={
               <GuestGuard>
                 <Login />
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <GuestGuard>
+                <SignUp />
               </GuestGuard>
             }
           />
@@ -240,6 +248,18 @@ function App() {
                 <CartProvider>
                   <DashBoardCustomer>
                     <Products />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/detail-product/:id"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <DetailProduct />
                   </DashBoardCustomer>
                 </CartProvider>
               </GuestGuard>

@@ -8,11 +8,11 @@ export class LoginApi {
     });
   };
 
-  static authenticationUp = (filter) => {
+  static authenticationUp = (data) => {
     return request({
-      method: "GET",
+      method: "POST",
       url: `/login-v2/singup`,
-      params: filter,
+      data: data,
     });
   };
 

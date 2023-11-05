@@ -78,7 +78,7 @@ function Products() {
   const [listColor, setListColor] = useState([]);
   const [totalPagesProduct, setTotalPagesProduct] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
-  const [formPrice, setFormPrice] = useState({})
+  const [formPrice, setFormPrice] = useState({});
   const [formSearch, setFormSearch] = useState({
     page: currentPage,
     size: 15,
@@ -193,7 +193,7 @@ function Products() {
           return {
             ...prev,
             [name]: prev[name] ? `${prev[name]},${value}` : value,
-          }
+          };
         } else {
           const updatedValue = prev[name]
             .split(",")
@@ -208,7 +208,7 @@ function Products() {
     }
   };
   // change price
-  const changePrice = (min, max,name,checked) => {
+  const changePrice = (min, max, name, checked) => {
     setIsChecked((prevStates) => ({
       ...prevStates,
       ["price"]: {
@@ -218,40 +218,47 @@ function Products() {
     }));
 
     setFormPrice((prev) => {
-      if(checked){
-     return{
-      ...prev,
-      ["minPrice"]: prev["minPrice"] ? `${prev["minPrice"]},${min}` : min,
-      ["maxPrice"]: prev["maxPrice"] ? `${prev["maxPrice"]},${max}` : max,
-     }
-      }else{
+      if (checked) {
+        return {
+          ...prev,
+          ["minPrice"]: prev["minPrice"] ? `${prev["minPrice"]},${min}` : min,
+          ["maxPrice"]: prev["maxPrice"] ? `${prev["maxPrice"]},${max}` : max,
+        };
+      } else {
         const updatedMin = prev["minPrice"]
-        .split(",")
-        .filter((item) => item !== min)
-        .join(",");
+          .split(",")
+          .filter((item) => item !== min)
+          .join(",");
         const updatedMax = prev["maxPrice"]
-        .split(",")
-        .filter((item) => item !== max)
-        .join(",");
-      return {
-        ...prev,
-        ["minPrice"]: updatedMin,
-        ["maxPrice"]: updatedMax,
-      };
+          .split(",")
+          .filter((item) => item !== max)
+          .join(",");
+        return {
+          ...prev,
+          ["minPrice"]: updatedMin,
+          ["maxPrice"]: updatedMax,
+        };
       }
-    })
-  }
+    });
+  };
   useEffect(() => {
-    console.log( );
-     if(formPrice["minPrice"] && formPrice["maxPrice"] !== ""){
-       changeFormSearch("minPrice",formPrice.minPrice.split(",").sort((a, b) => a - b)[0])
-       changeFormSearch("maxPrice",formPrice.maxPrice.split(",").sort((a, b) => a - b)[formPrice.minPrice.split(",").length-1])
-     }else{
-       changeFormSearch("minPrice",'')
-       changeFormSearch("maxPrice",'')
-     }
-   }, [formPrice])
-
+    console.log();
+    if (formPrice["minPrice"] && formPrice["maxPrice"] !== "") {
+      changeFormSearch(
+        "minPrice",
+        formPrice.minPrice.split(",").sort((a, b) => a - b)[0]
+      );
+      changeFormSearch(
+        "maxPrice",
+        formPrice.maxPrice.split(",").sort((a, b) => a - b)[
+          formPrice.minPrice.split(",").length - 1
+        ]
+      );
+    } else {
+      changeFormSearch("minPrice", "");
+      changeFormSearch("maxPrice", "");
+    }
+  }, [formPrice]);
 
   return (
     <React.Fragment>
@@ -259,7 +266,7 @@ function Products() {
         <Row>
           <Col
             lg={{ span: 16, offset: 4 }}
-            style={{ display: "flex", margin: "50px auto" }}
+            style={{ display: "flex", justifyContent: "center" }}
           >
             <div className="category-of-products">
               {/* search by gender */}
@@ -267,8 +274,9 @@ function Products() {
                 {categoryGender.map((item, index) => (
                   <>
                     <li
-                      className={`sub-gender ${formSearch["gender"] === item.value ? "clicked" : ""
-                        }`}
+                      className={`sub-gender ${
+                        formSearch["gender"] === item.value ? "clicked" : ""
+                      }`}
                       onClick={() => changeFormSearch("gender", item.value)}
                     >
                       {item.name}
@@ -305,7 +313,9 @@ function Products() {
                             e.target.checked
                           )
                         }
-                      >{item.label}</Checkbox>
+                      >
+                        {item.label}
+                      </Checkbox>
                     </li>
                   </>
                 ))}
@@ -422,7 +432,13 @@ function Products() {
                         height: "30px",
                         marginRight: 5,
                       }}
-                      className={formSearch.color && formSearch.color !== '' && (formSearch.color.split(",").includes(item.name) ? "item-color-search" : "")}
+                      className={
+                        formSearch.color &&
+                        formSearch.color !== "" &&
+                        (formSearch.color.split(",").includes(item.name)
+                          ? "item-color-search"
+                          : "")
+                      }
                       onClick={() => changeColor("color", item.name)}
                     ></div>
                   ))}
