@@ -66,8 +66,8 @@ import Password from "./pages/customer/account/password/Password";
 import Purchase from "./pages/customer/account/purchase/Purchase";
 import Notification from "./pages/customer/account/notification/Notification";
 import RepoVoucher from "./pages/customer/account/voucher/Voucher";
+import Policy from "./pages/customer/policy/Policy";
 function App() {
-
   const [showOnTop, setShowOnTop] = useState(false);
 
   useEffect(() => {
@@ -162,13 +162,20 @@ function App() {
 
   return (
     <div className="App">
-      {showOnTop ? (<div className="button-on-top"
-        onClick={() => {
-          // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
-          window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn mượt lên đầu trang
-        }}
-      ><FontAwesomeIcon style={{ color: "white", fontSize: 20 }} icon={faArrowUp}
-        /></div>) : (null)}
+      {showOnTop ? (
+        <div
+          className="button-on-top"
+          onClick={() => {
+            // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
+            window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn mượt lên đầu trang
+          }}
+        >
+          <FontAwesomeIcon
+            style={{ color: "white", fontSize: 20 }}
+            icon={faArrowUp}
+          />
+        </div>
+      ) : null}
 
       {isLoading && (
         <div className="loading-overlay">
@@ -191,10 +198,7 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
-          <Route
-            path="/"
-            element={<Navigate replace to="/home"/>}
-          />
+          <Route path="/" element={<Navigate replace to="/home" />} />
           <Route
             path="/login"
             element={
@@ -253,7 +257,18 @@ function App() {
               </GuestGuard>
             }
           />
-
+          <Route
+            path="/policy"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Policy />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
           <Route
             path="/account-address"
             element={
