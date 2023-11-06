@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Row, Col, Menu, Tabs, Pagination } from "antd";
+import { Row, Col, Menu, Tabs, Pagination, Card } from "antd";
 import { RiseOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 import { Link } from "react-router-dom";
@@ -204,7 +204,12 @@ function Home() {
           <Col className="col-choose" lg={{ span: 6, offset: 1 }}>
             <div className="type-gender-2">
               <Link className="hover-wrapper">
-                <img className="img-choose-gender" src={banner4} alt="..." />
+                <img
+                  className="img-choose-gender"
+                  src={banner4}
+                  alt="..."
+                  style={{ borderRadius: "5px" }}
+                />
               </Link>
 
               <div className="text-product-center">
@@ -279,11 +284,8 @@ function Home() {
         </Row>
       </div>
       <div>
-        <Row>
-          <Col
-            lg={{ span: 16, offset: 4 }}
-            style={{ textAlign: "center", marginBottom: 100 }}
-          >
+        <Row justify={"center"}>
+          <Col>
             <Tabs
               defaultActiveKey="1"
               centered
@@ -301,13 +303,15 @@ function Home() {
                 </Tabs.TabPane>
               ))}
             </Tabs>
-            <Pagination
-              defaultCurrent={1}
-              current={currentPage}
-              total={totalPagesProduct * 10}
-              onChange={handlePageChange}
-            />
           </Col>
+        </Row>
+        <Row justify={"center"} style={{ marginBottom: "30px" }}>
+          <Pagination
+            defaultCurrent={1}
+            current={currentPage}
+            total={totalPagesProduct * 10}
+            onChange={handlePageChange}
+          />
         </Row>
       </div>
     </div>
