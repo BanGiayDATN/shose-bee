@@ -2,7 +2,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, InputNumber, Modal, Row } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
@@ -12,8 +12,9 @@ function CardItem({ item, index }) {
   const now = dayjs();
   const [modal, setModal] = useState(false);
   const [clickedIndex, setClickedIndex] = useState(-1);
-  const nav = useNavigate()
+  const nav = useNavigate();
 
+  console.log(item);
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProductDetail: "",
@@ -26,7 +27,6 @@ function CardItem({ item, index }) {
 
   const idAccountLocal = sessionStorage.getItem("idAccount");
   const [quantity, setQuantity] = useState(1);
-  const [cartAccount, setCartAccount] = useState([]);
   const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
 
   const [cartLocal, setCartLocal] = useState(initialCartLocal);
@@ -178,7 +178,10 @@ function CardItem({ item, index }) {
         tabindex="0"
       >
         <div>
-          <div className="link-card-item" onClick={()=> nav(`/detail-product/${item.idProductDetail}`)}>
+          <div
+            className="link-card-item"
+            onClick={() => nav(`/detail-product/${item.idProductDetail}`)}
+          >
             <div className="box-img-product">
               <div
                 style={{

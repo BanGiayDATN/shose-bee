@@ -61,7 +61,8 @@
 .child-category {
   list-style: none;
   padding: 10px;
-  color: grey;
+  color: #000;
+  margin-left: 10px;
 }
 .sell-off {
   list-style: none;

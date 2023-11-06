@@ -1,4 +1,4 @@
-import { Checkbox, Col, Menu, Row, Pagination } from "antd";
+import { Checkbox, Col, Menu, Row, Pagination, Card } from "antd";
 import React from "react";
 import "./Style-products.css";
 import { useState } from "react";
@@ -42,29 +42,29 @@ const newProduct = [
 ];
 const categoryPrice = [
   {
-    name: "Dưới 500 nghìn",
+    name: "Dưới 1 triệu",
     minPrice: "0",
-    maxPrice: "500000",
-  },
-  {
-    name: "500 nghìn - 1 triệu",
-    minPrice: "500000",
     maxPrice: "1000000",
   },
   {
-    name: "1 triệu - 2 triệu",
+    name: "1 triệu - 3 triệu",
     minPrice: "1000000",
-    maxPrice: "2000000",
-  },
-  {
-    name: "2 triệu - 3 triệu",
-    minPrice: "2000000",
     maxPrice: "3000000",
   },
   {
-    name: "Trên 3 triệu",
+    name: "3 triệu - 5 triệu",
     minPrice: "3000000",
-    maxPrice: "1000000000",
+    maxPrice: "5000000",
+  },
+  {
+    name: "5 triệu - 10 triệu",
+    minPrice: "5000000",
+    maxPrice: "10000000",
+  },
+  {
+    name: "Trên 10 triệu",
+    minPrice: "10000000",
+    maxPrice: "100000000000",
   },
 ];
 
@@ -263,210 +263,214 @@ function Products() {
   return (
     <React.Fragment>
       <div className="products">
-        <Row>
-          <Col
-            lg={{ span: 16, offset: 4 }}
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <div className="category-of-products">
-              {/* search by gender */}
-              <ul className="category-gender">
-                {categoryGender.map((item, index) => (
-                  <>
-                    <li
-                      className={`sub-gender ${
-                        formSearch["gender"] === item.value ? "clicked" : ""
-                      }`}
-                      onClick={() => changeFormSearch("gender", item.value)}
-                    >
-                      {item.name}
-                    </li>
-                    {index !== categoryGender.length - 1 && (
-                      <p style={{ color: "rgb(183, 188, 188)" }}>|</p>
-                    )}
-                  </>
-                ))}
-              </ul>
-              {/* search by status */}
-
-              <label
-                style={{
-                  color: "#ff4400",
-                  fontSize: "20px",
-                  paddingBottom: 20,
-                  fontWeight: 700,
-                  padding: 10,
-                }}
-              >
-                Trạng thái
-              </label>
-              <ul className="sell-off">
-                {categorySellOff.map((item, index) => (
-                  <>
-                    <li className="child-category">
-                      <Checkbox
-                        checked={isChecked[item.name]?.[item.value] || false}
-                        onChange={(e) =>
-                          changeFomSearch(
-                            item.name,
-                            item.value,
-                            e.target.checked
-                          )
-                        }
+        <Row justify={"center"} gutter={16} style={{marginTop:"30px"}}>
+          <Col span={7}>
+            <Card>
+              <div className="category-of-products">
+                {/* search by gender */}
+                <ul className="category-gender">
+                  {categoryGender.map((item, index) => (
+                    <>
+                      <li
+                        className={`sub-gender ${
+                          formSearch["gender"] === item.value ? "clicked" : ""
+                        }`}
+                        onClick={() => changeFormSearch("gender", item.value)}
                       >
+                        {item.name}
+                      </li>
+                      {index !== categoryGender.length - 1 && (
+                        <p style={{ color: "rgb(183, 188, 188)" }}>|</p>
+                      )}
+                    </>
+                  ))}
+                </ul>
+                {/* search by status */}
+
+                <label
+                  style={{
+                    color: "#ff4400",
+                    fontSize: "20px",
+                    paddingBottom: 20,
+                    fontWeight: 700,
+                    padding: 10,
+                  }}
+                >
+                  Trạng thái
+                </label>
+                <ul className="sell-off">
+                  {categorySellOff.map((item, index) => (
+                    <>
+                      <li className="child-category">
+                        <Checkbox
+                          checked={isChecked[item.name]?.[item.value] || false}
+                          onChange={(e) =>
+                            changeFomSearch(
+                              item.name,
+                              item.value,
+                              e.target.checked
+                            )
+                          }
+                        >
+                          {item.label}
+                        </Checkbox>
+                      </li>
+                    </>
+                  ))}
+                </ul>
+
+                {/* search by new product */}
+
+                <ul className="new-product-search">
+                  {newProduct.map((item, index) => (
+                    <>
+                      <li className="child-category">
+                        <Checkbox
+                          checked={isChecked[item.name]?.[item.value] || false}
+                          onChange={(e) =>
+                            changeFomSearch(
+                              item.name,
+                              item.value,
+                              e.target.checked
+                            )
+                          }
+                        />{" "}
                         {item.label}
-                      </Checkbox>
-                    </li>
-                  </>
-                ))}
-              </ul>
-
-              {/* search by new product */}
-
-              <ul className="new-product-search">
-                {newProduct.map((item, index) => (
-                  <>
-                    <li className="child-category">
-                      <Checkbox
-                        checked={isChecked[item.name]?.[item.value] || false}
-                        onChange={(e) =>
-                          changeFomSearch(
-                            item.name,
-                            item.value,
-                            e.target.checked
-                          )
-                        }
-                      />{" "}
-                      {item.label}
-                    </li>
-                  </>
-                ))}
-              </ul>
-              {/* search by price */}
-              <label
-                style={{
-                  color: "#ff4400",
-                  fontSize: "20px",
-                  fontWeight: 700,
-                  padding: 10,
-                }}
-              >
-                Giá
-              </label>
-              <ul className="category-price">
-                {categoryPrice.map((item, index) => (
-                  <>
-                    <li className="child-category" key={index}>
-                      <Checkbox
-                        checked={isChecked["price"]?.[item.name] || false}
-                        onChange={(e) =>
-                          changePrice(
-                            item.minPrice,
-                            item.maxPrice,
-                            item.name,
-                            e.target.checked
-                          )
-                        }
-                      />{" "}
-                      {item.name}
-                    </li>
-                  </>
-                ))}
-              </ul>
-
-              {/* search by categorys */}
-              <ul className="categorys">
-                {categorys.map((item, index) => (
-                  <li key={index} className="box-category">
-                    <label
-                      style={{
-                        color: "#ff4400",
-                        fontSize: "20px",
-                        paddingBottom: 20,
-                      }}
-                    >
-                      {item.label}
-                    </label>
-                    <ul>
-                      {item.children.map((child, childIndex) => (
-                        <li key={childIndex} className="child-category">
-                          <Checkbox
-                            checked={
-                              isChecked[item.name]?.[child.name] || false
-                            }
-                            onChange={(e) =>
-                              changeFomSearch(
-                                item.name,
-                                child.name,
-                                e.target.checked
-                              )
-                            }
-                          />{" "}
-                          {child.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-              {/* search by color */}
-              <ul className="category-color-search">
+                      </li>
+                    </>
+                  ))}
+                </ul>
+                {/* search by price */}
                 <label
                   style={{
                     color: "#ff4400",
                     fontSize: "20px",
                     fontWeight: 700,
+                    padding: 10,
                   }}
                 >
-                  Màu
+                  Giá
                 </label>
-                <div
-                  style={{ display: "flex", marginTop: 10, paddingLeft: 20 }}
-                >
-                  {listColor.map((item, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        backgroundColor: decodeURIComponent(item.code),
-                        width: "30px",
-                        height: "30px",
-                        marginRight: 5,
-                      }}
-                      className={
-                        formSearch.color &&
-                        formSearch.color !== "" &&
-                        (formSearch.color.split(",").includes(item.name)
-                          ? "item-color-search"
-                          : "")
-                      }
-                      onClick={() => changeColor("color", item.name)}
-                    ></div>
+                <ul className="category-price">
+                  {categoryPrice.map((item, index) => (
+                    <>
+                      <li className="child-category" key={index}>
+                        <Checkbox
+                          checked={isChecked["price"]?.[item.name] || false}
+                          onChange={(e) =>
+                            changePrice(
+                              item.minPrice,
+                              item.maxPrice,
+                              item.name,
+                              e.target.checked
+                            )
+                          }
+                        />{" "}
+                        {item.name}
+                      </li>
+                    </>
+                  ))}
+                </ul>
+
+                {/* search by categorys */}
+                <ul className="categorys">
+                  {categorys.map((item, index) => (
+                    <li key={index} className="box-category">
+                      <label
+                        style={{
+                          color: "#ff4400",
+                          fontSize: "20px",
+                          paddingBottom: 20,
+                        }}
+                      >
+                        {item.label}
+                      </label>
+                      <ul>
+                        {item.children.map((child, childIndex) => (
+                          <li key={childIndex} className="child-category">
+                            <Checkbox
+                              checked={
+                                isChecked[item.name]?.[child.name] || false
+                              }
+                              onChange={(e) =>
+                                changeFomSearch(
+                                  item.name,
+                                  child.name,
+                                  e.target.checked
+                                )
+                              }
+                            />{" "}
+                            {child.name}
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+                {/* search by color */}
+                <ul className="category-color-search">
+                  <label
+                    style={{
+                      color: "#ff4400",
+                      fontSize: "20px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    Màu
+                  </label>
+                  <div
+                    style={{ display: "flex", marginTop: 10, paddingLeft: 20 }}
+                  >
+                    {listColor.map((item, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          backgroundColor: decodeURIComponent(item.code),
+                          width: "30px",
+                          height: "30px",
+                          marginRight: 5,
+                        }}
+                        className={
+                          formSearch.color &&
+                          formSearch.color !== "" &&
+                          (formSearch.color.split(",").includes(item.name)
+                            ? "item-color-search"
+                            : "")
+                        }
+                        onClick={() => changeColor("color", item.name)}
+                      ></div>
+                    ))}
+                  </div>
+                </ul>
+              </div>
+            </Card>
+          </Col>
+
+          <Col span={15}>
+            <Card>
+              <div className="box-products">
+                <div className="list-product">
+                  {list.map((item, index) => (
+                    <CardItem item={item} index={index} />
                   ))}
                 </div>
-              </ul>
-            </div>
-            <div className="box-products">
-              <div className="list-product">
-                {list.map((item, index) => (
-                  <CardItem item={item} index={index} />
-                ))}
-              </div>
 
-              <div
-                style={{
-                  marginTop: "30px",
-                  textAlign: "right",
-                  marginRight: 20,
-                }}
-              >
-                <Pagination
-                  defaultCurrent={1}
-                  current={currentPage + 1}
-                  total={totalPagesProduct * 10}
-                  onChange={handlePageChange}
-                />
+                <div
+                  style={{
+                    marginTop: "30px",
+                    textAlign: "right",
+                    marginRight: 20,
+                  }}
+                >
+                  <Pagination
+                    defaultCurrent={1}
+                    current={currentPage + 1}
+                    total={totalPagesProduct * 10}
+                    onChange={handlePageChange}
+                  />
+                </div>
               </div>
-            </div>
+            </Card>
           </Col>
         </Row>
       </div>
