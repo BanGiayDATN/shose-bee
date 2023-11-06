@@ -27,7 +27,7 @@ function ModalCreateAddressAccount({
   const closeModalCreate = () => {
     setFormAdd({
       idAccount: sessionStorage.getItem("idAccount"),
-      status: "KHONG_SU_DUNG",
+      status: "DANG_SU_DUNG",
     });
     setFormErrors({});
     setModalAddressAccount(false);
@@ -109,8 +109,8 @@ function ModalCreateAddressAccount({
         phoneNumber: !formAdd.phoneNumber
           ? "Nhập số điện thoại"
           : !phoneNumberPattern.test(formAdd.phoneNumber)
-          ? "Nhập đúng định dạng"
-          : "",
+            ? "Nhập đúng định dạng"
+            : "",
         province:
           formAdd.province === undefined || !formAdd.province
             ? "Chọn tỉnh/thành phố"

@@ -178,7 +178,7 @@ function CardItem({ item, index }) {
         tabindex="0"
       >
         <div>
-          <div className="link-card-item" onClick={()=> nav(`/detail-product/${item.idProductDetail}`)}>
+          <Link className="link-card-item" to={`/detail-product/${item.idProductDetail}`}>
             <div className="box-img-product">
               <div
                 style={{
@@ -202,7 +202,7 @@ function CardItem({ item, index }) {
               </p>
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
-          </div>
+          </Link>
         </div>
         <div
           className="button-buy-now"

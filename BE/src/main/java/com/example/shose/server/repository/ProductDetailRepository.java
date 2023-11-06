@@ -288,30 +288,42 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
     Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     @Query(value = """
-            SELECT
-                pd.id as idProductDetail,
-                GROUP_CONCAT(i.name)as image,
-                p.name as nameProduct,
-                pd.price as price,
-                pd.quantity as quantity,
-                c.code as codeColor,
-                s.name as nameSize,
-                c2.name as nameCategory,
-                b.name as nameBrand,
-                m.name as nameMaterial,
-                s2.name as nameSole
-            
-            from product_detail pd
-                     left JOIN image i on i.id_product_detail = pd.id
-                     JOIN product p on pd.id_product = p.id
-                     JOIN color c on c.id = pd.id_color
-                     JOIN size s on s.id = pd.id_size
-                     JOIN category c2 on pd.id_category = c2.id
-                     JOIN brand b on pd.id_brand = b.id
-                     JOIN material m on pd.id_material = m.id
-                     JOIN sole s2 on pd.id_sole = s2.id
-            where pd.id = :id
-                 """, nativeQuery = true)
+
+                       SELECT
+                         pd.id as idProductDetail,
+                         GROUP_CONCAT(i.name)as image,
+                         p.name as nameProduct,
+                         pd.price as price,
+                         pd.quantity as quantity,
+                         c.code as codeColor,
+                         (select group_concat(s3.name,',',pd.id ORDER BY s3.name ASC) from product_detail pd
+                         join size s3 on pd.id_size = s3.id
+                         join color c3 on pd.id_color = c3.id
+                         join product p2 on pd.id_product = p2.id
+                         JOIN category c4 on pd.id_category = c4.id
+                         JOIN brand b1 on pd.id_brand = b1.id
+                         JOIN material m1 on pd.id_material = m1.id
+                         JOIN sole s4 on pd.id_sole = s4.id
+                         where c3.id = c.id and p2.id = p.id and c4.id = c2.id and b1.id = b.id and m1.id = m.id and s4.id = s2.id
+                        order by s3.name asc
+                         ) as listSize,
+                         s.name as nameSize,
+                         c2.name as nameCategory,
+                         b.name as nameBrand,
+                         m.name as nameMaterial,
+                         s2.name as nameSole
+                     
+                     from product_detail pd
+                              left JOIN image i on i.id_product_detail = pd.id
+                              JOIN product p on pd.id_product = p.id
+                              JOIN color c on c.id = pd.id_color
+                              JOIN size s on s.id = pd.id_size
+                              JOIN category c2 on pd.id_category = c2.id
+                              JOIN brand b on pd.id_brand = b.id
+                              JOIN material m on pd.id_material = m.id
+                              JOIN sole s2 on pd.id_sole = s2.id
+                       where pd.id = :id
+                            """, nativeQuery = true)
     GetDetailProductOfClient getDetailProductOfClient(@Param("id") String id);
 
 

@@ -29,6 +29,9 @@ public interface GetDetailProductOfClient {
 
     @Value("#{target.nameSize}")
     String getNameSize();
+    @Value("#{target.listSize}")
+    String getListSize();
+
     @Value("#{target.nameCategory}")
     String getNameCategory();
     @Value("#{target.nameBrand}")

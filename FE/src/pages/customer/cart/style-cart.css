@@ -77,13 +77,13 @@
   margin-top: "10px";
 }
 .info-cart {
-  /* width: 1000px; */
+
   width: 65%;
   margin-right: 3%;
 }
 .bill-of-cart {
   margin-top: 60px;
-  width: 30%;
+  margin-left: auto;
   background-color: #fc703d;
   padding: 9px;
   height: 520px;
@@ -180,8 +180,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 60%;
+  margin-left: auto;
   border-radius: 7px;
+  
 }
 
 .input-quantity-cart {
