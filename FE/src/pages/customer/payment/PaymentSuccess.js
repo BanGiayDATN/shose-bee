@@ -17,6 +17,8 @@ const { updateTotalQuantity } = useCart();
 useEffect(()=>{
 if(vnp_ResponseCode==='00'){
   console.log(formBill);
+  const param = new URLSearchParams(window.location.search);
+  formBill.responsePayment = param
   onPayment(formBill)
 }else{
   var data ={
