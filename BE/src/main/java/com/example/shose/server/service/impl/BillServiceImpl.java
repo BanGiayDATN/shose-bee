@@ -28,13 +28,7 @@ import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
-import com.example.shose.server.infrastructure.constant.Message;
-import com.example.shose.server.infrastructure.constant.Roles;
-import com.example.shose.server.infrastructure.constant.Status;
-import com.example.shose.server.infrastructure.constant.StatusBill;
-import com.example.shose.server.infrastructure.constant.StatusMethod;
-import com.example.shose.server.infrastructure.constant.StatusPayMents;
-import com.example.shose.server.infrastructure.constant.TypeBill;
+import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
@@ -54,6 +48,7 @@ import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.RandomNumberGenerator;
+import com.example.shose.server.util.payMent.Config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -576,10 +571,10 @@ public class BillServiceImpl implements BillService {
          if (!account.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_IS_EXIT);
         }
-        if( account.get().getRoles() != Roles.ROLE_ADMIN && !bill.get().getEmployees().getId().equals(idEmployees)  ){
+        if( account.get().getRoles() != Roles.ADMIN && !bill.get().getEmployees().getId().equals(idEmployees)  ){
             throw new RestApiException(Message.ACCOUNT_NOT_ROLE_CANCEL_BILL);
         }
-        if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && account.get().getRoles() != Roles.ROLE_ADMIN){
+        if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && account.get().getRoles() != Roles.ADMIN){
             throw new RestApiException(Message.ACCOUNT_NOT_ROLE_CANCEL_BILL);
         }
         bill.get().setStatusBill(StatusBill.DA_HUY);
@@ -609,6 +604,11 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public String createBillCustomerOnlineRequest(CreateBillCustomerOnlineRequest request) {
+        if(!request.getPaymentMethod().equals("paymentReceive")){
+            if(!Config.decodeHmacSha512(request.getResponsePayment().toParamsString(), request.getResponsePayment().getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
+                throw new RestApiException(Message.ERROR_HASHSECRET);
+            }
+        }
         User user = User.builder()
                 .fullName(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
@@ -637,7 +637,7 @@ public class BillServiceImpl implements BillService {
         addressRepository.save(address);
 
         Bill bill = Bill.builder()
-                .code(new RandomNumberGenerator().randomToString("HD"))
+                .code(request.getResponsePayment().getVnp_TxnRef().split("-")[0])
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
@@ -679,7 +679,11 @@ public class BillServiceImpl implements BillService {
                 .bill(bill)
                 .totalMoney(request.getTotalMoney())
                 .status(StatusPayMents.THANH_TOAN).build();
-
+        if(!request.getPaymentMethod().equals("paymentReceive")){
+            paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
+            paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
+            paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+        }
         paymentsMethodRepository.save(paymentsMethod);
 
         if (!request.getIdVoucher().isEmpty()) {
@@ -701,10 +705,14 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public String createBillAccountOnlineRequest(CreateBillAccountOnlineRequest request) {
-
+        if(!request.getPaymentMethod().equals("paymentReceive")){
+            if(!Config.decodeHmacSha512(request.getResponsePayment().toParamsString(), request.getResponsePayment().getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
+                throw new RestApiException(Message.ERROR_HASHSECRET);
+            }
+        }
         Account account = accountRepository.findById(request.getIdAccount()).get();
         Bill bill = Bill.builder()
-                .code(new RandomNumberGenerator().randomToString("Bill"))
+                .code(request.getResponsePayment().getVnp_TxnRef().split("-")[0])
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress())
                 .userName(request.getUserName())
@@ -748,7 +756,11 @@ public class BillServiceImpl implements BillService {
                 .bill(bill)
                 .totalMoney(request.getTotalMoney())
                 .status(StatusPayMents.THANH_TOAN).build();
-
+        if(!request.getPaymentMethod().equals("paymentReceive")){
+            paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
+            paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
+            paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+        }
         paymentsMethodRepository.save(paymentsMethod);
 
         if (!request.getIdVoucher().isEmpty()) {

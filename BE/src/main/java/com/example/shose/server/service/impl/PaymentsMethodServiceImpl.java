@@ -411,7 +411,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         vnp_Params.put("vnp_OrderInfo", payModel.vnp_OrderInfo);
         vnp_Params.put("vnp_OrderType", payModel.vnp_OrderType);
         vnp_Params.put("vnp_ReturnUrl", VnPayConstant.vnp_ReturnUrlBuyOnline);
-        vnp_Params.put("vnp_TxnRef", String.valueOf(UUID.randomUUID()));
+        vnp_Params.put("vnp_TxnRef", "HD" + RandomStringUtils.randomNumeric(6) + "-"+ vnp_CreateDate);
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         List fieldList = new ArrayList(vnp_Params.keySet());
