@@ -170,6 +170,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 7px;
+  cursor: pointer;
 }
 .button-continue-to-buy{
   width: 150px;
@@ -182,7 +183,7 @@
   align-items: center;
   margin-left: auto;
   border-radius: 7px;
-  
+  cursor: pointer;
 }
 
 .input-quantity-cart {

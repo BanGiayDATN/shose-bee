@@ -2,7 +2,7 @@ import imgShoe from "./../../../assets/images/third_slider_img03.png";
 import logoHidden from "./../../../assets/images/logo_client.png";
 import imgShoe1 from "./../../../assets/images/trending_banner02.jpg";
 import "./style-cart.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCart } from "./CartContext";
 import { useState, useEffect } from "react";
@@ -37,6 +37,7 @@ import dayjs from "dayjs";
 import { Header } from "antd/es/layout/layout";
 
 function Cart() {
+  const nav = useNavigate()
   const idAccountLocal = sessionStorage.getItem("idAccount");
   const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
   const [cart, setCart] = useState([]);
@@ -657,17 +658,18 @@ function Cart() {
                           </div>
                         </div>
                       ))}
-
-
                     </>
                   )}
                 </div>
-                <div style={{ display: "flex" }}>
+                {cartLocal.length !== 0 ? (
+                  <div style={{ display: "flex" }}>
                     <div className="button-delete-all-cart">Xóa tất cả</div>
-                    <Link className="button-continue-to-buy" to="/home" >
-                        Tiếp tục mua hàng
-                    </Link>
-                  </div>
+                  
+                    <div className="button-continue-to-buy" onClick={()=> nav("/home")}  >
+                      Tiếp tục mua hàng
+                    </div>
+                  </div>) : (null)}
+
               </div>
               {/* bill of cart */}
               <div className="bill-of-cart" style={{ borderRadius: "20px" }}>

@@ -421,7 +421,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 AND  ( :#{#res.status} IS NULL OR :#{#res.status} =''  OR pd.status in (:#{#req.statuss}) )
                 AND  ( :#{#res.gender} IS NULL OR :#{#res.gender} ='' OR pd.gender LIKE :#{#req.gender} )
                 AND  ( :#{#res.minPrice} IS NULL OR :#{#res.minPrice} ='' OR pd.price >= :#{#req.minPrice} ) 
-                AND  ( :#{#res.maxPrice} IS NULL  OR :#{#res.maxPrice} = '' OR  pd.price <= :#{#req.maxPrice} )
+                AND  ( :#{#res.maxPrice} IS NULL  OR :#{#res.maxPrice} = '' OR  pd.price < :#{#req.maxPrice} )
                 AND  ( :#{#res.newProduct} IS NULL  OR :#{#res.newProduct} = '' OR DATE_FORMAT(FROM_UNIXTIME(pd.created_date / 1000), '%Y-%m-%d %H:%i:%s') between DATE_SUB(NOW(), INTERVAL 15 DAY)  and  NOW())
                 AND ( :#{#res.sellOff} IS NULL  OR :#{#res.sellOff} = '' OR promotion_summary.status =true)
                 GROUP BY pd.id,valuePromotion
