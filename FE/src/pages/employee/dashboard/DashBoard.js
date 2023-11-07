@@ -86,14 +86,11 @@ const DashBoard = () => {
         };
 
         const newDataPie = data.map(item => ({
-          category: statusMapping[item.statusBill] || item.statusBill, // Sử dụng mapping hoặc giữ nguyên nếu không tìm thấy
+          category: statusMapping[item.statusBill] || item.statusBill,
           value: item.totalStatusBill,
           color: statusColors[item.statusBill] || item.statusBill,
         }));
         drawChartPie(newDataPie)
-        // const chartPieLabels = data.map((item) => statusMapping[item.statusBill]);
-        // const chartPieData = data.map((item) => item.totalStatusBill);
-        // const chartPieColor = data.map((item) => statusColors[item.statusBill]);
       },
       (err) => {
         console.log(err);
@@ -102,11 +99,12 @@ const DashBoard = () => {
 
     StatisticalApi.fetchBillByDate().then(
       (res) => {
-        console.log(res.data);
         const dataBill = res.data.dataBill;
         const dataProduct = res.data.dataProduct;
         const dateBillList = [];
         const dateProductList = [];
+        const groupBill = new Map();
+        const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
           const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -117,8 +115,28 @@ const DashBoard = () => {
           const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
           dateProductList.push({ totalProductDate: item.totalProductDate, billDate: formattedDate });
         });
-        setDataColumn(dateBillList);
-        drawChartEnergy(dateBillList, dateProductList);
+
+
+        dateProductList.forEach(item => {
+          const { totalProductDate, billDate } = item;
+          if (groupProduct.has(billDate)) {
+            const existingItem = groupProduct.get(billDate);
+            existingItem.totalProductDate += totalProductDate;
+          } else {
+            groupProduct.set(billDate, { totalProductDate, billDate });
+          }
+        });
+
+        dateBillList.forEach(item => {
+          const { totalBillDate, billDate } = item;
+          if (groupBill.has(billDate)) {
+            const existingItem = groupBill.get(billDate);
+            existingItem.totalBillDate += totalBillDate;
+          } else {
+            groupBill.set(billDate, { totalBillDate, billDate });
+          }
+        });
+        drawChartEnergy(Array.from(groupBill.values()), Array.from(groupProduct.values()));
       },
       (err) => {
         console.log(err);
@@ -289,7 +307,7 @@ const DashBoard = () => {
       dataIndex: "stt",
       key: "stt",
       sorter: (a, b) => a.stt - b.stt,
-      width: 50 
+      width: 50
     },
     {
       title: "Ảnh",
@@ -339,23 +357,6 @@ const DashBoard = () => {
     return index % 2 === 0 ? "even-row" : "odd-row";
   };
 
-
-  // const dateMap = {};
-  // dataColumn.forEach((item) => {
-  //   const date = new Date(Number(item.billDate));
-  //   const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-  //     }/${date.getFullYear()}`;
-
-  //   if (dateMap[formattedDate]) {
-  //     dateMap[formattedDate] += item.totalBillDate;
-  //   } else {
-  //     dateMap[formattedDate] = item.totalBillDate;
-  //   }
-  // });
-
-  // const chartLabels = Object.keys(dateMap);
-  // const chartData = Object.values(dateMap);
-
   const handleStartDateChange = (event) => {
     const startDate = event.target.value;
     const startDateLong = new Date(startDate).getTime();
@@ -373,11 +374,12 @@ const DashBoard = () => {
   const loadDataChartColumn = (startDate, endDate) => {
     StatisticalApi.fetchBillByDate(startDate, endDate).then(
       (res) => {
-        console.log(res.data);
         const dataBill = res.data.dataBill;
         const dataProduct = res.data.dataProduct;
         const dateBillList = [];
         const dateProductList = [];
+        const groupBill = new Map();
+        const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
           const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -388,8 +390,28 @@ const DashBoard = () => {
           const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
           dateProductList.push({ totalProductDate: item.totalProductDate, billDate: formattedDate });
         });
-        setDataColumn(dateBillList);
-        drawChartEnergy(dateBillList, dateProductList)
+
+
+        dateProductList.forEach(item => {
+          const { totalProductDate, billDate } = item;
+          if (groupProduct.has(billDate)) {
+            const existingItem = groupProduct.get(billDate);
+            existingItem.totalProductDate += totalProductDate;
+          } else {
+            groupProduct.set(billDate, { totalProductDate, billDate });
+          }
+        });
+
+        dateBillList.forEach(item => {
+          const { totalBillDate, billDate } = item;
+          if (groupBill.has(billDate)) {
+            const existingItem = groupBill.get(billDate);
+            existingItem.totalBillDate += totalBillDate;
+          } else {
+            groupBill.set(billDate, { totalBillDate, billDate });
+          }
+        });
+        drawChartEnergy(Array.from(groupBill.values()), Array.from(groupProduct.values()));
       },
       (err) => {
         console.log(err);
@@ -398,29 +420,16 @@ const DashBoard = () => {
   };
 
   const drawChartEnergy = (dataBill, dataProduct) => {
-    // data1 là data của hôm qua, tháng trước,....
-    // data2 là data của hôm nay, tháng này,....
 
     var colorsSES11 = ""
     var colorsSES12 = ""
     var colorsSES21 = ""
     var colorsSES22 = ""
-    // if (typeModule == "load") {
-    colorsSES11 = 0x9DA3BE
+
     colorsSES12 = 0x9D92AF
-    colorsSES21 = 0x0a1a5c
     colorsSES22 = 0x0f105f
-    // } else if (typeModule == "solar") {
-    //     colorsSES21 = 0xF37021
-    //     colorsSES22 = 0xFF8456
-    //     colorsSES11 = 0xFFD4A6
-    //     colorsSES12 = 0xFFDDAA
-    // } else if (typeModule == "grid") {
-    //     colorsSES11 = 0x9DA3BE
-    //     colorsSES12 = 0x9D92AF
-    //     colorsSES21 = 0x0a1a5c
-    //     colorsSES22 = 0x0f105f
-    // }
+    colorsSES21 = 0xF37021
+    colorsSES11 = 0xFFD4A6
 
 
     am5.array.each(am5.registry.rootElements, function (root) {
@@ -443,10 +452,10 @@ const DashBoard = () => {
       // https://www.amcharts.com/docs/v5/charts/xy-chart/
       let chart = root.container.children.push(
         am5xy.XYChart.new(root, {
-
-          panX: true,
+          panX: false,
           panY: false,
           wheelX: "panX",
+          wheelY: "zoomX",
           layout: root.verticalLayout
         })
       );
@@ -557,9 +566,10 @@ const DashBoard = () => {
 
       series1.columns.template.set("fillGradient", am5.LinearGradient.new(root, {
         stops: [{
-          color: am5.color(colorsSES11)
+          color: am5.color(0x297373),
+          offset: 0.7
         }, {
-          color: am5.color(colorsSES12)
+          color: am5.color(0x946b49)
         }],
         rotation: 90
       }));
@@ -591,9 +601,9 @@ const DashBoard = () => {
 
       series2.columns.template.set("fillGradient", am5.LinearGradient.new(root, {
         stops: [{
-          color: am5.color(colorsSES21)
+          color: am5.color(0xFF621F)
         }, {
-          color: am5.color(colorsSES22)
+          color: am5.color(0x946B49)
         }],
         rotation: 90
       }));
@@ -603,6 +613,7 @@ const DashBoard = () => {
       // Add cursor
       // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
       let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+        behavior: "zoomX"
       }));
       cursor.lineY.set("visible", false);
 

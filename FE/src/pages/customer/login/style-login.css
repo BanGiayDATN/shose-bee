@@ -19,17 +19,9 @@
     display: grid;
     place-items: center;
 }
-.content-login{
-    margin: 1% ;
-    width:50%;
-    height: 80%;
-    background-color: rgb(87, 86, 84);
-    display: flex;
-    /* margin-left: 60%; */
-    /* padding-top: 10%; */
-}
+
 .box-form-login{
-    width: 90%;
+    width: 800px;
     height: 500px;
     background-color: rgb(255, 255, 255);
     margin: auto;
@@ -38,6 +30,7 @@
    display: flex;
    position: relative;
    padding: 20px 0;
+   /* border: 1px solid rgb(238, 235, 235); */
 }
 .form-login{
     width: 50%;
@@ -167,6 +160,9 @@ transition: 0.3 ease;
     place-items: center;
     border-radius: 5px;
     cursor: pointer;
+    &:hover{
+        background-color: #ff4400;
+    }
 }
 .box-forgot-pass{
     width: 350px;

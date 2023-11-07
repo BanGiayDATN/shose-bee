@@ -621,7 +621,7 @@ public class BillServiceImpl implements BillService {
                 .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .password(new RandomNumberGenerator().randomPassword())
-                .roles(Roles.USER).build();
+                .roles(Roles.ROLE_USER).build();
 
         accountRepository.save(account);
         Address address = Address.builder()

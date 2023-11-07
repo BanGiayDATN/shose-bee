@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,8 +32,9 @@ public class BillRestController {
     @Autowired
     private BillService billService;
 
-    @Value("${user}")
-    private String userId;
+
+    @Autowired
+    private ShoseSession shoseSession;
 
 
     @GetMapping
@@ -61,8 +63,8 @@ public class BillRestController {
     }
 
     @PutMapping("/cancel-status/{id}")
-    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.cancelBill(id, userId, request, requests));
+    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.cancelBill(id, userId, request));
     }
 
     @GetMapping("/details-invoices-counter")

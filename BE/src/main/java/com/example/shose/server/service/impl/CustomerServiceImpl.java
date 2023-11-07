@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.QuickCreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
+import com.example.shose.server.dto.request.customer.UpdateInfoClient;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.entity.Account;
@@ -20,6 +21,7 @@ import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.CustomerService;
+import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,7 +99,7 @@ public class CustomerServiceImpl implements CustomerService {
         // tạo tài khoản cho khách hàng
         Account account = new Account();
         account.setUser(user);
-        account.setRoles(Roles.USER);
+        account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
         account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         account.setStatus(Status.DANG_SU_DUNG);
@@ -160,7 +162,7 @@ public class CustomerServiceImpl implements CustomerService {
         Address addressUser = addressRepository.getAddressByUserIdAndStatus(user.getId(), Status.DANG_SU_DUNG);
 
         Address address = new Address();
-        if(addressUser != null){
+        if (addressUser != null) {
             address.setId(addressUser.getId());
         }
         address.setWard(addressRequest.getWard());
@@ -177,6 +179,28 @@ public class CustomerServiceImpl implements CustomerService {
         addressRepository.save(address);
         return user;
 
+    }
+
+    @Override
+    public User updateInfoClient(UpdateInfoClient req) {
+        Optional<User> optional = userReposiory.findById(req.getId());
+        if (!optional.isPresent()) {
+            throw new RestApiException("Người dùng không tồn tại");
+        }
+
+        User user = optional.get();
+        user.setFullName(req.getFullName());
+        user.setEmail(req.getEmail());
+        user.setPhoneNumber(req.getPhoneNumber());
+        user.setGender(req.getGender());
+        if (req.getAvata() == null) {
+           user.setAvata(user.getAvata());
+        }else{
+            String urlImage = imageToCloudinary.uploadImage(req.getAvata());
+            user.setAvata(urlImage);
+        }
+        user.setDateOfBirth(req.getDateOfBirth());
+        return userReposiory.save(user);
     }
 
 
@@ -219,7 +243,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Account account = new Account();
         account.setUser(user);
-        account.setRoles(Roles.USER);
+        account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
         account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         account.setStatus(Status.DANG_SU_DUNG);

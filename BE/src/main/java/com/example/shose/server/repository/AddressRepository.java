@@ -78,6 +78,8 @@ public interface AddressRepository extends JpaRepository<Address, String> {
 
     @Query("SELECT a FROM  Address a WHERE (a.status =:status) and (a.user.id =:idUser)")
     List<Address> findAllAddressByStatus(@Param("status") Status status, @Param("idUser") String idUser);
+    @Query("SELECT a FROM  Address a WHERE a.status ='DANG_SU_DUNG' ")
+    Address getAddressDefault();
 
     @Query(value = """
             SELECT 
@@ -138,17 +140,17 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.province_id AS provinceId,
                 a.to_district_id AS districtId,
                 a.full_name AS fullName,
-                a.phone_number AS phoneNumber
-                
+                a.phone_number AS phoneNumber,
+                u.id AS userId
             FROM address a
             JOIN user u on a.id_user = u.id
             JOIN account acc on u.id = acc.id_user
             WHERE acc.id = :idAccount
-            
+            ORDER BY  a.status ASC
                   """,
             nativeQuery = true
     )
-    List<AddressAccountResponse> getListAddressByAcountId(@Param("idAccount") String idAccount);
+    List<AddressAccountResponse> getListAddressByAccountId(@Param("idAccount") String idAccount);
 
 
 }
