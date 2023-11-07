@@ -20,18 +20,6 @@ if(vnp_ResponseCode==='00'){
   const param = new URLSearchParams(window.location.search);
   formBill.responsePayment = param
   onPayment(formBill)
-}else{
-  var data ={
-    billDetail: formBill.billDetail
-  }
-  PaymentClientApi.changeQuantityProductAfterPayment(data).then(
-    (res) => {
-   
-    },
-    (err) => {
-      console.log(err);
-    }
-  )
 }
 },[])
 const formatMoney = (price) => {

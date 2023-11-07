@@ -704,10 +704,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }
   const formRef = React.useRef(null);
 
-  const addPayMent = (e, method) => {
+  const addPayMent = async(e, method) => {
     if (method == "CHUYEN_KHOAN") {
-      updateBillWhenSavePayMent([...dataPayment]);
-      submitCodeTransactionNext(e);
+     await updateBillWhenSavePayMent([...dataPayment]);
+     await submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",

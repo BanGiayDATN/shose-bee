@@ -571,10 +571,10 @@ public class BillServiceImpl implements BillService {
          if (!account.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_IS_EXIT);
         }
-        if( account.get().getRoles() != Roles.ADMIN && !bill.get().getEmployees().getId().equals(idEmployees)  ){
+        if( account.get().getRoles() != Roles.ROLE_ADMIN && !bill.get().getEmployees().getId().equals(idEmployees)  ){
             throw new RestApiException(Message.ACCOUNT_NOT_ROLE_CANCEL_BILL);
         }
-        if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && account.get().getRoles() != Roles.ADMIN){
+        if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && account.get().getRoles() != Roles.ROLE_ADMIN){
             throw new RestApiException(Message.ACCOUNT_NOT_ROLE_CANCEL_BILL);
         }
         bill.get().setStatusBill(StatusBill.DA_HUY);
@@ -607,6 +607,21 @@ public class BillServiceImpl implements BillService {
         if(!request.getPaymentMethod().equals("paymentReceive")){
             if(!Config.decodeHmacSha512(request.getResponsePayment().toParamsString(), request.getResponsePayment().getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
                 throw new RestApiException(Message.ERROR_HASHSECRET);
+            }
+            List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(request.getResponsePayment().getVnp_TransactionNo());
+            if (findAllByVnpTransactionNo.size() > 0) {
+                throw new RestApiException(Message.PAYMENT_TRANSACTION);
+            }
+            request.getBillDetail().forEach(x -> {
+                ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
+                productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
+                if (productDetail.getStatus() == Status.HET_SAN_PHAM) {
+                    productDetail.setStatus(Status.DANG_SU_DUNG);
+                }
+                productDetailRepository.save(productDetail);
+            });
+            if(request.getResponsePayment().getVnp_ResponseCode() != "00"){
+                throw new RestApiException(Message.PAYMENT_ERROR);
             }
         }
         User user = User.builder()
@@ -698,8 +713,7 @@ public class BillServiceImpl implements BillService {
                     .build();
             voucherDetailRepository.save(voucherDetail);
         }
-
-
+        sendMailOnline(bill.getId());
         return "thanh toán ok";
     }
 
@@ -708,6 +722,21 @@ public class BillServiceImpl implements BillService {
         if(!request.getPaymentMethod().equals("paymentReceive")){
             if(!Config.decodeHmacSha512(request.getResponsePayment().toParamsString(), request.getResponsePayment().getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
                 throw new RestApiException(Message.ERROR_HASHSECRET);
+            }
+            List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(request.getResponsePayment().getVnp_TransactionNo());
+            if (findAllByVnpTransactionNo.size() > 0) {
+                throw new RestApiException(Message.PAYMENT_TRANSACTION);
+            }
+            request.getBillDetail().forEach(x -> {
+                ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
+                productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
+                if (productDetail.getStatus() == Status.HET_SAN_PHAM) {
+                    productDetail.setStatus(Status.DANG_SU_DUNG);
+                }
+                productDetailRepository.save(productDetail);
+            });
+            if(request.getResponsePayment().getVnp_ResponseCode() != "00"){
+                throw new RestApiException(Message.PAYMENT_ERROR);
             }
         }
         Account account = accountRepository.findById(request.getIdAccount()).get();
@@ -720,7 +749,7 @@ public class BillServiceImpl implements BillService {
                 .itemDiscount(request.getItemDiscount())
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
-                .statusBill(StatusBill.DA_THANH_TOAN)
+                .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
@@ -781,6 +810,7 @@ public class BillServiceImpl implements BillService {
             List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndProductDetail_Id(cart.getId(), x.getIdProductDetail());
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
+        sendMailOnline(bill.getId());
         return "thanh toán ok";
     }
 
@@ -823,7 +853,15 @@ public class BillServiceImpl implements BillService {
 //     end   create file pdf
         return true;
     }
-
+    public void sendMailOnline(String idBill) {
+        String finalHtml = null;
+        Optional<Bill> optional = billRepository.findById(idBill);
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+            invoice.setCheckShip(true);
+        if( (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
+            sendMail(invoice, "http://localhost:3000/bill/"+ optional.get().getCode()+"/"+optional.get().getPhoneNumber(), optional.get().getEmail());
+        }
+    }
     public void sendMail(InvoiceResponse invoice, String url, String email){
         if(email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
             String finalHtmlSendMail = null;
