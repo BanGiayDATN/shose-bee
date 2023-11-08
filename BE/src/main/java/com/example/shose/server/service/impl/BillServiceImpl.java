@@ -702,6 +702,7 @@ public class BillServiceImpl implements BillService {
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+             paymentsMethod.setTotalMoney(request.getTotalMoney().add(request.getMoneyShip()));
         }
         paymentsMethodRepository.save(paymentsMethod);
 
@@ -797,6 +798,7 @@ public class BillServiceImpl implements BillService {
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+            paymentsMethod.setTotalMoney(request.getTotalMoney().add(request.getMoneyShip()));
         }
         paymentsMethodRepository.save(paymentsMethod);
 
