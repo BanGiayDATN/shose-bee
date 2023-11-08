@@ -17,19 +17,16 @@ const { updateTotalQuantity } = useCart();
 useEffect(()=>{
 if(vnp_ResponseCode==='00'){
   console.log(formBill);
+  const params = new URLSearchParams(window.location.search);
+  const paramsObj = {};
+
+  // Lặp qua các tham số và gán chúng vào đối tượng JSON.
+  params.forEach((value, key) => {
+    paramsObj[key] = value;
+  });
+
+  formBill.responsePayment = paramsObj
   onPayment(formBill)
-}else{
-  var data ={
-    billDetail: formBill.billDetail
-  }
-  PaymentClientApi.changeQuantityProductAfterPayment(data).then(
-    (res) => {
-   
-    },
-    (err) => {
-      console.log(err);
-    }
-  )
 }
 },[])
 const formatMoney = (price) => {

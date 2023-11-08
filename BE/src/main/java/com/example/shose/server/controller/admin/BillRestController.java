@@ -11,7 +11,6 @@ import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,8 +62,8 @@ public class BillRestController {
     }
 
     @PutMapping("/cancel-status/{id}")
-    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
-        return  new ResponseObject(billService.cancelBill(id, shoseSession.getUserId(), request));
+    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
+        return  new ResponseObject(billService.cancelBill(id, shoseSession.getUserId(), request, requests));
     }
 
     @GetMapping("/details-invoices-counter")
