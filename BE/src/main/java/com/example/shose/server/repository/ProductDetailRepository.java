@@ -337,7 +337,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    c2.id AS idCode,
                    s2.id AS idSize,
                    detail.maqr AS QRCode,
-                   p2.value AS promotion
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE p2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                   AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -356,6 +361,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 LEFT JOIN promotion_product_detail ppd ON detail.id = ppd.id_product_detail
                 LEFT JOIN promotion p2 ON ppd.id_promotion = p2.id
                 WHERE  detail.id = :id
+                GROUP BY detail.id
             """, nativeQuery = true)
     ProductDetailDTOResponse getOneById(@Param("id") String id);
 

@@ -9,9 +9,8 @@
 }
 .list-product {
   display: grid; /* Sử dụng CSS Grid để quản lý bố trí */
-  grid-template-columns: repeat(3, 0.1fr); /* 4 CardItem trong một hàng */
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   grid-gap: 0px; /* Khoảng cách giữa các CardItem */
-
 }
 .category-gender {
   width: 100%;

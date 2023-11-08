@@ -263,7 +263,7 @@ function Products() {
   return (
     <React.Fragment>
       <div className="products">
-        <Row justify={"center"} gutter={16} style={{marginTop:"30px"}}>
+        <Row justify={"center"} gutter={16} style={{ marginTop: "30px" }}>
           <Col span={7}>
             <Card>
               <div className="category-of-products">
