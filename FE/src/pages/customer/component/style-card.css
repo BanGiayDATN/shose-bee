@@ -183,3 +183,7 @@
   .size-product.highlight {
     border: 1px solid #000000;
   }
+
+  .button-delete-cart:hover{
+    color: red;
+  }
