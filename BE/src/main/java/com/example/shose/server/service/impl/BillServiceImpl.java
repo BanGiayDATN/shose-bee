@@ -697,11 +697,12 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()))
-                .status(StatusPayMents.THANH_TOAN).build();
+                .status(StatusPayMents.TRA_SAU).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+            paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
         }
         paymentsMethodRepository.save(paymentsMethod);
 
@@ -792,11 +793,12 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()))
-                .status(StatusPayMents.THANH_TOAN).build();
+                .status(StatusPayMents.TRA_SAU).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+            paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
         }
         paymentsMethodRepository.save(paymentsMethod);
 
