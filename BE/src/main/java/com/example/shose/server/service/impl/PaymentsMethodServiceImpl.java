@@ -300,35 +300,39 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         if (Config.decodeHmacSha512(response.toParamsString(), response.getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)) {
-            List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(response.getVnp_TransactionNo());
-            if (findAllByVnpTransactionNo.size() > 0) {
-                throw new RestApiException(Message.PAYMENT_TRANSACTION);
-            }
-            Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
-            PaymentsMethod paymentsMethod = new PaymentsMethod();
-            paymentsMethod.setBill(bill.get());
-            paymentsMethod.setDescription("Thanh toán thành công");
-            paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount().substring(0, response.getVnp_Amount().length() - 2)));
-            paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
-            paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
-            paymentsMethod.setEmployees(account.get());
-            paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
-            paymentsMethod.setCreateAt(Long.parseLong(response.getVnp_TxnRef().split("-")[1]));
-            paymentsMethod.setTransactionDate(Long.parseLong(response.getVnp_PayDate()));
-            paymentsMethodRepository.save(paymentsMethod);
+           if(response.getVnp_TransactionStatus().equals("00")){
+               List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(response.getVnp_TransactionNo());
+               if (findAllByVnpTransactionNo.size() > 0) {
+                   throw new RestApiException(Message.PAYMENT_TRANSACTION);
+               }
+               Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
+               PaymentsMethod paymentsMethod = new PaymentsMethod();
+               paymentsMethod.setBill(bill.get());
+               paymentsMethod.setDescription("Thanh toán thành công");
+               paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount().substring(0, response.getVnp_Amount().length() - 2)));
+               paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
+               paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
+               paymentsMethod.setEmployees(account.get());
+               paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
+               paymentsMethod.setCreateAt(Long.parseLong(response.getVnp_TxnRef().split("-")[1]));
+               paymentsMethod.setTransactionDate(Long.parseLong(response.getVnp_PayDate()));
+               paymentsMethodRepository.save(paymentsMethod);
 
-            List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
-            boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
-            if (checkBill) {
-                bill.get().setStatusBill(StatusBill.THANH_CONG);
-                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                billRepository.save(bill.get());
-            } else {
-                bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
-                billRepository.save(bill.get());
-            }
-            createFilePdfAtCounter(bill.get().getId(), requests);
-            return true;
+               List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
+               boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
+               if (checkBill) {
+                   bill.get().setStatusBill(StatusBill.THANH_CONG);
+                   bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                   billRepository.save(bill.get());
+               } else {
+                   bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+                   billRepository.save(bill.get());
+               }
+               createFilePdfAtCounter(bill.get().getId(), requests);
+               return true;
+           }else{
+               throw new RestApiException(Message.PAYMENT_ERROR);
+           }
         }else{
             throw new RestApiException(Message.ERROR_HASHSECRET);
         }
