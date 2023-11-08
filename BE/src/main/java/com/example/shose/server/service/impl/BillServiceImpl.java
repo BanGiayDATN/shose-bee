@@ -696,13 +696,12 @@ public class BillServiceImpl implements BillService {
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
-                .totalMoney(request.getTotalMoney())
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()))
                 .status(StatusPayMents.THANH_TOAN).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
-             paymentsMethod.setTotalMoney(request.getTotalMoney().add(request.getMoneyShip()));
         }
         paymentsMethodRepository.save(paymentsMethod);
 
@@ -792,13 +791,12 @@ public class BillServiceImpl implements BillService {
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
-                .totalMoney(request.getTotalMoney())
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()))
                 .status(StatusPayMents.THANH_TOAN).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
-            paymentsMethod.setTotalMoney(request.getTotalMoney().add(request.getMoneyShip()));
         }
         paymentsMethodRepository.save(paymentsMethod);
 
