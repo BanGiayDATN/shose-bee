@@ -660,6 +660,7 @@ public class BillServiceImpl implements BillService {
                 .itemDiscount(request.getItemDiscount())
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
+                .email(request.getEmail())
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
@@ -752,6 +753,7 @@ public class BillServiceImpl implements BillService {
                 .itemDiscount(request.getItemDiscount())
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
+                .email(account.getEmail())
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
           if(!request.getPaymentMethod().equals("paymentReceive")){
@@ -864,7 +866,7 @@ public class BillServiceImpl implements BillService {
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
             invoice.setCheckShip(true);
-        if( (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
+         if( (optional.get().getEmail() != null)){
             sendMail(invoice, "http://localhost:3000/bill/"+ optional.get().getCode()+"/"+optional.get().getPhoneNumber(), optional.get().getEmail());
         }
     }
