@@ -10,6 +10,7 @@ export function CartProvider({ children }) {
   useEffect(() => {
     console.log(idAccount);
     console.log(totalQuantity);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalQuantity])
   useEffect(() => {
     if (idAccount !== null) {
@@ -20,6 +21,7 @@ export function CartProvider({ children }) {
         setTotalQuantity(total)
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const updateTotalQuantity = (newCart) => {

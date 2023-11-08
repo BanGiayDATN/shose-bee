@@ -317,7 +317,7 @@ const CreateProductManagment = () => {
       title: <div style={{ textAlign: "center" }}>Tên Sản Phẩm</div>,
       dataIndex: "productId",
       key: "productId",
-      width: "32%",
+      width: "30%",
       render: (productId, record) =>
         `${productId} [ ${record.size} - ${getColorName(record.color)} ]`,
     },
