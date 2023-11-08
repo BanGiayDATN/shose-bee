@@ -22,15 +22,22 @@
   }
   
   .card-item {
-    /* text-align: center; */
+    text-align: center;
+    display: flex;
+    justify-content: center;
     position: relative;
     width: 280px;
     height: 430px;
-    border-radius: 0px;
     color: black;
-    border: #f6f1f1 1px solid;
-    margin: 20px 20px;
+    border: #f6f1f1 3px solid;
+    margin: 20px 5px;
     overflow: hidden;
+    transition: transform 0.3s;
+    border-radius: 10px;
+
+    &:hover {
+      transform: translateY(-10px); 
+    }
   }
   .button-buy-now:hover {
     background-color: #ff4400;
@@ -175,4 +182,8 @@
   
   .size-product.highlight {
     border: 1px solid #000000;
+  }
+
+  .button-delete-cart:hover{
+    color: red;
   }

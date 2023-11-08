@@ -90,7 +90,12 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                    c.name AS nameCategory,
                    b.name AS nameBrand,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE p2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                   AS promotion,
                    detail.quantity,
                    s2.name AS size,
                    c2.code AS color,

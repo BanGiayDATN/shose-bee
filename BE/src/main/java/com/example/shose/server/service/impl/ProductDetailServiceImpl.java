@@ -338,6 +338,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         List<String> categoryList = request.getCategory() != null ? Arrays.asList(request.getCategory().split(",")) : null;
         List<String> statusList = request.getStatus() != null ? Arrays.asList(request.getStatus().split(",")) : null;
 
+        System.out.println(request);
+
         FindProductDetailByCategorysConvertRequest detail = FindProductDetailByCategorysConvertRequest.builder()
                 .colors(colorList)
                 .brands(brandList)
@@ -352,6 +354,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 .sellOff(request.getSellOff())
                 .newProduct(request.getNewProduct())
                 .build();
+        System.out.println(detail);
         return productDetailRepository.getProductDetailByCategorys(pageable,detail,request);
     }
 

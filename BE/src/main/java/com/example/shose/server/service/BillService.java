@@ -47,7 +47,7 @@ public interface BillService {
 
     boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, HttpServletRequest requests, String idEmployees);
 
-    Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request);
+    Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request, HttpServletRequest requests);
 
     String createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
 

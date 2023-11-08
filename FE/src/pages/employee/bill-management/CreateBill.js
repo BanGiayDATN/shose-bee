@@ -39,15 +39,6 @@ import "./style-bill.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 
-
-function generateRandomNumber(length) {
-  const digits = Array(length).fill("0");
-  for (let i = 0; i < length; i++) {
-    digits[i] = String.fromCharCode(Math.floor(Math.random() * 10) + "0");
-  }
-  return digits.join("");
-}
-
 function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
   const [products, setProducts] = useState([]);
@@ -713,10 +704,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }
   const formRef = React.useRef(null);
 
-  const addPayMent = (e, method) => {
+  const addPayMent = async(e, method) => {
     if (method == "CHUYEN_KHOAN") {
-      updateBillWhenSavePayMent([...dataPayment]);
-      submitCodeTransactionNext(e);
+     await updateBillWhenSavePayMent([...dataPayment]);
+     await submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -1491,15 +1482,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const getPromotionColor = (promotion) => {
     return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
   };
-
-  function checkQuantity(input) {
-    let max = input.getAttribute("max");
-    if (!Number.isInteger(input.value)) {
-      input.value = input.id;
-    } else if (input.value > max) {
-      input.value = input.id;
-    }
-  }
 
   // open modal when payment vnpay
   return (
@@ -2899,10 +2881,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       },
                       {
       validator: (_, value) => {
-        if (value && value > 1000) {
-          return Promise.resolve();
+        if ( totalMoneyPayMent < 1000) {
+          return Promise.reject("Giá tiền phải lớn hơn 1000");
         }
-        return Promise.reject("Giá tiền phải lớn hơn 1000");
       },
     },
                     ]}
@@ -2940,7 +2921,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   width: "98%",
                   alignItems: "center",
                 }}
-                disabled={totalMoneyPayMent < 1000 ? true : false}
+                disabled={(totalMoneyPayMent < 1000 ) ? true : false}
               >
                 Tiền mặt
               </Button>

@@ -54,4 +54,10 @@ public class Config {
         }
         return ipAdress;
     }
+
+    public static String removeDiacritics(String input) {
+        String withoutDiacritics = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return withoutDiacritics.replaceAll("[^a-zA-Z\\s]", "").replaceAll("\\s+", " ");
+    }
 }

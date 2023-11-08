@@ -30,7 +30,11 @@ public enum Message {
     EMAIL_USER_EXIST("Email người dùng đã tồn tại"),
     PASSWORD_NOT_EXISTS("Password không đúng"),
     NOT_PAYMENT_PRODUCT("Sản phẩm đã dừng bán"),
+    ERROR_HASHSECRET("Lỗi chữ ký"),
     ERROR_SQL("Thao tác quá nhiều lần"),
+    ERROR_CANCEL_BILL("Lỗi khi hủy đơn hàng"),
+    PAYMENT_TRANSACTION("Mã giao dịch đã tồn tại"),
+    PAYMENT_ERROR("Thanh toán thất bại"),
     NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán");
 
 

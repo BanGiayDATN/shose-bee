@@ -144,49 +144,50 @@ function CreateVoucherManagement() {
     return convertedFormData;
   };
   const handleSubmit = () => {
-    const isFormValid =
-      formData.code &&
-      formData.name &&
-      formData.value &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.startDate < formData.endDate;
+    Modal.confirm({
+      title: "Xác nhận thêm",
+      content: "Bạn có chắc chắn muốn thêm khuyến mại ?",
+      okText: "Thêm",
+      cancelText: "Hủy",
+      onOk() {
+        const isFormValid =
+          formData.code &&
+          formData.name &&
+          formData.value &&
+          formData.startDate &&
+          formData.endDate &&
+          formData.startDate < formData.endDate;
 
-    if (!isFormValid) {
-      const errors = {
-        code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
-        value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+        if (!isFormValid) {
+          const errors = {
+            code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
+            name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
+            value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
+            startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
 
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-            ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-            : "",
-      };
-      setFormErrors(errors);
-      return;
-    }
-    console.log(formData.idProductDetails);
-    // if(formData.idProductDetails === undefined){
-    //    toast.success("Bạn chưa chọn chi tiết sản phẩm cho khuyến mại!", {
-    //     autoClose: 5000,
-    //   })
-    //   return;
-    // }
-    PromotionApi.create(convertToLong()).then((res) => {
-      dispatch(CreatePromotion(res.data.data));
-      toast.success("Thêm thành công!", {
-        autoClose: 5000,
-      });
-      window.location.href = "/promotion-management";
+            endDate: !formData.endDate
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : "",
+          };
+          setFormErrors(errors);
+          return;
+        }
+        PromotionApi.create(convertToLong()).then((res) => {
+          dispatch(CreatePromotion(res.data.data));
+          toast.success("Thêm thành công!", {
+            autoClose: 5000,
+          });
+          window.location.href = "/promotion-management";
+        });
+        setFormData({});
+        setListProductDetail([]);
+        onSelectChange("");
+        onSelectChangeDetail("");
+        setSelectedRowKeysDetail("");
+      },
     });
-    setFormData({});
-    setListProductDetail([]);
-    onSelectChange("");
-    onSelectChangeDetail("");
-    setSelectedRowKeysDetail("");
   };
   const closeModal = () => {
     setModal(false);
@@ -477,11 +478,7 @@ function CreateVoucherManagement() {
             <h1>Thêm khuyến mại</h1>
           </div>
 
-          <Form
-            name="validateOnly"
-            layout="vertical"
-            autoComplete="off"
-          >
+          <Form name="validateOnly" layout="vertical" autoComplete="off">
             {fields.map((field, index) => {
               return (
                 <div>
@@ -490,7 +487,6 @@ function CreateVoucherManagement() {
                     label={field.label}
                     validateStatus={formErrors[field.name] ? "error" : ""}
                     help={formErrors[field.name] || ""}
-
                   >
                     {field.type === "number" && (
                       <InputNumber
@@ -557,23 +553,14 @@ function CreateVoucherManagement() {
             })}
 
             <Form.Item label=" ">
-              <Popconfirm
-                title="Thông báo"
-                description="Bạn có chắc chắn muốn thêm không ?"
-                onConfirm={() => {
-                  handleSubmit();
-                }}
-                okText="Có"
-                cancelText="Không"
+              <Button
+                className="button-add-promotion"
+                key="submit"
+                title="Thêm"
+                onClick={handleSubmit}
               >
-                <Button
-                  className="button-add-promotion"
-                  key="submit"
-                  title="Thêm"
-                >
-                  Thêm
-                </Button>
-              </Popconfirm>
+                Thêm
+              </Button>
             </Form.Item>
           </Form>
         </Col>
@@ -607,18 +594,18 @@ function CreateVoucherManagement() {
               rowSelection={rowSelection}
               dataSource={updatedList}
               pagination={{ pageSize: 5 }}
-            // onRow={(record) => ({
-            //   onClick: () => {
-            //     const newSelectedRowKeys = [...selectedRowKeys];
-            //     if (newSelectedRowKeys.includes(record.id)) {
-            //       const index = newSelectedRowKeys.indexOf(record.id);
-            //       newSelectedRowKeys.splice(index, 1);
-            //     } else {
-            //       newSelectedRowKeys.push(record.id);
-            //     }
-            //     setSelectedRowKeys(newSelectedRowKeys);
-            //   },
-            // })}
+              // onRow={(record) => ({
+              //   onClick: () => {
+              //     const newSelectedRowKeys = [...selectedRowKeys];
+              //     if (newSelectedRowKeys.includes(record.id)) {
+              //       const index = newSelectedRowKeys.indexOf(record.id);
+              //       newSelectedRowKeys.splice(index, 1);
+              //     } else {
+              //       newSelectedRowKeys.push(record.id);
+              //     }
+              //     setSelectedRowKeys(newSelectedRowKeys);
+              //   },
+              // })}
             />
           </Col>
           <Col>

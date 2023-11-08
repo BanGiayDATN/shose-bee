@@ -70,5 +70,4 @@ public class PaymentsMethodRestController {
     return new ResponseObject(paymentsMethodService.paymentSuccess(shoseSession.getUserId(), response, requests)) ;
     }
 
-
 }
