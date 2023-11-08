@@ -67,12 +67,4 @@ export class ProducDetailtApi {
       data: data,
     });
   };
-
-  static updateProduct = (id, data) => {
-    return request({
-      method: "PUT",
-      url: `/admin/product-detail/${id}`,
-      data: data,
-    });
-  };
 }

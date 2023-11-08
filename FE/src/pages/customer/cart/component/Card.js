@@ -77,7 +77,7 @@ function CardItem({ item, index }) {
         }
       });
       window.location.href = "/cart";
-      toast.success("Thêm giỏ hàng thành công", {
+      toast.success("Add cart không login", {
         autoClose: 3000,
       });
     } else {
@@ -98,7 +98,7 @@ function CardItem({ item, index }) {
         }
       );
       window.location.href = "/cart";
-      toast.success("Thêm giỏ hàng thành công", {
+      toast.success("Add cart có login!", {
         autoClose: 3000,
       });
     }

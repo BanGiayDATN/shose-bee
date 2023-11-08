@@ -7,7 +7,15 @@ import { toast } from "react-toastify";
 import { useCart } from "./CartContext";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTags, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHeader,
+  faHeart,
+  faHeartBroken,
+  faHeartCrack,
+  faHeartPulse,
+  faTags,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Row,
   Col,
@@ -17,13 +25,16 @@ import {
   Modal,
   Button,
   Radio,
+  Table,
   Tooltip,
 } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
 import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { CartDetailClientApi } from "./../../../api/customer/cartdetail/cartDetailClient.api";
 import dayjs from "dayjs";
+import { Header } from "antd/es/layout/layout";
 
 function Cart() {
   const idAccountLocal = sessionStorage.getItem("idAccount");
@@ -357,7 +368,6 @@ function Cart() {
     });
   };
   const changeQuantity = (itemOld, value) => {
-    // eslint-disable-next-line array-callback-return
     chooseItemCart.map((item) => {
       if (item.idProductDetail === itemOld.idProductDetail) {
         if (itemOld.quantity < value) {
@@ -478,6 +488,9 @@ function Cart() {
   const modalProps = {
     draggable: false, // Tắt tính năng kéo thả
   };
+
+  
+
 
   return (
     <div className="cart">
@@ -616,17 +629,17 @@ function Cart() {
                                   changeQuantity(item, value)
                                 }
                               ></InputNumber>
-                              <div className="button-delete-cart">
-                                <Tooltip title="Xóa sản phẩm">
-                                  <FontAwesomeIcon
-                                    icon={faTrash}
-                                    size="xl"
-                                    onClick={() => {
-                                      deleteItemCart(item);
-                                    }}
-                                  />
-                                </Tooltip>
-                              </div>
+                            </div>
+                            <div className="button-delete-cart">
+                              <Tooltip title="Xóa sản phẩm">
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  size="xl"
+                                  onClick={() => {
+                                    deleteItemCart(item);
+                                  }}
+                                />
+                              </Tooltip>
                             </div>
                           </div>
                           <div className="form-status-cart">
