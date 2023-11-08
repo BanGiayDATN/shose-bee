@@ -35,6 +35,7 @@ function CardItem({ item, index }) {
     localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
   }, [cartLocal]);
   useEffect(() => {
+    console.log(item);
     console.log(now.format("HH:mm:ss DD-MM-YYYY"));
     console.log(
       now.subtract(15, "day").format("DD-MM-YYYY"),
@@ -178,7 +179,7 @@ function CardItem({ item, index }) {
         tabindex="0"
       >
         <div>
-          <Link className="link-card-item" to={`/detail-product/${item.idProductDetail}`}>
+          <Link className="link-card-item" to={`/detail-product/${item.idProductDetail}`} onClick={()=> window.location.href = `/detail-product/${item.idProductDetail}`}>
             <div className="box-img-product">
               <div
                 style={{
@@ -186,11 +187,11 @@ function CardItem({ item, index }) {
                 }}
                 className="image-product"
               >
-                {item.valuePromotion !== null && (
+                {item.valuePromotion !== null ? (
                   <div className="value-promotion">
                     Giảm {parseInt(item.valuePromotion)}%
                   </div>
-                )}
+                ) : null}
                 {nowTimestampReduce <= itemTimestamp && (
                   <div className="new-product">Mới</div>
                 )}

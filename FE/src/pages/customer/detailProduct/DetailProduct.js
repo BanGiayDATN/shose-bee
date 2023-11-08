@@ -1,6 +1,6 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, InputNumber, Row } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
 import { useParams } from "react-router";
@@ -8,8 +8,11 @@ import tableSize from "./../../../assets/images/SizeChart.jpg"
 import { ProductDetailClientApi } from "../../../api/customer/productdetail/productDetailClient.api";
 import "./style-detail-product.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRetweet, faTruckFast, faPaypal, faFileInvoiceDollar, faShieldHeart } from "@fortawesome/free-solid-svg-icons";
-
+import { faRetweet, faTruckFast, faPaypal, faFileInvoiceDollar, faShieldHeart, faCircleRight, faCircleLeft, faLeftLong, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import CardItem from "../component/Card";
 
 function DetailProduct() {
     const idAccountLocal = sessionStorage.getItem("idAccount");
@@ -32,22 +35,27 @@ function DetailProduct() {
         nameProduct: "",
         price: 0,
         quantity: 0,
+        createdDate: "",
+        valuePromotion: 0
     });
-    const [productSaw, setProductSaw] = useState( JSON.parse(sessionStorage.getItem("listProductSaw") || []))
+    const productSawLocal = JSON.parse(sessionStorage.getItem("listProductSaw")) || [];
+    const [productSaw, setProductSaw] = useState(productSawLocal)
+    useEffect(() => {
+        sessionStorage.setItem("listProductSaw", JSON.stringify(productSaw));
+    }, [productSaw]);
+
 
     useEffect(() => {
         localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
     }, [cartLocal]);
 
-    useEffect(() => {
-        sessionStorage.setItem("listProductSaw", JSON.stringify(productSaw));
-    }, [productSaw]);
+
     useEffect(() => {
         getDetailProduct(id.id)
     }, [])
     useEffect(() => {
         setImage(detailProduct.image.split(",")[0])
-
+        console.log(detailProduct);
         const newCartItem = {
             idProductDetail: detailProduct.idProductDetail,
             image: detailProduct.image,
@@ -56,10 +64,13 @@ function DetailProduct() {
             nameProduct: detailProduct.nameProduct,
             codeColor: detailProduct.codeColor,
             nameSize: detailProduct.nameSize,
+            createdDate: detailProduct.createdDate,
+            valuePromotion: detailProduct.valuePromotion
         };
         console.log(newCartItem);
         setProductSaw((prev) => {
-            console.log(cartLocal);
+            console.log(newCartItem.idProductDetail);
+            console.log(prev);
             const exists = prev.find(
                 (item) => item.idProductDetail === newCartItem.idProductDetail
             );
@@ -75,13 +86,14 @@ function DetailProduct() {
                 );
             }
         });
-
+        console.log(detailProduct);
     }, [detailProduct])
 
     const getDetailProduct = (idProductDetail) => {
         setItemSize(idProductDetail)
         ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
             (res) => {
+                console.log(res.data.data);
                 setDetailProduct(res.data.data);
                 const nameSizeArray = res.data.data.listSize.split(',');
                 const sizeList = [];
@@ -127,6 +139,7 @@ function DetailProduct() {
                 nameProduct: detailProduct.nameProduct,
                 codeColor: detailProduct.codeColor,
                 nameSize: detailProduct.nameSize,
+
             };
 
             setCartLocal((prev) => {
@@ -194,7 +207,54 @@ function DetailProduct() {
             setCurrentIndex(currentIndex + 1);
         }
     };
+    const sliderRef = useRef(null);
 
+    const settings = {
+
+        dots: true,
+        infinite: true,
+        speed: 1500,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 1860,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: true
+                }
+            },
+            {
+                breakpoint: 1370,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: true
+                }
+            },
+            {
+                breakpoint: 640,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: true
+                }
+            },
+
+        ]
+    };
+
+    const goToNext = () => {
+        sliderRef.current.slickNext();
+    };
+
+    const goToPrev = () => {
+        sliderRef.current.slickPrev();
+    };
 
     return (<React.Fragment>
         <div className="box-detail-product">
@@ -202,7 +262,7 @@ function DetailProduct() {
                 <Col
                     lg={{ span: 16, offset: 4 }}
                     style={{ display: "flex", justifyContent: "center", padding: 50, borderTop: "3px solid black" }}
-
+                    className="box-info-detail-product"
                 >
                     <div className="box-image-pd">
                         <img
@@ -243,7 +303,13 @@ function DetailProduct() {
                         <div className="name-pd">{detailProduct.nameProduct}</div>
                         <div className="price-product-pd">
                             {" "}
-                            Giá: {formatMoney(detailProduct.price)}
+                            {detailProduct.valuePromotion !== null ? (
+                                <>
+                                    <span style={{ marginLeft: 5 }}> {formatMoney(detailProduct.price - (
+                                        detailProduct.price * (detailProduct.valuePromotion / 100)))}</span>
+                                    <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(detailProduct.price)}</del>
+                                </>
+                            ) : (formatMoney(detailProduct.price))}
                         </div>
                         <div className="box-color-pd">
 
@@ -374,12 +440,48 @@ function DetailProduct() {
 
                 <Col
                     lg={{ span: 16, offset: 4 }}
-                    style={{ display: "flex", justifyContent: "center", marginTop: 100, padding: 50 }}
+                    style={{ textAlign: "center", marginTop: 100 }}
                 >
+                    <h1>Sản phẩm đã xem</h1>
+                    <div className="box-product-saw">
 
+                        {productSaw.length < 6 ? (
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                {
+                                    productSaw.slice(1).map((item, index) => (
+                                        <div>
+                                            <CardItem item={item} index={index} />
+                                        </div>
+
+                                    ))
+                                }
+                            </div>
+                        ) : (
+                            <>
+                                <div style={{ position: "relative" }}>
+                                    <Slider ref={sliderRef} {...settings}>
+                                        {productSaw.slice(1).map((item, index) => (
+                                            <div style={{ display:"flex",justifyContent:"center" }}>
+                                                <CardItem item={item} index={index} />
+                                            </div>
+                                        ))}
+                                    </Slider>
+                                </div>
+                                {productSaw.length > 5 ? (
+                                    <>
+                                        <FontAwesomeIcon className="button-prev-product-saw" icon={faChevronLeft} onClick={goToPrev} />
+                                        <FontAwesomeIcon className="button-next-product-saw" icon={faChevronRight} onClick={goToNext} />
+                                    </>
+                                ) : null}
+                            </>
+                        )}
+
+                    </div>
 
                 </Col>
             </Row>
+
+
         </div>
     </React.Fragment>);
 }
