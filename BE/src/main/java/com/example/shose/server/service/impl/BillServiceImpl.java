@@ -620,7 +620,7 @@ public class BillServiceImpl implements BillService {
                 }
                 productDetailRepository.save(productDetail);
             });
-            if(request.getResponsePayment().getVnp_TransactionStatus() != "00"){
+            if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
                 throw new RestApiException(Message.PAYMENT_ERROR);
             }
         }
@@ -740,7 +740,7 @@ public class BillServiceImpl implements BillService {
                 }
                 productDetailRepository.save(productDetail);
             });
-            if(request.getResponsePayment().getVnp_TransactionStatus() != "00"){
+            if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
                 throw new RestApiException(Message.PAYMENT_ERROR);
             }
         }
