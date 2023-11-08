@@ -17,8 +17,15 @@ const { updateTotalQuantity } = useCart();
 useEffect(()=>{
 if(vnp_ResponseCode==='00'){
   console.log(formBill);
-  const param = new URLSearchParams(window.location.search);
-  formBill.responsePayment = param
+  const params = new URLSearchParams(window.location.search);
+  const paramsObj = {};
+
+  // Lặp qua các tham số và gán chúng vào đối tượng JSON.
+  params.forEach((value, key) => {
+    paramsObj[key] = value;
+  });
+
+  formBill.responsePayment = paramsObj
   onPayment(formBill)
 }
 },[])
