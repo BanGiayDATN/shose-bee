@@ -276,9 +276,8 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
             formData.append("data", JSON.stringify(values));
             ProducDetailtApi.updateProduct(initialValues.id, formData)
               .then((response) => {
-                console.log(response.data);
-                window.location.reload();
                 toast.success("Cập nhật thành công");
+                window.location.reload();
                 form.resetFields();
               })
               .catch((error) => {
