@@ -652,7 +652,7 @@ public class BillServiceImpl implements BillService {
         addressRepository.save(address);
 
         Bill bill = Bill.builder()
-                .code(request.getResponsePayment().getVnp_TxnRef().split("-")[0])
+                .code("HD" + RandomStringUtils.randomNumeric(6))
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
@@ -662,6 +662,9 @@ public class BillServiceImpl implements BillService {
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
+        if(!request.getPaymentMethod().equals("paymentReceive")){
+            bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
+        }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
@@ -741,7 +744,7 @@ public class BillServiceImpl implements BillService {
         }
         Account account = accountRepository.findById(request.getIdAccount()).get();
         Bill bill = Bill.builder()
-                .code(request.getResponsePayment().getVnp_TxnRef().split("-")[0])
+                .code("HD" + RandomStringUtils.randomNumeric(6) )
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress())
                 .userName(request.getUserName())
@@ -751,6 +754,9 @@ public class BillServiceImpl implements BillService {
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
+          if(!request.getPaymentMethod().equals("paymentReceive")){
+            bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
+        }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
