@@ -696,7 +696,7 @@ public class BillServiceImpl implements BillService {
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
-                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()))
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount())
                 .status(StatusPayMents.TRA_SAU).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
@@ -792,7 +792,7 @@ public class BillServiceImpl implements BillService {
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
-                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()))
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount())
                 .status(StatusPayMents.TRA_SAU).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
