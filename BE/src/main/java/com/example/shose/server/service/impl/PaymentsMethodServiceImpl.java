@@ -294,6 +294,39 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
+    public boolean refundPayment(String idUser, String codeBill, CreatePaymentsMethodRequest request) {
+        Optional<Bill> bill = billRepository.findByCode(codeBill);
+        if (!bill.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Optional<Account> account = accountRepository.findById(idUser);
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER){
+            BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.get().getId());
+            if (bill.get().getStatusBill() == StatusBill.DA_HUY) {
+                BillHistory billHistory = new BillHistory();
+                billHistory.setBill(bill.get());
+                billHistory.setStatusBill(StatusBill.DA_HUY);
+                billHistory.setActionDescription("Hoàn tiền cho khách hàng");
+                billHistory.setEmployees(account.get());
+                billHistoryRepository.save(billHistory);
+            }
+            PaymentsMethod paymentsMethod = new PaymentsMethod();
+            paymentsMethod.setBill(bill.get());
+            paymentsMethod.setDescription(request.getActionDescription());
+            paymentsMethod.setMethod(request.getMethod());
+            paymentsMethod.setStatus(StatusPayMents.HOAN_TIEN);
+            paymentsMethod.setTotalMoney(payment);
+            paymentsMethod.setDescription(request.getActionDescription());
+            paymentsMethod.setEmployees(account.get());
+            paymentsMethodRepository.save(paymentsMethod);
+        }
+        return true;
+    }
+
+    @Override
     public boolean paymentSuccess(String idEmployees, PayMentVnpayResponse response, HttpServletRequest requests) {
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!account.isPresent()) {
