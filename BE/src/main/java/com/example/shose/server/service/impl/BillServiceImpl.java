@@ -510,7 +510,7 @@ public class BillServiceImpl implements BillService {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
-
+        bill.get().setEmployees(account.get());
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
         billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));

@@ -203,7 +203,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         }
         Optional<Account> account = accountRepository.findById(idUser);
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill.get()).stream().filter(paymentMethod -> paymentMethod.getMethod().equals(StatusMethod.CHUYEN_KHOAN)).collect(Collectors.toList());
-        if (paymentsMethods.size() != 0) {
+        if (paymentsMethods.size() != 0 && bill.get().getTypeBill() == TypeBill.OFFLINE) {
             PaymentsMethod paymentsMethod = paymentsMethods.get(0);
             String vnp_TxnRef = paymentsMethod.getBill().getCode() + "-"+ paymentsMethod.getCreateAt();
             String vnp_RequestId = RandomStringUtils.randomNumeric(8);
