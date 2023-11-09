@@ -445,7 +445,7 @@ function DetailProduct() {
                     <h1>Sản phẩm đã xem</h1>
                     <div className="box-product-saw">
 
-                        {productSaw.length < 6 ? (
+                        {productSaw.filter((item) =>item.idProductDetail !== id).length < 6 ? (
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 {
                                     productSaw.slice(1).map((item, index) => (
@@ -459,7 +459,7 @@ function DetailProduct() {
                         ) : (
                             <>
                                 <div style={{ position: "relative" }}>
-                                    <Slider ref={sliderRef} {...settings}>
+                                    <Slider style={{ display:"flex",justifyContent:"center" }} ref={sliderRef} {...settings}>
                                         {productSaw.slice(1).map((item, index) => (
                                             <div style={{ display:"flex",justifyContent:"center" }}>
                                                 <CardItem item={item} index={index} />

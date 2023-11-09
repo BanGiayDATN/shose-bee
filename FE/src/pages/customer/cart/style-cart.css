@@ -82,9 +82,10 @@
   
 }
 .bill-of-cart {
+  width: 400px;
   margin-left: 3%;
   margin-top: 60px;
-  margin-left: auto;
+  /* margin-left: auto; */
   padding: 9px;
   height: 520px;
 }
