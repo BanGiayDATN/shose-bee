@@ -281,12 +281,12 @@ function DetailBill() {
     });
     form.resetFields();
   };
-  const showModalPayMent = (e) => {
+  const showModalRefundPayMent = (e) => {
     setIsModalPayMentOpen(true);
     form.resetFields();
   };
   const handleOkPayMent = () => {
-    if (statusBill.totalMoney >= 0) {
+    if (statusBill.actionDescription.trim().length > 0) {
       setIsModalPayMentOpen(false);
       Modal.confirm({
         title: "Xác nhận",
@@ -294,12 +294,10 @@ function DetailBill() {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          await PaymentsMethodApi.payment(id, statusBill).then((res) => {
+          await PaymentsMethodApi.refundPayment(id, statusBill).then((res) => {
             dispatch(addPaymentsMethod(res.data.data));
-            console.log(res.data.data);
           });
           await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-            console.log(res.data.data);
             dispatch(getProductInBillDetail(res.data.data));
           });
           await BillApi.fetchDetailBill(id).then((res) => {
@@ -1464,6 +1462,28 @@ function DetailBill() {
               <div></div>
             )}
           </Col>
+          <Col span={4}>
+            {/* <Button
+              type="dashed"
+              align={"end"}
+              style={{ margin: "" }}
+              onClick={(e) => showModalPayMent(e)}
+            >
+              Xác nhận thanh toán
+            </Button> */}
+            {!paymentsMethod.some(payment => payment.status === "HOAN_TIEN") && statusPresent == 8 ? (
+              <Button
+                type="dashed"
+                align={"end"}
+                style={{ margin: "" }}
+                onClick={(e) => showModalRefundPayMent(e)}
+              >
+                Hoàn tiền 
+              </Button>
+            ) : (
+              <div></div>
+            )}
+          </Col>
         </Row>
         <Row style={{ width: "100%" }}>
           <Table
@@ -1935,39 +1955,6 @@ function DetailBill() {
         okText={"Xác nhận"}
       >
         <Form form={form} ref={formRef}>
-          <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24} style={{ marginTop: "10px" }}>
-              <label className="label-bill" style={{ top: "-14px" }}>
-                Giá
-              </label>
-              <Form.Item
-                label=""
-                name="price"
-                style={{ marginBottom: "20px" }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập số tiền",
-                  },
-                ]}
-              >
-                <NumberFormat
-                  thousandSeparator={true}
-                  suffix=" VND"
-                  placeholder="Vui lòng nhập số tiền"
-                  style={{
-                    width: "100%",
-                    position: "relative",
-                    height: "37px",
-                  }}
-                  customInput={Input}
-                  onChange={(e) =>
-                    onChangeDescStatusBill("totalMoney", e.target.value)
-                  }
-                />
-              </Form.Item>
-            </Col>
-          </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
               <label className="label-bill" style={{ marginTop: "2px" }}>
@@ -1997,44 +1984,6 @@ function DetailBill() {
                   {
                     value: "CHUYEN_KHOAN",
                     label: "Chuyển khoản",
-                  },
-                  {
-                    value: "TIEN_MAT_VA_CHUYEN_KHOAN",
-                    label: "Tiền mặt và chuyển khoản",
-                  },
-                ]}
-              />
-            </Col>
-          </Row>
-          <Row style={{ width: "100%" }}>
-            <Col span={24} style={{ marginTop: "10px" }}>
-              <label className="label-bill" style={{ top: "-6%" }}>
-                Loại thanh toán
-              </label>
-              <Select
-                showSearch
-                style={{
-                  width: "100%",
-                  margin: "10px 0",
-                  position: "relative",
-                }}
-                placeholder="Chọn Loại"
-                optionFilterProp="children"
-                onChange={(value) => onChangeDescStatusBill("status", value)}
-                defaultValue={statusBill.status}
-                filterOption={(input, option) =>
-                  (option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                options={[
-                  {
-                    value: "THANH_TOAN",
-                    label: "Thanh toán",
-                  },
-                  {
-                    value: "HOAN_TIEN",
-                    label: "Hoàn tiền",
                   },
                 ]}
               />

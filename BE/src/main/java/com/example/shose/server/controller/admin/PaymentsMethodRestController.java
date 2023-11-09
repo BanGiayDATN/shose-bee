@@ -70,4 +70,8 @@ public class PaymentsMethodRestController {
     return new ResponseObject(paymentsMethodService.paymentSuccess(shoseSession.getUserId(), response, requests)) ;
     }
 
+    @PostMapping("/refund-payment/{id}")
+    public ResponseObject refundPayment(@RequestBody CreatePaymentsMethodRequest request, @PathVariable("id") String id){
+        return new ResponseObject(paymentsMethodService.refundPayment(shoseSession.getUserId(), id, request)) ;
+    }
 }

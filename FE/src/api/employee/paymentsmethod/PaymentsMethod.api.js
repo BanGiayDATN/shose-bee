@@ -15,6 +15,14 @@ export class PaymentsMethodApi {
     });
   };
 
+  static refundPayment = (id, data) => {
+    return request({
+      method: "POST",
+      url: `/admin/payment/refund-payment/` +id,
+      data: data
+    });
+  };
+
   static paymentVnpay = ( data) => {
     return request({
       method: "POST",

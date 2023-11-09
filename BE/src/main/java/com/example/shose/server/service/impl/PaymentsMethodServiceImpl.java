@@ -315,7 +315,6 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             }
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
-            paymentsMethod.setDescription(request.getActionDescription());
             paymentsMethod.setMethod(request.getMethod());
             paymentsMethod.setStatus(StatusPayMents.HOAN_TIEN);
             paymentsMethod.setTotalMoney(payment);
