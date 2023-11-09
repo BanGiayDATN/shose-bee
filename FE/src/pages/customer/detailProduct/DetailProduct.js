@@ -1,16 +1,32 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, InputNumber, Row } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
 import { useParams } from "react-router";
+import tableSize from "./../../../assets/images/SizeChart.jpg"
 import { ProductDetailClientApi } from "../../../api/customer/productdetail/productDetailClient.api";
 import "./style-detail-product.css"
-import dayjs from "dayjs";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRetweet, faTruckFast, faPaypal, faFileInvoiceDollar, faShieldHeart, faCircleRight, faCircleLeft, faLeftLong, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import CardItem from "../component/Card";
 
 function DetailProduct() {
     const idAccountLocal = sessionStorage.getItem("idAccount");
+    const [itemSize, setItemSize] = useState('');
+    const [infoAndSize, setInfoAndSize] = useState(1);
     const id = useParams()
+    const [listSize, setListSize] = useState([]);
+    const itemsPerPage = 4;
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [imageIndex, setImageIndex] = useState(0);
+    const [image, setImage] = useState('');
+    const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
+    const [cartLocal, setCartLocal] = useState(initialCartLocal);
+    const [quantity, setQuantity] = useState(1);
     const [detailProduct, setDetailProduct] = useState({
         codeColor: "",
         idProductDetail: "",
@@ -19,25 +35,74 @@ function DetailProduct() {
         nameProduct: "",
         price: 0,
         quantity: 0,
+        createdDate: "",
+        valuePromotion: 0
     });
-    const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
+    const productSawLocal = JSON.parse(sessionStorage.getItem("listProductSaw")) || [];
+    const [productSaw, setProductSaw] = useState(productSawLocal)
+    useEffect(() => {
+        sessionStorage.setItem("listProductSaw", JSON.stringify(productSaw));
+    }, [productSaw]);
 
-    const [cartLocal, setCartLocal] = useState(initialCartLocal);
 
     useEffect(() => {
         localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
     }, [cartLocal]);
-    const [quantity, setQuantity] = useState(1);
+
+
     useEffect(() => {
-        console.log(id.id);
         getDetailProduct(id.id)
     }, [])
-    const getDetailProduct = (idProductDetail) => {
+    useEffect(() => {
+        setImage(detailProduct.image.split(",")[0])
+        console.log(detailProduct);
+        const newCartItem = {
+            idProductDetail: detailProduct.idProductDetail,
+            image: detailProduct.image,
+            price: detailProduct.price,
+            quantity: quantity,
+            nameProduct: detailProduct.nameProduct,
+            codeColor: detailProduct.codeColor,
+            nameSize: detailProduct.nameSize,
+            createdDate: detailProduct.createdDate,
+            valuePromotion: detailProduct.valuePromotion
+        };
+        console.log(newCartItem);
+        setProductSaw((prev) => {
+            console.log(newCartItem.idProductDetail);
+            console.log(prev);
+            const exists = prev.find(
+                (item) => item.idProductDetail === newCartItem.idProductDetail
+            );
+            if (!exists) {
+                console.log("mới");
+                return [...prev, newCartItem];
+            } else {
+                console.log("trùng");
+                return prev.map((item) =>
+                    item.idProductDetail === newCartItem.idProductDetail
+                        ? { ...item, quantity: item.quantity + newCartItem.quantity }
+                        : item
+                );
+            }
+        });
+        console.log(detailProduct);
+    }, [detailProduct])
 
+    const getDetailProduct = (idProductDetail) => {
+        setItemSize(idProductDetail)
         ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
             (res) => {
                 console.log(res.data.data);
                 setDetailProduct(res.data.data);
+                const nameSizeArray = res.data.data.listSize.split(',');
+                const sizeList = [];
+                for (let index = 0; index < nameSizeArray.length; index += 2) {
+                    const name = nameSizeArray[index];
+                    const id = nameSizeArray[index + 1];
+                    sizeList.push({ name, id });
+                }
+                setListSize(sizeList);
             },
             (err) => {
                 console.log(err);
@@ -52,6 +117,12 @@ function DetailProduct() {
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
         );
     };
+    // thay doi kich thuoc 
+    const changeSize = (item) => {
+        window.location.href = `/detail-product/${item}`
+        getDetailProduct(item)
+    }
+    // them san pham vao gio hang
     const addToCard = () => {
         if (detailProduct.quantity === 0) {
             toast.error("Sản phẩm đã hết hàng", {
@@ -68,6 +139,7 @@ function DetailProduct() {
                 nameProduct: detailProduct.nameProduct,
                 codeColor: detailProduct.codeColor,
                 nameSize: detailProduct.nameSize,
+
             };
 
             setCartLocal((prev) => {
@@ -106,100 +178,138 @@ function DetailProduct() {
         }
     };
 
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const changeQuantity = (value) => {
+        setQuantity(value)
+    }
+    const changeTitleInfoAndSize = (item) => {
+        setInfoAndSize(item)
+    }
 
-    useEffect(() => {
-        // Thiết lập một interval để tự động chuyển ảnh sau một khoảng thời gian
-        const intervalId = setInterval(() => {
-            nextImage();
-        }, 3000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
-
-        // Xóa interval khi component unmount để tránh lỗi memory leak
-        return () => clearInterval(intervalId);
-    }, [currentImageIndex]);
-    const previousImage = () => {
-        if (currentImageIndex === 0) {
-            // Nếu đang ở ảnh đầu tiên, chuyển đến ảnh cuối cùng
-            setCurrentImageIndex(detailProduct.image.split(",").length - 1);
+    const totalPages = Math.ceil(
+        detailProduct.image.split(",").length / itemsPerPage
+    );
+    const changeImage = (image, index) => {
+        setImage(image)
+        setImageIndex(index)
+    }
+    const previous = () => {
+        if (currentIndex === 0) {
+            return
         } else {
-            setCurrentImageIndex(currentImageIndex - 1);
+            setCurrentIndex(currentIndex - 1);
         }
     };
 
-    const nextImage = () => {
-        if (currentImageIndex === detailProduct.image.split(",").length - 1) {
-            // Nếu đang ở ảnh cuối cùng, chuyển đến ảnh đầu tiên
-            setCurrentImageIndex(0);
+    const next = () => {
+        if (currentIndex === totalPages - 1) {
+            return;
         } else {
-            setCurrentImageIndex(currentImageIndex + 1);
+            setCurrentIndex(currentIndex + 1);
         }
     };
+    const sliderRef = useRef(null);
+
+    const settings = {
+
+        dots: true,
+        infinite: true,
+        speed: 1500,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 1860,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: true
+                }
+            },
+            {
+                breakpoint: 1370,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: true
+                }
+            },
+            {
+                breakpoint: 640,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: true
+                }
+            },
+
+        ]
+    };
+
+    const goToNext = () => {
+        sliderRef.current.slickNext();
+    };
+
+    const goToPrev = () => {
+        sliderRef.current.slickPrev();
+    };
+
     return (<React.Fragment>
         <div className="box-detail-product">
             <Row>
                 <Col
-                    lg={{ span: 14, offset: 5 }}
-                    style={{ display: "flex", justifyContent: "center", padding: 50 }}
-
+                    lg={{ span: 16, offset: 4 }}
+                    style={{ display: "flex", justifyContent: "center", padding: 50, borderTop: "3px solid black" }}
+                    className="box-info-detail-product"
                 >
                     <div className="box-image-pd">
-                        <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                            <LeftOutlined
-                                className="button-prev-card-pd"
-                                onClick={previousImage}
+                        <img
+                            className="img-detail-product-pd"
+                            src={image === '' ? detailProduct.image.split(",")[0] : image}
+                            alt="..."
+                        />
+
+                        <div className="box-slide-image">
+                            <LeftOutlined className="button-prev-img-pd" onClick={previous}
+                                style={{ cursor: currentIndex <= 0 ? "not-allowed" : "pointer" }}
                             />
-                            <img
-                                className="img-detail-product-pd"
-                                src={detailProduct.image.split(",")[currentImageIndex]}
-                                alt="..."
+
+                            {detailProduct.image.split(",")
+                                .slice(
+                                    currentIndex * itemsPerPage,
+                                    (currentIndex + 1) * itemsPerPage
+                                )
+                                .map((item, index) => (
+                                    <img
+                                        key={index}
+                                        className="img-slide-detail-product-pd"
+                                        src={item}
+                                        alt="..."
+                                        style={{ border: image === item ? "1px solid #ff4400" : null }}
+                                        onClick={() => changeImage(item, index)}
+                                    />
+                                ))}
+
+                            <RightOutlined className="button-next-img-pd" onClick={next}
+                                style={{ cursor: currentIndex >= totalPages - 1 ? "not-allowed" : "pointer" }}
                             />
-                            <RightOutlined className="button-next-card-pd" onClick={nextImage} />
+
                         </div>
 
-
-                        <div className="box-info-detail">
-                            <div className="box-title-info-detail">
-                                THÔNG TIN CHI TIẾT
-                            </div>
-
-                            <ul className="ul-info-pd" style={{ padding: 20 }}>
-                                <li className="li-info-pd">
-                                    <span className="title-info-pd"> Tên sản phẩm</span>
-                                    <span className="content-info-pd"> {detailProduct.nameProduct}</span>
-                                </li>
-                                <li className="li-info-pd">
-                                    <span className="title-info-pd"> Giá</span>
-                                    <span className="content-info-pd"> {formatMoney(detailProduct.price)}</span>
-                                </li>
-                                <li className="li-info-pd">
-                                    <span className="title-info-pd"> Thương hiệu</span>
-                                    <span className="content-info-pd"> {detailProduct.nameBrand}</span>
-                                </li>
-                                <li className="li-info-pd">
-                                    <span className="title-info-pd"> Loại sản phẩm</span>
-                                    <span className="content-info-pd"> {detailProduct.nameCategory}</span>
-                                </li>
-                                <li className="li-info-pd">
-                                    <span className="title-info-pd"> Chất liệu</span>
-                                    <span className="content-info-pd"> {detailProduct.nameMaterial}</span>
-                                </li>
-                                <li className="li-info-pd">
-                                    <span className="title-info-pd"> Kích thước</span>
-                                    <span className="content-info-pd"> {detailProduct.nameSize}</span>
-                                </li>
-                                <li className="li-info-pd">
-                                    <span className="title-info-pd"> Đế giày</span>
-                                    <span className="content-info-pd"> {detailProduct.nameSole}</span>
-                                </li>
-
-                            </ul>
-                        </div>
                     </div>
                     <div className="box-info-pd" >
                         <div className="name-pd">{detailProduct.nameProduct}</div>
                         <div className="price-product-pd">
                             {" "}
-                            Giá: {formatMoney(detailProduct.price)}
+                            {detailProduct.valuePromotion !== null ? (
+                                <>
+                                    <span style={{ marginLeft: 5 }}> {formatMoney(detailProduct.price - (
+                                        detailProduct.price * (detailProduct.valuePromotion / 100)))}</span>
+                                    <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(detailProduct.price)}</del>
+                                </>
+                            ) : (formatMoney(detailProduct.price))}
                         </div>
                         <div className="box-color-pd">
 
@@ -218,24 +328,29 @@ function DetailProduct() {
                         <div className="box-size-pd">
                             <div>Size:</div>
                             <div className="list-size-product-pd" tabIndex="0">
-                                <div
-                                    className="size-product-pd "
-                                    tabIndex="0"
-                                    style={{ border: "1px solid black" }}
-                                >
-                                    {detailProduct.nameSize}
-                                </div>
+
+                                {listSize.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className={itemSize === item.id ? "size-product-pd-click" : "size-product-pd"}
+                                        tabIndex="0"
+                                        onClick={() => changeSize(item.id)}
+                                    >
+                                        {item.name}
+                                    </div>
+                                ))}
+
                             </div>
                         </div>
 
-                        <div>
-                            <div style={{ marginBottom: "10px", color: "black" }}>
-                                Số lượng tồn:{" "}
-                                <span style={{ color: "#ff4400" }}>
-                                    {detailProduct.quantity} sản phẩm
-                                </span>
-                            </div>
+
+                        <div className="box-quantity-pd">
+                            Số lượng tồn:{" "}
+                            <span style={{ color: "#ff4400" }}>
+                                {detailProduct.quantity} sản phẩm
+                            </span>
                         </div>
+
                         <div className="add-to-card-pd">
                             <InputNumber
                                 className="input-quantity-card-pd"
@@ -245,15 +360,128 @@ function DetailProduct() {
                                 min={1}
                                 defaultValue={1}
                                 max={detailProduct.quantity}
-                                onChange={(value) => setQuantity(value)}
+                                onChange={(value) => changeQuantity(value)}
                             ></InputNumber>
                             <div className="button-add-to-card-pd" onClick={addToCard}>
                                 Thêm vào Giỏ hàng
                             </div>
                         </div>
+
+                        <div className="box-policy">
+                            <ul>
+                                <li className="item-policy"><div className="box-icon"><FontAwesomeIcon icon={faTruckFast} className="icon-policy" /></div> <span className="title-policy">Miễn phí giao hàng đơn từ 800k. </span></li>
+                                <li className="item-policy"><div
+                                    className="box-icon"
+                                >
+                                    <FontAwesomeIcon icon={faRetweet} className="icon-policy" /></div> <span className="title-policy">Đổi trả miễn phí trong vòng 30 ngày.</span></li>
+                                <li className="item-policy"><div
+                                    className="box-icon"
+                                ><FontAwesomeIcon icon={faFileInvoiceDollar} className="icon-policy" /> </div><span className="title-policy">Thanh toán trực tuyến nhanh chóng và an toàn. </span></li>
+                                <li className="item-policy"><div
+                                    className="box-icon"
+                                ><FontAwesomeIcon icon={faShieldHeart}
+                                    className="icon-policy" /></div> <span className="title-policy">Sản phẩm chính hãng 100%. </span></li>
+                            </ul>
+                        </div>
+
+
+                        <div className="box-info-detail">
+                            <div className="box-title-info-detail">
+                                <div className="detail-info" style={{ color: infoAndSize === 1 ? "black" : "white" }}
+                                    onClick={() => changeTitleInfoAndSize(1)}
+                                >
+                                    THÔNG TIN CHI TIẾT
+                                </div>
+                                <div className="guide-to-choose-size" style={{ color: infoAndSize === 2 ? "black" : "white" }}
+                                    onClick={() => changeTitleInfoAndSize(2)}
+                                >
+                                    CÁCH CHỌN SIZE
+                                </div>
+                            </div>
+                            {infoAndSize === 1 ? (
+                                <ul className="ul-info-pd" style={{ padding: '30px 10px' }}>
+                                    <li className="li-info-pd">
+                                        <span className="title-info-pd"> Tên sản phẩm</span>
+                                        <span className="content-info-pd"> {detailProduct.nameProduct}</span>
+                                    </li>
+                                    <li className="li-info-pd">
+                                        <span className="title-info-pd"> Giá</span>
+                                        <span className="content-info-pd"> {formatMoney(detailProduct.price)}</span>
+                                    </li>
+                                    <li className="li-info-pd">
+                                        <span className="title-info-pd"> Thương hiệu</span>
+                                        <span className="content-info-pd"> {detailProduct.nameBrand}</span>
+                                    </li>
+                                    <li className="li-info-pd">
+                                        <span className="title-info-pd"> Loại sản phẩm</span>
+                                        <span className="content-info-pd"> {detailProduct.nameCategory}</span>
+                                    </li>
+                                    <li className="li-info-pd">
+                                        <span className="title-info-pd"> Chất liệu</span>
+                                        <span className="content-info-pd"> {detailProduct.nameMaterial}</span>
+                                    </li>
+                                    <li className="li-info-pd">
+                                        <span className="title-info-pd"> Kích thước</span>
+                                        <span className="content-info-pd"> {detailProduct.nameSize}</span>
+                                    </li>
+                                    <li className="li-info-pd">
+                                        <span className="title-info-pd"> Đế giày</span>
+                                        <span className="content-info-pd"> {detailProduct.nameSole}</span>
+                                    </li>
+
+                                </ul>
+                            ) : (<div className="box-img-guide-choose-size">
+                                <img src={tableSize} alt="..." />
+                            </div>)}
+
+                        </div>
                     </div>
                 </Col>
+
+                <Col
+                    lg={{ span: 16, offset: 4 }}
+                    style={{ textAlign: "center", marginTop: 100 }}
+                >
+                    <h1>Sản phẩm đã xem</h1>
+                    <div className="box-product-saw">
+
+                        {productSaw.filter((item) =>item.idProductDetail !== id).length < 6 ? (
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                {
+                                    productSaw.slice(1).map((item, index) => (
+                                        <div>
+                                            <CardItem item={item} index={index} />
+                                        </div>
+
+                                    ))
+                                }
+                            </div>
+                        ) : (
+                            <>
+                                <div style={{ position: "relative" }}>
+                                    <Slider style={{ display:"flex",justifyContent:"center" }} ref={sliderRef} {...settings}>
+                                        {productSaw.slice(1).map((item, index) => (
+                                            <div style={{ display:"flex",justifyContent:"center" }}>
+                                                <CardItem item={item} index={index} />
+                                            </div>
+                                        ))}
+                                    </Slider>
+                                </div>
+                                {productSaw.length > 5 ? (
+                                    <>
+                                        <FontAwesomeIcon className="button-prev-product-saw" icon={faChevronLeft} onClick={goToPrev} />
+                                        <FontAwesomeIcon className="button-next-product-saw" icon={faChevronRight} onClick={goToNext} />
+                                    </>
+                                ) : null}
+                            </>
+                        )}
+
+                    </div>
+
+                </Col>
             </Row>
+
+
         </div>
     </React.Fragment>);
 }

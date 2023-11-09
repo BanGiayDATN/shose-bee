@@ -109,8 +109,8 @@ function ModalCreateAddressAccount({
         phoneNumber: !formAdd.phoneNumber
           ? "Nhập số điện thoại"
           : !phoneNumberPattern.test(formAdd.phoneNumber)
-          ? "Nhập đúng định dạng"
-          : "",
+            ? "Nhập đúng định dạng"
+            : "",
         province:
           formAdd.province === undefined || !formAdd.province
             ? "Chọn tỉnh/thành phố"
