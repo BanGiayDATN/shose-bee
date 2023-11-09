@@ -66,6 +66,7 @@ import Password from "./pages/customer/account/password/Password";
 import Purchase from "./pages/customer/account/purchase/Purchase";
 import Notification from "./pages/customer/account/notification/Notification";
 import RepoVoucher from "./pages/customer/account/voucher/Voucher";
+import Policy from "./pages/customer/policy/Policy";
 import SignUp from "./pages/customer/signup/SignUp";
 function App() {
   const pathname = window.location.pathname;
@@ -94,7 +95,6 @@ function App() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  
   }, []);
   const scrollToTop = () => {
     const c = document.documentElement.scrollTop || document.body.scrollTop;
@@ -207,10 +207,7 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />
-          <Route
-            path="/"
-            element={<Navigate replace to="/home" />}
-          />
+          <Route path="/" element={<Navigate replace to="/home" />} />
           <Route
             path="/login"
             element={
@@ -219,7 +216,7 @@ function App() {
               </GuestGuard>
             }
           />
-           <Route
+          <Route
             path="/signup"
             element={
               <GuestGuard>
@@ -289,7 +286,18 @@ function App() {
               </GuestGuard>
             }
           />
-
+          <Route
+            path="/policy"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <Policy />
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
           <Route
             path="/account-address"
             element={

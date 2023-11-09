@@ -9,6 +9,7 @@ import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/Payments
 import logo from "./../../../assets/images/logo_client.png";
 import "./style-payment-success.css";
 import { Button } from "antd";
+import { toast } from "react-toastify";
 
 const getUrlVars = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -69,12 +70,12 @@ function PayMentSuccessful() {
     const param = new URLSearchParams(window.location.search);
     fetchData();
     setStatus(getTransactionStatus());
-    console.log(getTransactionStatus());
-    console.log(getTransactionStatus() == "00");
     setAmount(getAmount());
     PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {
       setLoadLink(false)
-    });
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+    });;
   }, []);
   const [loadLink, setLoadLink] = useState(true)
 

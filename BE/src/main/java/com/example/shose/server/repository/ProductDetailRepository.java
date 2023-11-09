@@ -42,7 +42,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    c.name AS nameCategory,
                    b.name AS nameBrand,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                   AS promotion,
                    detail.quantity,
                    s2.name AS size,
                    c2.code AS color,
@@ -64,7 +69,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
-                WHERE i.status = true  
+                WHERE i.status = true   
                 AND p.id = :#{#req.idProduct}
                 AND  ( :#{#req.size} = 0 OR s2.name = :#{#req.size} OR :#{#req.size} = '' )
                 AND  ( :#{#req.color} IS NULL OR c2.code LIKE %:#{#req.color}% OR :#{#req.color} LIKE '' )
@@ -268,7 +273,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 pd.price as price,
                 promotion_summary.valuePromotion as valuePromotion,
                 pd.created_date as createdDate
-            FROM product_detail pd
+               FROM product_detail pd
                      LEFT JOIN (
                 SELECT
                     pd.id as pd_id,
@@ -354,7 +359,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    c2.id AS idCode,
                    s2.id AS idSize,
                    detail.maqr AS QRCode,
-                   p2.value AS promotion
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                   AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
                 JOIN (
@@ -373,6 +383,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 LEFT JOIN promotion_product_detail ppd ON detail.id = ppd.id_product_detail
                 LEFT JOIN promotion p2 ON ppd.id_promotion = p2.id
                 WHERE  detail.id = :id
+                GROUP BY detail.id
             """, nativeQuery = true)
     ProductDetailDTOResponse getOneById(@Param("id") String id);
 
@@ -436,7 +447,9 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 AND ( :#{#res.sellOff} IS NULL  OR :#{#res.sellOff} = '' OR promotion_summary.status =true)
                 GROUP BY pd.id,valuePromotion
                 """, nativeQuery = true)
-    Page<GetProductDetail> getProductDetailByCategorys(Pageable pageable, @Param("req") FindProductDetailByCategorysConvertRequest req,@Param("res") FindProductDetailByCategorysRequest res);
+    Page<GetProductDetail> getProductDetailByCategorys(Pageable pageable,
+                                                       @Param("req") FindProductDetailByCategorysConvertRequest req,
+                                                       @Param("res") FindProductDetailByCategorysRequest res);
 
     @Query(value = """
                 SELECT
@@ -452,7 +465,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    c.name AS nameCategory,
                    b.name AS nameBrand,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                   AS promotion,
                    detail.quantity,
                    s2.name AS size,
                    c2.code AS color,

@@ -12,8 +12,9 @@ function CardItem({ item, index }) {
   const now = dayjs();
   const [modal, setModal] = useState(false);
   const [clickedIndex, setClickedIndex] = useState(-1);
-  const nav = useNavigate()
+  const nav = useNavigate();
 
+  console.log(item);
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProductDetail: "",
@@ -26,7 +27,6 @@ function CardItem({ item, index }) {
 
   const idAccountLocal = sessionStorage.getItem("idAccount");
   const [quantity, setQuantity] = useState(1);
-  const [cartAccount, setCartAccount] = useState([]);
   const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
 
   const [cartLocal, setCartLocal] = useState(initialCartLocal);
@@ -80,7 +80,7 @@ function CardItem({ item, index }) {
         }
       });
       window.location.href = "/cart";
-      toast.success("Add cart không login", {
+      toast.success("Thêm giỏ hàng thành công", {
         autoClose: 3000,
       });
     } else {
@@ -101,7 +101,7 @@ function CardItem({ item, index }) {
         }
       );
       window.location.href = "/cart";
-      toast.success("Add cart có login!", {
+      toast.success("Thêm giỏ hàng thành công", {
         autoClose: 3000,
       });
     }

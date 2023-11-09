@@ -190,8 +190,8 @@ function DetailBill() {
       content: "Bạn có đồng ý hủy không?",
       okText: "Đồng ý",
       cancelText: "Hủy",
-      onOk: () => {
-        BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+      onOk: async() => {
+        await BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
           dispatch(getBill(res.data.data));
           var index = listStatus.findIndex(
             (item) => item.status == res.data.data.statusBill
@@ -211,6 +211,10 @@ function DetailBill() {
           };
           dispatch(addStatusPresent(index));
           dispatch(addBillHistory(history));
+        });
+        await PaymentsMethodApi.findByIdBill(id).then((res) => {
+          setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
+          dispatch(getPaymentsMethod(res.data.data));
         });
         setIsModalCanCelOpen(false);
         toast.success("Hủy hóa đơn thành công");
@@ -1447,7 +1451,7 @@ function DetailBill() {
             >
               Xác nhận thanh toán
             </Button> */}
-            {payMentNo && statusPresent == 3 ? (
+            {payMentNo && statusPresent == 4 ? (
               <Button
                 type="dashed"
                 align={"end"}
@@ -1489,7 +1493,7 @@ function DetailBill() {
                   fontWeight: "500",
                 }}
               >
-                Thông tin đơn hàng
+                Thông tin đơn hàng:  {bill.code}
               </h2>
             </Col>
             <Col span={2}>
@@ -1774,7 +1778,7 @@ function DetailBill() {
                       : item.price * item.quantity + " đ"}
                   </span>{" "}
                 </Col>
-                <Col span={5} style={{ display: "flex", alignItems: "center" }}>
+                {/* <Col span={5} style={{ display: "flex", alignItems: "center" }}>
                   <Row>
                     <Col span={12}>
                       {bill.statusBill == "TAO_HOA_DON" ||
@@ -1845,7 +1849,7 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Row>
-                </Col>
+                </Col> */}
               </Row>
             );
           })}

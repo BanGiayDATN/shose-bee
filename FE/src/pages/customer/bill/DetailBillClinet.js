@@ -298,8 +298,8 @@ if (statusBill.actionDescription == "") {
     content: "Bạn có đồng ý hủy không?",
     okText: "Đồng ý",
     cancelText: "Hủy",
-    onOk: () => {
-      BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+    onOk: async() => {
+      await BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
         dispatch(getBill(res.data.data));
         var index = listStatus.findIndex(
           (item) => item.status == res.data.data.statusBill
@@ -319,6 +319,10 @@ if (statusBill.actionDescription == "") {
         };
         dispatch(addStatusPresent(index));
         dispatch(addBillHistory(history));
+        
+      });
+      await BillClientApi.fetchAllPayMentlInBill(id).then((res) => {
+        dispatch(getPaymentsMethod(res.data.data));
       });
       setIsModalCanCelOpen(false);
       toast.success("Hủy hóa đơn thành công");
@@ -379,8 +383,8 @@ const onChangeDescStatusBill = (fileName, value) => {
           >
             <Row style={{ width: "100%" }}>
               <Col span={12}>
-              <Col span={statusPresent < 5 ? 6 : 0}>
-                    {statusPresent < 5 ? (
+              <Col span={statusPresent < 4 ? 6 : 0}>
+                    {statusPresent < 4 ? (
                       <Button
                         type="danger"
                         onClick={() => showModalCanCel()}

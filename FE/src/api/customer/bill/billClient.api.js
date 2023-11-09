@@ -41,4 +41,12 @@ export class BillClientApi {
       url: `/client/payment/bill/`+ id
     });
   };
+
+  static changeCancelStatusBill = (id, data) =>{
+    return request({
+      method: "PUT",
+      url: `/client/bill/cancel-status/`+ id,
+      params: data,
+    });
+  } 
 }

@@ -126,8 +126,8 @@ function ModalCreateAddressAccount({
       setFormErrors(errors);
       return;
     }
-
-    AddressClientApi.createAddressClient(form).then((res) => {
+    const add = { ...form, status: "DANG_SU_DUNG" };
+    AddressClientApi.createAddressClient(add).then((res) => {
       dispatch(CreateAddressAccountClient(res.data.data));
       toast.success("Thêm mới địa chỉ thành công");
       closeModalCreate();
