@@ -256,6 +256,10 @@ function DetailBill() {
           console.log(res.data.data);
           dispatch(getProductInBillDetail(res.data.data));
         });
+         await PaymentsMethodApi.findByIdBill(id).then((res) => {
+          setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
+          dispatch(getPaymentsMethod(res.data.data));
+        });
         await BillApi.fetchDetailBill(id).then((res) => {
           console.log(res.data.data);
           dispatch(getBill(res.data.data));
