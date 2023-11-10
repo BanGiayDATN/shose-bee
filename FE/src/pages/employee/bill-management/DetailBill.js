@@ -58,7 +58,7 @@ function DetailBill() {
   const [statusBill, setStatusBill] = useState({
     actionDescription: "",
     method: "TIEN_MAT",
-    transaction: '',
+    transaction: "",
     status: "THANH_TOAN",
   });
   const dispatch = useDispatch();
@@ -291,6 +291,9 @@ function DetailBill() {
   };
   const handleOkPayMent = () => {
     if (statusBill.actionDescription.trim().length > 0) {
+      if(statusBill.method == "CHUYEN_KHOAN" && statusBill.transaction.trim().length == 0){
+        toast.warning("Vui lòng nhập mã giao dịch");
+      }
       setIsModalPayMentOpen(false);
       Modal.confirm({
         title: "Xác nhận",
