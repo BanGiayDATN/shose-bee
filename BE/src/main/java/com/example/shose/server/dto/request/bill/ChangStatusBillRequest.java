@@ -21,5 +21,5 @@ public class ChangStatusBillRequest {
 
     private String totalMoney;
 
-     private  boolean status = false;
+//     private  boolean status = false;
 }
