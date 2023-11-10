@@ -1997,6 +1997,36 @@ function DetailBill() {
               />
             </Col>
           </Row>
+           {
+          statusBill.method == "CHUYEN_KHOAN" ? (   <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label
+                className="label-bill"
+                style={{ marginTop: "3px", top: "-31%" }}
+              >
+                Mã giao dịch
+              </label>
+              <Form.Item
+                label=""
+                name="name"
+                style={{ marginBottom: "20px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập mã giao dịch",
+                  },
+                ]}
+              >
+                <Input
+                  onChange={(e) => onChangeBill("name", e.target.value)}
+                  placeholder="Nhập tên khách hàng"
+                  defaultValue={statusBill.transaction}
+                  style={{ width: "98%", position: "relative", height: "40px" }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>):(<Row></Row>)
+          }
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
               <label className="label-bill">Mô Tả</label>
