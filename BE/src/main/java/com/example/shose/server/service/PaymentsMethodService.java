@@ -25,12 +25,13 @@ public interface PaymentsMethodService {
 
     String payWithVNPAY(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException;
 
-    boolean refundVnpay(String idUser, String codeBill, HttpServletRequest request) ;
+    boolean refundVnpay(String idUser,  boolean status, String codeBill, HttpServletRequest request) ;
+
+    boolean refundPayment(String idUser, String codeBill, CreatePaymentsMethodRequest request);
 
     boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response, HttpServletRequest requests);
 
     boolean changeQuantityProduct(QuantityProductPaymentRequest request);
-
 
     boolean updatepayMent(String idBill,String idEmployees,List<String> ids);
     String payWithVNPAYOnline(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException;
