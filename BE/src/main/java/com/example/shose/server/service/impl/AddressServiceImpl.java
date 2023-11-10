@@ -144,13 +144,13 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Address setDefault(String idAddress) {
-        Optional<Address> optional = addressRepository.findById(idAddress);
+    public Address setDefault(SetAddressDefaultClientRequest request) {
+        Optional<Address> optional = addressRepository.findById(request.getIdAddress());
         if(!optional.isPresent()){
             throw new RestApiException("Địa chỉ của khách không tồn tại");
         }
 
-        Address address1 = addressRepository.getAddressDefault();
+        Address address1 = addressRepository.getAddressDefaultAccount(request.getIdAccount());
         address1.setStatus(Status.KHONG_SU_DUNG);
         addressRepository.save(address1);
         Address address =  optional.get();
@@ -189,7 +189,7 @@ public class AddressServiceImpl implements AddressService {
             throw new RestApiException("Người dùng không tồn tại");
         }
         if(req.getStatus().equals(Status.DANG_SU_DUNG)){
-            Address address = addressRepository.getAddressDefault();
+            Address address = addressRepository.getAddressDefaultAccount(req.getIdAccount());
             if(address != null){
                 address.setStatus(Status.KHONG_SU_DUNG);
                 addressRepository.save(address);

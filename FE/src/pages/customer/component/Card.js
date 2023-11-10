@@ -11,10 +11,8 @@ import "./style-card.css";
 function CardItem({ item, index }) {
   const now = dayjs();
   const [modal, setModal] = useState(false);
+  const [id, setId] = useState('');
   const [clickedIndex, setClickedIndex] = useState(-1);
-  const nav = useNavigate();
-
-  console.log(item);
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProductDetail: "",
@@ -44,72 +42,151 @@ function CardItem({ item, index }) {
     );
   }, []);
 
-  const addToCard = () => {
-    if (detailProduct.quantity === 0) {
-      toast.error("Sản phẩm đã hết hàng", {
-        autoClose: 3000,
-      });
-      return;
-    }
-    if (idAccountLocal === null) {
-      const newCartItem = {
-        idProductDetail: detailProduct.idProductDetail,
-        image: detailProduct.image,
-        price: detailProduct.price,
-        quantity: quantity,
-        nameProduct: detailProduct.nameProduct,
-        codeColor: detailProduct.codeColor,
-        nameSize: detailProduct.nameSize,
-      };
-
-      setCartLocal((prev) => {
-        console.log(cartLocal);
-        const exists = prev.find(
-          (item) => item.idProductDetail === newCartItem.idProductDetail
-        );
-        if (!exists) {
-          console.log("mới");
-          return [...prev, newCartItem];
-        } else {
-          console.log("trùng");
-          return prev.map((item) =>
-            item.idProductDetail === newCartItem.idProductDetail
-              ? { ...item, quantity: item.quantity + newCartItem.quantity }
-              : item
-          );
-        }
-      });
-      window.location.href = "/cart";
-      toast.success("Thêm giỏ hàng thành công", {
-        autoClose: 3000,
-      });
-    } else {
-      const newCartItem = {
-        idAccount: idAccountLocal,
-        idProductDetail: detailProduct.idProductDetail,
-        price: detailProduct.price,
-        quantity: quantity,
-      };
-
-      CartClientApi.addCart(newCartItem).then(
-        (res) => {
-          console.log(res.data.data);
-          // setListProductDetailByCategory(res.data.data);
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-      window.location.href = "/cart";
-      toast.success("Thêm giỏ hàng thành công", {
-        autoClose: 3000,
-      });
+  const fetchData = async () => {
+    try {
+      const response = await CartClientApi.listCart(idAccountLocal);
+      const cartAccount = response.data.data;
+      return cartAccount;
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   };
+// them san pham vao gio hang
+const addToCard = async () => {
+
+    if (detailProduct.quantity === 0) {
+        toast.error("Sản phẩm đã hết hàng", {
+            autoClose: 3000,
+        });
+        return;
+    }
+    if (idAccountLocal === null) {
+        const detailProductCart = cartLocal.find((item) => item.idProductDetail === id)
+        if (detailProductCart !== undefined) {
+            if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
+                const newCartItem = {
+                    idProductDetail: detailProduct.idProductDetail,
+                    image: detailProduct.image,
+                    price: detailProduct.price,
+                    quantity: quantity,
+                    nameProduct: detailProduct.nameProduct,
+                    codeColor: detailProduct.codeColor,
+                    nameSize: detailProduct.nameSize,
+                };
+
+                setCartLocal((prev) => {
+                    console.log(cartLocal);
+                    const exists = prev.find(
+                        (item) => item.idProductDetail === newCartItem.idProductDetail
+                    );
+                    if (!exists) {
+                        return [...prev, newCartItem];
+                    } else {
+                        return prev.map((item) =>
+                            item.idProductDetail === newCartItem.idProductDetail
+                                ? { ...item, quantity: item.quantity + newCartItem.quantity }
+                                : item
+                        );
+                    }
+                });
+                window.location.href = "/cart";
+                toast.success("Thêm giỏ hàng thành công", {
+                    autoClose: 3000,
+                });
+            } else {
+                toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
+            }
+
+        } else {
+            const newCartItem = {
+                idProductDetail: detailProduct.idProductDetail,
+                image: detailProduct.image,
+                price: detailProduct.price,
+                quantity: quantity,
+                nameProduct: detailProduct.nameProduct,
+                codeColor: detailProduct.codeColor,
+                nameSize: detailProduct.nameSize,
+            };
+
+            setCartLocal((prev) => {
+                console.log(cartLocal);
+                const exists = prev.find(
+                    (item) => item.idProductDetail === newCartItem.idProductDetail
+                );
+                if (!exists) {
+                    return [...prev, newCartItem];
+                } else {
+                    return prev.map((item) =>
+                        item.idProductDetail === newCartItem.idProductDetail
+                            ? { ...item, quantity: item.quantity + newCartItem.quantity }
+                            : item
+                    );
+                }
+            });
+            window.location.href = "/cart";
+            toast.success("Thêm giỏ hàng thành công", {
+                autoClose: 3000,
+            });
+        }
+
+    } else {
+    const cartAccount = await fetchData()
+        const detailProductCart = cartAccount.find((item) => item.idProductDetail === id)
+
+        if (detailProductCart !== undefined) {
+            if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
+
+                const newCartItem = {
+                    idAccount: idAccountLocal,
+                    idProductDetail: detailProduct.idProductDetail,
+                    price: detailProduct.price,
+                    quantity: quantity,
+                };
+
+                CartClientApi.addCart(newCartItem).then(
+                    (res) => {
+                        console.log(res.data.data);
+                    },
+                    (err) => {
+                        console.log(err);
+                    }
+                );
+                window.location.href = "/cart";
+                toast.success("Thêm giỏ hàng thành công", {
+                    autoClose: 3000,
+                });
+            } else {
+                toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
+            }
+
+        } else {
+            const newCartItem = {
+                idAccount: idAccountLocal,
+                idProductDetail: detailProduct.idProductDetail,
+                price: detailProduct.price,
+                quantity: quantity,
+            };
+
+            CartClientApi.addCart(newCartItem).then(
+                (res) => {
+                    console.log(res.data.data);
+                },
+                (err) => {
+                    console.log(err);
+                }
+            );
+            window.location.href = "/cart";
+            toast.success("Thêm giỏ hàng thành công", {
+                autoClose: 3000,
+            });
+        }
+    }
+
+};
 
   const getDetailProduct = (idProductDetail) => {
-    console.log(idProductDetail);
-    console.log(detailProduct);
+    setId(idProductDetail)
     ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
       (res) => {
         console.log(res.data.data);
@@ -120,11 +197,13 @@ function CardItem({ item, index }) {
       }
     );
     setModal(true);
+    setCurrentImageIndex(0)
   };
 
   const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
     getDetailProduct(idProductDetail);
+    
   };
   const closeModal = () => {
     setModal(false);
@@ -141,12 +220,11 @@ function CardItem({ item, index }) {
   };
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   useEffect(() => {
     // Thiết lập một interval để tự động chuyển ảnh sau một khoảng thời gian
     const intervalId = setInterval(() => {
       nextImage();
-    }, 3000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
+    }, 2000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
 
     // Xóa interval khi component unmount để tránh lỗi memory leak
     return () => clearInterval(intervalId);

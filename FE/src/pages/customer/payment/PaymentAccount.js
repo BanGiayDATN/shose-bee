@@ -33,7 +33,7 @@ import ModalUpdateAddress from "../../customer/payment/modal/ModalUpdateAddress"
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 dayjs.extend(utc);
 function PaymentAccount() {
-  const nav = useNavigate()
+  const nav = useNavigate();
   const [modalAddressAccount, setModalAddressAccount] = useState(false);
   const { updateTotalQuantity } = useCart();
   const { Option } = Select;
@@ -166,7 +166,7 @@ function PaymentAccount() {
     } else {
       BillClientApi.createBillAccountOnline(formBill).then(
         (res) => {
-          nav("/home")
+          nav("/home");
         },
         (err) => {
           console.log(err);

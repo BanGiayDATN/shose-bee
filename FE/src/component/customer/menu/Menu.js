@@ -108,7 +108,7 @@ function HeaderMenu() {
             );
           })}
         </div>
-        <div className="left-menu">
+        <div className="right-menu">
           <div className="search-menu">
             <SearchOutlined
               style={{ fontSize: "20px" }}

@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useCart } from "./CartContext";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTags, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faMinus, faPlus, faTags, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   Row,
   Col,
@@ -69,10 +69,12 @@ function Cart() {
       getListCart(idAccountLocal);
       setTotalPrice(0);
     }
+    console.log(chooseItemCart.length, cart.length);
+    if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
+      setSelectAllChecked(true)
+    }
   }, []);
-  // useEffect(() => {
-  //   console.log(selectedItem);
-  // }, [selectedItem]);
+
   useEffect(() => {
     console.log(listSize);
   }, [listSize]);
@@ -92,7 +94,12 @@ function Cart() {
   }, [cart]);
 
   useEffect(() => {
-    console.log("item của bill", chooseItemCart);
+    console.log(chooseItemCart.length, cart.length);
+    if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
+      setSelectAllChecked(true)
+    } else if (chooseItemCart.length !== cart.length) {
+      setSelectAllChecked(false)
+    }
   }, [chooseItemCart]);
   useEffect(() => {
     console.log("new", detailProductNew);
@@ -358,13 +365,12 @@ function Cart() {
     });
   };
   const changeQuantity = (itemOld, value) => {
-    console.log(value);
     chooseItemCart.map((item) => {
       if (item.idProductDetail === itemOld.idProductDetail) {
         if (itemOld.quantity < value) {
-          setTotalPrice(totalPrice + parseInt(itemOld.price));
+          setTotalPrice(totalPrice + parseInt(itemOld.price * (value - itemOld.quantity)));
         } else {
-          setTotalPrice(totalPrice - parseInt(itemOld.price));
+          setTotalPrice(totalPrice - parseInt(itemOld.price * (itemOld.quantity - value)));
         }
       }
     });
@@ -376,7 +382,6 @@ function Cart() {
         }
         return item;
       });
-      console.log("updateCart", updatedCart);
       setCart(updatedCart);
     } else {
       const formChange = {
@@ -507,7 +512,7 @@ function Cart() {
                     alignItems: "center",
                     marginTop: "60px",
                     borderRadius: "10px",
-                    backgroundColor: "#FF6600",
+                    backgroundColor: "rgb(139 139 139)",
                   }}
                 >
                   <div>
@@ -603,33 +608,27 @@ function Cart() {
                                 marginTop: "10px",
                               }}
                             >
-                              <p
-                                style={{ fontWeight: "bold", marginRight: 10 }}
-                              >
-                                Số lượng
-                              </p>
-                              <InputNumber
-                                className="input-quantity-cart"
-                                name="quantity"
-                                type="number"
-                                //  value={item.quantity}
-                                defaultValue={item.quantity}
-                                min="1"
-                                onChange={(value) =>
-                                  changeQuantity(item, value)
-                                }
-                              ></InputNumber>
-                              <div className="button-delete-cart">
-                                <Tooltip title="Xóa sản phẩm">
+                              <div>
+                                <div
+                                  style={{ fontWeight: "bold", marginRight: 10 }}
+                                >
+                                  Số lượng
+                                </div>
+                                <div className="form-change-quantity">
+
                                   <FontAwesomeIcon
-                                    icon={faTrash}
-                                    size="xl"
-                                    onClick={() => {
-                                      deleteItemCart(item);
-                                    }}
+                                    icon={faMinus} className="button-minus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) - 1) < 1 ? 1 : (parseInt(item.quantity) - 1))} />
+                                  <Input className="quantity-product-in-cart"
+                                    min={1}
+                                    value={item.quantity}
+                                    onChange={(value) =>
+                                      changeQuantity(item, value.target.value < 1 ? 1 : value.target.value)
+                                    }
                                   />
-                                </Tooltip>
+                                  <FontAwesomeIcon icon={faPlus} className="button-plus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) + 1) < 1 ? 1 : (parseInt(item.quantity) + 1))} />
+                                </div>
                               </div>
+
                             </div>
                           </div>
                           <div className="form-status-cart">
@@ -638,23 +637,36 @@ function Cart() {
                                 fontSize: "17px",
                                 fontWeight: "500",
                                 textAlign: "center",
-                                marginTop: "50%",
+                                marginTop: "5%",
                                 width: "150px",
                               }}
                             >
                               {formatMoney(item.quantity * item.price)}
                             </div>
+
+                            <div className="button-delete-cart">
+                              <Tooltip title="Xóa sản phẩm">
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  size="xl"
+                                  onClick={() => {
+                                    deleteItemCart(item);
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+
                           </div>
                         </div>
                       ))}
                     </>
                   )}
                 </div>
-                {cartLocal.length !== 0 ? (
+                {cart.length !== 0 ? (
                   <div style={{ display: "flex" }}>
                     <div className="button-delete-all-cart">Xóa tất cả</div>
-                  
-                    <div className="button-continue-to-buy" onClick={()=> nav("/home")}  >
+
+                    <div className="button-continue-to-buy" onClick={() => nav("/home")}  >
                       Tiếp tục mua hàng
                     </div>
                   </div>) : (null)}

@@ -184,6 +184,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+    &:hover{
+      background-color:#ff4400;
+    }
   }
   
   .size-product.highlight {

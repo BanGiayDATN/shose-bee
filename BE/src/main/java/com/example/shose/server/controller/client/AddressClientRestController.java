@@ -1,6 +1,7 @@
 package com.example.shose.server.controller.client;
 
 import com.example.shose.server.dto.request.address.CreateAddressClientRequest;
+import com.example.shose.server.dto.request.address.SetAddressDefaultClientRequest;
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressClientRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
@@ -31,9 +32,9 @@ public class AddressClientRestController {
     public ResponseObject getListByAccount(@PathVariable("idAccount") String idAccount)  {
         return new ResponseObject(addressService.getListAddressByAccountId(idAccount));
     }
-    @PostMapping("/setDefault/{idAddress}")
-    public ResponseObject setDefault(@PathVariable("idAddress") String idAddress)  {
-        return new ResponseObject(addressService.setDefault(idAddress));
+    @PostMapping("/setDefault")
+    public ResponseObject setDefault(@RequestBody SetAddressDefaultClientRequest request)  {
+        return new ResponseObject(addressService.setDefault(request));
     }
     @PostMapping("/update")
     public ResponseObject update(@RequestBody UpdateAddressClientRequest request)  {
