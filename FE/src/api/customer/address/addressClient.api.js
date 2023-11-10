@@ -82,10 +82,11 @@ export class AddressClientApi {
       url: `/client/address/list/${idAccount}`,
     });
   };
-  static setDefault = (idAddress) => {
+  static setDefault = (data) => {
     return request({
       method: "POST",
-      url: `/client/address/setDefault/${idAddress}`,
+      url: `/client/address/setDefault`,
+      data:data
     });
   };
   static updateAddressClient = (data) => {

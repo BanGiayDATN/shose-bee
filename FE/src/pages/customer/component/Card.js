@@ -131,11 +131,7 @@ const addToCard = async () => {
         }
 
     } else {
-  
-        // );
-
     const cartAccount = await fetchData()
-
         const detailProductCart = cartAccount.find((item) => item.idProductDetail === id)
 
         if (detailProductCart !== undefined) {

@@ -34,7 +34,7 @@ public interface AddressService {
     AddressAccountResponse getAddressByAccountIdAndStatus( String idAccount);
     List<AddressAccountResponse> getListAddressByAccountId( String idAccount);
 
-    Address setDefault(String idAddress);
+    Address setDefault(SetAddressDefaultClientRequest request);
     Address updateAddressClient(UpdateAddressClientRequest req);
     Address createAddressClient(CreateAddressClientRequest req);
     Address deleteAddressAccount(String id);
