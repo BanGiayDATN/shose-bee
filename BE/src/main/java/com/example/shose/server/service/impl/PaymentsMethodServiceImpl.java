@@ -320,6 +320,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setTotalMoney(payment);
             paymentsMethod.setDescription(request.getActionDescription());
             paymentsMethod.setEmployees(account.get());
+            paymentsMethod.setVnp_TransactionNo(request.getTransaction());
             paymentsMethodRepository.save(paymentsMethod);
         }
         return true;
