@@ -295,7 +295,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Override
     public boolean refundPayment(String idUser, String codeBill, CreatePaymentsMethodRequest request) {
-        Optional<Bill> bill = billRepository.findByCode(codeBill);
+        Optional<Bill> bill = billRepository.findById(codeBill);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
