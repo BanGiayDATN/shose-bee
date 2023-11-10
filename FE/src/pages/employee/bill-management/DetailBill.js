@@ -2021,7 +2021,7 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                  onChange={(e) => onChangeBill("name", e.target.value)}
+                  onChange={(e) => onChangeDescStatusBill("transaction", e.target.value)}
                   placeholder="Nhập mã giao dịch"
                   defaultValue={statusBill.transaction}
                   style={{ width: "98%", position: "relative", height: "40px" }}
