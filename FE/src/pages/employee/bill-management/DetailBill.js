@@ -58,7 +58,7 @@ function DetailBill() {
   const [statusBill, setStatusBill] = useState({
     actionDescription: "",
     method: "TIEN_MAT",
-    totalMoney: 0,
+    transaction: '',
     status: "THANH_TOAN",
   });
   const dispatch = useDispatch();
@@ -2019,7 +2019,7 @@ function DetailBill() {
               >
                 <Input
                   onChange={(e) => onChangeBill("name", e.target.value)}
-                  placeholder="Nhập tên khách hàng"
+                  placeholder="Nhập mã giao dịch"
                   defaultValue={statusBill.transaction}
                   style={{ width: "98%", position: "relative", height: "40px" }}
                 />
