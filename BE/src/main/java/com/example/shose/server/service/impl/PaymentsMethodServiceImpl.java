@@ -303,7 +303,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER){
+        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
             BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.get().getId());
             if (bill.get().getStatusBill() == StatusBill.DA_HUY) {
                 BillHistory billHistory = new BillHistory();
