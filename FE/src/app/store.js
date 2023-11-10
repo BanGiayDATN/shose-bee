@@ -15,6 +15,7 @@ import VoucherReducer from "./reducer/Voucher.reducer";
 import ProductReducer from "./reducer/Product.reducer";
 import LoadingReducer from "./reducer/Loading.reducer";
 import AddressAccountClientReducer from "./reducer/AddressAccountClient.reducer";
+import UserClientReducer from "./reducer/UserClient.reducer";
 export const store = configureStore({
   reducer: {
     category: CategoryReducer,
@@ -32,7 +33,8 @@ export const store = configureStore({
     voucher: VoucherReducer,
     product: ProductReducer,
     loading: LoadingReducer,
-    addressAccountClient: AddressAccountClientReducer
+    addressAccountClient: AddressAccountClientReducer,
+    userClient:UserClientReducer
   },
 });
 

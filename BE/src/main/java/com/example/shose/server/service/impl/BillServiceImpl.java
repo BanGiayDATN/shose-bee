@@ -673,6 +673,7 @@ public class BillServiceImpl implements BillService {
                 .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
         for (BillDetailOnline x : request.getBillDetail()) {
+
             ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
             if (productDetail.getQuantity() < x.getQuantity()) {
                 throw new RestApiException(Message.ERROR_QUANTITY);

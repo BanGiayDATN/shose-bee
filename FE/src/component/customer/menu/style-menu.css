@@ -81,7 +81,7 @@
   background-color: white;
   display: block;
 }
-.left-menu {
+.right-menu {
   margin-left: 15%;
   display: flex;
   justify-content: center;
@@ -173,9 +173,9 @@
     .icon-menu-block{
       font-size: 40px;
       display: block;
-      margin-left:20%;
+      margin-left:50px;
     }
-    .left-menu {
+    .right-menu {
       margin:5%;
     }
 }
@@ -189,8 +189,8 @@
     display: block;
     margin-left:100%;
   }
-  .left-menu {
-    margin-left: 30%;
+  .right-menu {
+    margin-left: 10%;
   }
 }
 /* pc: width >= 1024px */

@@ -122,8 +122,34 @@ function DetailProduct() {
         window.location.href = `/detail-product/${item}`
         getDetailProduct(item)
     }
+
+    const [cart, setCart] = useState([]);
+
+    const getListCart = (id) => {
+        CartClientApi.listCart(id).then(
+            (res) => {
+                const respone = res.data.data;
+                console.log(respone);
+                setCart(respone);
+            },
+            (err) => {
+                console.log(err);
+            }
+        );
+    };
+    const fetchData = async () => {
+        try {
+            const response = await CartClientApi.listCart(idAccountLocal);
+            const cartAccount = response.data.data;
+            return cartAccount;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    };
     // them san pham vao gio hang
-    const addToCard = () => {
+    const addToCard = async () => {
+
         if (detailProduct.quantity === 0) {
             toast.error("Sản phẩm đã hết hàng", {
                 autoClose: 3000,
@@ -131,51 +157,131 @@ function DetailProduct() {
             return;
         }
         if (idAccountLocal === null) {
-            const newCartItem = {
-                idProductDetail: detailProduct.idProductDetail,
-                image: detailProduct.image,
-                price: detailProduct.price,
-                quantity: quantity,
-                nameProduct: detailProduct.nameProduct,
-                codeColor: detailProduct.codeColor,
-                nameSize: detailProduct.nameSize,
+            const detailProductCart = cartLocal.find((item) => item.idProductDetail === id.id)
+            if (detailProductCart !== undefined) {
+                if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
+                    const newCartItem = {
+                        idProductDetail: detailProduct.idProductDetail,
+                        image: detailProduct.image,
+                        price: detailProduct.price,
+                        quantity: quantity,
+                        nameProduct: detailProduct.nameProduct,
+                        codeColor: detailProduct.codeColor,
+                        nameSize: detailProduct.nameSize,
+                    };
 
-            };
-
-            setCartLocal((prev) => {
-                const exists = prev.find(
-                    (item) => item.idProductDetail === newCartItem.idProductDetail
-                );
-                if (!exists) {
-                    return [...prev, newCartItem];
+                    setCartLocal((prev) => {
+                        console.log(cartLocal);
+                        const exists = prev.find(
+                            (item) => item.idProductDetail === newCartItem.idProductDetail
+                        );
+                        if (!exists) {
+                            return [...prev, newCartItem];
+                        } else {
+                            return prev.map((item) =>
+                                item.idProductDetail === newCartItem.idProductDetail
+                                    ? { ...item, quantity: item.quantity + newCartItem.quantity }
+                                    : item
+                            );
+                        }
+                    });
+                    window.location.href = "/cart";
+                    toast.success("Thêm giỏ hàng thành công", {
+                        autoClose: 3000,
+                    });
                 } else {
-                    return prev.map((item) =>
-                        item.idProductDetail === newCartItem.idProductDetail
-                            ? { ...item, quantity: item.quantity + newCartItem.quantity }
-                            : item
+                    toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
+                }
+
+            } else {
+                const newCartItem = {
+                    idProductDetail: detailProduct.idProductDetail,
+                    image: detailProduct.image,
+                    price: detailProduct.price,
+                    quantity: quantity,
+                    nameProduct: detailProduct.nameProduct,
+                    codeColor: detailProduct.codeColor,
+                    nameSize: detailProduct.nameSize,
+                };
+
+                setCartLocal((prev) => {
+                    console.log(cartLocal);
+                    const exists = prev.find(
+                        (item) => item.idProductDetail === newCartItem.idProductDetail
                     );
-                }
-            });
-            window.location.href = "/cart";
+                    if (!exists) {
+                        return [...prev, newCartItem];
+                    } else {
+                        return prev.map((item) =>
+                            item.idProductDetail === newCartItem.idProductDetail
+                                ? { ...item, quantity: item.quantity + newCartItem.quantity }
+                                : item
+                        );
+                    }
+                });
+                window.location.href = "/cart";
+                toast.success("Thêm giỏ hàng thành công", {
+                    autoClose: 3000,
+                });
+            }
+
         } else {
-            const newCartItem = {
-                idAccount: idAccountLocal,
-                idProductDetail: detailProduct.idProductDetail,
-                price: detailProduct.price,
-                quantity: quantity,
-            };
 
-            CartClientApi.addCart(newCartItem).then(
-                (res) => {
-                    window.location.href = "/home";
+            // );
 
-                },
-                (err) => {
-                    console.log(err);
+            const cartAccount = await fetchData()
+
+            const detailProductCart = cartAccount.find((item) => item.idProductDetail === id.id)
+
+            if (detailProductCart !== undefined) {
+                if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
+
+                    const newCartItem = {
+                        idAccount: idAccountLocal,
+                        idProductDetail: detailProduct.idProductDetail,
+                        price: detailProduct.price,
+                        quantity: quantity,
+                    };
+
+                    CartClientApi.addCart(newCartItem).then(
+                        (res) => {
+                            console.log(res.data.data);
+                        },
+                        (err) => {
+                            console.log(err);
+                        }
+                    );
+                    window.location.href = "/cart";
+                    toast.success("Thêm giỏ hàng thành công", {
+                        autoClose: 3000,
+                    });
+                } else {
+                    toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
                 }
-            );
 
+            } else {
+                const newCartItem = {
+                    idAccount: idAccountLocal,
+                    idProductDetail: detailProduct.idProductDetail,
+                    price: detailProduct.price,
+                    quantity: quantity,
+                };
+
+                CartClientApi.addCart(newCartItem).then(
+                    (res) => {
+                        console.log(res.data.data);
+                    },
+                    (err) => {
+                        console.log(err);
+                    }
+                );
+                window.location.href = "/cart";
+                toast.success("Thêm giỏ hàng thành công", {
+                    autoClose: 3000,
+                });
+            }
         }
+
     };
 
     const changeQuantity = (value) => {
@@ -445,10 +551,10 @@ function DetailProduct() {
                     <h1>Sản phẩm đã xem</h1>
                     <div className="box-product-saw">
 
-                        {productSaw.filter((item) =>item.idProductDetail !== id).length < 6 ? (
+                        {productSaw.filter((item) => item.idProductDetail !== id.id).slice(1).length < 5 ? (
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 {
-                                    productSaw.slice(1).map((item, index) => (
+                                    productSaw.filter((item) => item.idProductDetail !== id.id).slice(1).map((item, index) => (
                                         <div>
                                             <CardItem item={item} index={index} />
                                         </div>
@@ -459,9 +565,9 @@ function DetailProduct() {
                         ) : (
                             <>
                                 <div style={{ position: "relative" }}>
-                                    <Slider style={{ display:"flex",justifyContent:"center" }} ref={sliderRef} {...settings}>
-                                        {productSaw.slice(1).map((item, index) => (
-                                            <div style={{ display:"flex",justifyContent:"center" }}>
+                                    <Slider style={{ display: "flex", justifyContent: "center" }} ref={sliderRef} {...settings}>
+                                        {productSaw.filter((item) => item.idProductDetail !== id.id).slice(1).map((item, index) => (
+                                            <div style={{ display: "flex", justifyContent: "center" }}>
                                                 <CardItem item={item} index={index} />
                                             </div>
                                         ))}

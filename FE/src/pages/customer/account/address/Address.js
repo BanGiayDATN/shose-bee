@@ -6,6 +6,7 @@ import { GetAddressAccountClient, SetAddressAccountClient, UpdateAddressDefaultA
 import { useAppDispatch, useAppSelector } from "../../../../app/hook";
 import ModalCreateAddress from "./modal/ModalCreateAddress";
 import ModalUpdateAddress from "./modal/ModalUpdateAddress";
+import { Modal, Tooltip } from "antd";
 function Address() {
     const [modalCreate, setModalCreate] = useState(false)
     const [modalUpdate, setModalUpdate] = useState(false)
@@ -27,9 +28,17 @@ function Address() {
         })
     }, []);
     const setDefault = (id) => {
+        Modal.confirm({
+            title: "Xác nhận đặt mặc định",
+            content: "Bạn có chắc chắn muốn đặt mặc định không?",
+            okText: "Xóa",
+            okType: "danger",
+            cancelText: "Hủy",
+            onOk() {
         AddressClientApi.setDefault(id).then((res) => {
             dispatch(UpdateAddressDefaultAccountClient(res.data.data))
         })
+    }})
     }
     const deleteAddressClient = (id) => {
         console.log(id);
@@ -87,7 +96,9 @@ function Address() {
                                     ) : (null)}
                                 </div>
                                 {item.status !== "DANG_SU_DUNG" ? (
+                                    <Tooltip title="Thiết lập mặc định">
                                     <div className="add-default-address-account" onClick={() => setDefault(item.id)}>Thiết lập mặc định</div>
+                                    </Tooltip>
                                 ) : (null)}
                             </div>
 

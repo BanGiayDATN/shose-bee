@@ -37,11 +37,11 @@ const page = useNavigate()
         </Link>
       </div>
 
-      <div className="content-header-home">
+      {/* <div className="content-header-home">
         <Link to="#" className="title-header">
           <span className="header-icon"><EnvironmentOutlined /></span> Tìm kiếm cửa hàng
         </Link>
-      </div>
+      </div> */}
       <div className="content-header-account"
         onMouseEnter={handleMenuHover}
         onMouseLeave={handleMenuLeave}

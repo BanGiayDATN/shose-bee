@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./style-profile.css"
-import { DatePicker, Form, Radio } from "antd";
-import avatar from "../../../../assets/images/trending_banner03.jpg";
+import { Form, Radio } from "antd";
+
 import { AccountClientApi } from "../../../../api/customer/account/accountClient.api";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { AccountApi } from "../../../../api/employee/account/account.api";
+import { dispatch } from "../../../../app/store";
+import { SetUserClient,UpdateUserClient } from "../../../../app/reducer/UserClient.reducer";
 function Profile() {
     const [formInfo, setFormInfo] = useState({});
     const [showImage, setShowImage] = useState('');
@@ -15,8 +16,7 @@ function Profile() {
     useEffect(() => {
         AccountClientApi.getById(id).then((res) => {
             const data = res.data.data.user
-            const formData = new FormData();
-
+            dispatch(SetUserClient(data))
             setFormInfo({
                 id: data.id,
                 fullName: data.fullName,
@@ -25,10 +25,7 @@ function Profile() {
                 email: data.email,
                 gender: data.gender,
             })
-
-            console.log(formData);
             setShowImage(data.avata)
-            console.log(dayjs(res.data.data.user.dateOfBirth).format("MM/DD/YYYY"));
         })
     }, [])
 
@@ -73,6 +70,7 @@ function Profile() {
       };
     const handleUpdateInfoUser = () => {
         AccountClientApi.updateInfoUser(convertToLong()).then((res) => {
+            dispatch(SetUserClient(res.data.data))
             toast.success("Cập nhập thành công");
         })
     }
