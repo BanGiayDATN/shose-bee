@@ -196,14 +196,14 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public boolean refundVnpay(String idUser, String codeBill, HttpServletRequest request) {
+    public boolean refundVnpay(String idUser, boolean status, String codeBill, HttpServletRequest request) {
         Optional<Bill> bill = billRepository.findByCode(codeBill);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         Optional<Account> account = accountRepository.findById(idUser);
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill.get()).stream().filter(paymentMethod -> paymentMethod.getMethod().equals(StatusMethod.CHUYEN_KHOAN)).collect(Collectors.toList());
-        if (paymentsMethods.size() != 0 && bill.get().getTypeBill() == TypeBill.OFFLINE) {
+        if (paymentsMethods.size() != 0 && status) {
             PaymentsMethod paymentsMethod = paymentsMethods.get(0);
             String vnp_TxnRef = paymentsMethod.getBill().getCode() + "-"+ paymentsMethod.getCreateAt();
             String vnp_RequestId = RandomStringUtils.randomNumeric(8);
