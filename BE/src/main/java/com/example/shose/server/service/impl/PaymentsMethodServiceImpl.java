@@ -196,14 +196,14 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public boolean refundVnpay(String idUser, String codeBill, HttpServletRequest request) {
+    public boolean refundVnpay(String idUser, boolean status, String codeBill, HttpServletRequest request) {
         Optional<Bill> bill = billRepository.findByCode(codeBill);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         Optional<Account> account = accountRepository.findById(idUser);
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill.get()).stream().filter(paymentMethod -> paymentMethod.getMethod().equals(StatusMethod.CHUYEN_KHOAN)).collect(Collectors.toList());
-        if (paymentsMethods.size() != 0) {
+        if (paymentsMethods.size() != 0 && status) {
             PaymentsMethod paymentsMethod = paymentsMethods.get(0);
             String vnp_TxnRef = paymentsMethod.getBill().getCode() + "-"+ paymentsMethod.getCreateAt();
             String vnp_RequestId = RandomStringUtils.randomNumeric(8);
@@ -291,6 +291,39 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         }
         return true;
 
+    }
+
+    @Override
+    public boolean refundPayment(String idUser, String codeBill, CreatePaymentsMethodRequest request) {
+        Optional<Bill> bill = billRepository.findById(codeBill);
+        if (!bill.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Optional<Account> account = accountRepository.findById(idUser);
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
+            BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.get().getId());
+            if (bill.get().getStatusBill() == StatusBill.DA_HUY) {
+                BillHistory billHistory = new BillHistory();
+                billHistory.setBill(bill.get());
+                billHistory.setStatusBill(StatusBill.DA_HUY);
+                billHistory.setActionDescription("Hoàn tiền cho khách hàng");
+                billHistory.setEmployees(account.get());
+                billHistoryRepository.save(billHistory);
+            }
+            PaymentsMethod paymentsMethod = new PaymentsMethod();
+            paymentsMethod.setBill(bill.get());
+            paymentsMethod.setMethod(request.getMethod());
+            paymentsMethod.setStatus(StatusPayMents.HOAN_TIEN);
+            paymentsMethod.setTotalMoney(payment);
+            paymentsMethod.setDescription(request.getActionDescription());
+            paymentsMethod.setEmployees(account.get());
+            paymentsMethod.setVnp_TransactionNo(request.getTransaction());
+            paymentsMethodRepository.save(paymentsMethod);
+        }
+        return true;
     }
 
     @Override
