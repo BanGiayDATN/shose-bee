@@ -2,12 +2,9 @@ package com.example.shose.server.infrastructure.session;
 
 public interface ShoseSession {
 
-    String getUserId();
+    UserDetailToken getEmployee();
 
-    String getEmail();
+    UserDetailToken getCustomer();
 
-    String getFullName();
-
-    String getRole();
 
 }

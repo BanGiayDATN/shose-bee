@@ -53,22 +53,22 @@ public class BillRestController {
 
     @PostMapping("")
     public ResponseObject save(@RequestBody CreateBillOfflineRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.save(shoseSession.getUserId(),requests, request));
+        return  new ResponseObject(billService.save(shoseSession.getEmployee().getId(),requests, request));
     }
 
     @PutMapping("/change-status/{id}")
     public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getUserId(), request, requests));
+        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getEmployee().getId(), request, requests));
     }
 
     @PutMapping("/cancel-status/{id}")
     public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.cancelBill(id, shoseSession.getUserId(), request, requests));
+        return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request, requests));
     }
 
     @GetMapping("/details-invoices-counter")
     public ResponseObject findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
-        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(shoseSession.getUserId(), request));
+        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(shoseSession.getEmployee().getId(), request));
     }
 
     @GetMapping("/count-paymet-post-paid/{id}")
@@ -83,12 +83,12 @@ public class BillRestController {
 
     @PutMapping("/change-status-bill")
     public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request, HttpServletRequest requests) {
-        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, shoseSession.getUserId()));
+        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, shoseSession.getEmployee().getId()));
     }
 
     @GetMapping("/code-bill")
     public ResponseObject CreateCodeBill() {
-        return  new ResponseObject(billService.CreateCodeBill(shoseSession.getUserId()));
+        return  new ResponseObject(billService.CreateCodeBill(shoseSession.getEmployee().getId()));
     }
 
     @PutMapping("/update-bill-wait")

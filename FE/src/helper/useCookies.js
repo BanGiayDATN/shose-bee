@@ -21,6 +21,7 @@ export const setToken = (token) => {
 
 export const deleteToken = () => {
   setCookie("userToken", "", 1);
+  setCookie("customerToken", "", 1);
 };
 
 export const setUserToken = (token) => {
@@ -33,13 +34,16 @@ export const setUserToken = (token) => {
     avata: decodedToken.avata,
     expirationTime: new Date(decodedToken.exp * 1000),
   };
-  setCookie("user", JSON.stringify(user), 1);
+  const cookieName =
+    user.role === "ROLE_ADMIN" ? "userToken1" : "customerToken1";
+  setCookie(cookieName, token, 1);
 };
 
 export const getUserToken = () => {
-  return getCookie("user") || "";
+  return getCookie("userToken1") || getCookie("customerToken1") || "";
 };
 
 export const deleteUserToken = () => {
-  setCookie("user", "", 1);
+  setCookie("userToken", "", 1);
+  setCookie("customerToken", "", 1);
 };
