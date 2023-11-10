@@ -2,11 +2,21 @@ import { jwtDecode } from "jwt-decode";
 import { getCookie, setCookie } from "./CookiesRequest";
 
 export const getToken = () => {
-  return getCookie("userToken") || "";
+  return getCookie("userToken") || getCookie("customerToken") || "";
 };
 
 export const setToken = (token) => {
-  setCookie("userToken", token, 1);
+  const decodedToken = jwtDecode(token);
+  const user = {
+    id: decodedToken.id,
+    email: decodedToken.email,
+    role: decodedToken.role,
+    fullName: decodedToken.fullName,
+    avata: decodedToken.avata,
+    expirationTime: new Date(decodedToken.exp * 1000),
+  };
+  const cookieName = user.role === "ROLE_ADMIN" ? "userToken" : "customerToken";
+  setCookie(cookieName, token, 1);
 };
 
 export const deleteToken = () => {
