@@ -22,7 +22,6 @@ const LoginManagement = () => {
   };
 
   const onFinish = (values) => {
-    setToken("");
     LoginApi.authenticationIn(values)
       .then((res) => {
         toast.success("Đăng nhập thành công");

@@ -58,7 +58,7 @@ function DetailBill() {
   const [statusBill, setStatusBill] = useState({
     actionDescription: "",
     method: "TIEN_MAT",
-    totalMoney: 0,
+    transaction: "",
     status: "THANH_TOAN",
   });
   const dispatch = useDispatch();
@@ -256,6 +256,10 @@ function DetailBill() {
           console.log(res.data.data);
           dispatch(getProductInBillDetail(res.data.data));
         });
+         await PaymentsMethodApi.findByIdBill(id).then((res) => {
+          setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
+          dispatch(getPaymentsMethod(res.data.data));
+        });
         await BillApi.fetchDetailBill(id).then((res) => {
           console.log(res.data.data);
           dispatch(getBill(res.data.data));
@@ -281,12 +285,15 @@ function DetailBill() {
     });
     form.resetFields();
   };
-  const showModalPayMent = (e) => {
+  const showModalRefundPayMent = (e) => {
     setIsModalPayMentOpen(true);
     form.resetFields();
   };
   const handleOkPayMent = () => {
-    if (statusBill.totalMoney >= 0) {
+    if (statusBill.actionDescription.trim().length > 0) {
+      if(statusBill.method == "CHUYEN_KHOAN" && statusBill.transaction.trim().length == 0){
+        toast.warning("Vui lòng nhập mã giao dịch");
+      }
       setIsModalPayMentOpen(false);
       Modal.confirm({
         title: "Xác nhận",
@@ -294,12 +301,10 @@ function DetailBill() {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          await PaymentsMethodApi.payment(id, statusBill).then((res) => {
+          await PaymentsMethodApi.refundPayment(id, statusBill).then((res) => {
             dispatch(addPaymentsMethod(res.data.data));
-            console.log(res.data.data);
           });
           await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-            console.log(res.data.data);
             dispatch(getProductInBillDetail(res.data.data));
           });
           await BillApi.fetchDetailBill(id).then((res) => {
@@ -1442,7 +1447,7 @@ function DetailBill() {
               Lịch sử thanh toán
             </h2>
           </Col>
-          <Col span={4}>
+         
             {/* <Button
               type="dashed"
               align={"end"}
@@ -1452,6 +1457,7 @@ function DetailBill() {
               Xác nhận thanh toán
             </Button> */}
             {payMentNo && statusPresent == 4 ? (
+               <Col span={4}>
               <Button
                 type="dashed"
                 align={"end"}
@@ -1460,10 +1466,35 @@ function DetailBill() {
               >
                 Xác nhận thanh toán
               </Button>
+          </Col>
             ) : (
               <div></div>
             )}
-          </Col>
+          
+         
+            {/* <Button
+              type="dashed"
+              align={"end"}
+              style={{ margin: "" }}
+              onClick={(e) => showModalPayMent(e)}
+            >
+              Xác nhận thanh toán
+            </Button> */}
+            {!paymentsMethod.some(payment => payment.status === "HOAN_TIEN") && statusPresent == 8 ? (
+               <Col span={4}>
+              <Button
+                type="dashed"
+                align={"end"}
+                style={{ margin: "" }}
+                onClick={(e) => showModalRefundPayMent(e)}
+              >
+                Hoàn tiền 
+              </Button>
+            </Col>
+            ) : (
+              <div></div>
+            )}
+        
         </Row>
         <Row style={{ width: "100%" }}>
           <Table
@@ -1935,39 +1966,6 @@ function DetailBill() {
         okText={"Xác nhận"}
       >
         <Form form={form} ref={formRef}>
-          <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24} style={{ marginTop: "10px" }}>
-              <label className="label-bill" style={{ top: "-14px" }}>
-                Giá
-              </label>
-              <Form.Item
-                label=""
-                name="price"
-                style={{ marginBottom: "20px" }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập số tiền",
-                  },
-                ]}
-              >
-                <NumberFormat
-                  thousandSeparator={true}
-                  suffix=" VND"
-                  placeholder="Vui lòng nhập số tiền"
-                  style={{
-                    width: "100%",
-                    position: "relative",
-                    height: "37px",
-                  }}
-                  customInput={Input}
-                  onChange={(e) =>
-                    onChangeDescStatusBill("totalMoney", e.target.value)
-                  }
-                />
-              </Form.Item>
-            </Col>
-          </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "10px" }}>
               <label className="label-bill" style={{ marginTop: "2px" }}>
@@ -1998,48 +1996,40 @@ function DetailBill() {
                     value: "CHUYEN_KHOAN",
                     label: "Chuyển khoản",
                   },
-                  {
-                    value: "TIEN_MAT_VA_CHUYEN_KHOAN",
-                    label: "Tiền mặt và chuyển khoản",
-                  },
                 ]}
               />
             </Col>
           </Row>
-          <Row style={{ width: "100%" }}>
-            <Col span={24} style={{ marginTop: "10px" }}>
-              <label className="label-bill" style={{ top: "-6%" }}>
-                Loại thanh toán
+           {
+          statusBill.method == "CHUYEN_KHOAN" ? (   <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label
+                className="label-bill"
+                style={{ marginTop: "3px", top: "-31%" }}
+              >
+                Mã giao dịch
               </label>
-              <Select
-                showSearch
-                style={{
-                  width: "100%",
-                  margin: "10px 0",
-                  position: "relative",
-                }}
-                placeholder="Chọn Loại"
-                optionFilterProp="children"
-                onChange={(value) => onChangeDescStatusBill("status", value)}
-                defaultValue={statusBill.status}
-                filterOption={(input, option) =>
-                  (option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                options={[
+              <Form.Item
+                label=""
+                name="name"
+                style={{ marginBottom: "20px" }}
+                rules={[
                   {
-                    value: "THANH_TOAN",
-                    label: "Thanh toán",
-                  },
-                  {
-                    value: "HOAN_TIEN",
-                    label: "Hoàn tiền",
+                    required: true,
+                    message: "Vui lòng nhập mã giao dịch",
                   },
                 ]}
-              />
+              >
+                <Input
+                  onChange={(e) => onChangeDescStatusBill("transaction", e.target.value)}
+                  placeholder="Nhập mã giao dịch"
+                  defaultValue={statusBill.transaction}
+                  style={{ width: "98%", position: "relative", height: "40px" }}
+                />
+              </Form.Item>
             </Col>
-          </Row>
+          </Row>):(<Row></Row>)
+          }
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
               <label className="label-bill">Mô Tả</label>
@@ -2363,278 +2353,6 @@ function DetailBill() {
         </Form>
       </Modal>
       {/* end modal bill  */}
-
-      {/* begin modal refundProduct  */}
-      <Modal
-        title="Trả hàng"
-        className="refundProduct"
-        open={isModaRefundProductOpen}
-        onOk={handleOkRefundProduct}
-        onCancel={handleCancelRefundProduct}
-        style={{ width: "800px" }}
-        cancelText={"huỷ"}
-        okText={"Xác nhận"}
-      >
-        <Form initialValues={initialValues} ref={formRef} form={form}>
-          <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24} style={{ marginTop: "10px" }}></Col>
-          </Row>
-
-          <Row style={{ marginTop: "10px", width: "100%" }}>
-            <Col span={7}>
-              <img
-                src={detaiProduct.image}
-                alt="Ảnh sản phẩm"
-                style={{
-                  width: "170px",
-                  borderRadius: "10%",
-                  height: "140px",
-                  marginLeft: "5px",
-                }}
-              />
-            </Col>
-            <Col span={14}>
-              <Row>
-                {" "}
-                <span
-                  style={{
-                    fontSize: "19",
-                    fontWeight: "500",
-                    marginTop: "10px",
-                  }}
-                >
-                  {detaiProduct.productName}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ color: "red", fontWeight: "500" }}>
-                  {formatCurrency(detaiProduct.price)}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12", marginTop: "10px" }}>
-                  Size: {detaiProduct.nameSize}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12" }}>
-                  x {detaiProduct.quantity}
-                </span>{" "}
-              </Row>
-            </Col>
-            <Col span={3} style={{ display: "flex", alignItems: "center" }}>
-              <span
-                style={{
-                  color: "red",
-                  fontWeight: "bold",
-                  marginBottom: "30px",
-                }}
-              >
-                {formatCurrency(detaiProduct.price * detaiProduct.quantity)}
-              </span>{" "}
-            </Col>
-          </Row>
-          <Row style={{ width: "100%", marginTop: "20px" }} justify={"center"}>
-            <Col span={4}>Số lượng</Col>
-            <Col span={6}>
-              <Row>
-                <Col span={6}>
-                  {" "}
-                  <Button
-                    onClick={handleDecrease}
-                    style={{ margin: "0 4px 0 10px" }}
-                  >
-                    -
-                  </Button>
-                </Col>
-                <Col span={12}>
-                  {" "}
-                  <InputNumber
-                    min={1}
-                    defaultValue={quantity}
-                    max={detaiProduct.quantity}
-                    style={{ marginLeft: "4px" }}
-                    onChange={(value) => {
-                      if (
-                        value < detaiProduct.quantity ||
-                        value > 1 ||
-                        value != undefined
-                      ) {
-                        setQuantity(value);
-                      }
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  {" "}
-                  <Button
-                    onClick={handleIncrease}
-                    style={{ margin: "0 4px 0 4px" }}
-                  >
-                    +
-                  </Button>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-          <Row style={{ width: "100%" }}>
-            <Col span={24} style={{ marginTop: "20px" }}>
-              <label className="label-bill">Ghi chú</label>
-              <TextArea
-                rows={4}
-                defaultValue={refundProduct.note}
-                style={{ width: "100%", position: "relative" }}
-                placeholder="Nhập mô tả"
-                onChange={(e) => onChangeRefundProduct("note", e.target.value)}
-              />
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-      {/* end modal refundProduct  */}
-
-      {/* begin modal update product  */}
-      <Modal
-        title="Sửa sản phẩm"
-        className="refundProduct"
-        open={isModaUpdateProduct}
-        onOk={handleOkUpdateProduct}
-        onCancel={handleCancelUpdateProduct}
-        style={{ width: "800px" }}
-        cancelText={"huỷ"}
-        okText={"Xác nhận"}
-      >
-        <Form initialValues={initialValues} form={form} ref={formRef}>
-          <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Col span={24} style={{ marginTop: "10px" }}></Col>
-          </Row>
-
-          <Row style={{ marginTop: "10px", width: "100%" }}>
-            <Col span={7}>
-              <img
-                src={detaiProduct.image}
-                alt="Ảnh sản phẩm"
-                style={{
-                  width: "170px",
-                  borderRadius: "10%",
-                  height: "140px",
-                  marginLeft: "5px",
-                }}
-              />
-            </Col>
-            <Col span={14}>
-              <Row>
-                {" "}
-                <span
-                  style={{
-                    fontSize: "19",
-                    fontWeight: "500",
-                    marginTop: "10px",
-                  }}
-                >
-                  {detaiProduct.productName}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ color: "red", fontWeight: "500" }}>
-                  {detaiProduct.price >= 1000
-                    ? detaiProduct.price.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                    : detaiProduct.price + " đ"}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12", marginTop: "10px" }}>
-                  Size: {detaiProduct.nameSize}
-                </span>{" "}
-              </Row>
-              <Row>
-                <span style={{ fontSize: "12" }}>
-                  x {detaiProduct.quantity}
-                </span>{" "}
-              </Row>
-            </Col>
-            <Col span={3} style={{ display: "flex", alignItems: "center" }}>
-              <span
-                style={{
-                  color: "red",
-                  fontWeight: "bold",
-                  marginBottom: "30px",
-                }}
-              >
-                {detaiProduct.price * detaiProduct.quantity >= 1000
-                  ? (detaiProduct.price * detaiProduct.quantity).toLocaleString(
-                    "vi-VN",
-                    {
-                      style: "currency",
-                      currency: "VND",
-                    }
-                  )
-                  : detaiProduct.price * detaiProduct.quantity + " đ"}
-              </span>{" "}
-            </Col>
-          </Row>
-          <Row style={{ width: "100%", marginTop: "20px" }} justify={"center"}>
-            <Col span={4}>Số lượng</Col>
-            <Col span={6}>
-              <Row>
-                <Col span={6}>
-                  {" "}
-                  <Button
-                    onClick={handleDecrease}
-                    style={{ margin: "0 4px 0 10px" }}
-                  >
-                    -
-                  </Button>
-                </Col>
-                <Col span={12}>
-                  {" "}
-                  <InputNumber
-                    min={1}
-                    max={detaiProduct.maxQuantity + detaiProduct.quantity}
-                    value={quantity}
-                    style={{ marginLeft: "4px" }}
-                    onChange={(value) => {
-                      if (
-                        value <=
-                        detaiProduct.maxQuantity + detaiProduct.quantity &&
-                        value > 0 &&
-                        value != undefined
-                      ) {
-                        setQuantity(value);
-                      }
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  {" "}
-                  <Button
-                    onClick={handleIncrease}
-                    style={{ margin: "0 4px 0 4px" }}
-                  >
-                    +
-                  </Button>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-          <Row style={{ width: "100%" }}>
-            <Col span={24} style={{ marginTop: "20px" }}>
-              <label className="label-bill">Ghi chú</label>
-              <TextArea
-                rows={4}
-                defaultValue={refundProduct.note}
-                style={{ width: "100%", position: "relative" }}
-                placeholder="Nhập mô tả"
-                onChange={(e) => onChangeUpdateProduct("note", e.target.value)}
-              />
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-      {/* end modal update product  */}
 
       {/* begin modal product */}
       <Modal

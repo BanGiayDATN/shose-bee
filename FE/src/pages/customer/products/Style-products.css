@@ -7,9 +7,13 @@
   margin-left: auto;
   margin-bottom: 50px;
 }
+.box-pagination-products{
+  margin-top: 30px;
+  text-align: center;
+}
 .list-product {
   display: grid; /* Sử dụng CSS Grid để quản lý bố trí */
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 0px; /* Khoảng cách giữa các CardItem */
 }
 .category-gender {
@@ -24,7 +28,7 @@
 }
 .sub-gender {
   list-style: none;
-  padding: 20px;
+  padding: 25px;
   font-weight: 700;
   cursor: pointer;
   color: rgb(158, 156, 153);
@@ -75,16 +79,46 @@
   border-bottom: 1px dashed rgb(188, 188, 188);
   margin-bottom: 10px;
 }
-.category-price{
+.category-price {
   list-style: none;
   padding: 0 10px;
   font-weight: 700;
   border-bottom: 1px dashed rgb(188, 188, 188);
 }
-.item-color-search{
-  border:3px #f47d52 solid;
+.item-color-search {
+  border: 3px #f47d52 solid;
 }
-:where(.css-dev-only-do-not-override-1m62vyb).ant-checkbox-checked .ant-checkbox-inner {
+:where(.css-dev-only-do-not-override-1m62vyb).ant-checkbox-checked
+  .ant-checkbox-inner {
   background-color: #ff4400;
   border-color: #ff4400;
+}
+@media screen and (max-width: 1170px) {
+  .category-of-products {
+   display: none;
+  }
+  .list-product {
+    margin: 0 50px;
+  }
+
+}
+@media screen and (max-width: 860px) {
+  .list-product {
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 0px; 
+  }
+  .box-products{
+    padding: 70px;
+  }
+}
+@media screen and (max-width: 580px) {
+  .list-product {
+    display: grid; 
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 0px; 
+  }
+  .box-products{
+    padding: 90px;
+  }
 }

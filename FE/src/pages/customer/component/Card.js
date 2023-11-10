@@ -2,7 +2,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, InputNumber, Modal, Row } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
@@ -35,6 +35,7 @@ function CardItem({ item, index }) {
     localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
   }, [cartLocal]);
   useEffect(() => {
+    console.log(item);
     console.log(now.format("HH:mm:ss DD-MM-YYYY"));
     console.log(
       now.subtract(15, "day").format("DD-MM-YYYY"),
@@ -178,10 +179,7 @@ function CardItem({ item, index }) {
         tabindex="0"
       >
         <div>
-          <div
-            className="link-card-item"
-            onClick={() => nav(`/detail-product/${item.idProductDetail}`)}
-          >
+          <Link className="link-card-item" to={`/detail-product/${item.idProductDetail}`} onClick={()=> window.location.href = `/detail-product/${item.idProductDetail}`}>
             <div className="box-img-product">
               <div
                 style={{
@@ -189,11 +187,11 @@ function CardItem({ item, index }) {
                 }}
                 className="image-product"
               >
-                {item.valuePromotion !== null && (
+                {item.valuePromotion !== null ? (
                   <div className="value-promotion">
                     Giảm {parseInt(item.valuePromotion)}%
                   </div>
-                )}
+                ) : null}
                 {nowTimestampReduce <= itemTimestamp && (
                   <div className="new-product">Mới</div>
                 )}
@@ -205,7 +203,7 @@ function CardItem({ item, index }) {
               </p>
             </div>
             <p className="price-product">{formatMoney(item.price)}</p>
-          </div>
+          </Link>
         </div>
         <div
           className="button-buy-now"

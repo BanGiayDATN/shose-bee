@@ -196,14 +196,14 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public boolean refundVnpay(String idUser, String codeBill, HttpServletRequest request) {
+    public boolean refundVnpay(String idUser, boolean status, String codeBill, HttpServletRequest request) {
         Optional<Bill> bill = billRepository.findByCode(codeBill);
         if (!bill.isPresent()) {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         Optional<Account> account = accountRepository.findById(idUser);
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill.get()).stream().filter(paymentMethod -> paymentMethod.getMethod().equals(StatusMethod.CHUYEN_KHOAN)).collect(Collectors.toList());
-        if (paymentsMethods.size() != 0) {
+        if (paymentsMethods.size() != 0 && status) {
             PaymentsMethod paymentsMethod = paymentsMethods.get(0);
             String vnp_TxnRef = paymentsMethod.getBill().getCode() + "-"+ paymentsMethod.getCreateAt();
             String vnp_RequestId = RandomStringUtils.randomNumeric(8);
@@ -294,41 +294,78 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
+    public boolean refundPayment(String idUser, String codeBill, CreatePaymentsMethodRequest request) {
+        Optional<Bill> bill = billRepository.findById(codeBill);
+        if (!bill.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        Optional<Account> account = accountRepository.findById(idUser);
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
+            BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.get().getId());
+            if (bill.get().getStatusBill() == StatusBill.DA_HUY) {
+                BillHistory billHistory = new BillHistory();
+                billHistory.setBill(bill.get());
+                billHistory.setStatusBill(StatusBill.DA_HUY);
+                billHistory.setActionDescription("Hoàn tiền cho khách hàng");
+                billHistory.setEmployees(account.get());
+                billHistoryRepository.save(billHistory);
+            }
+            PaymentsMethod paymentsMethod = new PaymentsMethod();
+            paymentsMethod.setBill(bill.get());
+            paymentsMethod.setMethod(request.getMethod());
+            paymentsMethod.setStatus(StatusPayMents.HOAN_TIEN);
+            paymentsMethod.setTotalMoney(payment);
+            paymentsMethod.setDescription(request.getActionDescription());
+            paymentsMethod.setEmployees(account.get());
+            paymentsMethod.setVnp_TransactionNo(request.getTransaction());
+            paymentsMethodRepository.save(paymentsMethod);
+        }
+        return true;
+    }
+
+    @Override
     public boolean paymentSuccess(String idEmployees, PayMentVnpayResponse response, HttpServletRequest requests) {
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         if (Config.decodeHmacSha512(response.toParamsString(), response.getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)) {
-            List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(response.getVnp_TransactionNo());
-            if (findAllByVnpTransactionNo.size() > 0) {
-                throw new RestApiException(Message.PAYMENT_TRANSACTION);
-            }
-            Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
-            PaymentsMethod paymentsMethod = new PaymentsMethod();
-            paymentsMethod.setBill(bill.get());
-            paymentsMethod.setDescription("Thanh toán thành công");
-            paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount().substring(0, response.getVnp_Amount().length() - 2)));
-            paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
-            paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
-            paymentsMethod.setEmployees(account.get());
-            paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
-            paymentsMethod.setCreateAt(Long.parseLong(response.getVnp_TxnRef().split("-")[1]));
-            paymentsMethod.setTransactionDate(Long.parseLong(response.getVnp_PayDate()));
-            paymentsMethodRepository.save(paymentsMethod);
+           if(response.getVnp_TransactionStatus().equals("00")){
+               List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(response.getVnp_TransactionNo());
+               if (findAllByVnpTransactionNo.size() > 0) {
+                   throw new RestApiException(Message.PAYMENT_TRANSACTION);
+               }
+               Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
+               PaymentsMethod paymentsMethod = new PaymentsMethod();
+               paymentsMethod.setBill(bill.get());
+               paymentsMethod.setDescription("Thanh toán thành công");
+               paymentsMethod.setTotalMoney(new BigDecimal(response.getVnp_Amount().substring(0, response.getVnp_Amount().length() - 2)));
+               paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
+               paymentsMethod.setMethod(StatusMethod.CHUYEN_KHOAN);
+               paymentsMethod.setEmployees(account.get());
+               paymentsMethod.setVnp_TransactionNo(response.getVnp_TransactionNo());
+               paymentsMethod.setCreateAt(Long.parseLong(response.getVnp_TxnRef().split("-")[1]));
+               paymentsMethod.setTransactionDate(Long.parseLong(response.getVnp_PayDate()));
+               paymentsMethodRepository.save(paymentsMethod);
 
-            List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
-            boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
-            if (checkBill) {
-                bill.get().setStatusBill(StatusBill.THANH_CONG);
-                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                billRepository.save(bill.get());
-            } else {
-                bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
-                billRepository.save(bill.get());
-            }
-            createFilePdfAtCounter(bill.get().getId(), requests);
-            return true;
+               List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
+               boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
+               if (checkBill) {
+                   bill.get().setStatusBill(StatusBill.THANH_CONG);
+                   bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                   billRepository.save(bill.get());
+               } else {
+                   bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+                   billRepository.save(bill.get());
+               }
+               createFilePdfAtCounter(bill.get().getId(), requests);
+               return true;
+           }else{
+               throw new RestApiException(Message.PAYMENT_ERROR);
+           }
         }else{
             throw new RestApiException(Message.ERROR_HASHSECRET);
         }

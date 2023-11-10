@@ -2,7 +2,7 @@ import imgShoe from "./../../../assets/images/third_slider_img03.png";
 import logoHidden from "./../../../assets/images/logo_client.png";
 import imgShoe1 from "./../../../assets/images/trending_banner02.jpg";
 import "./style-cart.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCart } from "./CartContext";
 import { useState, useEffect } from "react";
@@ -26,6 +26,7 @@ import { CartDetailClientApi } from "./../../../api/customer/cartdetail/cartDeta
 import dayjs from "dayjs";
 
 function Cart() {
+  const nav = useNavigate()
   const idAccountLocal = sessionStorage.getItem("idAccount");
   const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
   const [cart, setCart] = useState([]);
@@ -357,6 +358,7 @@ function Cart() {
     });
   };
   const changeQuantity = (itemOld, value) => {
+    console.log(value);
     chooseItemCart.map((item) => {
       if (item.idProductDetail === itemOld.idProductDetail) {
         if (itemOld.quantity < value) {
@@ -478,6 +480,9 @@ function Cart() {
     draggable: false, // Tắt tính năng kéo thả
   };
 
+
+
+
   return (
     <div className="cart">
       <div className="img-banner">
@@ -491,7 +496,7 @@ function Cart() {
         </div>
 
         <Row>
-          <Col lg={{ span: 18, offset: 3 }}>
+          <Col lg={{ span: 16, offset: 4 }}>
             <div className="form-content-cart">
               <div className="info-cart">
                 <div
@@ -554,9 +559,8 @@ function Cart() {
                     <>
                       {cart.map((item, index) => (
                         <div
-                          className={`item-cart ${
-                            index === cart.length - 1 ? "last-item" : ""
-                          }`}
+                          className={`item-cart ${index === cart.length - 1 ? "last-item" : ""
+                            }`}
                           key={index}
                         >
                           <div key={index} className="box-cart-img">
@@ -643,18 +647,18 @@ function Cart() {
                           </div>
                         </div>
                       ))}
-
-                      <div style={{ display: "flex" }}>
-                        <div className="button-delete-all-cart">Xóa tất cả</div>
-                        <Link to="/home" style={{ marginLeft: "48%" }}>
-                          <Button className="button-continue-to-buy">
-                            Tiếp tục mua hàng
-                          </Button>
-                        </Link>
-                      </div>
                     </>
                   )}
                 </div>
+                {cartLocal.length !== 0 ? (
+                  <div style={{ display: "flex" }}>
+                    <div className="button-delete-all-cart">Xóa tất cả</div>
+                  
+                    <div className="button-continue-to-buy" onClick={()=> nav("/home")}  >
+                      Tiếp tục mua hàng
+                    </div>
+                  </div>) : (null)}
+
               </div>
               {/* bill of cart */}
               <div className="bill-of-cart" style={{ borderRadius: "20px" }}>
@@ -703,9 +707,8 @@ function Cart() {
                   )}
 
                   <div
-                    className={`value-bill-of-cart ${
-                      idAccountLocal !== null ? "acc" : ""
-                    }`}
+                    className={`value-bill-of-cart ${idAccountLocal !== null ? "acc" : ""
+                      }`}
                   >
                     <div style={{ display: "flex" }}>
                       <div
@@ -762,9 +765,8 @@ function Cart() {
             listSize.sort().map((item, index) => (
               <div
                 key={index}
-                className={`item-size-of-cart ${
-                  clickedIndex === index ? "clicked" : ""
-                }`}
+                className={`item-size-of-cart ${clickedIndex === index ? "clicked" : ""
+                  }`}
                 tabIndex="0"
                 onClick={() => getDetailProduct(index, item)}
               >
@@ -808,9 +810,8 @@ function Cart() {
               }}
             />
             <div
-              className={`button-submit-voucher-cart ${
-                !formSearch ? "" : "show"
-              }`}
+              className={`button-submit-voucher-cart ${!formSearch ? "" : "show"
+                }`}
               onClick={() => {
                 getVoucher(formSearch);
               }}

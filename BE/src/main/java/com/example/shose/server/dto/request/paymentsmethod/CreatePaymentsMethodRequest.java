@@ -28,4 +28,6 @@ public class CreatePaymentsMethodRequest {
 
     private StatusPayMents status;
 
+    private String transaction;
+
 }
