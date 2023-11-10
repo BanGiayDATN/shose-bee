@@ -24,6 +24,7 @@ import com.example.shose.server.service.CustomerService;
 import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -97,11 +101,12 @@ public class CustomerServiceImpl implements CustomerService {
         User addressUser = userReposiory.getById(user.getId());
 
         // tạo tài khoản cho khách hàng
+        String password = String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber());
         Account account = new Account();
         account.setUser(user);
         account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
-        account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
+        account.setPassword(passwordEncoder.encode(password));
         account.setStatus(Status.DANG_SU_DUNG);
         accountRepository.save(account); // add tài khoản vào database
 
@@ -123,7 +128,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         // gửi email
         String subject = "Xin chào, bạn đã đăng ký thành công ";
-        sendEmailService.sendEmailPasword(account.getEmail(), subject, account.getPassword());
+        sendEmailService.sendEmailPasword(account.getEmail(), subject, password);
 
         return user;
     }

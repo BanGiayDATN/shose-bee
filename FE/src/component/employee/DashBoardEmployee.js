@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BellOutlined,
   LogoutOutlined,
@@ -36,10 +36,12 @@ import SubMenu from "antd/es/menu/SubMenu";
 import {
   deleteToken,
   deleteUserToken,
+  getToken,
   getUserToken,
 } from "../../helper/useCookies";
 import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
+import { jwtDecode } from "jwt-decode";
 
 const { Header, Sider, Content } = Layout;
 const notificationCount = 5; // Số lượng thông báo chưa đọc
@@ -48,8 +50,27 @@ const DashBoardEmployee = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const nav = useNavigate();
   const [form] = Form.useForm();
-
+  const [user, setUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const token = getToken();
+
+  const loadUser = () => {
+    const decodedToken = jwtDecode(token);
+    setUser({
+      id: decodedToken.id,
+      email: decodedToken.email,
+      role: decodedToken.role,
+      fullName: decodedToken.fullName,
+      avata: decodedToken.avata,
+      expirationTime: new Date(decodedToken.exp * 1000),
+    });
+  };
+
+  useEffect(() => {
+    loadUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -92,7 +113,6 @@ const DashBoardEmployee = ({ children }) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const userToken = JSON.parse(getUserToken());
   const handleLogout = () => {
     deleteToken();
     deleteUserToken();
@@ -247,11 +267,11 @@ const DashBoardEmployee = ({ children }) => {
               </Button>
             </Badge>
             <span style={{ fontWeight: "bold", marginLeft: "20px" }}>
-              {userToken.fullName}
+              {user !== null && user.fullName}
             </span>
             <Dropdown overlay={menu} placement="bottomRight">
               <img
-                src={userToken.avata}
+                src={user !== null && user.avata}
                 alt="User Avatar"
                 style={{
                   width: "32px",
