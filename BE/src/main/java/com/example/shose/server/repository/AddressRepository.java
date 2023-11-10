@@ -101,7 +101,8 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.to_district_id AS toDistrictId,
                 a.ward_code AS wardCode,
                 a.full_name AS fullName,
-                a.phone_number AS phoneNumber
+                a.phone_number AS phoneNumber,
+                u.id AS userId
             FROM address a
             JOIN user u on a.id_user = u.id
             WHERE u.id LIKE :#{#idUser}

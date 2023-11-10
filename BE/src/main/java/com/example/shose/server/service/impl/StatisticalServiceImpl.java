@@ -58,7 +58,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
     @Override
     public List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct() {
-        return billRepository.getAllStatisticalBestSellingProduct();
+        return billRepository.getAllStatisticalBestSellingProduct(getStartMonth(), getEndMonth());
     }
 
     @Override

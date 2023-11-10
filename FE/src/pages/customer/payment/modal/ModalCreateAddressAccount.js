@@ -12,6 +12,7 @@ function ModalCreateAddressAccount({
 }) {
   const [formAdd, setFormAdd] = useState({
     idAccount: sessionStorage.getItem("idAccount"),
+    status: "DANG_SU_DUNG"
   });
   const [formErrors, setFormErrors] = useState({});
   const [listCity, setListCity] = useState([]);

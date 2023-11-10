@@ -510,7 +510,7 @@ public class BillServiceImpl implements BillService {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
-
+        bill.get().setEmployees(account.get());
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
         billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
@@ -596,7 +596,7 @@ public class BillServiceImpl implements BillService {
             }
             productDetailRepository.save(productDetail.get());
         });
-        if(!paymentsMethodService.refundVnpay(idEmployees, bill.get().getCode(), requests)){
+        if(!paymentsMethodService.refundVnpay(idEmployees,request.isStatus(), bill.get().getCode(), requests)){
             throw new RestApiException(Message.ERROR_CANCEL_BILL);
         }
         return billRepository.save(bill.get());
