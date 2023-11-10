@@ -3,7 +3,7 @@ export class AddressApi {
   static fetchAll = (filter) => {
     return request({
       method: "GET",
-      url: `/customer/address?id_user=2dd6dc5e-ad8d-473b-a2aa-23f3477a6394`,
+      url: `/admin/address?id_user=2dd6dc5e-ad8d-473b-a2aa-23f3477a6394`,
       params: filter,
     });
   };
@@ -11,7 +11,7 @@ export class AddressApi {
   static create = (data) => {
     return request({
       method: "POST",
-      url: `/customer/address`,
+      url: `/admin/address`,
       data: data,
     });
   };
@@ -19,21 +19,21 @@ export class AddressApi {
   static getOne = (id) => {
     return request({
       method: "GET",
-      url: `/customer/address/${id}`,
+      url: `/admin/address/${id}`,
     });
   };
 
   static getAddressByUserIdAndStatus = (id) => {
     return request({
       method: "GET",
-      url: `/customer/address/address-user-status/${id}`,
+      url: `/admin/address/address-user-status/${id}`,
     });
   };
 
   static update = (id, data) => {
     return request({
       method: "PUT",
-      url: `/customer/address/${id}`,
+      url: `/admin/address/${id}`,
       data: data,
     });
   };
@@ -116,7 +116,7 @@ export class AddressApi {
   static fetchAllAddressByUser = (idUser) => {
     return request({
       method: "GET",
-      url: `/customer/address/address-user/${idUser}`,
+      url: `/admin/address/address-user/${idUser}`,
     });
   };
 }

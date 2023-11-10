@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/customer/address")
+@RequestMapping("/admin/address")
 public class AddressRestController {
     @Autowired
     private AddressService addressService;

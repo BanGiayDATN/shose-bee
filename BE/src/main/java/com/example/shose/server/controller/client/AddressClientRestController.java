@@ -1,8 +1,11 @@
 package com.example.shose.server.controller.client;
 
 import com.example.shose.server.dto.request.address.CreateAddressClientRequest;
+import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressClientRequest;
+import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.service.AddressService;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
@@ -47,5 +50,37 @@ public class AddressClientRestController {
     @GetMapping("/detail/{id}")
     public ResponseObject detail(@PathVariable("id") String idAddress)  {
         return new ResponseObject(addressService.getOneById(idAddress));
+    }
+
+    @GetMapping("/address-user/{idUser}")
+    public ResponseObject view(@PathVariable("idUser") String idUser) {
+        return new ResponseObject(addressService.findAddressByUserId(idUser));
+    }
+
+    @GetMapping("/getOne/{id}")
+    public ResponseObject getOneById(@PathVariable("id") String id) {
+        return new ResponseObject(addressService.getOneById(id));
+    }
+
+    @PostMapping
+    public ResponseObject add(@RequestBody CreateAddressRequest request) {
+        return new ResponseObject(addressService.create(request));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseObject update(@PathVariable("id") String id,
+                                 @RequestBody UpdateAddressRequest request) {
+        request.setId(id);
+        return new ResponseObject(addressService.update(request));
+    }
+
+    @GetMapping("/simple-user")
+    public ResponseObject getAllSimpleEntityEmployess() {
+        return new ResponseObject(addressService.getAllSimpleEntityUser());
+    }
+
+    @GetMapping("/address-user-status/{id}")
+    public ResponseObject getAddressByUserIdAndStatus(@PathVariable("id") String id) {
+        return new ResponseObject(addressService.getAddressByUserIdAndStatus(id, Status.DANG_SU_DUNG));
     }
 }

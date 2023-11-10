@@ -151,11 +151,13 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                   FROM image
                   GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
             LEFT JOIN image i ON max_images.max_image_id = i.id
-   WHERE bd.id_product_detail IS NOT NULL AND b.status_bill like 'THANH_CONG'
+   WHERE bd.id_product_detail IS NOT NULL 
+        AND b.status_bill like 'THANH_CONG'
+        AND b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
    GROUP BY image, nameProduct, price
    ORDER BY sold desc
                                       """, nativeQuery = true)
-    List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct();
+    List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct(@Param("startOfMonth") Long startOfMonth, @Param("endOfMonth") Long endOfMonth);
 
     @Query(value = """
     SELECT
