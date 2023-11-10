@@ -25,7 +25,7 @@ public interface PaymentsMethodService {
 
     String payWithVNPAY(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException;
 
-    boolean refundVnpay(String idUser, String codeBill, HttpServletRequest request) ;
+    boolean refundVnpay(String idUser,  boolean status, String codeBill, HttpServletRequest request) ;
 
     boolean refundPayment(String idUser, String codeBill, CreatePaymentsMethodRequest request);
 
