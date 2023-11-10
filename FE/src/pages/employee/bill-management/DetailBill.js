@@ -1994,7 +1994,7 @@ function DetailBill() {
                   },
                   {
                     value: "CHUYEN_KHOAN",
-                    label: "Chuyển khoản",
+                    label: "Chuyển khoản (Khuyến nghị)",
                   },
                 ]}
               />
