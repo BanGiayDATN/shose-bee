@@ -259,6 +259,7 @@ function PaymentAccount() {
   const handleCancel = () => {
     setModalVisibleAddAddress(false);
     setModalVisibleUpdateAddress(false);
+    getAddressDefault(idAccount);
   };
 
   const handleOkAddress = () => {
