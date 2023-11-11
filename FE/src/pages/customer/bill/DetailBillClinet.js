@@ -3,6 +3,7 @@ import {
   Col,
   Form,
   Modal,
+  Select,
   Result,
   Row,
   Table,
@@ -266,6 +267,7 @@ const [statusBill, setStatusBill] = useState({
   method: "TIEN_MAT",
   totalMoney: 0,
   status: "THANH_TOAN",
+  statusCancel: false
 });
 const formRef = React.useRef(null);
 const onFinish = (values) => {
@@ -338,6 +340,7 @@ if (statusBill.actionDescription == "") {
     method: "TIEN_MAT",
     totalMoney: 0,
     status: "THANH_TOAN",
+    statusCancel: false
   });
   form.resetFields();
 };
@@ -849,6 +852,48 @@ const onChangeDescStatusBill = (fileName, value) => {
                   form={form}
                   initialValues={initialValues}
                 >
+                      {
+                  paymentsMethod.some(
+                    (payment) => payment.status == "THANH_TOAN"
+                  ) ? (  <Row style={{ width: "100%" }}>
+                  <Col span={24} style={{ marginTop: "10px" }}>
+                    <label className="label-bill" style={{ marginTop: "2px" }}>
+                      Hình thức
+                    </label>
+                    <Select
+                      showSearch
+                      style={{
+                        width: "100%",
+                        margin: "10px 0",
+                        position: "relative",
+                      }}
+                      placeholder="Chọn hình thức"
+                      optionFilterProp="children"
+                      onChange={(value) => onChangeDescStatusBill("statusCancel", value)}
+                      defaultValue={statusBill.statusCancel}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      options={[
+                        {
+                          value: "false",
+                          label: "Liên hệ nhân viên",
+                         
+                        },
+                        {
+                          value: "true",
+                          label: "Chuyển khoản vnpay( Hoàn sau 30 ngày)",
+                          disabled: paymentsMethod.some(
+                            (payment) => payment.method == "TIEN_MAT"
+                          ) || paymentsMethod.length > 1 
+                        },
+                      ]}
+                    />
+                  </Col>
+                </Row>) : (<Row></Row>)
+                 }      
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
 

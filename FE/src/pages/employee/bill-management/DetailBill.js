@@ -230,6 +230,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+      statusCancel: false
     });
     form.resetFields();
   };
@@ -307,6 +308,10 @@ function DetailBill() {
           await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
             dispatch(getProductInBillDetail(res.data.data));
           });
+           await PaymentsMethodApi.findByIdBill(id).then((res) => {
+            setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
+            dispatch(getPaymentsMethod(res.data.data));
+          });
           await BillApi.fetchDetailBill(id).then((res) => {
             console.log(res.data.data);
             dispatch(getBill(res.data.data));
@@ -333,6 +338,7 @@ function DetailBill() {
             method: "TIEN_MAT",
             totalMoney: 0,
             status: "THANH_TOAN",
+             statusCancel: false
           });
         },
         onCancel: () => {
@@ -342,6 +348,7 @@ function DetailBill() {
             method: "TIEN_MAT",
             totalMoney: 0,
             status: "THANH_TOAN",
+             statusCancel: false
           });
         },
       });
@@ -352,6 +359,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+       statusCancel: false
     });
   };
   const handleCancelPayMent = () => {
@@ -361,6 +369,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+       statusCancel: false
     });
   };
   // enad modal thanh toán
@@ -802,6 +811,7 @@ function DetailBill() {
           method: "TIEN_MAT",
           totalMoney: 0,
           status: "THANH_TOAN",
+           statusCancel: false
         });
         form.resetFields();
       
@@ -813,6 +823,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+       statusCancel: false
     });
   };
 
@@ -823,6 +834,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+      statusCancel: false
     });
     form.resetFields();
   };
@@ -1352,6 +1364,48 @@ function DetailBill() {
                   form={form}
                   initialValues={initialValues}
                 >
+                      {
+                  paymentsMethod.some(
+                    (payment) => payment.status == "THANH_TOAN"
+                  ) ? (  <Row style={{ width: "100%" }}>
+                  <Col span={24} style={{ marginTop: "10px" }}>
+                    <label className="label-bill" style={{ marginTop: "2px" }}>
+                      Hình thức
+                    </label>
+                    <Select
+                      showSearch
+                      style={{
+                        width: "100%",
+                        margin: "10px 0",
+                        position: "relative",
+                      }}
+                      placeholder="Chọn hình thức"
+                      optionFilterProp="children"
+                      onChange={(value) => onChangeDescStatusBill("statusCancel", value)}
+                      defaultValue={statusBill.statusCancel}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      options={[
+                        {
+                          value: "false",
+                          label: "Liên hệ khách hàng",
+                         
+                        },
+                        {
+                          value: "true",
+                          label: "Chuyển khoản vnpay(Hoàn sau 30 ngày)",
+                          disabled: paymentsMethod.some(
+                            (payment) => payment.method == "TIEN_MAT"
+                          ) || paymentsMethod.length > 1 
+                        },
+                      ]}
+                    />
+                  </Col>
+                </Row>) : (<Row></Row>)
+                 }      
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
 
@@ -1480,7 +1534,7 @@ function DetailBill() {
             >
               Xác nhận thanh toán
             </Button> */}
-            {!paymentsMethod.some(payment => payment.status === "HOAN_TIEN") && statusPresent == 8 ? (
+            {!paymentsMethod.some(payment =>( payment.status === "TRA_SAU" || payment.status == 'HOAN_TIEN')) && statusPresent == 8 ? (
                <Col span={4}>
               <Button
                 type="dashed"
@@ -1994,7 +2048,7 @@ function DetailBill() {
                   },
                   {
                     value: "CHUYEN_KHOAN",
-                    label: "Chuyển khoản",
+                    label: "Chuyển khoản (Khuyến nghị)",
                   },
                 ]}
               />

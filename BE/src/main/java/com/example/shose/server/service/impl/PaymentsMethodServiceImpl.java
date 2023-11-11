@@ -270,8 +270,6 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 }
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.toString());
-                System.out.println("jhkjhkfjshkjfdhkjdshfkjdshfkj");
-                System.out.println(jsonNode);
 
                 PaymentsMethod paymentsMethodRefound = new PaymentsMethod();
                 paymentsMethodRefound.setBill(bill.get());
@@ -303,16 +301,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
+        // if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
             BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.get().getId());
-            if (bill.get().getStatusBill() == StatusBill.DA_HUY) {
-                BillHistory billHistory = new BillHistory();
-                billHistory.setBill(bill.get());
-                billHistory.setStatusBill(StatusBill.DA_HUY);
-                billHistory.setActionDescription("Hoàn tiền cho khách hàng");
-                billHistory.setEmployees(account.get());
-                billHistoryRepository.save(billHistory);
-            }
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
             paymentsMethod.setMethod(request.getMethod());
@@ -322,7 +312,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setEmployees(account.get());
             paymentsMethod.setVnp_TransactionNo(request.getTransaction());
             paymentsMethodRepository.save(paymentsMethod);
-        }
+        // }
         return true;
     }
 
