@@ -506,13 +506,14 @@ function Cart() {
               <div className="info-cart">
                 <div
                   style={{
-                    height: "30px",
+                    height: "30pxe",
                     display: "flex",
-                    padding: "30px",
+                    padding: "20px 30px",
                     alignItems: "center",
                     marginTop: "60px",
-                    borderRadius: "10px",
-                    backgroundColor: "rgb(139 139 139)",
+                    marginBottom:30,
+                    backgroundColor:"white",
+                    border: "1px solid #ebebeb"
                   }}
                 >
                   <div>
@@ -526,7 +527,7 @@ function Cart() {
                     style={{
                       marginLeft: "7%",
                       fontWeight: "bold",
-                      color: "white",
+                      color: "gray",
                       fontSize: "15px",
                     }}
                   >
@@ -536,7 +537,7 @@ function Cart() {
                     style={{
                       marginLeft: "20%",
                       fontWeight: "bold",
-                      color: "white",
+                      color: "gray",
                       fontSize: "15px",
                     }}
                   >
@@ -546,7 +547,7 @@ function Cart() {
                     style={{
                       marginLeft: "35%",
                       fontWeight: "bold",
-                      color: "white",
+                      color: "gray",
                       fontSize: "15px",
                     }}
                   >
@@ -663,11 +664,11 @@ function Cart() {
                   )}
                 </div>
                 {cart.length !== 0 ? (
-                  <div style={{ display: "flex" }}>
-                    <div className="button-delete-all-cart">Xóa tất cả</div>
+                  <div style={{ display: "flex",marginTop:70 }}>
+                    <div className="button-delete-all-cart">XOÁ TẤT CẢ</div>
 
                     <div className="button-continue-to-buy" onClick={() => nav("/home")}  >
-                      Tiếp tục mua hàng
+                      TIẾP TỤC MUA HÀNG
                     </div>
                   </div>) : (null)}
 
