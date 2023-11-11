@@ -35,7 +35,7 @@ function Address() {
     Modal.confirm({
       title: "Xác nhận đặt mặc định",
       content: "Bạn có chắc chắn muốn đặt mặc định không?",
-      okText: "Xóa",
+      okText: "Đặt",
       okType: "danger",
       cancelText: "Hủy",
       onOk() {
@@ -46,7 +46,6 @@ function Address() {
     });
   };
   const deleteAddressClient = (id) => {
-    console.log(id);
     AddressClientApi.deleteAddressClient(id).then((res) => {
       dispatch(DeleteAddressAccountClient(res.data.data));
     });
