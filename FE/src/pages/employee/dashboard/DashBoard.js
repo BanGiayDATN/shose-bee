@@ -342,16 +342,17 @@ const DashBoard = () => {
       key: "sold",
       sorter: (a, b) => a.sold - b.sold,
       align: "center",
-      width: 60
+      // width: 60
+      width: 190
     },
-    {
-      title: "Doanh số",
-      dataIndex: "sales",
-      key: "sales",
-      sorter: (a, b) => a.seles - b.seles,
-      render: (text) => formatCurrency(text),
-      align: "center",
-    },
+    // {
+    //   title: "Doanh số",
+    //   dataIndex: "sales",
+    //   key: "sales",
+    //   sorter: (a, b) => a.seles - b.seles,
+    //   render: (text) => formatCurrency(text),
+    //   align: "center",
+    // },
   ];
   const getRowClassName = (record, index) => {
     return index % 2 === 0 ? "even-row" : "odd-row";
@@ -728,7 +729,7 @@ const DashBoard = () => {
         <Row className="row-footer">
           <Col className="row-footer-left">
             <h2 style={{ textAlign: "center", margin: " 2%" }}>
-              Top sản phẩm bán chạy
+              Top sản phẩm bán chạy tháng này
             </h2>
             <Table
               style={{ marginTop: "30px" }}

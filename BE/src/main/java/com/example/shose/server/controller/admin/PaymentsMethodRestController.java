@@ -42,7 +42,7 @@ public class PaymentsMethodRestController {
 
     @PostMapping("/bill/{id}")
     public ResponseObject create(@PathVariable("id") String id, @RequestBody CreatePaymentsMethodRequest request){
-        return  new ResponseObject(paymentsMethodService.create(id, shoseSession.getUserId(), request));
+        return  new ResponseObject(paymentsMethodService.create(id, shoseSession.getEmployee().getId(), request));
     }
 
     @GetMapping("/total-money/{id}")
@@ -52,7 +52,7 @@ public class PaymentsMethodRestController {
 
     @PutMapping("/update-status/{id}")
     public ResponseObject sumTotalMoneyByIdBill(@PathVariable("id")  String idBill, @RequestBody() List<String> ids){
-        return  new ResponseObject(paymentsMethodService.updatepayMent(idBill, shoseSession.getUserId(), ids));
+        return  new ResponseObject(paymentsMethodService.updatepayMent(idBill, shoseSession.getEmployee().getId(), ids));
     }
 
 
@@ -67,11 +67,11 @@ public class PaymentsMethodRestController {
 
     @GetMapping("/payment-success")
     public ResponseObject pay(final PayMentVnpayResponse response, HttpServletRequest requests){
-    return new ResponseObject(paymentsMethodService.paymentSuccess(shoseSession.getUserId(), response, requests)) ;
+    return new ResponseObject(paymentsMethodService.paymentSuccess(shoseSession.getEmployee().getId(), response, requests)) ;
     }
 
     @PostMapping("/refund-payment/{id}")
     public ResponseObject refundPayment(@RequestBody CreatePaymentsMethodRequest request, @PathVariable("id") String id){
-        return new ResponseObject(paymentsMethodService.refundPayment(shoseSession.getUserId(), id, request)) ;
+        return new ResponseObject(paymentsMethodService.refundPayment(shoseSession.getEmployee().getId(), id, request)) ;
     }
 }

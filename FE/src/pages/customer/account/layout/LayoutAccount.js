@@ -6,11 +6,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faStore, faTags, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router";
 import { useLocation } from "react-router-dom";
+import { AccountClientApi } from "../../../../api/customer/account/accountClient.api";
+import { UseSelector,Use } from "react-redux/es/hooks/useSelector";
+import { GetUserClient } from "../../../../app/reducer/UserClient.reducer";
+import {  useAppSelector } from "../../../../app/hook";
+import dayjs from "dayjs";
 function LayoutAccount({ children }) {
     const param = useLocation()
     const [id, setId] = useState(0);
+    const [formInfo, setFormInfo] = useState({});
     const [idChild, setIdChild] = useState(1);
     const page = useNavigate()
+    const data = useAppSelector(GetUserClient);
+    useEffect(() => {
+        if (data != null) {
+            setFormInfo(data);
+          console.log(data);
+        }
+      }, [data]);
     useEffect(() => {
         switch (param.pathname) {
             case "/profile":
@@ -90,10 +103,10 @@ function LayoutAccount({ children }) {
         <div className="layout-account">
             <div className="sidebar-account">
                 <div className="box-persional-profile">
-                    <img className="avatar-account" src={avatar} alt="..." />
+                    <img className="avatar-account" src={formInfo.avata} alt="..." />
                     <div className="name-account">
                         <p style={{ fontWeight: 500 }}>
-                            Đinh Khắc Diệm
+                        {formInfo.fullName}
                         </p>
 
                         <div style={{ color: "grey", fontSize: 14 }}> <EditOutlined /> Sửa hồ sơ</div>

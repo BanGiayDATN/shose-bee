@@ -69,10 +69,18 @@ import RepoVoucher from "./pages/customer/account/voucher/Voucher";
 import Policy from "./pages/customer/policy/Policy";
 import SignUp from "./pages/customer/signup/SignUp";
 function App() {
+  const pathname = window.location.pathname;
+  useEffect(() => {
+    console.log(pathname);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth"
+    });
+  }, [pathname]);
   const [showOnTop, setShowOnTop] = useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     const handleScroll = () => {
       if (window.scrollY > 300) {
         setShowOnTop(true);
@@ -80,16 +88,21 @@ function App() {
         setShowOnTop(false);
       }
     };
-
+ 
     // Gắn sự kiện cuộn vào cửa sổ
     window.addEventListener("scroll", handleScroll);
-
     // Gỡ bỏ sự kiện cuộn khi component bị hủy
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
+  const scrollToTop = () => {
+    const c = document.documentElement.scrollTop || document.body.scrollTop;
+    if (c > 0) {
+      window.requestAnimationFrame(scrollToTop);
+      window.scrollTo(0, c - c / 20);
+    }
+  };
   const dispatch = useAppDispatch();
   const [listVoucher, setListVoucher] = useState([]);
   const [listPromotion, setListPromotion] = useState([]);
@@ -164,20 +177,13 @@ function App() {
 
   return (
     <div className="App">
-      {showOnTop ? (
-        <div
-          className="button-on-top"
-          onClick={() => {
-            // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
-            window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn mượt lên đầu trang
-          }}
-        >
-          <FontAwesomeIcon
-            style={{ color: "white", fontSize: 20 }}
-            icon={faArrowUp}
-          />
-        </div>
-      ) : null}
+      {showOnTop ? (<div className="button-on-top"
+        onClick={() => {
+          // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
+          scrollToTop() // Cuộn mượt lên đầu trang
+        }}
+      ><FontAwesomeIcon style={{ color: "white", fontSize: 20 }} icon={faArrowUp}
+        /></div>) : (null)}
 
       {isLoading && (
         <div className="loading-overlay">
@@ -197,6 +203,7 @@ function App() {
         pauseOnHover
       />
       <BrowserRouter basename={AppConfig.routerBase}>
+
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/layout-guard-roles" element={<NotAuthorized />} />

@@ -24,11 +24,19 @@ public interface GetDetailProductOfClient {
 
     @Value("#{target.quantity}")
     Integer getQuantity();
+    @Value("#{target.valuePromotion}")
+    BigDecimal getValuePromotion();
+    @Value("#{target.createdDate}")
+    String getCreatedDate();
+
     @Value("#{target.codeColor}")
     String getCodeColor();
 
     @Value("#{target.nameSize}")
     String getNameSize();
+    @Value("#{target.listSize}")
+    String getListSize();
+
     @Value("#{target.nameCategory}")
     String getNameCategory();
     @Value("#{target.nameBrand}")
@@ -37,4 +45,5 @@ public interface GetDetailProductOfClient {
     String getNameMaterial();
     @Value("#{target.nameSole}")
     String getNameSole();
+
 }

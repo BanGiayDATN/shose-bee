@@ -82,10 +82,11 @@ export class AddressClientApi {
       url: `/client/address/list/${idAccount}`,
     });
   };
-  static setDefault = (idAddress) => {
+  static setDefault = (data) => {
     return request({
       method: "POST",
-      url: `/client/address/setDefault/${idAddress}`,
+      url: `/client/address/setDefault`,
+      data:data
     });
   };
   static updateAddressClient = (data) => {
@@ -112,6 +113,71 @@ export class AddressClientApi {
     return request({
       method: "GET",
       url: `/client/address/detail/${idAddress}`,
+    });
+  };
+  //Address client
+  static fetchAllAddressByUser = (idUser) => {
+    return request({
+      method: "GET",
+      url: `/client/address/address-user/${idUser}`,
+    });
+  };
+  static create = (data) => {
+    return request({
+      method: "POST",
+      url: `/client/address`,
+      data: data,
+    });
+  };
+
+  static getOne = (id) => {
+    return request({
+      method: "GET",
+      url: `/client/getOne/${id}`,
+    });
+  };
+
+  static getAddressByUserIdAndStatus = (id) => {
+    return request({
+      method: "GET",
+      url: `/client/address/address-user-status/${id}`,
+    });
+  };
+
+  static update = (id, data) => {
+    return request({
+      method: "PUT",
+      url: `/client/address/${id}`,
+      data: data,
+    });
+  };
+  static fetchAllProvince = () => {
+    return requestAdress({
+      method: "GET",
+      headers: {
+        token: "d73043b1-2777-11ee-b394-8ac29577e80e",
+      },
+      url: `https://online-gateway.ghn.vn/shiip/public-api/master-data/province`,
+    });
+  };
+  static fetchAllProvinceDistricts = (codeProvince) => {
+    return requestAdress({
+      method: "GET",
+      headers: {
+        token: "d73043b1-2777-11ee-b394-8ac29577e80e",
+      },
+      url: `  https://online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+      params: { province_id: codeProvince },
+    });
+  };
+  static fetchAllProvinceWard = (codeDistrict) => {
+    return requestAdress({
+      method: "GET",
+      headers: {
+        token: "d73043b1-2777-11ee-b394-8ac29577e80e",
+      },
+      url: ` https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
+      params: { district_id: codeDistrict },
     });
   };
 }

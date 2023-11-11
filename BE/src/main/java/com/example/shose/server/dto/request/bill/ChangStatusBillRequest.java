@@ -22,4 +22,5 @@ public class ChangStatusBillRequest {
     private String totalMoney;
 
      private  boolean statusCancel = false;
+
 }

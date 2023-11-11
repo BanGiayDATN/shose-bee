@@ -112,46 +112,59 @@ public class PromotionServiceImpl implements PromotionService {
 
         PromotionByIdRespone promotionByIdRespone = promotionRepository.getByIdPromotion(request.getId());
 
-        for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
-            boolean foundInNew = false;
+        if(promotionByIdRespone.getProductDetailUpdate() == null){
+            for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
+                    PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
+                    promotionProductDetail.setPromotion(promotion);
+                    promotionProductDetail.setProductDetail(productDetailRepository.findById(idProductDetailNew.getId()).get());
+                    promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+                    promotionProductDetailRepository.save(promotionProductDetail);
 
+            }
+
+        }else{
+            for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
+                boolean foundInNew = false;
+
+
+                for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
+                    if (idProductDetailNew.getId().contains(idProductDetailOld)) {
+                        foundInNew = true;
+                        break;
+                    }
+                }
+
+                if (!foundInNew) {
+                    PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
+                    promotionProductDetail.setStatus(Status.KHONG_SU_DUNG);
+                    promotionProductDetailRepository.save(promotionProductDetail);
+                }else{
+                    PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
+                    promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+                    promotionProductDetailRepository.save(promotionProductDetail);
+                }
+            }
 
             for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
-                if (idProductDetailNew.getId().contains(idProductDetailOld)) {
-                    foundInNew = true;
-                    break;
-                }
-            }
+                boolean foundInOld = false;
 
-            if (!foundInNew) {
-                PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
-                promotionProductDetail.setStatus(Status.KHONG_SU_DUNG);
-                promotionProductDetailRepository.save(promotionProductDetail);
-            }else{
-                PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
-                promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
-                promotionProductDetailRepository.save(promotionProductDetail);
+                for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
+                    if (idProductDetailOld.contains(idProductDetailNew.getId())) {
+                        foundInOld = true;
+                        break;
+                    }
+                }
+
+                if (!foundInOld) {
+                    PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
+                    promotionProductDetail.setPromotion(promotion);
+                    promotionProductDetail.setProductDetail(productDetailRepository.findById(idProductDetailNew.getId()).get());
+                    promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+                    promotionProductDetailRepository.save(promotionProductDetail);
+                }
             }
         }
 
-        for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
-            boolean foundInOld = false;
-
-            for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
-                if (idProductDetailOld.contains(idProductDetailNew.getId())) {
-                    foundInOld = true;
-                    break;
-                }
-            }
-
-            if (!foundInOld) {
-                PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
-                promotionProductDetail.setPromotion(promotion);
-                promotionProductDetail.setProductDetail(productDetailRepository.findById(idProductDetailNew.getId()).get());
-                promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
-                promotionProductDetailRepository.save(promotionProductDetail);
-            }
-        }
         return promotion;
     }
 

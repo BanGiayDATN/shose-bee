@@ -28,13 +28,12 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
 import { useCart } from "../cart/CartContext";
-import { AddressApi } from "../../../api/customer/address/address.api";
-import ModalCreateAddress from "../../employee/customer-management/modal/ModalCreateAddress";
-import ModalUpdateAddress from "../../employee/customer-management/modal/ModalUpdateAddress";
+import ModalCreateAddress from "../../customer/payment/modal/ModalCreateAddress";
+import ModalUpdateAddress from "../../customer/payment/modal/ModalUpdateAddress";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 dayjs.extend(utc);
 function PaymentAccount() {
-  const nav = useNavigate()
+  const nav = useNavigate();
   const [modalAddressAccount, setModalAddressAccount] = useState(false);
   const { updateTotalQuantity } = useCart();
   const { Option } = Select;
@@ -167,7 +166,7 @@ function PaymentAccount() {
     } else {
       BillClientApi.createBillAccountOnline(formBill).then(
         (res) => {
-          nav("/home")
+          nav("/home");
         },
         (err) => {
           console.log(err);
@@ -275,10 +274,11 @@ function PaymentAccount() {
   const [listAddress, setListAddress] = useState([]);
 
   const handleChangeAddress = () => {
-    console.log(listAddress);
     setIsModalAddressOpen(true);
-    AddressApi.fetchAllAddressByUser(userId).then((res) => {
+    AddressClientApi.fetchAllAddressByUser(userId).then((res) => {
       setListAddress(res.data.data);
+      console.log("userId", userId);
+      console.log("dataaaaa", (res.data.data));
     });
   };
 
@@ -404,17 +404,15 @@ function PaymentAccount() {
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${
-                  keyMethodPayment === "paymentReceive" ? "click" : ""
-                }`}
+                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
+                  }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${
-                  keyMethodPayment === "paymentVnpay" ? "click" : ""
-                }`}
+                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
+                  }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}

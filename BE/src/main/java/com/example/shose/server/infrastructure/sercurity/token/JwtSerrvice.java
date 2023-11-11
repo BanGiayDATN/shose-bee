@@ -1,6 +1,7 @@
 package com.example.shose.server.infrastructure.sercurity.token;
 
 import com.example.shose.server.entity.Account;
+import com.example.shose.server.infrastructure.session.UserDetailToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,12 +34,12 @@ public class JwtSerrvice {
                 .setClaims(claims)
                 .setSubject(account.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
                 .signWith(getSiginKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String genetateRefreshToken(Map<String, Object> extractClaims,Account account) {
+    public String genetateRefreshToken(Map<String, Object> extractClaims, Account account) {
         extractClaims.put("id", account.getId());
         extractClaims.put("email", account.getUsername());
         extractClaims.put("role", account.getRoles());
@@ -48,7 +49,7 @@ public class JwtSerrvice {
                 .setClaims(extractClaims)
                 .setSubject(account.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 30 * 24 * 60 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 30 * 24 * 60 * 60 * 1000))
                 .signWith(getSiginKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -87,18 +88,26 @@ public class JwtSerrvice {
     }
 
 
-    public void decodeTheToken (String token , HttpServletRequest request){
+    public void decodeTheToken(String token, HttpServletRequest request) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
+        String fullName = claims.get("fullName", String.class);
+        String email = claims.get("email", String.class);
+        String id = claims.get("id", String.class);
+        String role = claims.get("role", String.class);
+
         HttpSession session = request.getSession();
-        session.setAttribute("fullName", claims.get("fullName", String.class));
-        session.setAttribute("email", claims.get("email", String.class));
-        session.setAttribute("id", claims.get("id", String.class));
-        session.setAttribute("role", claims.get("role",String.class));
+        var user = UserDetailToken.builder().id(id).role(role).fullName(fullName).email(email).build();
+        if (user.getRole().equals("ROLE_USER")) {
+            session.setAttribute("customer", user);
+        } else {
+            session.setAttribute("employee", user);
+        }
     }
+
 
 }

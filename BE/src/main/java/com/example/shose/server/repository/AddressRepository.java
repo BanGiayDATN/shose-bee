@@ -81,6 +81,12 @@ public interface AddressRepository extends JpaRepository<Address, String> {
     @Query("SELECT a FROM  Address a WHERE a.status ='DANG_SU_DUNG' ")
     Address getAddressDefault();
 
+    @Query("SELECT a FROM  Address a" +
+            " join User u on a.user.id = u.id" +
+            " join Account acc on u.id = acc.user.id" +
+            " WHERE a.status ='DANG_SU_DUNG' and acc.id = :id")
+    Address getAddressDefaultAccount(@Param("id") String id);
+
     @Query(value = """
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY a.last_modified_date DESC ) AS stt,
@@ -95,7 +101,8 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.to_district_id AS toDistrictId,
                 a.ward_code AS wardCode,
                 a.full_name AS fullName,
-                a.phone_number AS phoneNumber
+                a.phone_number AS phoneNumber,
+                u.id AS userId
             FROM address a
             JOIN user u on a.id_user = u.id
             WHERE u.id LIKE :#{#idUser}

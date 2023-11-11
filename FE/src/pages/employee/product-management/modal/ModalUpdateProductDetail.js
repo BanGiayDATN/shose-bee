@@ -274,15 +274,11 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
         Promise.all(promises)
           .then(() => {
             formData.append("data", JSON.stringify(values));
-            axios
-              .put(
-                `http://localhost:8080/admin/product-detail/${initialValues.id}`,
-                formData
-              )
+            ProducDetailtApi.updateProduct(initialValues.id, formData)
               .then((response) => {
-                console.log(response.data);
                 toast.success("Cập nhật thành công");
                 window.location.reload();
+                form.resetFields();
               })
               .catch((error) => {
                 console.error(error);

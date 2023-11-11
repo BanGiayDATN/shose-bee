@@ -44,4 +44,7 @@ public interface AddressUserReponse {
 
     @Value("#{target.wardCode}")
     String getWardCode();
+
+    @Value("#{target.userId}")
+    String getUserId();
 }
