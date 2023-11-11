@@ -9,7 +9,7 @@ import {
   Col,
   Modal,
   Tooltip,
-  Radio
+  Radio,
 } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-customer.css";
@@ -49,12 +49,11 @@ const CustomerManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [clickRadio, setClickRadio] = useState('');
-
+  const [clickRadio, setClickRadio] = useState("");
 
   const changeRadio = (index) => {
-    setClickRadio(index)
-  }
+    setClickRadio(index);
+  };
   // Lấy mảng redux ra
   const data = useAppSelector(GetCustomer);
   useEffect(() => {
@@ -84,12 +83,24 @@ const CustomerManagement = () => {
   };
   useEffect(() => {
     const { keyword, status } = searchCustomer;
+
     CustomerApi.fetchAll({ status }).then((res) => {
-      const filteredCustomers = res.data.data.filter(
-        (customer) =>
-          customer.fullName.includes(keyword) ||
-          customer.phoneNumber.includes(keyword)
-      );
+      const filteredCustomers = res.data.data
+        .filter((customer) => {
+          const fullName = customer.fullName || ""; 
+          const phoneNumber = customer.phoneNumber || "";
+          const toKeyword = keyword.toLowerCase();
+
+          return (
+            fullName.toLowerCase().includes(toKeyword) ||
+            phoneNumber.includes(keyword)
+          );
+        })
+        .map((customer, index) => ({
+          ...customer,
+          stt: index + 1,
+        }));
+
       setListaccount(filteredCustomers);
       dispatch(SetCustomer(filteredCustomers));
     });
@@ -102,16 +113,17 @@ const CustomerManagement = () => {
       const filteredCustomers = res.data.data
         .filter((customer) => {
           const toKeyword = keyword.toLowerCase();
-          const fullName = customer.fullName.toLowerCase();
-          return (
-            fullName.includes(toKeyword) ||
-            customer.phoneNumber.includes(keyword)
-          );
+          const fullName = customer.fullName
+            ? customer.fullName.toLowerCase()
+            : "";
+          const phoneNumber = customer.phoneNumber ? customer.phoneNumber : "";
+          return fullName.includes(toKeyword) || phoneNumber.includes(keyword);
         })
         .map((customer, index) => ({
           ...customer,
           stt: index + 1,
         }));
+
       setListaccount(filteredCustomers);
       dispatch(SetCustomer(filteredCustomers));
     });
@@ -236,6 +248,7 @@ const CustomerManagement = () => {
   }, []);
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ageRange, initialCustomerList]);
   const columns = [
     {
@@ -408,7 +421,6 @@ const CustomerManagement = () => {
   const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
 
   const showModalAddress = (e) => {
-
     setIsModalAddressOpen(true);
   };
   const handleOkAddress = () => {
@@ -592,35 +604,49 @@ const CustomerManagement = () => {
         <Row style={{ width: "100%" }}>
           <Col span={16}></Col>
           <Col span={1}>
-            <Button onClick={() => handleOpenAddAdress()}>+ Thêm địa chỉ mới</Button>
+            <Button onClick={() => handleOpenAddAdress()}>
+              + Thêm địa chỉ mới
+            </Button>
           </Col>
         </Row>
-        <Row style={{ marginTop: "20px" }}>
-        </Row>
-        <div style={{ overflowY: 'auto', height: '450px' }}>
+        <Row style={{ marginTop: "20px" }}></Row>
+        <div style={{ overflowY: "auto", height: "450px" }}>
           {listAddress.map((item, index) => (
-            <div style={{ marginTop: "10px", marginBottom: "20px",borderTop:"1px solid grey", padding:"10px 0"}}>
+            <div
+              style={{
+                marginTop: "10px",
+                marginBottom: "20px",
+                borderTop: "1px solid grey",
+                padding: "10px 0",
+              }}
+            >
               <Row style={{ marginTop: "20px" }}>
                 <Col span={2}>
                   <Radio
                     name="group-radio"
                     value={item}
-                    checked={!clickRadio ? item.status === "DANG_SU_DUNG" : index === clickRadio}
+                    checked={
+                      !clickRadio
+                        ? item.status === "DANG_SU_DUNG"
+                        : index === clickRadio
+                    }
                     onChange={() => changeRadio(index)}
                   />
                 </Col>
                 <Col span={17}>
                   <Row>
-                    <span style={{ fontSize: 17, fontWeight: 600, marginRight: 3 }}>
+                    <span
+                      style={{ fontSize: 17, fontWeight: 600, marginRight: 3 }}
+                    >
                       {item.fullName}
                     </span>
                     {"  |  "}
-                    <span style={{marginTop:"2px",marginLeft: 3}}>{item.phoneNumber}</span>
+                    <span style={{ marginTop: "2px", marginLeft: 3 }}>
+                      {item.phoneNumber}
+                    </span>
                   </Row>
                   <Row>
-                    <span style={{ fontSize: 14}}>
-                      {item.address}
-                    </span>
+                    <span style={{ fontSize: 14 }}>{item.address}</span>
                   </Row>
                   {item.status === "DANG_SU_DUNG" ? (
                     <Row>
@@ -631,13 +657,18 @@ const CustomerManagement = () => {
                   ) : null}
                 </Col>
                 <Col span={4}>
-                  <Button type="dashed"
+                  <Button
+                    type="dashed"
                     title="Chọn"
                     style={{
                       border: "1px solid #ff4400",
                       fontWeight: "470",
                     }}
-                    onClick={() => handleViewUpdate(item.id)}> Cập nhật</Button>
+                    onClick={() => handleViewUpdate(item.id)}
+                  >
+                    {" "}
+                    Cập nhật
+                  </Button>
                 </Col>
               </Row>
             </div>

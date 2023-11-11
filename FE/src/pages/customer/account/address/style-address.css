@@ -15,8 +15,12 @@
     padding: 8px;
     color: white;
     margin-left: auto;
-    border-radius: 2px;
     cursor: pointer;
+    border-radius: 10px;
+    width: 100px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 }
 
 .item-address-account{
@@ -34,7 +38,12 @@
     padding: 4px;
     font-size: 13px;
     margin-top: 10px;
-    width: 65px;
+    width: 75px;
+    border-radius: 5px;
+    height: 30px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 }
 .add-default-address-account{
     color: #a5a5a4;

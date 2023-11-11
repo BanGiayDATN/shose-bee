@@ -24,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +48,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = new User();
         userReposiory.save(user);
 
+        var check = accountRepository.getOneByEmail(signUpRequets.getEmail());
+        if (check != null) {
+            throw new RestApiException("Tài khoản đã đăng ký.");
+        }
+
         Account account = new Account();
         account.setEmail(signUpRequets.getEmail());
         account.setRoles(signUpRequets.getRoles());
@@ -56,6 +60,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         account.setStatus(Status.DANG_SU_DUNG);
         account.setPassword(passwordEncoder.encode(signUpRequets.getPassword()));
         accountRepository.save(account);
+
+        String subject = "Xin chào, bạn đã đăng ký thành công tài khoản. ";
+        sendEmailService.sendEmailPasword(account.getEmail(), subject, signUpRequets.getPassword());
         return "Người dùng đã được thêm vào hệ thống";
     }
 

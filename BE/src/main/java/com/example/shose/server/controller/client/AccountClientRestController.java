@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @CrossOrigin("*")
 @RequestMapping("/client/account")
 public class AccountClientRestController {
+
     @Autowired
     private AccountService accountService;
     @Autowired
