@@ -1391,12 +1391,12 @@ function DetailBill() {
                       options={[
                         {
                           value: "false",
-                          label: "Liên hệ nhân viên",
+                          label: "Liên hệ khách hàng",
                          
                         },
                         {
                           value: "true",
-                          label: "Chuyển khoản vnpay(30 ngày)",
+                          label: "Chuyển khoản vnpay(Hoàn sau 30 ngày)",
                           disabled: paymentsMethod.some(
                             (payment) => payment.method == "TIEN_MAT"
                           ) || paymentsMethod.length > 1 
