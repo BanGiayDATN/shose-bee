@@ -301,7 +301,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
+        // if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
             BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.get().getId());
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
@@ -312,7 +312,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setEmployees(account.get());
             paymentsMethod.setVnp_TransactionNo(request.getTransaction());
             paymentsMethodRepository.save(paymentsMethod);
-        }
+        // }
         return true;
     }
 
