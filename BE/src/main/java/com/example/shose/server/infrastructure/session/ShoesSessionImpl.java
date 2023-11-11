@@ -11,22 +11,12 @@ public class ShoesSessionImpl implements ShoseSession{
     private HttpSession httpSession;
 
     @Override
-    public String getUserId() {
-        return String.valueOf(httpSession.getAttribute("id"));
+    public UserDetailToken getEmployee() {
+        return (UserDetailToken) httpSession.getAttribute("employee");
     }
 
     @Override
-    public String getEmail() {
-        return String.valueOf(httpSession.getAttribute("email"));
-    }
-
-    @Override
-    public String getFullName() {
-        return String.valueOf(httpSession.getAttribute("fullName"));
-    }
-
-    @Override
-    public String getRole() {
-        return String.valueOf(httpSession.getAttribute("role"));
+    public UserDetailToken getCustomer() {
+        return (UserDetailToken) httpSession.getAttribute("customer");
     }
 }

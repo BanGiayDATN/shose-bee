@@ -115,7 +115,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String changePassword(ChangePassword changePassword) {
-        String emailUser = shoseSession.getEmail();
+        String emailUser = shoseSession.getEmployee().getEmail();
         var account = accountRepository.getOneByEmail(emailUser);
         if (passwordEncoder.matches(changePassword.getPassword(), account.getPassword())) {
             String newPasswordEncoded = passwordEncoder.encode(changePassword.getNewPassword());

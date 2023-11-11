@@ -33,13 +33,13 @@ request.interceptors.response.use(
   },
   (error) => {
     deleteToken();
-    // if (
-    //   error.response &&
-    //   (error.response.status === 401 || error.response.status === 403)
-    // ) {
-    //   window.location.href = "/not-authorization";
-    //   return;
-    // }
+    if (
+      error.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
+      window.location.href = "/not-authorization";
+      return;
+    }
     if (error.response != null && error.response.status === 400) {
       toast.error(error.response.data.message);
     }

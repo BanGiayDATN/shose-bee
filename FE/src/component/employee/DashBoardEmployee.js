@@ -42,6 +42,7 @@ import {
 import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
 import { jwtDecode } from "jwt-decode";
+import { getCookie } from "../../helper/CookiesRequest";
 
 const { Header, Sider, Content } = Layout;
 const notificationCount = 5; // Số lượng thông báo chưa đọc
@@ -52,10 +53,11 @@ const DashBoardEmployee = ({ children }) => {
   const [form] = Form.useForm();
   const [user, setUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const token = getToken();
+  const token = getCookie("userToken");
 
   const loadUser = () => {
     const decodedToken = jwtDecode(token);
+    console.log("1111  " + token);
     setUser({
       id: decodedToken.id,
       email: decodedToken.email,
