@@ -1534,7 +1534,7 @@ function DetailBill() {
             >
               Xác nhận thanh toán
             </Button> */}
-            {!paymentsMethod.some(payment => payment.status === "TRA_SAU") && statusPresent == 8 ? (
+            {!paymentsMethod.some(payment =>( payment.status === "TRA_SAU" || payment.status == 'HOAN_TIEN')) && statusPresent == 8 ? (
                <Col span={4}>
               <Button
                 type="dashed"
