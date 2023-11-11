@@ -230,6 +230,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+      statusCancel: false
     });
     form.resetFields();
   };
@@ -337,6 +338,7 @@ function DetailBill() {
             method: "TIEN_MAT",
             totalMoney: 0,
             status: "THANH_TOAN",
+             statusCancel: false
           });
         },
         onCancel: () => {
@@ -346,6 +348,7 @@ function DetailBill() {
             method: "TIEN_MAT",
             totalMoney: 0,
             status: "THANH_TOAN",
+             statusCancel: false
           });
         },
       });
@@ -356,6 +359,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+       statusCancel: false
     });
   };
   const handleCancelPayMent = () => {
@@ -365,6 +369,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+       statusCancel: false
     });
   };
   // enad modal thanh toán
@@ -806,6 +811,7 @@ function DetailBill() {
           method: "TIEN_MAT",
           totalMoney: 0,
           status: "THANH_TOAN",
+           statusCancel: false
         });
         form.resetFields();
       
@@ -817,6 +823,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
+       statusCancel: false
     });
   };
 
