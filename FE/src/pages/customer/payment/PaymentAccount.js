@@ -278,8 +278,6 @@ function PaymentAccount() {
     setIsModalAddressOpen(true);
     AddressClientApi.fetchAllAddressByUser(userId).then((res) => {
       setListAddress(res.data.data);
-      console.log("userId", userId);
-      console.log("dataaaaa", (res.data.data));
     });
   };
 
