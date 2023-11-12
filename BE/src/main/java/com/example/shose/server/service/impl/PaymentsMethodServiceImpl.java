@@ -329,6 +329,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                    throw new RestApiException(Message.PAYMENT_TRANSACTION);
                }
                Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
+               bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
                PaymentsMethod paymentsMethod = new PaymentsMethod();
                paymentsMethod.setBill(bill.get());
                paymentsMethod.setDescription("Thanh toán thành công");
