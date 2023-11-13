@@ -1,6 +1,6 @@
 .profile-account {
   border: 1px solid rgb(241, 241, 241);
-  height: 60vh;
+  height: 100%;
   padding: 20px 30px;
   background-color: #fff;
 }
@@ -40,6 +40,7 @@
   width: 85%;
   border: 1px solid rgb(202, 202, 202);
   padding: 10px;
+  border-radius: 10px;
 }
 .input-info-profile .placeholder {
   color: #d3d3d3;
@@ -52,6 +53,7 @@
   padding: 10px;
   font-size: 13px;
   color: rgb(65, 65, 65);
+  border-radius: 10px;
 }
 .form-image-account {
   flex: 1;
@@ -60,8 +62,7 @@
   text-align: center;
 }
 .img-form-edit-profile {
-  width: 190px;
-  height: 190px;
+ 
   border-radius: 100%;
   margin-bottom: 20px;
 }
@@ -73,6 +74,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 10px;
 }
 .button-upload-image-profile:hover {
   border: 1px solid #ff4400;
@@ -80,7 +82,7 @@
   cursor: pointer;
 }
 .button-update-profile{
-    width: 15%;
+    width: 20%;
     height: 40px;
     background-color:#ff4400;
     color: white;
@@ -89,6 +91,7 @@
     align-items: center;
     border-radius: 3px;
     cursor: pointer;
+    border-radius: 10px;
 }
 :where(.css-dev-only-do-not-override-1m62vyb).ant-radio-wrapper .ant-radio-checked .ant-radio-inner {
     border-color: #ff4c16;

@@ -176,6 +176,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
+        optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
 
         List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
         billDetailResponse.forEach(item -> {
@@ -326,6 +327,7 @@ public class BillServiceImpl implements BillService {
             optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
             optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
             optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
+            optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
 
             List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
@@ -469,6 +471,7 @@ public class BillServiceImpl implements BillService {
         updateBill.get().setUserName(request.getName().trim());
         updateBill.get().setPhoneNumber(request.getPhoneNumber().trim());
         updateBill.get().setNote(request.getNote().trim());
+        updateBill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         return billRepository.save(updateBill.get());
     }
 
@@ -510,6 +513,7 @@ public class BillServiceImpl implements BillService {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
         }
+        bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         bill.get().setEmployees(account.get());
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
@@ -550,6 +554,7 @@ public class BillServiceImpl implements BillService {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             }
+            bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
             bill.get().setEmployees(account.get());
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
@@ -577,6 +582,7 @@ public class BillServiceImpl implements BillService {
         if(bill.get().getStatusBill() == StatusBill.VAN_CHUYEN && account.get().getRoles() != Roles.ROLE_ADMIN){
             throw new RestApiException(Message.ACCOUNT_NOT_ROLE_CANCEL_BILL);
         }
+        bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         bill.get().setStatusBill(StatusBill.DA_HUY);
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
@@ -596,13 +602,14 @@ public class BillServiceImpl implements BillService {
             }
             productDetailRepository.save(productDetail.get());
         });
-        if(!paymentsMethodService.refundVnpay(idEmployees,false, bill.get().getCode(), requests)){
+        if(!paymentsMethodService.refundVnpay(idEmployees,request.isStatusCancel(), bill.get().getCode(), requests)){
             throw new RestApiException(Message.ERROR_CANCEL_BILL);
         }
         return billRepository.save(bill.get());
     }
 
     @Override
+
     public Bill createBillCustomerOnlineRequest(CreateBillCustomerOnlineRequest request) {
         if(request.getPaymentMethod().equals("paymentReceive")){
             for (BillDetailOnline x : request.getBillDetail()){
@@ -623,6 +630,7 @@ public class BillServiceImpl implements BillService {
                     productDetail.setStatus(Status.HET_SAN_PHAM);
                 }
                 productDetailRepository.save(productDetail);
+
             }
         }
         Bill bill = Bill.builder()
@@ -696,6 +704,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+
     public Bill createBillAccountOnlineRequest(CreateBillAccountOnlineRequest request) {
         if(request.getPaymentMethod().equals("paymentReceive")){
             for (BillDetailOnline x : request.getBillDetail()){
@@ -716,6 +725,7 @@ public class BillServiceImpl implements BillService {
                     productDetail.setStatus(Status.HET_SAN_PHAM);
                 }
                 productDetailRepository.save(productDetail);
+
             }
         }
 

@@ -107,7 +107,7 @@ public interface AddressRepository extends JpaRepository<Address, String> {
             JOIN user u on a.id_user = u.id
             WHERE u.id LIKE :#{#idUser}
             GROUP BY a.id
-            ORDER BY a.last_modified_date DESC
+            ORDER BY a.status ASC
                   """,
             nativeQuery = true
     )

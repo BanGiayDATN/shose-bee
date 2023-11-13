@@ -53,7 +53,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 AND ( :#{#request.type} IS NULL
                          OR :#{#request.type} LIKE ''
                          OR bi.type = :#{#request.type})
-                ORDER BY bi.created_date DESC
+                ORDER BY bi.last_modified_date DESC
                             
                 """, nativeQuery = true)
         List<BillResponse> getAll( BillRequest request);

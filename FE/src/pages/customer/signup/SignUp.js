@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./Style-sign-up.css"
-import { Link } from "react-router-dom";
+import "./Style-sign-up.css";
+import { Link, useNavigate } from "react-router-dom";
 import logoLogin from "./../../../assets/images/logo_client.png";
 import Footer from "../../../component/customer/footer/Footer";
 import { Form, Input } from "antd";
@@ -100,25 +100,27 @@ function SignUp() {
                                     onChange={(e) => changeFormSignUp("password", e.target.value)} />
                             </Form.Item>
 
-                            <Form.Item >
-                                <div className="button-signup" onClick={handleSignUp} >
-                                    Đăng ký
-                                </div>
-                            </Form.Item>
-                            <Form.Item >
-                                <div >
-                                    Bạn đã có tài khoản?  <Link style={{ color: "#e7511a" }} to={"/login"} >Đăng nhập</Link>
-                                </div>
-                            </Form.Item>
-                        </Form>
-
-
-                    </div>
-                </div>
+                <Form.Item>
+                  <div className="button-signup" onClick={handleSignUp}>
+                    Đăng ký
+                  </div>
+                </Form.Item>
+                <Form.Item>
+                  <div>
+                    Bạn đã có tài khoản?{" "}
+                    <Link style={{ color: "#e7511a" }} to={"/login"}>
+                      Đăng nhập
+                    </Link>
+                  </div>
+                </Form.Item>
+              </Form>
             </div>
-            <Footer />
+          </div>
         </div>
-    </React.Fragment>);
+        <Footer />
+      </div>
+    </React.Fragment>
+  );
 }
 
 export default SignUp;

@@ -654,17 +654,6 @@ const CreateProductManagment = () => {
       },
     ],
   };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showQuantityAndPriceModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleQuantityAndPriceOk = () => {
-    console.log("okkkk");
-    setIsModalOpen(false);
-  };
-  const handleQuantityAndPriceCancel = () => {
-    setIsModalOpen(false);
-  };
 
   return (
     <>
@@ -1139,16 +1128,6 @@ const CreateProductManagment = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                onClick={showQuantityAndPriceModal}
-                style={{ height: "40px", fontWeight: "bold" }}
-              >
-                Chỉnh sửa số lượng và giá
-              </Button>
-            </Tooltip>
-            <Tooltip title="Thêm sản phẩm chi tiết">
-              <Button
-                type="primary"
-                htmlType="submit"
                 onClick={handleUpload}
                 style={{
                   height: "40px",
@@ -1170,18 +1149,6 @@ const CreateProductManagment = () => {
           pagination={{ pageSize: 5 }}
         />
       </div>
-      <Modal
-        title="Chỉnh sửa số lượng và giá tiền chung"
-        open={isModalOpen}
-        onOk={handleQuantityAndPriceOk}
-        onCancel={handleQuantityAndPriceCancel}
-        okText="Chỉnh sửa"
-        cancelText="Hủy"
-      >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal>
     </>
   );
 };

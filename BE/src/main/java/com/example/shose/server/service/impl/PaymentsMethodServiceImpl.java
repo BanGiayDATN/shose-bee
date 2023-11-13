@@ -270,8 +270,6 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 }
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.toString());
-                System.out.println("jhkjhkfjshkjfdhkjdshfkjdshfkj");
-                System.out.println(jsonNode);
 
                 PaymentsMethod paymentsMethodRefound = new PaymentsMethod();
                 paymentsMethodRefound.setBill(bill.get());
@@ -303,16 +301,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
-        if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
+        // if(bill.get().getEmployees().getRoles() == Roles.ROLE_USER || billHistoryRepository.checkBillVanChuyen(codeBill) > 0){
             BigDecimal payment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.get().getId());
-            if (bill.get().getStatusBill() == StatusBill.DA_HUY) {
-                BillHistory billHistory = new BillHistory();
-                billHistory.setBill(bill.get());
-                billHistory.setStatusBill(StatusBill.DA_HUY);
-                billHistory.setActionDescription("Hoàn tiền cho khách hàng");
-                billHistory.setEmployees(account.get());
-                billHistoryRepository.save(billHistory);
-            }
             PaymentsMethod paymentsMethod = new PaymentsMethod();
             paymentsMethod.setBill(bill.get());
             paymentsMethod.setMethod(request.getMethod());
@@ -322,7 +312,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             paymentsMethod.setEmployees(account.get());
             paymentsMethod.setVnp_TransactionNo(request.getTransaction());
             paymentsMethodRepository.save(paymentsMethod);
-        }
+        // }
         return true;
     }
 
@@ -339,6 +329,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                    throw new RestApiException(Message.PAYMENT_TRANSACTION);
                }
                Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
+               bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
                PaymentsMethod paymentsMethod = new PaymentsMethod();
                paymentsMethod.setBill(bill.get());
                paymentsMethod.setDescription("Thanh toán thành công");
@@ -413,6 +404,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     @Override
     public String payWithVNPAYOnline(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
 
+
             for (BillDetailOnline x : payModel.getBillDetail()){
                 Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
                 if(!optional.isPresent()){
@@ -434,20 +426,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                 productDetailRepository.save(productDetail);
             }
 
-        payModel.getBillDetail().forEach(item -> {
-            ProductDetail productDetail = productDetailRepository.findById(item.getIdProductDetail()).get();
-            if (productDetail.getQuantity() < item.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
-            }
-            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
-                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
-            }
-            productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
-            if (productDetail.getQuantity() == 0) {
-                productDetail.setStatus(Status.HET_SAN_PHAM);
-            }
-            productDetailRepository.save(productDetail);
-        });
+
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");

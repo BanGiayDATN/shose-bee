@@ -34,7 +34,7 @@ public class JwtSerrvice {
                 .setClaims(claims)
                 .setSubject(account.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 60 * 1000))
                 .signWith(getSiginKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -49,7 +49,7 @@ public class JwtSerrvice {
                 .setClaims(extractClaims)
                 .setSubject(account.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 30 * 24 * 60 * 60 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + 30 * 24 * 60 * 60 * 60 * 1000))
                 .signWith(getSiginKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
