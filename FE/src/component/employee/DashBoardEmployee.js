@@ -17,7 +17,6 @@ import {
   Modal,
   Form,
   Input,
-  Checkbox,
 } from "antd";
 import "./style-dashboard-employee.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -36,8 +35,6 @@ import SubMenu from "antd/es/menu/SubMenu";
 import {
   deleteToken,
   deleteUserToken,
-  getToken,
-  getUserToken,
 } from "../../helper/useCookies";
 import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
@@ -57,7 +54,6 @@ const DashBoardEmployee = ({ children }) => {
 
   const loadUser = () => {
     const decodedToken = jwtDecode(token);
-    console.log("1111  " + token);
     setUser({
       id: decodedToken.id,
       email: decodedToken.email,
@@ -92,7 +88,6 @@ const DashBoardEmployee = ({ children }) => {
         });
       })
       .then((value) => {
-        console.log(value);
         if (value.resetPassword !== value.newPassword) {
           toast.warning("Xác nhận lại mật khẩu sai.");
           return;

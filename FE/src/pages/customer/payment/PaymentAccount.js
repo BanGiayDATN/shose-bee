@@ -1,18 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./style-payment-account.css";
-import {
-  Row,
-  Col,
-  InputNumber,
-  Input,
-  Select,
-  Form,
-  Modal,
-  Button,
-  Radio,
-} from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { Row, Col, Modal, Button, Radio } from "antd";
 import { toast } from "react-toastify";
 import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
@@ -27,7 +16,6 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
-import { useCart } from "../cart/CartContext";
 import ModalCreateAddress from "../../customer/payment/modal/ModalCreateAddress";
 import ModalUpdateAddress from "../../customer/payment/modal/ModalUpdateAddress";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
@@ -35,13 +23,8 @@ dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
   const [modalAddressAccount, setModalAddressAccount] = useState(false);
-  const { updateTotalQuantity } = useCart();
-  const { Option } = Select;
   const idAccount = sessionStorage.getItem("idAccount");
-  const [listCity, setListCity] = useState([]);
-  const [listDistrict, setListDistrict] = useState([]);
   const [addressDefault, setAddressDefault] = useState({});
-  const [listWard, setListWard] = useState([]);
   const [formBill, setFormBill] = useState({
     address: "",
     billDetail: [],
@@ -57,7 +40,6 @@ function PaymentAccount() {
   const [dayShip, setDayShip] = useState("");
   const [keyMethodPayment, setKeyMethodPayment] = useState("paymentReceive");
   const [totalBill, setTotalBill] = useState(0);
-  const [formGetMoneyShip, setFormGetMoneyShip] = useState([]);
   const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
   const voucher = JSON.parse(sessionStorage.getItem("voucher"));
   const comercial = [
@@ -339,11 +321,27 @@ function PaymentAccount() {
           </div>
           <div className="product-of-bill-acc">
             <div className="title-product-of-bill-acc">
-              <div style={{ fontSize: 17 }}>Sản phẩm</div>
-              <div style={{ marginLeft: "30%" }}>Size</div>
-              <div style={{ marginLeft: "12%" }}>Đơn giá</div>
-              <div style={{ marginLeft: "12%" }}>Số lượng</div>
-              <div style={{ marginLeft: "auto" }}>Thành tiền</div>
+              <div style={{ fontSize: 17, fontWeight: "bold" }}>Sản phẩm</div>
+              <div
+                style={{ marginLeft: "30%", fontSize: 17, fontWeight: "bold" }}
+              >
+                Kích cỡ
+              </div>
+              <div
+                style={{ marginLeft: "12%", fontSize: 17, fontWeight: "bold" }}
+              >
+                Đơn giá
+              </div>
+              <div
+                style={{ marginLeft: "12%", fontSize: 17, fontWeight: "bold" }}
+              >
+                Số lượng
+              </div>
+              <div
+                style={{ marginLeft: "auto", fontSize: 17, fontWeight: "bold" }}
+              >
+                Thành tiền
+              </div>
             </div>
 
             <div className="content-product-of-bill-acc">
@@ -386,9 +384,9 @@ function PaymentAccount() {
             </div>
           </div>
           <div className="voucher-payment-acc">
-            <span style={{ fontSize: 20 }}>
+            <span style={{ fontSize: 20, fontWeight:"bold"}}>
               <FontAwesomeIcon
-                style={{ color: "#ff4400", marginRight: 10 }}
+                style={{ color: "#ff4400", marginRight: 10 , }}
                 icon={faTags}
               />{" "}
               Bee voucher
@@ -399,19 +397,21 @@ function PaymentAccount() {
           </div>
           <div className="footer-payment-acc">
             <div className="method-payment-acc">
-              <div style={{ fontSize: 18, fontWeight: 600 }}>
+              <div style={{ fontSize: 18,fontWeight:"bold"}}>
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
-                  }`}
+                className={`payment-when-recevie-acc ${
+                  keyMethodPayment === "paymentReceive" ? "click" : ""
+                }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
-                  }`}
+                className={`payment-by-vnpay-acc ${
+                  keyMethodPayment === "paymentVnpay" ? "click" : ""
+                }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}
@@ -425,9 +425,9 @@ function PaymentAccount() {
             <div className="time-recieve-goods">
               <FontAwesomeIcon
                 icon={faCarRear}
-                style={{ fontSize: "30px", marginRight: "20px" }}
+                style={{ fontSize: "33px", marginRight: "25px" }}
               />
-              <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
+              <span style={{fontSize:"17px"}}>Thời gian nhận hàng dự kiến: {dayShip}</span>
             </div>
             <div className="titles-money-payment-acc">
               <div className="box-title-money">
