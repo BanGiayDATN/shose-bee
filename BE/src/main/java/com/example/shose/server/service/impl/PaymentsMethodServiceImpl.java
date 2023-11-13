@@ -329,6 +329,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                    throw new RestApiException(Message.PAYMENT_TRANSACTION);
                }
                Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
+               bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
                PaymentsMethod paymentsMethod = new PaymentsMethod();
                paymentsMethod.setBill(bill.get());
                paymentsMethod.setDescription("Thanh toán thành công");
@@ -402,20 +403,6 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Override
     public String payWithVNPAYOnline(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
-        payModel.getBillDetail().forEach(item -> {
-            ProductDetail productDetail = productDetailRepository.findById(item.getIdProductDetail()).get();
-            if (productDetail.getQuantity() < item.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
-            }
-            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
-                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
-            }
-            productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
-            if (productDetail.getQuantity() == 0) {
-                productDetail.setStatus(Status.HET_SAN_PHAM);
-            }
-            productDetailRepository.save(productDetail);
-        });
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
