@@ -4,6 +4,7 @@ import com.example.shose.server.dto.logindto.ChangePassword;
 import com.example.shose.server.dto.logindto.ResetPassword;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
+import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
@@ -46,6 +47,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String signUp(SignUpRequets signUpRequets) {
+
+        Optional<Account> optional = accountRepository.getByEmail(signUpRequets.getEmail());
+        if(optional.isPresent()){
+            throw new RestApiException(Message.EMAIL_USER_EXIST);
+        }
         User user = new User();
         userReposiory.save(user);
 

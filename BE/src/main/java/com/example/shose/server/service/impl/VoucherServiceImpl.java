@@ -40,6 +40,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<Voucher> findByStatus() {
+        return voucherRepository.findAllByStatus(Status.DANG_SU_DUNG);
+    }
+
+    @Override
     public Voucher add(CreateVoucherRequest request) {
         long currentSeconds = (System.currentTimeMillis() / 1000)*1000;
         Status status = (request.getStartDate() <= currentSeconds && currentSeconds <= request.getEndDate())

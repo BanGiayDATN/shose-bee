@@ -58,8 +58,12 @@ function Cart() {
     }));
   };
   const submitVoucher = () => {
+    if (Object.keys(selectedItem).length > 0) {
+      setVoucher(selectedItem);
+    }
+    console.log(selectedItem);
     setModalVoucher(false);
-    setVoucher(selectedItem);
+    
   };
   useEffect(() => {
     console.log(idAccountLocal);
@@ -200,7 +204,7 @@ function Cart() {
       });
     } else {
       setModalVoucher(true);
-      VoucherClientApi.getListVoucherByAccount(idAcccount).then(
+      VoucherClientApi.getListVoucher().then(
         (res) => {
           setListVoucher(res.data.data);
           console.log(listVoucher);
@@ -808,8 +812,7 @@ function Cart() {
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
         width={600}
-        height={1000}
-        {...modalProps}
+
       >
         <div className="category-voucher">
           <h1>Chọn mã khuyến mãi</h1>

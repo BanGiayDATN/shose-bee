@@ -375,8 +375,7 @@
   padding: 8px;
   margin-left: 15px;
   color: #d1c9c6;
-  cursor: none;
-  /* pointer-events: none; */
+cursor: not-allowed;
 }
 .button-submit-voucher-cart.show {
   border: #726a69 1px solid;
