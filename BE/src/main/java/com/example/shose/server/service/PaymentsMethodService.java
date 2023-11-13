@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodR
 import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.PaymentsMethod;
+import com.example.shose.server.entity.ProductDetail;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.UnsupportedEncodingException;
@@ -35,4 +36,7 @@ public interface PaymentsMethodService {
 
     boolean updatepayMent(String idBill,String idEmployees,List<String> ids);
     String payWithVNPAYOnline(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException;
+
+    boolean minusQuantityProductDetail(List<BillDetailOnline> listProductDetail);
+    boolean refundQuantityProductDetail(List<BillDetailOnline> listProductDetail);
 }

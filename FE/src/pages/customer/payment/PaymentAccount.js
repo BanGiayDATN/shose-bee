@@ -131,18 +131,20 @@ function PaymentAccount() {
   };
   const payment = () => {
     if (formBill.paymentMethod === "paymentVnpay") {
+
       const data = {
         vnp_Ammount: totalBefore,
-        billDetail: listproductOfBill,
+        billDetail: formBill.billDetail,
       };
       console.log(listproductOfBill);
       PaymentClientApi.paymentVnpay(data).then(
         (res) => {
           window.location.replace(res.data.data);
           sessionStorage.setItem("formBill", JSON.stringify(formBill));
-        },
+        },    
         (err) => {
-          toast.error(err.response.data.message);
+          // toast.error(err.response.data.message);
+          
         }
       );
     } else {

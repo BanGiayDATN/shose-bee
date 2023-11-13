@@ -329,6 +329,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                    throw new RestApiException(Message.PAYMENT_TRANSACTION);
                }
                Optional<Bill> bill = billRepository.findByCode(response.getVnp_TxnRef().split("-")[0]);
+               bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
                PaymentsMethod paymentsMethod = new PaymentsMethod();
                paymentsMethod.setBill(bill.get());
                paymentsMethod.setDescription("Thanh toán thành công");
@@ -402,20 +403,30 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Override
     public String payWithVNPAYOnline(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
-        payModel.getBillDetail().forEach(item -> {
-            ProductDetail productDetail = productDetailRepository.findById(item.getIdProductDetail()).get();
-            if (productDetail.getQuantity() < item.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
+
+
+            for (BillDetailOnline x : payModel.getBillDetail()){
+                Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
+                if(!optional.isPresent()){
+                    throw new RestApiException("Sản phẩm không tồn tại");
+                }
+
+                ProductDetail productDetail = optional.get();
+                if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                    throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
+                }
+                if(productDetail.getQuantity()<x.getQuantity()){
+                    throw new RestApiException(Message.ERROR_QUANTITY);
+                }
+
+                productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
+                if (productDetail.getQuantity() == 0) {
+                    productDetail.setStatus(Status.HET_SAN_PHAM);
+                }
+                productDetailRepository.save(productDetail);
             }
-            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
-                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
-            }
-            productDetail.setQuantity(productDetail.getQuantity() - item.getQuantity());
-            if (productDetail.getQuantity() == 0) {
-                productDetail.setStatus(Status.HET_SAN_PHAM);
-            }
-            productDetailRepository.save(productDetail);
-        });
+
+
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -471,6 +482,49 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VnPayConstant.vnp_Url + "?" + queryUrl;
         return paymentUrl;
+    }
+
+    @Override
+    public boolean minusQuantityProductDetail(List<BillDetailOnline> listProductDetail) {
+
+        for (BillDetailOnline x : listProductDetail){
+         Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
+         if(!optional.isPresent()){
+             throw new RestApiException("Sản phẩm không tồn tại");
+         }
+
+         ProductDetail productDetail = optional.get();
+            if(productDetail.getQuantity()<x.getQuantity()){
+                throw new RestApiException(Message.ERROR_QUANTITY);
+            }
+            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
+            }
+         productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
+            if (productDetail.getQuantity() == 0) {
+                productDetail.setStatus(Status.HET_SAN_PHAM);
+            }
+         productDetailRepository.save(productDetail);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean refundQuantityProductDetail(List<BillDetailOnline> listProductDetail) {
+        for (BillDetailOnline x : listProductDetail){
+            Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
+            if(!optional.isPresent()){
+                throw new RestApiException("Sản phẩm không tồn tại");
+            }
+            System.out.println(x.getIdProductDetail());
+            ProductDetail productDetail = optional.get();
+            productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
+            if (productDetail.getStatus().equals(Status.HET_SAN_PHAM)) {
+                productDetail.setStatus(Status.DANG_SU_DUNG);
+            }
+            productDetailRepository.save(productDetail);
+        }
+        return true;
     }
 
 

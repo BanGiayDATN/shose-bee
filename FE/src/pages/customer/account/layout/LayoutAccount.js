@@ -8,14 +8,17 @@ import { useNavigate, useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 import { AccountClientApi } from "../../../../api/customer/account/accountClient.api";
 import { UseSelector,Use } from "react-redux/es/hooks/useSelector";
-import { GetUserClient } from "../../../../app/reducer/UserClient.reducer";
+import { GetUserClient, SetUserClient } from "../../../../app/reducer/UserClient.reducer";
 import {  useAppSelector } from "../../../../app/hook";
 import dayjs from "dayjs";
+import { dispatch } from "../../../../app/store";
 function LayoutAccount({ children }) {
     const param = useLocation()
     const [id, setId] = useState(0);
     const [formInfo, setFormInfo] = useState({});
     const [idChild, setIdChild] = useState(1);
+    const idAccount = sessionStorage.getItem("idAccount")
+    
     const page = useNavigate()
     const data = useAppSelector(GetUserClient);
     useEffect(() => {
@@ -25,6 +28,11 @@ function LayoutAccount({ children }) {
         }
       }, [data]);
     useEffect(() => {
+        AccountClientApi.getById(idAccount).then((res) => {
+            const data = res.data.data.user
+            dispatch(SetUserClient(data))
+        })
+
         switch (param.pathname) {
             case "/profile":
                 setId(1);
@@ -47,7 +55,7 @@ function LayoutAccount({ children }) {
             default:
                 setId(4);
         }
-        console.log(id,idChild);
+       
     }, [])
     const openCateprofile = (id) => {
         setId(id)
