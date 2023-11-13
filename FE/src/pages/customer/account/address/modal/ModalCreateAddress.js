@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 function ModalCreateAddress({ modalCreate, setModalCreate }) {
     const [formAdd, setFormAdd] = useState({
         idAccount: sessionStorage.getItem('idAccount'),
-        status:"KHONG_SU_DUNG"
+        status: "KHONG_SU_DUNG"
     })
     const [formErrors, setFormErrors] = useState({})
     const [listCity, setListCity] = useState([])
@@ -25,7 +25,7 @@ function ModalCreateAddress({ modalCreate, setModalCreate }) {
     const closeModalCreate = () => {
         setFormAdd({
             idAccount: sessionStorage.getItem('idAccount'),
-            status:"KHONG_SU_DUNG"
+            status: "KHONG_SU_DUNG"
         })
         setFormErrors({})
         setModalCreate(false)
@@ -127,13 +127,13 @@ function ModalCreateAddress({ modalCreate, setModalCreate }) {
             return;
         }
 
-      
-                AddressClientApi.createAddressClient(form).then((res) => {
-                    dispatch(CreateAddressAccountClient(res.data.data))
-                    toast.success("Thêm mới địa chỉ thành công");
-                    closeModalCreate()
-                })
-    
+
+        AddressClientApi.createAddressClient(form).then((res) => {
+            dispatch(CreateAddressAccountClient(res.data.data))
+            toast.success("Thêm mới địa chỉ thành công");
+            closeModalCreate()
+        })
+
     };
 
 
@@ -164,12 +164,12 @@ function ModalCreateAddress({ modalCreate, setModalCreate }) {
 
                     </Form.Item>
 
-                    <Form.Item style={{ marginLeft: "auto",textAlign:"left" }}
+                    <Form.Item style={{ marginLeft: "auto", textAlign: "left" }}
                         validateStatus={formErrors["phoneNumber"] ? "error" : ""}
                         help={formErrors["phoneNumber"] || ""}
                     >
                         <input placeholder="Số điện thoại"
-                        value={formAdd["phoneNumber"]|| ""}
+                            value={formAdd["phoneNumber"] || ""}
                             className="input-create-address-account"
                             onChange={(e) => formAddChange("phoneNumber", e.target.value)}
                         />
@@ -177,16 +177,16 @@ function ModalCreateAddress({ modalCreate, setModalCreate }) {
                 </div>
 
                 <div
-                    style={{ display: "flex", justifyContent: "center",textAlign: "left"  }}
+                    style={{ display: "flex", justifyContent: "center", textAlign: "left" }}
                 >
                     <Form.Item
-                    style={{ marginRight:10  }}
+                        style={{ marginRight: 10 }}
                         validateStatus={formErrors["province"] ? "error" : ""}
                         help={formErrors["province"] || ""}
                     >
                         <select
                             className="select-create-address-address"
-                            value={ `${formAdd["provinceId"]}|${formAdd["province"]}` }
+                            value={`${formAdd["provinceId"]}|${formAdd["province"]}`}
                             onChange={(e) => {
                                 const selectedValue = e.target.value; // Lấy giá trị đã chọn (bao gồm cả ProvinceID và ProvinceName)
                                 const [provinceID, provinceName] =
@@ -209,13 +209,13 @@ function ModalCreateAddress({ modalCreate, setModalCreate }) {
                         </select>
                     </Form.Item>
                     <Form.Item
-                    style={{ marginRight:10 }}
+                        style={{ marginRight: 10 }}
                         validateStatus={formErrors["district"] ? "error" : ""}
                         help={formErrors["district"] || ""}
                     >
                         <select
                             className="select-create-address-address"
-                          value={`${formAdd["districtId"]}|${ formAdd["district"]}`}
+                            value={`${formAdd["districtId"]}|${formAdd["district"]}`}
                             onChange={(e) => {
                                 const selectedValue = e.target.value; // Lấy giá trị đã chọn (bao gồm cả ProvinceID và ProvinceName)
                                 const [districtID, districtName] =
@@ -242,7 +242,7 @@ function ModalCreateAddress({ modalCreate, setModalCreate }) {
                         help={formErrors["ward"] || ""}
                     >
                         <select
-                           value={`${formAdd["wardCode"]}|${ formAdd["ward"]}`}
+                            value={`${formAdd["wardCode"]}|${formAdd["ward"]}`}
                             className="select-create-address-address"
                             onChange={(e) => {
                                 const selectedValue = e.target.value; // Lấy giá trị đã chọn (bao gồm cả ProvinceID và ProvinceName)
@@ -266,7 +266,7 @@ function ModalCreateAddress({ modalCreate, setModalCreate }) {
                 </div>
 
                 <Form.Item
-                style={{  textAlign: "left" }}
+                    style={{ textAlign: "left" }}
                     validateStatus={formErrors["line"] ? "error" : ""}
                     help={formErrors["line"] || ""}
                 >

@@ -13,7 +13,12 @@ export class VoucherClientApi {
           url: `/client/voucher/account/${idAccount}`
         });
       };
-    
+      static getListVoucher= () => {
+        return request({
+          method: "GET",
+          url: `/client/voucher/list`
+        });
+      };
     
      
    

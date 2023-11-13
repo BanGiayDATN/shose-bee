@@ -17,4 +17,18 @@ export class PaymentClientApi {
         data: data
       });
     };
+    static minusQuantityProductDetail = (data) => {
+      return request({
+        method: "POST",
+        url: `/client/payment/minusQuantityProductDetail` ,
+        data: data
+      });
+    };
+    static refundQuantityProductDetail = (data) => {
+      return request({
+        method: "POST",
+        url: `/client/payment/refundQuantityProductDetail` ,
+        data: data
+      });
+    };
   }
