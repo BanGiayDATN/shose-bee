@@ -618,14 +618,6 @@ public class BillServiceImpl implements BillService {
             if (findAllByVnpTransactionNo.size() > 0) {
                 throw new RestApiException(Message.PAYMENT_TRANSACTION);
             }
-            request.getBillDetail().forEach(x -> {
-                ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
-                productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
-                if (productDetail.getStatus() == Status.HET_SAN_PHAM) {
-                    productDetail.setStatus(Status.DANG_SU_DUNG);
-                }
-                productDetailRepository.save(productDetail);
-            });
             if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
                 throw new RestApiException(Message.PAYMENT_ERROR);
             }
@@ -739,14 +731,6 @@ public class BillServiceImpl implements BillService {
             if (findAllByVnpTransactionNo.size() > 0) {
                 throw new RestApiException(Message.PAYMENT_TRANSACTION);
             }
-            request.getBillDetail().forEach(x -> {
-                ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
-                productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
-                if (productDetail.getStatus() == Status.HET_SAN_PHAM) {
-                    productDetail.setStatus(Status.DANG_SU_DUNG);
-                }
-                productDetailRepository.save(productDetail);
-            });
             if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
                 throw new RestApiException(Message.PAYMENT_ERROR);
             }
