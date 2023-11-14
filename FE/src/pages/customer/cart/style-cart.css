@@ -109,6 +109,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: url("https://bizweb.dktcdn.net/100/414/833/themes/803358/assets/empty-cart.png?1698141402395");
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-size: 70%;
   /* border: #7c7876 1px dotted; */
 }
 .item-cart {

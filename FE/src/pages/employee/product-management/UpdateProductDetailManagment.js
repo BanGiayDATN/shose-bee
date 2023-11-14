@@ -112,9 +112,7 @@ const UpdateProductDetailManagment = () => {
 
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    ProducDetailtApi.fetchAll({
-      product: search,
-    }).then((res) => {
+    ProducDetailtApi.fetchAll(selectedValues).then((res) => {
       setListProductDetails(res.data.data);
       setSelectedRowKeys(temporarySelectedRowKeys);
     });
