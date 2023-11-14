@@ -15,6 +15,7 @@ function CardItem({ item, index }) {
   const [itemSize, setItemSize] = useState('');
   const [clickedIndex, setClickedIndex] = useState(-1);
   const [listSize, setListSize] = useState([]);
+  const [cartAccount, setCartAccount] = useState([]);
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProductDetail: "",
@@ -44,182 +45,140 @@ function CardItem({ item, index }) {
     );
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const response = await CartClientApi.listCart(idAccountLocal);
-      const cartAccount = response.data.data;
-      return cartAccount;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
-// them san pham vao gio hang
-const addToCard = async () => {
+  const handleAddCartLocal = (newCartItem) => {
+    setCartLocal((prev) => {
+      console.log(cartLocal);
+      const exists = prev.find(
+        (item) => item.idProductDetail === newCartItem.idProductDetail
+      );
+      if (!exists) {
+        return [...prev, newCartItem];
+      } else {
+        return prev.map((item) =>
+          item.idProductDetail === newCartItem.idProductDetail
+            ? { ...item, quantity: item.quantity + newCartItem.quantity }
+            : item
+        );
+      }
+    });
+  }
+  // them san pham vao gio hang
+  const addToCard = async () => {
 
     if (detailProduct.quantity === 0) {
-        toast.error("Sản phẩm đã hết hàng", {
-            autoClose: 3000,
-        });
-        return;
+      toast.error("Sản phẩm đã hết hàng", {
+        autoClose: 3000,
+      });
+      return;
     }
     if (idAccountLocal === null) {
-        const detailProductCart = cartLocal.find((item) => item.idProductDetail === id)
-        if (detailProductCart !== undefined) {
-            if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
-                const newCartItem = {
-                    idProductDetail: detailProduct.idProductDetail,
-                    image: detailProduct.image,
-                    price: detailProduct.price,
-                    quantity: quantity,
-                    nameProduct: detailProduct.nameProduct,
-                    codeColor: detailProduct.codeColor,
-                    nameSize: detailProduct.nameSize,
-                };
+      const newCartItem = {
+        idProductDetail: detailProduct.idProductDetail,
+        image: detailProduct.image,
+        price: detailProduct.price,
+        quantity: quantity,
+        nameProduct: detailProduct.nameProduct,
+        codeColor: detailProduct.codeColor,
+        nameSize: detailProduct.nameSize,
+        quantityProductDetail: detailProduct.quantity
+      };
+      const detailProductCart = cartLocal.find((item) => item.idProductDetail === id)
+      if (detailProductCart !== undefined) {
+        if (parseInt(quantity) + parseInt(detailProductCart.quantity) <= detailProduct.quantity) {
 
-                setCartLocal((prev) => {
-                    console.log(cartLocal);
-                    const exists = prev.find(
-                        (item) => item.idProductDetail === newCartItem.idProductDetail
-                    );
-                    if (!exists) {
-                        return [...prev, newCartItem];
-                    } else {
-                        return prev.map((item) =>
-                            item.idProductDetail === newCartItem.idProductDetail
-                                ? { ...item, quantity: item.quantity + newCartItem.quantity }
-                                : item
-                        );
-                    }
-                });
-                window.location.href = "/cart";
-                toast.success("Thêm giỏ hàng thành công", {
-                    autoClose: 3000,
-                });
-            } else {
-                toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
-            }
 
+          handleAddCartLocal(newCartItem)
+          window.location.href = "/cart";
+          toast.success("Thêm giỏ hàng thành công", {
+            autoClose: 3000,
+          });
         } else {
-            const newCartItem = {
-                idProductDetail: detailProduct.idProductDetail,
-                image: detailProduct.image,
-                price: detailProduct.price,
-                quantity: quantity,
-                nameProduct: detailProduct.nameProduct,
-                codeColor: detailProduct.codeColor,
-                nameSize: detailProduct.nameSize,
-            };
-
-            setCartLocal((prev) => {
-                console.log(cartLocal);
-                const exists = prev.find(
-                    (item) => item.idProductDetail === newCartItem.idProductDetail
-                );
-                if (!exists) {
-                    return [...prev, newCartItem];
-                } else {
-                    return prev.map((item) =>
-                        item.idProductDetail === newCartItem.idProductDetail
-                            ? { ...item, quantity: item.quantity + newCartItem.quantity }
-                            : item
-                    );
-                }
-            });
-            window.location.href = "/cart";
-            toast.success("Thêm giỏ hàng thành công", {
-                autoClose: 3000,
-            });
+          toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
         }
+
+      } else {
+
+
+        handleAddCartLocal(newCartItem)
+        window.location.href = "/cart";
+        toast.success("Thêm giỏ hàng thành công", {
+          autoClose: 3000,
+        });
+      }
 
     } else {
-    const cartAccount = await fetchData()
-        const detailProductCart = cartAccount.find((item) => item.idProductDetail === id)
-
-        if (detailProductCart !== undefined) {
-            if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
-
-                const newCartItem = {
-                    idAccount: idAccountLocal,
-                    idProductDetail: detailProduct.idProductDetail,
-                    price: detailProduct.price,
-                    quantity: quantity,
-                };
-
-                CartClientApi.addCart(newCartItem).then(
-                    (res) => {
-                        console.log(res.data.data);
-                    },
-                    (err) => {
-                        console.log(err);
-                    }
-                );
-                window.location.href = "/cart";
-                toast.success("Thêm giỏ hàng thành công", {
-                    autoClose: 3000,
-                });
-            } else {
-                toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
-            }
-
+      const newCartItem = {
+        idAccount: idAccountLocal,
+        idProductDetail: detailProduct.idProductDetail,
+        price: detailProduct.price,
+        quantity: quantity,
+      };
+      const detailProductCart = cartAccount.find((item) => item.idProductDetail === id)
+      console.log(detailProductCart);
+      if (detailProductCart !== undefined) {
+        if (parseInt(quantity) + parseInt(detailProductCart.quantity) <= detailProduct.quantity) {
+          await CartClientApi.addCart(newCartItem);
+          window.location.href = "/cart";
+          toast.success("Thêm giỏ hàng thành công", {
+            autoClose: 3000,
+          });
         } else {
-            const newCartItem = {
-                idAccount: idAccountLocal,
-                idProductDetail: detailProduct.idProductDetail,
-                price: detailProduct.price,
-                quantity: quantity,
-            };
-
-            CartClientApi.addCart(newCartItem).then(
-                (res) => {
-                    console.log(res.data.data);
-                },
-                (err) => {
-                    console.log(err);
-                }
-            );
-            window.location.href = "/cart";
-            toast.success("Thêm giỏ hàng thành công", {
-                autoClose: 3000,
-            });
+          toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
         }
+
+      } else {
+
+        await CartClientApi.addCart(newCartItem);
+        window.location.href = "/cart";
+        toast.success("Thêm giỏ hàng thành công", {
+          autoClose: 3000,
+        });
+      }
     }
 
-};
+  };
 
-
+  const listCartAccount = () => {
+    CartClientApi.listCart(idAccountLocal).then((response) => {
+      setCartAccount(response.data.data)
+      console.log(response.data.data);
+    })
+  }
   const getDetailProduct = (idProductDetail) => {
     setItemSize(idProductDetail)
     ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
-        (res) => {
-            console.log(res.data.data);
-            setDetailProduct(res.data.data);
-            const nameSizeArray = res.data.data.listSize.split(',');
-            const sizeList = [];
-            for (let index = 0; index < nameSizeArray.length; index += 2) {
-                const name = nameSizeArray[index];
-                const id = nameSizeArray[index + 1];
-                sizeList.push({ name, id });
-            }
-            setListSize(sizeList);
-            setModal(true)
-            setCurrentImageIndex(0)
-        },
-        (err) => {
-            console.log(err);
+      (res) => {
+        console.log(res.data.data);
+        setDetailProduct(res.data.data);
+        const nameSizeArray = res.data.data.listSize.split(',');
+        const sizeList = [];
+        for (let index = 0; index < nameSizeArray.length; index += 2) {
+          const name = nameSizeArray[index];
+          const id = nameSizeArray[index + 1];
+          sizeList.push({ name, id });
         }
-  
+        setListSize(sizeList);
+        setModal(true)
+        setCurrentImageIndex(0)
+
+      },
+      (err) => {
+        console.log(err);
+      }
+
     );
 
-};
-const changeSize = (item) => {
-  getDetailProduct(item)
-}
+
+  };
+  const changeSize = (item) => {
+    getDetailProduct(item)
+  }
 
   const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
     getDetailProduct(idProductDetail);
-    
+    listCartAccount()
+    setId(idProductDetail)
   };
   const closeModal = () => {
     setModal(false);
@@ -273,7 +232,7 @@ const changeSize = (item) => {
         tabindex="0"
       >
         <div>
-          <Link className="link-card-item" to={`/detail-product/${item.idProductDetail}`} onClick={()=> window.location.href = `/detail-product/${item.idProductDetail}`}>
+          <Link className="link-card-item" to={`/detail-product/${item.idProductDetail}`} onClick={() => window.location.href = `/detail-product/${item.idProductDetail}`}>
             <div className="box-img-product">
               <div
                 style={{
@@ -363,22 +322,22 @@ const changeSize = (item) => {
                 ------------------------------------------------------------------------
               </div>
               <div className="box-size-pd">
-                            <div>Size:</div>
-                            <div className="list-size-product-pd" tabIndex="0">
+                <div>Size:</div>
+                <div className="list-size-product-pd" tabIndex="0">
 
-                                {listSize.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className={itemSize === item.id ? "size-product-pd-click" : "size-product-pd"}
-                                        tabIndex="0"
-                                        onClick={() => changeSize(item.id)}
-                                    >
-                                        {item.name}
-                                    </div>
-                                ))}
+                  {listSize.map((item, index) => (
+                    <div
+                      key={index}
+                      className={itemSize === item.id ? "size-product-pd-click" : "size-product-pd"}
+                      tabIndex="0"
+                      onClick={() => changeSize(item.id)}
+                    >
+                      {item.name}
+                    </div>
+                  ))}
 
-                            </div>
-                        </div>
+                </div>
+              </div>
 
               <div>
                 <div style={{ marginBottom: "10px", color: "black" }}>

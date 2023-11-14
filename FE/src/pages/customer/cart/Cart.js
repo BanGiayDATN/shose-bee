@@ -1,29 +1,28 @@
-import imgShoe from "./../../../assets/images/third_slider_img03.png";
-import logoHidden from "./../../../assets/images/logo_client.png";
-import imgShoe1 from "./../../../assets/images/trending_banner02.jpg";
-import "./style-cart.css";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useCart } from "./CartContext";
-import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus, faTags, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Row,
+  Button,
+  Checkbox,
   Col,
   Input,
-  Checkbox,
-  InputNumber,
   Modal,
-  Button,
   Radio,
+  Row,
   Tooltip,
 } from "antd";
-import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
-import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { CartDetailClientApi } from "./../../../api/customer/cartdetail/cartDetailClient.api";
-import dayjs from "dayjs";
+import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
+import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
+import logoHidden from "./../../../assets/images/logo_client.png";
+import imgShoe from "./../../../assets/images/third_slider_img03.png";
+import imgShoe1 from "./../../../assets/images/trending_banner02.jpg";
+import { useCart } from "./CartContext";
+import "./style-cart.css";
 
 function Cart() {
   const nav = useNavigate()
@@ -37,6 +36,7 @@ function Cart() {
   const [modalSize, setModalSize] = useState(false);
   const [modalVoucher, setModalVoucher] = useState(false);
   const [listSize, setListSize] = useState([]);
+  const [listQuantity, setListQuantity] = useState([]);
   const [listVoucher, setListVoucher] = useState([]);
   const [detailProductNew, setDetailProductNew] = useState({});
   const [detailProductOld, setDetailProductOld] = useState({});
@@ -63,12 +63,32 @@ function Cart() {
     }
     console.log(selectedItem);
     setModalVoucher(false);
-    
+
   };
   useEffect(() => {
     console.log(idAccountLocal);
     if (idAccountLocal === null) {
-      setCart(cartLocal);
+      console.log(cartLocal.quantity);
+      cartLocal.map((item) =>
+        ProductDetailClientApi.getDetailProductOfClient(item.idProductDetail).then((res) => {
+          const data = res.data.data;
+          setCart((prev) => [
+            ...prev,
+            {
+              codeColor: item.codeColor,
+              idProductDetail: item.idProductDetail,
+              image: item.image,
+              nameProduct: item.nameProduct,
+              nameSize: item.nameSize,
+              price: item.price,
+              quantity: item.quantity,
+              quantityProductDetail: data.quantity
+            }
+          ]);
+          const quantity = res.data.data.quantity;
+          return quantity;
+          ;
+        }))
     } else {
       getListCart(idAccountLocal);
       setTotalPrice(0);
@@ -91,6 +111,7 @@ function Cart() {
       localStorage.setItem("cartLocal", JSON.stringify(cart));
       const total = cart.reduce((acc, item) => acc + item.quantity, 0);
       updateTotalQuantity(total);
+
     } else {
       getQuantityInCart(idAccountLocal);
     }
@@ -140,9 +161,7 @@ function Cart() {
   const getListCart = (id) => {
     CartClientApi.listCart(id).then(
       (res) => {
-        const respone = res.data.data;
-        console.log(respone);
-        setCart(respone);
+        setCart(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -156,15 +175,12 @@ function Cart() {
       setTotalPrice(0);
     } else {
       // Nếu checkbox "Select All" chưa được chọn, chọn tất cả các sản phẩm
-      const allItems = cart.map((item) => ({
-        nameProduct: item.nameProduct,
-        idProductDetail: item.idProductDetail,
-        price: item.price,
-        quantity: item.quantity,
-        nameSize: item.nameSize,
-        image: item.image,
-      }));
-      setChooseItemCart(allItems);
+      const itemOutNumber = cart.find((item) => item.quantityProductDetail === 0);
+      if (itemOutNumber) {
+        toast.warning("Có sản phẩm đã bán hết, vui lòng xoá!")
+        return;
+      }
+      setChooseItemCart(cart);
       const totalPrice = cart.reduce(
         (total, item) => total + parseInt(item.price) * item.quantity,
         0
@@ -368,7 +384,12 @@ function Cart() {
       },
     });
   };
-  const changeQuantity = (itemOld, value) => {
+  const changeQuantity = (itemOld, value, quantityProductDetail) => {
+
+    if (value > quantityProductDetail) {
+      toast.warning(`Số sản phẩm tối đa là ${quantityProductDetail}`)
+      return
+    }
     chooseItemCart.map((item) => {
       if (item.idProductDetail === itemOld.idProductDetail) {
         if (itemOld.quantity < value) {
@@ -404,6 +425,10 @@ function Cart() {
     }
   };
   const chooseCartForBill = (item, value) => {
+    if (item.quantityProductDetail === 0) {
+      toast.error("Sản phẩm đã bán hết");
+      return
+    }
     const itemDetail = {
       nameProduct: item.nameProduct,
       idProductDetail: item.idProductDetail,
@@ -472,8 +497,8 @@ function Cart() {
   };
   const payment = () => {
     if (chooseItemCart.length === 0) {
-      toast.success("Quý khách chưa chọn sản phẩm ạ!", {
-        autoClose: 3000,
+      toast.warning("Quý khách chưa chọn sản phẩm để thanh toán!", {
+        autoClose: 2000,
       });
     } else {
       if (idAccountLocal === null) {
@@ -485,10 +510,6 @@ function Cart() {
       }
     }
   };
-  const modalProps = {
-    draggable: false, // Tắt tính năng kéo thả
-  };
-
 
 
 
@@ -515,8 +536,8 @@ function Cart() {
                     padding: "20px 30px",
                     alignItems: "center",
                     marginTop: "60px",
-                    marginBottom:30,
-                    backgroundColor:"white",
+                    marginBottom: 30,
+                    backgroundColor: "white",
                     border: "1px solid #ebebeb"
                   }}
                 >
@@ -622,21 +643,38 @@ function Cart() {
                                 <div className="form-change-quantity">
 
                                   <FontAwesomeIcon
-                                    icon={faMinus} className="button-minus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) - 1) < 1 ? 1 : (parseInt(item.quantity) - 1))} />
+                                    icon={faMinus} className="button-minus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) - 1) < 1 ? 1 : (parseInt(item.quantity) - 1), item.quantityProductDetail)} />
                                   <Input className="quantity-product-in-cart"
                                     min={1}
+                                    max={item.quantityProductDetail}
                                     value={item.quantity}
                                     onChange={(value) =>
-                                      changeQuantity(item, value.target.value < 1 ? 1 : value.target.value)
+                                      changeQuantity(item, value.target.value < 1 ? 1 : value.target.value, item.quantityProductDetail)
                                     }
                                   />
-                                  <FontAwesomeIcon icon={faPlus} className="button-plus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) + 1) < 1 ? 1 : (parseInt(item.quantity) + 1))} />
+                                  <FontAwesomeIcon icon={faPlus} className="button-plus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) + 1) < 1 ? 1 : (parseInt(item.quantity) + 1), item.quantityProductDetail)} />
                                 </div>
                               </div>
 
                             </div>
                           </div>
                           <div className="form-status-cart">
+                            <div
+                              style={{
+                                fontSize: "17px",
+                                fontWeight: "500",
+                                textAlign: "center",
+                                marginBottom: "10%",
+                                width: "150px",
+                                color: "#ff4400"
+                              }}
+                            >
+                              {
+                                item.quantityProductDetail > 0 ? "Còn hàng" : "Hết hàng"
+
+                              }
+
+                            </div>
                             <div
                               style={{
                                 fontSize: "17px",
@@ -668,7 +706,7 @@ function Cart() {
                   )}
                 </div>
                 {cart.length !== 0 ? (
-                  <div style={{ display: "flex",marginTop:70 }}>
+                  <div style={{ display: "flex", marginTop: 70 }}>
                     <div className="button-delete-all-cart">XOÁ TẤT CẢ</div>
 
                     <div className="button-continue-to-buy" onClick={() => nav("/home")}  >

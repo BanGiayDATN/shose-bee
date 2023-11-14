@@ -170,7 +170,6 @@
   display: flex;
   justify-content: center;
   margin-top: 30px;
-  
 }
 .icon-button-delete-cart {
   color: rgb(249, 3, 3);
@@ -375,7 +374,7 @@
   padding: 8px;
   margin-left: 15px;
   color: #d1c9c6;
-cursor: not-allowed;
+  cursor: not-allowed;
 }
 .button-submit-voucher-cart.show {
   border: #726a69 1px solid;
