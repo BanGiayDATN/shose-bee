@@ -7,6 +7,7 @@ import { faSquareCheck, faTriangleExclamation } from "@fortawesome/free-solid-sv
 import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
 import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
+import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
 function PayMentSuccess() {
   const idAccount = sessionStorage.getItem("idAccount");
   const urlObject = new URL(window.location.href);
@@ -28,10 +29,10 @@ function PayMentSuccess() {
         formBill.responsePayment = paramsObj
         onPayment(formBill)
       }
-    }else{
+    } else {
       console.log(formBill.billDetail);
       PaymentClientApi.refundQuantityProductDetail(formBill.billDetail);
-      
+
     }
   }, [])
   const formatMoney = (price) => {
@@ -41,11 +42,18 @@ function PayMentSuccess() {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
     );
   };
-  const onPayment =  (formBill) => {
+  const onPayment = (formBill) => {
     if (idAccount !== null) {
-       BillClientApi.createBillAccountOnline(formBill).then(
+      BillClientApi.createBillAccountOnline(formBill).then(
         (res) => {
-
+          CartClientApi.quantityInCart(idAccount).then(
+            (res) => {
+              updateTotalQuantity(res.data.data);
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
         },
         (err) => {
           console.log(err);

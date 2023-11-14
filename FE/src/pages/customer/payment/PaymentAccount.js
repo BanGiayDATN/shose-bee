@@ -1,36 +1,33 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./style-payment-account.css";
-import {
-  Row,
-  Col,
-  InputNumber,
-  Input,
-  Select,
-  Form,
-  Modal,
-  Button,
-  Radio,
-} from "antd";
-import { CloseOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
-import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
-import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
-import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
 import {
   faCarRear,
-  faTags,
   faLocationDot,
+  faTags,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  Button,
+  Col,
+  Modal,
+  Radio,
+  Row,
+  Select
+} from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
-import { useCart } from "../cart/CartContext";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
+import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 import ModalCreateAddress from "../../customer/payment/modal/ModalCreateAddress";
 import ModalUpdateAddress from "../../customer/payment/modal/ModalUpdateAddress";
+import { useCart } from "../cart/CartContext";
+import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
+import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
+import "./style-payment-account.css";
+import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
+import { toast } from "react-toastify";
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
@@ -148,33 +145,57 @@ function PaymentAccount() {
     );
   };
   const payment = () => {
-    if (formBill.paymentMethod === "paymentVnpay") {
-
-      const data = {
-        vnp_Ammount: totalBefore,
-        billDetail: formBill.billDetail,
-      };
-      console.log(listproductOfBill);
-      PaymentClientApi.paymentVnpay(data).then(
-        (res) => {
-          window.location.replace(res.data.data);
-          sessionStorage.setItem("formBill", JSON.stringify(formBill));
-        },    
-        (err) => {
-          // toast.error(err.response.data.message);
-          
+    console.log(addressDefault);
+    Modal.confirm({
+      title: "Xác nhận đặt hàng",
+      content: "Bạn có chắc chắn muốn đặt hàng ?",
+      okText: "Đặt hàng",
+      okType: "primary",
+      cancelText: "Hủy",
+      onOk() {
+        if(addressDefault === null){
+          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!")
+          return;
         }
-      );
-    } else {
-      BillClientApi.createBillAccountOnline(formBill).then(
-        (res) => {
-          nav("/home");
-        },
-        (err) => {
-          console.log(err);
+    
+        if (formBill.paymentMethod === "paymentVnpay") {
+    
+          const data = {
+            vnp_Ammount: totalBefore,
+            billDetail: formBill.billDetail,
+          };
+          console.log(listproductOfBill);
+          PaymentClientApi.paymentVnpay(data).then(
+            (res) => {
+              window.location.replace(res.data.data);
+              sessionStorage.setItem("formBill", JSON.stringify(formBill));
+            },    
+            (err) => {
+            }
+          );
+        } else {
+          BillClientApi.createBillAccountOnline(formBill).then(
+            (res) => {
+              CartClientApi.quantityInCart(idAccount).then(
+                (res) => {
+                  updateTotalQuantity(res.data.data);
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+              toast.success("Bạn đặt hàng thành công.");
+              nav("/home");
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
+    
         }
-      );
-    }
+        
+      }})
+   
   };
 
   const getMoneyShip = (districtId, wardCode) => {

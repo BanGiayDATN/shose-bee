@@ -19,7 +19,6 @@ function SignUp() {
         setFormErrors({})
     }
     const handleSignUp = () => {
-        debugger
         const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         const passPattern = /^(?=.*[0-9])(.{8,})$/
         const isFormValid =
@@ -51,14 +50,23 @@ function SignUp() {
                 return;
             }
         }
+        console.log(formSignUp);
         LoginApi.authenticationUp(formSignUp).then((res) => {
             toast.success("Đăng ký thành công");
         }, (err) => {
-            if (err.response.data.message !== '') {
+            if (err.response.data.message === 'Email người dùng đã tồn tại') {
+                console.log(err);
                 setFormErrors((prev) => (
                     {
                         ...prev,
                         "email": err.response.data.message
+                    }
+                ))
+            }else if(err.response.data.data!== ''){
+                setFormErrors((prev) => (
+                    {
+                        ...prev,
+                        "password": err.response.data.data
                     }
                 ))
             }
