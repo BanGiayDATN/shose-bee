@@ -28,4 +28,8 @@ public class VoucherClientRestController {
     public ResponseObject getVoucherByIdAccount(@PathVariable("idAccount") String idAccount) {
         return new ResponseObject(voucherService.getVoucherByIdAccount(idAccount));
     }
+    @GetMapping("/list")
+    public ResponseObject getListVoucher() {
+        return new ResponseObject(voucherService.findByStatus());
+    }
 }

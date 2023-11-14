@@ -12,7 +12,9 @@ function CardItem({ item, index }) {
   const now = dayjs();
   const [modal, setModal] = useState(false);
   const [id, setId] = useState('');
+  const [itemSize, setItemSize] = useState('');
   const [clickedIndex, setClickedIndex] = useState(-1);
+  const [listSize, setListSize] = useState([]);
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProductDetail: "",
@@ -185,20 +187,34 @@ const addToCard = async () => {
 
 };
 
+
   const getDetailProduct = (idProductDetail) => {
-    setId(idProductDetail)
+    setItemSize(idProductDetail)
     ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
-      (res) => {
-        console.log(res.data.data);
-        setDetailProduct(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
+        (res) => {
+            console.log(res.data.data);
+            setDetailProduct(res.data.data);
+            const nameSizeArray = res.data.data.listSize.split(',');
+            const sizeList = [];
+            for (let index = 0; index < nameSizeArray.length; index += 2) {
+                const name = nameSizeArray[index];
+                const id = nameSizeArray[index + 1];
+                sizeList.push({ name, id });
+            }
+            setListSize(sizeList);
+            setModal(true)
+            setCurrentImageIndex(0)
+        },
+        (err) => {
+            console.log(err);
+        }
+  
     );
-    setModal(true);
-    setCurrentImageIndex(0)
-  };
+
+};
+const changeSize = (item) => {
+  getDetailProduct(item)
+}
 
   const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
@@ -298,7 +314,6 @@ const addToCard = async () => {
         width={1000}
         onCancel={closeModal}
         open={modal}
-        closeIcon={null}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
@@ -347,19 +362,23 @@ const addToCard = async () => {
               <div>
                 ------------------------------------------------------------------------
               </div>
-              <div>
-                <div>Size:</div>
-                <div className="list-size-product" tabIndex="0">
-                  <div
-                    className="size-product "
-                    key={index}
-                    tabIndex="0"
-                    style={{ border: "1px solid black" }}
-                  >
-                    {detailProduct.nameSize}
-                  </div>
-                </div>
-              </div>
+              <div className="box-size-pd">
+                            <div>Size:</div>
+                            <div className="list-size-product-pd" tabIndex="0">
+
+                                {listSize.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className={itemSize === item.id ? "size-product-pd-click" : "size-product-pd"}
+                                        tabIndex="0"
+                                        onClick={() => changeSize(item.id)}
+                                    >
+                                        {item.name}
+                                    </div>
+                                ))}
+
+                            </div>
+                        </div>
 
               <div>
                 <div style={{ marginBottom: "10px", color: "black" }}>

@@ -19,7 +19,7 @@ import {
   getBill,
   getBillHistory,
   getPaymentsMethod,
-  getProductInBillDetail
+  getProductInBillDetail,
 } from "../../../app/reducer/Bill.reducer";
 import TimeLine from "./TimeLine";
 
@@ -82,7 +82,6 @@ function DetailBill() {
     return formatter.format(value);
   };
 
-
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
       dispatch(getProductInBillDetail(res.data.data));
@@ -96,7 +95,7 @@ function DetailBill() {
         address: res.data.data.address,
         moneyShip: res.data.data.moneyShip,
         note: res.data.data.note,
-      })
+      });
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
       );
@@ -113,7 +112,7 @@ function DetailBill() {
       console.log(res.data.data);
     });
     BillApi.fetchCountPayMentPostpaidByIdBill(id).then((res) => {
-      setPaymentPostPaid(res.data.data)
+      setPaymentPostPaid(res.data.data);
     });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
       setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
@@ -154,83 +153,86 @@ function DetailBill() {
   };
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
-    const totalQuantity = products.length > 0 ? products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.quantity;
-    }, 0) : 1;
+    const totalQuantity =
+      products.length > 0
+        ? products.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue.quantity;
+          }, 0)
+        : 1;
     setAddress({ ...address, wards: valueWard.value });
     if (totalQuantity > 2) {
       setShipFee(0);
     } else {
-    AddressApi.fetchAllMoneyShip(
-      valueWard.valueDistrict,
-      valueWard.valueWard,
-      totalQuantity
-    ).then((res) => {
-      setShipFee(res.data.data.total);
-    });
-  }
-    
+      AddressApi.fetchAllMoneyShip(
+        valueWard.valueDistrict,
+        valueWard.valueWard,
+        totalQuantity
+      ).then((res) => {
+        setShipFee(res.data.data.total);
+      });
+    }
   };
 
   const [form] = Form.useForm();
-  
+
   // begin cancelBill
   const [isModalCanCelOpen, setIsModalCanCelOpen] = useState(false);
   const showModalCanCel = () => {
     setIsModalCanCelOpen(true);
   };
   const handleCanCelOk = () => {
-
     setIsModalCanCelOpen(false);
- if (statusBill.actionDescription == "") {
+    if (statusBill.actionDescription == "") {
       toast.error("Vui lòng nhập mô tả");
     } else {
-    Modal.confirm({
-      title: "Xác nhận",
-      content: "Bạn có đồng ý hủy không?",
-      okText: "Đồng ý",
-      cancelText: "Hủy",
-      onOk: async() => {
-        await BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
-          dispatch(getBill(res.data.data));
-          var index = listStatus.findIndex(
-            (item) => item.status == res.data.data.statusBill
-          );
-          if (res.data.data.statusBill == "TRA_HANG") {
-            index = 7;
-          }
-          if (res.data.data.statusBill == "DA_HUY") {
-            index = 8;
-          }
-          var history = {
-            stt: billHistory.length + 1,
-            statusBill: res.data.data.statusBill,
-            actionDesc: statusBill.actionDescription,
-            id: "",
-            createDate: new Date().getTime(),
-          };
-          dispatch(addStatusPresent(index));
-          dispatch(addBillHistory(history));
-        });
-        await PaymentsMethodApi.findByIdBill(id).then((res) => {
-          setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
-          dispatch(getPaymentsMethod(res.data.data));
-        });
-        setIsModalCanCelOpen(false);
-        toast.success("Hủy hóa đơn thành công");
-      },
-      onCancel: () => {
-        setIsModalCanCelOpen(false);
-      },
-    });
-  }
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý hủy không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          await BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+            dispatch(getBill(res.data.data));
+            var index = listStatus.findIndex(
+              (item) => item.status == res.data.data.statusBill
+            );
+            if (res.data.data.statusBill == "TRA_HANG") {
+              index = 7;
+            }
+            if (res.data.data.statusBill == "DA_HUY") {
+              index = 8;
+            }
+            var history = {
+              stt: billHistory.length + 1,
+              statusBill: res.data.data.statusBill,
+              actionDesc: statusBill.actionDescription,
+              id: "",
+              createDate: new Date().getTime(),
+            };
+            dispatch(addStatusPresent(index));
+            dispatch(addBillHistory(history));
+          });
+          await PaymentsMethodApi.findByIdBill(id).then((res) => {
+            setPayMentNo(
+              res.data.data.some((item) => item.status === "TRA_SAU")
+            );
+            dispatch(getPaymentsMethod(res.data.data));
+          });
+          setIsModalCanCelOpen(false);
+          toast.success("Hủy hóa đơn thành công");
+        },
+        onCancel: () => {
+          setIsModalCanCelOpen(false);
+        },
+      });
+    }
 
     setStatusBill({
       actionDescription: "",
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
-      statusCancel: false
+      statusCancel: false,
     });
     form.resetFields();
   };
@@ -257,7 +259,7 @@ function DetailBill() {
           console.log(res.data.data);
           dispatch(getProductInBillDetail(res.data.data));
         });
-         await PaymentsMethodApi.findByIdBill(id).then((res) => {
+        await PaymentsMethodApi.findByIdBill(id).then((res) => {
           setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
           dispatch(getPaymentsMethod(res.data.data));
         });
@@ -292,7 +294,10 @@ function DetailBill() {
   };
   const handleOkPayMent = () => {
     if (statusBill.actionDescription.trim().length > 0) {
-      if(statusBill.method == "CHUYEN_KHOAN" && statusBill.transaction.trim().length == 0){
+      if (
+        statusBill.method == "CHUYEN_KHOAN" &&
+        statusBill.transaction.trim().length == 0
+      ) {
         toast.warning("Vui lòng nhập mã giao dịch");
       }
       setIsModalPayMentOpen(false);
@@ -308,8 +313,10 @@ function DetailBill() {
           await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
             dispatch(getProductInBillDetail(res.data.data));
           });
-           await PaymentsMethodApi.findByIdBill(id).then((res) => {
-            setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
+          await PaymentsMethodApi.findByIdBill(id).then((res) => {
+            setPayMentNo(
+              res.data.data.some((item) => item.status === "TRA_SAU")
+            );
             dispatch(getPaymentsMethod(res.data.data));
           });
           await BillApi.fetchDetailBill(id).then((res) => {
@@ -338,7 +345,7 @@ function DetailBill() {
             method: "TIEN_MAT",
             totalMoney: 0,
             status: "THANH_TOAN",
-             statusCancel: false
+            statusCancel: false,
           });
         },
         onCancel: () => {
@@ -348,7 +355,7 @@ function DetailBill() {
             method: "TIEN_MAT",
             totalMoney: 0,
             status: "THANH_TOAN",
-             statusCancel: false
+            statusCancel: false,
           });
         },
       });
@@ -359,7 +366,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
-       statusCancel: false
+      statusCancel: false,
     });
   };
   const handleCancelPayMent = () => {
@@ -369,7 +376,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
-       statusCancel: false
+      statusCancel: false,
     });
   };
   // enad modal thanh toán
@@ -423,7 +430,12 @@ function DetailBill() {
 
   const handleOkBill = () => {
     var addressuser = billRequest.address;
-    if (address.detail != '' && address.wards != '' && address.district != '' && address.city != '') {
+    if (
+      address.detail != "" &&
+      address.wards != "" &&
+      address.district != "" &&
+      address.city != ""
+    ) {
       addressuser =
         address.detail +
         ", " +
@@ -436,10 +448,10 @@ function DetailBill() {
     const data = {
       name: String(billRequest.name).trim(),
       phoneNumber: billRequest.phoneNumber.trim(),
-      address: addressuser.trim() ,
+      address: addressuser.trim(),
       moneyShip: shipFee,
       note: billRequest.note.trim(),
-    }
+    };
     if (checkNotEmptyBill()) {
       Modal.confirm({
         title: "Xác nhận",
@@ -723,11 +735,11 @@ function DetailBill() {
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
 
-  const handleQuantityDecrease = (record) => { };
+  const handleQuantityDecrease = (record) => {};
 
-  const handleQuantityChange = (value, record) => { };
+  const handleQuantityChange = (value, record) => {};
 
-  const handleQuantityIncrease = (record) => { };
+  const handleQuantityIncrease = (record) => {};
 
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
@@ -769,13 +781,14 @@ function DetailBill() {
     if (statusBill.actionDescription == "") {
       toast.error("Vui lòng nhập mô tả");
     } else {
-        Modal.confirm({
-          title: "Xác nhận",
-          content: "Bạn có đồng ý xác nhận thanh toán không?",
-          okText: "Đồng ý",
-          cancelText: "Hủy",
-          onOk: async () => {
-            await BillApi.changeStatusBill(id, statusBill).then((res) => {
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý xác nhận thanh toán không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          await BillApi.changeStatusBill(id, statusBill)
+            .then((res) => {
               dispatch(getBill(res.data.data));
               var index = listStatus.findIndex(
                 (item) => item.status == res.data.data.statusBill
@@ -790,31 +803,32 @@ function DetailBill() {
                 index = 8;
               }
               dispatch(addStatusPresent(index));
-            }).catch((error) =>{
-              toast.error(error.response.data.message);
             })
-            await PaymentsMethodApi.findByIdBill(id).then((res) => {
-              dispatch(getPaymentsMethod(res.data.data));
+            .catch((error) => {
+              toast.error(error.response.data.message);
             });
-            await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-              dispatch(getBillHistory(res.data.data));
-            });
-            toast.success("Xác nhận thành công");
-            setIsModalOpenChangeStatus(false);
-          },
-          onCancel: () => {
-            setIsModalOpenChangeStatus(false);
-          },
-        });
-        setStatusBill({
-          actionDescription: "",
-          method: "TIEN_MAT",
-          totalMoney: 0,
-          status: "THANH_TOAN",
-           statusCancel: false
-        });
-        form.resetFields();
-      
+          await PaymentsMethodApi.findByIdBill(id).then((res) => {
+            dispatch(getPaymentsMethod(res.data.data));
+          });
+          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+            dispatch(getBillHistory(res.data.data));
+          });
+          toast.success("Xác nhận thành công");
+          setIsModalOpenChangeStatus(false);
+        },
+        onCancel: () => {
+          setIsModalOpenChangeStatus(false);
+        },
+      });
+      setStatusBill({
+        actionDescription: "",
+        method: "TIEN_MAT",
+        totalMoney: 0,
+        status: "THANH_TOAN",
+        statusCancel: false,
+      });
+      form.resetFields();
+
       setIsModalOpenChangeStatus(false);
     }
 
@@ -823,7 +837,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
-       statusCancel: false
+      statusCancel: false,
     });
   };
 
@@ -834,7 +848,7 @@ function DetailBill() {
       method: "TIEN_MAT",
       totalMoney: 0,
       status: "THANH_TOAN",
-      statusCancel: false
+      statusCancel: false,
     });
     form.resetFields();
   };
@@ -966,7 +980,6 @@ function DetailBill() {
       dataIndex: "price",
       key: "price",
       render: (price) => <span>{formatCurrency(price)}</span>,
-
     },
     {
       title: <div className="title-product">Số lượng </div>,
@@ -976,7 +989,7 @@ function DetailBill() {
     {
       title:
         bill.statusBill == "DA_THANH_TOAN" ||
-          bill.statusBill == "TAO_HOA_DON" ? (
+        bill.statusBill == "TAO_HOA_DON" ? (
           <div className="title-product">hành động</div>
         ) : (
           <div></div>
@@ -990,7 +1003,7 @@ function DetailBill() {
               type="primary"
               title="Hủy"
               style={{ backgroundColor: "red" }}
-            // onClick={() => handleViewDetail(record.id)}
+              // onClick={() => handleViewDetail(record.id)}
             >
               Thay đổi
             </Button>
@@ -999,7 +1012,7 @@ function DetailBill() {
               type="primary"
               title="Hủy"
               style={{ backgroundColor: "red" }}
-            // onClick={() => handleViewDetail(record.id)}
+              // onClick={() => handleViewDetail(record.id)}
             >
               Hủy
             </Button>
@@ -1065,11 +1078,11 @@ function DetailBill() {
   ];
 
   const columnsPayments = [
-     {
-      title:<div className="title-product">STT</div>,
-      key:"index",
-      render: ((value, item, index) =>   index + 1)
-  },
+    {
+      title: <div className="title-product">STT</div>,
+      key: "index",
+      render: (value, item, index) => index + 1,
+    },
     {
       title: <div className="title-product">Mã giao dịch</div>,
       dataIndex: "vnp_TransactionNo",
@@ -1091,8 +1104,8 @@ function DetailBill() {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-              ? "Chuyển khoản"
-              : "Tiền mặt và chuyển khoản"}
+            ? "Chuyển khoản"
+            : "Tiền mặt và chuyển khoản"}
         </span>
       ),
     },
@@ -1163,16 +1176,14 @@ function DetailBill() {
 
   // begin delete product
 
-  const xuatPdf =() => {
+  const xuatPdf = () => {
     BillApi.exportPdf(id).then(
-      (res) => {
-     
-      },
+      (res) => {},
       (err) => {
         console.log(err);
       }
-    )
-  }
+    );
+  };
   const removeProductInBill = (idProduct, size) => {
     Modal.confirm({
       title: "Xác nhận",
@@ -1203,7 +1214,7 @@ function DetailBill() {
           dispatch(getBillHistory(res.data.data));
         });
       },
-      onCancel: () => { },
+      onCancel: () => {},
     });
   };
   // end delete product
@@ -1238,7 +1249,7 @@ function DetailBill() {
                     style={{ width: "100%" }}
                     span={statusPresent < 6 ? 7 : 0}
                   >
-                    {statusPresent < 6  ? (
+                    {statusPresent < 6 ? (
                       <Button
                         type="primary"
                         className="btn btn-primary"
@@ -1296,8 +1307,8 @@ function DetailBill() {
               open={isModalOpenChangeStatus}
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}
-                cancelText={"huỷ"}
-             okText={"Xác nhận"}
+              cancelText={"huỷ"}
+              okText={"Xác nhận"}
             >
               <Form
                 onFinish={onFinish}
@@ -1320,14 +1331,20 @@ function DetailBill() {
                         {
                           validator: (_, value) => {
                             if (value && value.trim() === "") {
-                              return Promise.reject("Không được chỉ nhập khoảng trắng");
+                              return Promise.reject(
+                                "Không được chỉ nhập khoảng trắng"
+                              );
                             }
-                            if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                            if (
+                              !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                value
+                              )
+                            ) {
                               return Promise.reject(
                                 "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                               );
                             }
-            
+
                             return Promise.resolve();
                           },
                         },
@@ -1355,8 +1372,8 @@ function DetailBill() {
                 open={isModalCanCelOpen}
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
-                  cancelText={"huỷ"}
-               okText={"Xác nhận"}
+                cancelText={"huỷ"}
+                okText={"Xác nhận"}
               >
                 <Form
                   onFinish={onFinish}
@@ -1364,7 +1381,7 @@ function DetailBill() {
                   form={form}
                   initialValues={initialValues}
                 >
-                      {
+                  {/* {
                   paymentsMethod.some(
                     (payment) => payment.status == "THANH_TOAN"
                   ) ? (  <Row style={{ width: "100%" }}>
@@ -1405,14 +1422,13 @@ function DetailBill() {
                     />
                   </Col>
                 </Row>) : (<Row></Row>)
-                 }      
+                 }       */}
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
 
                     <Form.Item
                       label=""
                       name="actionDescription"
-                      // style={{ fontWeight: "bold" }}
                       rules={[
                         {
                           required: true,
@@ -1421,14 +1437,20 @@ function DetailBill() {
                         {
                           validator: (_, value) => {
                             if (value && value.trim() === "") {
-                              return Promise.reject("Không được chỉ nhập khoảng trắng");
+                              return Promise.reject(
+                                "Không được chỉ nhập khoảng trắng"
+                              );
                             }
-                            if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                            if (
+                              !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                value
+                              )
+                            ) {
                               return Promise.reject(
                                 "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                               );
                             }
-            
+
                             return Promise.resolve();
                           },
                         },
@@ -1458,7 +1480,7 @@ function DetailBill() {
                 className="widthModal"
                 width={800}
                 cancelText={"huỷ"}
-               okText={"Xác nhận"}
+                okText={"Xác nhận"}
               >
                 <Table
                   dataSource={billHistory}
@@ -1501,17 +1523,8 @@ function DetailBill() {
               Lịch sử thanh toán
             </h2>
           </Col>
-         
-            {/* <Button
-              type="dashed"
-              align={"end"}
-              style={{ margin: "" }}
-              onClick={(e) => showModalPayMent(e)}
-            >
-              Xác nhận thanh toán
-            </Button> */}
-            {payMentNo && statusPresent == 4 ? (
-               <Col span={4}>
+          {payMentNo && statusPresent == 4 ? (
+            <Col span={4}>
               <Button
                 type="dashed"
                 align={"end"}
@@ -1520,21 +1533,11 @@ function DetailBill() {
               >
                 Xác nhận thanh toán
               </Button>
-          </Col>
-            ) : (
-              <div></div>
-            )}
-          
-         
-            {/* <Button
-              type="dashed"
-              align={"end"}
-              style={{ margin: "" }}
-              onClick={(e) => showModalPayMent(e)}
-            >
-              Xác nhận thanh toán
-            </Button> */}
-            {!paymentsMethod.some(payment =>( payment.status === "TRA_SAU" || payment.status == 'HOAN_TIEN')) && statusPresent == 8 ? (
+            </Col>
+          ) : (
+            <div></div>
+          )}
+          {/* {!paymentsMethod.some(payment =>( payment.status === "TRA_SAU" || payment.status == 'HOAN_TIEN')) && statusPresent == 8 ? (
                <Col span={4}>
               <Button
                 type="dashed"
@@ -1547,8 +1550,7 @@ function DetailBill() {
             </Col>
             ) : (
               <div></div>
-            )}
-        
+            )} */}
         </Row>
         <Row style={{ width: "100%" }}>
           <Table
@@ -1578,7 +1580,7 @@ function DetailBill() {
                   fontWeight: "500",
                 }}
               >
-                Thông tin đơn hàng:  {bill.code}
+                Thông tin đơn hàng: {bill.code}
               </h2>
             </Col>
             <Col span={2}>
@@ -1741,69 +1743,78 @@ function DetailBill() {
           {detailProductInBill.map((item, index) => {
             return (
               <Row style={{ marginTop: "10px", width: "100%" }}>
-                <Col span={1} style={{
+                <Col
+                  span={1}
+                  style={{
                     display: "flex",
                     justifyContent: "center",
                     fontSize: "21px",
                     fontFamily: "500",
                     margin: "auto",
-                  }}>
+                  }}
+                >
                   {index + 1}
                 </Col>
                 <Col span={5}>
-                <div style={{ position: "relative", display: "inline-block" }}>
-          <img
-            src={item.image}
-            alt="Ảnh sản phẩm"
-            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
-          />
-          {item.promotion !== null && (
-            <div
-              style={{
-                position: "absolute",
-                top: "0px",
-                right: "0px",
-                padding: "0px",
-                cursor: "pointer",
-                borderRadius: "50%",
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faBookmark}
-                style={{
-                  ...getPromotionColor(item.promotion),
-                  fontSize: "3.5em",
-                }}
-              />
-              <span
-                style={{
-                  position: "absolute",
-                  top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
-                  left: "50%", // Để "50%" nằm chính giữa biểu tượng
-                  transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
-                  fontSize: "0.8em",
-                  fontWeight: "bold",
-                  ...getPromotionStyle(item.promotion),
-                }}
-              >
-                {`${item.promotion}%`}
-              </span>
-              <span
-                style={{
-                  position: "absolute",
-                  top: "60%", 
-                  left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
-                  transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
-                  fontSize: "0.8em",
-                  fontWeight: "bold",
-                  ...getPromotionStyle(item.promotion),
-                }}
-              >
-                Giảm
-              </span>
-            </div>
-          )}
-        </div>
+                  <div
+                    style={{ position: "relative", display: "inline-block" }}
+                  >
+                    <img
+                      src={item.image}
+                      alt="Ảnh sản phẩm"
+                      style={{
+                        width: "100px",
+                        borderRadius: "10%",
+                        height: "100px",
+                      }}
+                    />
+                    {item.promotion !== null && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          right: "0px",
+                          padding: "0px",
+                          cursor: "pointer",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faBookmark}
+                          style={{
+                            ...getPromotionColor(item.promotion),
+                            fontSize: "3.5em",
+                          }}
+                        />
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                            left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          {`${item.promotion}%`}
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "60%",
+                            left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                            transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            ...getPromotionStyle(item.promotion),
+                          }}
+                        >
+                          Giảm
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </Col>
                 <Col span={10}>
                   <Row>
@@ -1819,13 +1830,17 @@ function DetailBill() {
                     </span>{" "}
                   </Row>
                   <Row>
-                    {
-                      item.promotion != null ? (<span style={{fontSize: '12px',marginTop: "4px"}}>
-                      <del>
-                      {formatCurrency(item.price /(1-item.promotion/100))}
-                      </del>
-                  </span>): <span></span>
-                    }
+                    {item.promotion != null ? (
+                      <span style={{ fontSize: "12px", marginTop: "4px" }}>
+                        <del>
+                          {formatCurrency(
+                            item.price / (1 - item.promotion / 100)
+                          )}
+                        </del>
+                      </span>
+                    ) : (
+                      <span></span>
+                    )}
                     <span
                       style={{
                         color: "red",
@@ -1857,9 +1872,9 @@ function DetailBill() {
                   >
                     {item.price * item.quantity >= 1000
                       ? (item.price * item.quantity).toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
+                          style: "currency",
+                          currency: "VND",
+                        })
                       : item.price * item.quantity + " đ"}
                   </span>{" "}
                 </Col>
@@ -2054,36 +2069,44 @@ function DetailBill() {
               />
             </Col>
           </Row>
-           {
-          statusBill.method == "CHUYEN_KHOAN" ? (   <Row style={{ width: "100%" }}>
-            <Col span={24} style={{ marginTop: "20px" }}>
-              <label
-                className="label-bill"
-                style={{ marginTop: "3px", top: "-31%" }}
-              >
-                Mã giao dịch
-              </label>
-              <Form.Item
-                label=""
-                name="name"
-                style={{ marginBottom: "20px" }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã giao dịch",
-                  },
-                ]}
-              >
-                <Input
-                  onChange={(e) => onChangeDescStatusBill("transaction", e.target.value)}
-                  placeholder="Nhập mã giao dịch"
-                  defaultValue={statusBill.transaction}
-                  style={{ width: "98%", position: "relative", height: "40px" }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>):(<Row></Row>)
-          }
+          {statusBill.method == "CHUYEN_KHOAN" ? (
+            <Row style={{ width: "100%" }}>
+              <Col span={24} style={{ marginTop: "20px" }}>
+                <label
+                  className="label-bill"
+                  style={{ marginTop: "3px", top: "-31%" }}
+                >
+                  Mã giao dịch
+                </label>
+                <Form.Item
+                  label=""
+                  name="name"
+                  style={{ marginBottom: "20px" }}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập mã giao dịch",
+                    },
+                  ]}
+                >
+                  <Input
+                    onChange={(e) =>
+                      onChangeDescStatusBill("transaction", e.target.value)
+                    }
+                    placeholder="Nhập mã giao dịch"
+                    defaultValue={statusBill.transaction}
+                    style={{
+                      width: "98%",
+                      position: "relative",
+                      height: "40px",
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          ) : (
+            <Row></Row>
+          )}
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
               <label className="label-bill">Mô Tả</label>
@@ -2108,7 +2131,7 @@ function DetailBill() {
         open={isModaBillOpen}
         onOk={handleOkBill}
         onCancel={handleCancelBill}
-          cancelText={"huỷ"}
+        cancelText={"huỷ"}
         okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
@@ -2134,14 +2157,18 @@ function DetailBill() {
                   {
                     validator: (_, value) => {
                       if (value && value.trim() === "") {
-                        return Promise.reject("Không được chỉ nhập khoảng trắng");
+                        return Promise.reject(
+                          "Không được chỉ nhập khoảng trắng"
+                        );
                       }
-                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                      if (
+                        !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)
+                      ) {
                         return Promise.reject(
                           "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                         );
                       }
-      
+
                       return Promise.resolve();
                     },
                   },
@@ -2225,7 +2252,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                        // options={[]}
+                          // options={[]}
                         >
                           {listProvince?.map((item) => {
                             return (
@@ -2277,7 +2304,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                        // options={[]}
+                          // options={[]}
                         >
                           {listDistricts?.map((item) => {
                             return (
@@ -2328,7 +2355,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                        // options={[]}
+                          // options={[]}
                         >
                           {listWard?.map((item) => {
                             return (
@@ -2370,14 +2397,18 @@ function DetailBill() {
                   {
                     validator: (_, value) => {
                       if (value && value.trim() === "") {
-                        return Promise.reject("Không được chỉ nhập khoảng trắng");
+                        return Promise.reject(
+                          "Không được chỉ nhập khoảng trắng"
+                        );
                       }
-                      if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                      if (
+                        !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)
+                      ) {
                         return Promise.reject(
                           "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                         );
                       }
-      
+
                       return Promise.resolve();
                     },
                   },

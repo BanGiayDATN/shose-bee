@@ -109,10 +109,15 @@ function Products() {
     ProductDetailClientApi.list(formSearch).then((res) => {
       setList(res.data.data.data);
       setTotalPagesProduct(res.data.data.totalPages);
-      console.log(res.data.data.data);
+    
     });
   }, [formSearch]);
-
+useEffect(()=>{
+  if(totalPagesProduct===1){
+    changeFormSearch("page",0)
+    setCurrentPage(0)
+  }
+},[totalPagesProduct])
   const changeFormSearch = (name, value) => {
     setFormSearch((prev) => ({
       ...prev,
