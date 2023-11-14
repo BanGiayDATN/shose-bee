@@ -67,11 +67,12 @@ const DashBoard = () => {
           TAO_HOA_DON: "Tạo hóa đơn",
           CHO_XAC_NHAN: "Chờ xác nhận",
           CHO_VAN_CHUYEN: "Chờ vận chuyển",
-          VAN_CHUYEN: "vận chuyển",
+          VAN_CHUYEN: "Vận chuyển",
           DA_THANH_TOAN: "Đã thanh toán",
           THANH_CONG: "Thành công",
           TRA_HANG: "Trả hàng",
           DA_HUY: "Đã Hủy",
+          XAC_NHAN: "Xác nhận",
         };
 
         const statusColors = {
@@ -83,6 +84,7 @@ const DashBoard = () => {
           THANH_CONG: "#4CAF50",
           TRA_HANG: "##FF5733",
           DA_HUY: "#DD1B16",
+          XAC_NHAN: "#DD1B00",
         };
 
         const newDataPie = data.map(item => ({
