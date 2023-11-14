@@ -673,7 +673,7 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.CHUA_THANH_TOAN : StatusPayMents.DA_THANH_TOAN).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
 
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
@@ -772,7 +772,7 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.CHUA_THANH_TOAN : StatusPayMents.DA_THANH_TOAN).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));

@@ -4,20 +4,15 @@ import {
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Button,
-  Col,
-  Modal,
-  Radio,
-  Row,
-  Select
-} from "antd";
+import { Button, Col, Modal, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
+import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
 import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 import ModalCreateAddress from "../../customer/payment/modal/ModalCreateAddress";
 import ModalUpdateAddress from "../../customer/payment/modal/ModalUpdateAddress";
@@ -26,19 +21,13 @@ import { AddressClientApi } from "./../../../api/customer/address/addressClient.
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
-import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
-import { toast } from "react-toastify";
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
   const [modalAddressAccount, setModalAddressAccount] = useState(false);
   const { updateTotalQuantity } = useCart();
-  const { Option } = Select;
   const idAccount = sessionStorage.getItem("idAccount");
-  const [listCity, setListCity] = useState([]);
-  const [listDistrict, setListDistrict] = useState([]);
   const [addressDefault, setAddressDefault] = useState({});
-  const [listWard, setListWard] = useState([]);
   const [formBill, setFormBill] = useState({
     address: "",
     billDetail: [],
@@ -54,7 +43,6 @@ function PaymentAccount() {
   const [dayShip, setDayShip] = useState("");
   const [keyMethodPayment, setKeyMethodPayment] = useState("paymentReceive");
   const [totalBill, setTotalBill] = useState(0);
-  const [formGetMoneyShip, setFormGetMoneyShip] = useState([]);
   const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
   const voucher = JSON.parse(sessionStorage.getItem("voucher"));
   const comercial = [
@@ -153,13 +141,12 @@ function PaymentAccount() {
       okType: "primary",
       cancelText: "Hủy",
       onOk() {
-        if(addressDefault === null){
-          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!")
+        if (addressDefault === null) {
+          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
           return;
         }
-    
+
         if (formBill.paymentMethod === "paymentVnpay") {
-    
           const data = {
             vnp_Ammount: totalBefore,
             billDetail: formBill.billDetail,
@@ -169,9 +156,8 @@ function PaymentAccount() {
             (res) => {
               window.location.replace(res.data.data);
               sessionStorage.setItem("formBill", JSON.stringify(formBill));
-            },    
-            (err) => {
-            }
+            },
+            (err) => {}
           );
         } else {
           BillClientApi.createBillAccountOnline(formBill).then(
@@ -191,11 +177,9 @@ function PaymentAccount() {
               console.log(err);
             }
           );
-    
         }
-        
-      }})
-   
+      },
+    });
   };
 
   const getMoneyShip = (districtId, wardCode) => {
@@ -426,15 +410,17 @@ function PaymentAccount() {
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
-                  }`}
+                className={`payment-when-recevie-acc ${
+                  keyMethodPayment === "paymentReceive" ? "click" : ""
+                }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
-                  }`}
+                className={`payment-by-vnpay-acc ${
+                  keyMethodPayment === "paymentVnpay" ? "click" : ""
+                }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}
