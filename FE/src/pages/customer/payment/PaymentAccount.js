@@ -1,28 +1,31 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "./style-payment-account.css";
-import { Row, Col, Modal, Button, Radio } from "antd";
-import { toast } from "react-toastify";
-import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
-import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
-import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
 import {
   faCarRear,
-  faTags,
   faLocationDot,
+  faTags,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button, Col, Modal, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
+import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
+import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 import ModalCreateAddress from "../../customer/payment/modal/ModalCreateAddress";
 import ModalUpdateAddress from "../../customer/payment/modal/ModalUpdateAddress";
+import { useCart } from "../cart/CartContext";
+import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
+import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
+import "./style-payment-account.css";
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
   const [modalAddressAccount, setModalAddressAccount] = useState(false);
+  const { updateTotalQuantity } = useCart();
   const idAccount = sessionStorage.getItem("idAccount");
   const [addressDefault, setAddressDefault] = useState({});
   const [formBill, setFormBill] = useState({
@@ -130,33 +133,53 @@ function PaymentAccount() {
     );
   };
   const payment = () => {
-    if (formBill.paymentMethod === "paymentVnpay") {
+    console.log(addressDefault);
+    Modal.confirm({
+      title: "Xác nhận đặt hàng",
+      content: "Bạn có chắc chắn muốn đặt hàng ?",
+      okText: "Đặt hàng",
+      okType: "primary",
+      cancelText: "Hủy",
+      onOk() {
+        if (addressDefault === null) {
+          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
+          return;
+        }
 
-      const data = {
-        vnp_Ammount: totalBefore,
-        billDetail: formBill.billDetail,
-      };
-      console.log(listproductOfBill);
-      PaymentClientApi.paymentVnpay(data).then(
-        (res) => {
-          window.location.replace(res.data.data);
-          sessionStorage.setItem("formBill", JSON.stringify(formBill));
-        },    
-        (err) => {
-          // toast.error(err.response.data.message);
-          
+        if (formBill.paymentMethod === "paymentVnpay") {
+          const data = {
+            vnp_Ammount: totalBefore,
+            billDetail: formBill.billDetail,
+          };
+          console.log(listproductOfBill);
+          PaymentClientApi.paymentVnpay(data).then(
+            (res) => {
+              window.location.replace(res.data.data);
+              sessionStorage.setItem("formBill", JSON.stringify(formBill));
+            },
+            (err) => {}
+          );
+        } else {
+          BillClientApi.createBillAccountOnline(formBill).then(
+            (res) => {
+              CartClientApi.quantityInCart(idAccount).then(
+                (res) => {
+                  updateTotalQuantity(res.data.data);
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+              toast.success("Bạn đặt hàng thành công.");
+              nav("/home");
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
         }
-      );
-    } else {
-      BillClientApi.createBillAccountOnline(formBill).then(
-        (res) => {
-          nav("/home");
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-    }
+      },
+    });
   };
 
   const getMoneyShip = (districtId, wardCode) => {
@@ -323,27 +346,11 @@ function PaymentAccount() {
           </div>
           <div className="product-of-bill-acc">
             <div className="title-product-of-bill-acc">
-              <div style={{ fontSize: 17, fontWeight: "bold" }}>Sản phẩm</div>
-              <div
-                style={{ marginLeft: "30%", fontSize: 17, fontWeight: "bold" }}
-              >
-                Kích cỡ
-              </div>
-              <div
-                style={{ marginLeft: "12%", fontSize: 17, fontWeight: "bold" }}
-              >
-                Đơn giá
-              </div>
-              <div
-                style={{ marginLeft: "12%", fontSize: 17, fontWeight: "bold" }}
-              >
-                Số lượng
-              </div>
-              <div
-                style={{ marginLeft: "auto", fontSize: 17, fontWeight: "bold" }}
-              >
-                Thành tiền
-              </div>
+              <div style={{ fontSize: 17 }}>Sản phẩm</div>
+              <div style={{ marginLeft: "30%" }}>Size</div>
+              <div style={{ marginLeft: "12%" }}>Đơn giá</div>
+              <div style={{ marginLeft: "12%" }}>Số lượng</div>
+              <div style={{ marginLeft: "auto" }}>Thành tiền</div>
             </div>
 
             <div className="content-product-of-bill-acc">
@@ -386,9 +393,9 @@ function PaymentAccount() {
             </div>
           </div>
           <div className="voucher-payment-acc">
-            <span style={{ fontSize: 20, fontWeight:"bold"}}>
+            <span style={{ fontSize: 20 }}>
               <FontAwesomeIcon
-                style={{ color: "#ff4400", marginRight: 10 , }}
+                style={{ color: "#ff4400", marginRight: 10 }}
                 icon={faTags}
               />{" "}
               Bee voucher
@@ -399,7 +406,7 @@ function PaymentAccount() {
           </div>
           <div className="footer-payment-acc">
             <div className="method-payment-acc">
-              <div style={{ fontSize: 18,fontWeight:"bold"}}>
+              <div style={{ fontSize: 18, fontWeight: 600 }}>
                 Phương thức thanh toán
               </div>
               <div
@@ -427,9 +434,9 @@ function PaymentAccount() {
             <div className="time-recieve-goods">
               <FontAwesomeIcon
                 icon={faCarRear}
-                style={{ fontSize: "33px", marginRight: "25px" }}
+                style={{ fontSize: "30px", marginRight: "20px" }}
               />
-              <span style={{fontSize:"17px"}}>Thời gian nhận hàng dự kiến: {dayShip}</span>
+              <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
             </div>
             <div className="titles-money-payment-acc">
               <div className="box-title-money">

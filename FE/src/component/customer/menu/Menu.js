@@ -59,8 +59,8 @@ function HeaderMenu() {
     setActiveField("");
   };
   const onSearch = () => {
-      setModal(true);
- 
+    setModal(true);
+
   };
 
   const offSearch = () => {
@@ -112,17 +112,17 @@ function HeaderMenu() {
           </div>
           |
           <div>
-            <Link to= "/cart">
+            <Link to="/cart">
               <Badge
                 size="small"
                 count={totalQuantity}
-                style={{ 
-                  backgroundColor: "#ff4400", 
-                  fontSize: "10px", 
-                  height: "15px",  
+                style={{
+                  backgroundColor: "#ff4400",
+                  fontSize: "10px",
+                  height: "15px",
                   width: "15px",
-                  display:"flex",
-                  justifyContent:"center"
+                  display: "flex",
+                  justifyContent: "center"
                 }}
               >
                 <ShoppingCartOutlined
@@ -140,7 +140,7 @@ function HeaderMenu() {
 
       {/* <div> */}
 
-      <div className={`search-panel ${modal ===true ? "visible" : "hidden"}`}>
+      <div className={`search-panel ${modal === true ? "visible" : "hidden"}`}>
         <div className="header-search">
           <div className="text-search">Tìm kiếm sản phẩm</div>
 

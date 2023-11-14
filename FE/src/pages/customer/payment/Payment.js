@@ -119,7 +119,7 @@ function Payment() {
   useEffect(() => {
     console.log(keyMethodPayment);
   }, [keyMethodPayment]);
- 
+
   const payment = () => {
     console.log(formBill);
     const phoneNumberPattern =
@@ -210,7 +210,6 @@ function Payment() {
               navigate(`/home`);
             },
             (err) => {
-             // toast.error(err.response.data.message);
             }
           );
         }
