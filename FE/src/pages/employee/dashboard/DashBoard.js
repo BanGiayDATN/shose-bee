@@ -172,6 +172,8 @@ const DashBoard = () => {
       am5themes_Animated.new(root)
     ]);
 
+    root._logo.dispose(); 
+
     // Create chart
     var chart = root.container.children.push(am5percent.PieChart.new(root, {
       layout: root.verticalLayout
@@ -214,6 +216,7 @@ const DashBoard = () => {
       am5themes_Animated.new(root)
     ]);
 
+    root._logo.dispose(); 
     // Create chart
     // https://www.amcharts.com/docs/v5/charts/xy-chart/
     var chart = root.container.children.push(am5xy.XYChart.new(root, {
@@ -463,6 +466,8 @@ const DashBoard = () => {
         })
       );
 
+      root._logo.dispose(); 
+
       // Add scrollbar
       // https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/
       chart.set(
@@ -634,7 +639,7 @@ const DashBoard = () => {
       // https://www.amcharts.com/docs/v5/concepts/animations/
       chart.appear(1000, 100);
       series1.appear();
-
+      
       // xAxis.events.once("datavalidated", function (ev) {
       //   ev.target.zoomToIndexes(dataBill.length - 20, dataProduct.length);
       // });
@@ -731,7 +736,7 @@ const DashBoard = () => {
         <Row className="row-footer">
           <Col className="row-footer-left">
             <h2 style={{ textAlign: "center", margin: " 2%" }}>
-              Top sản phẩm bán chạy tháng này
+              Top sản phẩm bán chạy trong tháng
             </h2>
             <Table
               style={{ marginTop: "30px" }}
