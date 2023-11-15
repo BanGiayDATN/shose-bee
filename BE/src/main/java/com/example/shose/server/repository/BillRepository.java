@@ -156,6 +156,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
         AND b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
    GROUP BY image, nameProduct, price
    ORDER BY sold desc
+   LIMIT 9
                                       """, nativeQuery = true)
     List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct(@Param("startOfMonth") Long startOfMonth, @Param("endOfMonth") Long endOfMonth);
 
