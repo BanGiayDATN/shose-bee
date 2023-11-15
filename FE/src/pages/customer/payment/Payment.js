@@ -13,6 +13,8 @@ import "./style-payment.css";
 import { useCart } from "../cart/CartContext";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 dayjs.extend(utc);
 function Payment() {
   const { updateTotalQuantity } = useCart();
@@ -55,7 +57,8 @@ function Payment() {
     { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
-
+  const socket = new SockJS('http://localhost:8080/ws');
+  const stompClient = Stomp.over(socket);
   useEffect(() => {
     console.log(formErrors);
   }, [formErrors]);
@@ -192,7 +195,7 @@ function Payment() {
         } else {
           BillClientApi.createBillOnline(formBill).then(
             (res) => {
-              console.log("thanh toán khi nhận hàng!");
+              stompClient.send('/app/notifyAdmin', {},  'Có đơn hàng mới' );
               const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
               const updatelist = cartLocal.filter((item) => {
                 return !formBill.billDetail.some(

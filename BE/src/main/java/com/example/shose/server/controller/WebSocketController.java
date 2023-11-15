@@ -1,2 +1,14 @@
-package com.example.shose.server.controller;public class WebSocketController {
+package com.example.shose.server.controller;
+
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class WebSocketController {
+    @MessageMapping("/notifyAdmin")
+    @SendTo("/topic/admin-notifications")
+    public String notifyAdmin(String message) {
+        return message;
+    }
 }

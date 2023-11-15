@@ -2,13 +2,7 @@ package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
 import com.example.shose.server.infrastructure.constant.Status;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,10 +26,9 @@ public class Notification extends PrimaryEntity {
     @Column(name = "notify_content")
     private String notifyContent;
 
-    @Column(name = "notify_date")
-    private Long notifyDate;
-
     private String url;
+
+    private String receiver;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -44,4 +37,7 @@ public class Notification extends PrimaryEntity {
     @JoinColumn(name = "id_account", referencedColumnName = "id")
     private Account account;
 
+    @OneToOne
+    @JoinColumn(name = "id_bill", referencedColumnName = "id")
+    private Bill bill;
 }

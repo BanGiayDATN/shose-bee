@@ -28,6 +28,8 @@ import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
 import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
 import { toast } from "react-toastify";
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
@@ -67,7 +69,8 @@ function PaymentAccount() {
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
-
+  const socket = new SockJS('http://localhost:8080/ws');
+  const stompClient = Stomp.over(socket);
   useEffect(() => {
     getAddressDefault(idAccount);
     moneyBefore();
@@ -153,13 +156,13 @@ function PaymentAccount() {
       okType: "primary",
       cancelText: "Hủy",
       onOk() {
-        if(addressDefault === null){
+        if (addressDefault === null) {
           toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!")
           return;
         }
-    
+
         if (formBill.paymentMethod === "paymentVnpay") {
-    
+
           const data = {
             vnp_Ammount: totalBefore,
             billDetail: formBill.billDetail,
@@ -169,7 +172,7 @@ function PaymentAccount() {
             (res) => {
               window.location.replace(res.data.data);
               sessionStorage.setItem("formBill", JSON.stringify(formBill));
-            },    
+            },
             (err) => {
             }
           );
@@ -179,6 +182,7 @@ function PaymentAccount() {
               CartClientApi.quantityInCart(idAccount).then(
                 (res) => {
                   updateTotalQuantity(res.data.data);
+                  stompClient.send('/app/notifyAdmin', {}, 'Có đơn hàng mới');
                 },
                 (err) => {
                   console.log(err);
@@ -191,11 +195,12 @@ function PaymentAccount() {
               console.log(err);
             }
           );
-    
+
         }
-        
-      }})
-   
+
+      }
+    })
+
   };
 
   const getMoneyShip = (districtId, wardCode) => {

@@ -43,11 +43,41 @@ import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
 import { jwtDecode } from "jwt-decode";
 import { getCookie } from "../../helper/CookiesRequest";
-
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
+import { NotificationClientApi } from "../../api/customer/notification/notificationClient.api";
 const { Header, Sider, Content } = Layout;
-const notificationCount = 5; // Số lượng thông báo chưa đọc
 
 const DashBoardEmployee = ({ children }) => {
+  const [notificationCount, setNotificationCount] = useState(5);
+
+  const socket = new SockJS('http://localhost:8080/ws');
+  const stompClient = Stomp.over(socket);
+  useEffect(() => {
+
+    NotificationClientApi.getAll().then((res) => {
+      setNotificationCount(res.data.data.length)
+      console.log(res.data.data.length);
+    })
+    // Kết nối đến WebSocket khi component được mount
+    stompClient.connect({}, () => {
+      // Đăng ký để nhận thông báo từ admin
+      stompClient.subscribe('/topic/admin-notifications', (response) => {
+        // Xử lý thông báo từ admin
+        NotificationClientApi.getAll().then((res) => {
+          setNotificationCount(res.data.data.length)
+        })
+        toast.warning(response.body)
+      });
+    });
+
+    return () => {
+      // Ngắt kết nối khi component unmount
+      stompClient.disconnect();
+    };
+  }, []);
+
+
   const [collapsed, setCollapsed] = useState(false);
   const nav = useNavigate();
   const [form] = Form.useForm();
@@ -102,9 +132,9 @@ const DashBoardEmployee = ({ children }) => {
             toast.success("Đổi mật khẩu thành công.");
             handleCancel();
           })
-          .catch((err) => {});
+          .catch((err) => { });
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const handleCancel = () => {
@@ -263,7 +293,7 @@ const DashBoardEmployee = ({ children }) => {
             }}
           />
           <div style={{ display: "flex", alignItems: "center" }}>
-            <Badge count={notificationCount} style={{ backgroundColor: "red" }}>
+            <Badge count={notificationCount} style={{ backgroundColor: "red" }} >
               <Button type="text">
                 <BellOutlined />
               </Button>

@@ -16,34 +16,12 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
-import com.example.shose.server.entity.Account;
-import com.example.shose.server.entity.Address;
-import com.example.shose.server.entity.Bill;
-import com.example.shose.server.entity.BillDetail;
-import com.example.shose.server.entity.BillHistory;
-import com.example.shose.server.entity.Cart;
-import com.example.shose.server.entity.CartDetail;
-import com.example.shose.server.entity.PaymentsMethod;
-import com.example.shose.server.entity.ProductDetail;
-import com.example.shose.server.entity.User;
-import com.example.shose.server.entity.Voucher;
-import com.example.shose.server.entity.VoucherDetail;
+import com.example.shose.server.entity.*;
 import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
-import com.example.shose.server.repository.AccountRepository;
-import com.example.shose.server.repository.AddressRepository;
-import com.example.shose.server.repository.BillDetailRepository;
-import com.example.shose.server.repository.BillHistoryRepository;
-import com.example.shose.server.repository.BillRepository;
-import com.example.shose.server.repository.CartDetailRepository;
-import com.example.shose.server.repository.CartRepository;
-import com.example.shose.server.repository.PaymentsMethodRepository;
-import com.example.shose.server.repository.ProductDetailRepository;
-import com.example.shose.server.repository.UserReposiory;
-import com.example.shose.server.repository.VoucherDetailRepository;
-import com.example.shose.server.repository.VoucherRepository;
+import com.example.shose.server.repository.*;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
@@ -121,6 +99,8 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private PaymentsMethodService paymentsMethodService;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Override
     public List<BillResponse> getAll(BillRequest request) {
@@ -804,6 +784,13 @@ public class BillServiceImpl implements BillService {
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
         sendMailOnline(bill.getId());
+        Notification notification = Notification.builder()
+                .receiver("admin")
+                .notifyContent("Vừa mua đơn hàng")
+                .status(Status.CHUA_DOC)
+                .account(account)
+                .bill(bill).build();
+         notificationRepository.save(notification);
         return bill;
     }
 
