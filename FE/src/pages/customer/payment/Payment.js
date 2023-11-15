@@ -664,7 +664,7 @@ function Payment() {
                       fontSize: "20px",
                       marginLeft: "auto",
                       color: " #ff4400",
-                      fontWeight: "700",
+                      fontWeight: "500",
                     }}
                   >
                     {formatMoney(totalBillToPay)}

@@ -439,20 +439,34 @@ function PaymentAccount() {
               <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
             </div>
             <div className="titles-money-payment-acc">
-              <div className="box-title-money">
-                <h3 className="title-money">Tổng tiền</h3>{" "}
-                <div className="text-money"> {formatMoney(totalBefore)}</div>
-              </div>
-              <div className="box-title-money">
-                <h3 className="title-money">Phí vận chuyển</h3>{" "}
-                <div className="text-money">{formatMoney(moneyShip)} </div>
-              </div>
-              <div className="box-title-money">
-                <h3 className="title-money">Tổng thanh toán</h3>{" "}
-                <div className="text-money-total">
-                  {formatMoney(totalAfter)}{" "}
-                </div>
-              </div>
+              <Row>
+                <Col span={12}>
+                  <h3>Tổng tiền</h3>
+                </Col>
+                <Col span={12}>
+                  <h3> : {formatMoney(totalBefore)}</h3>
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col span={12}>
+                  <h3>Phí vận chuyển</h3>
+                </Col>
+                <Col span={12}>
+                  <h3> : {formatMoney(moneyShip)}</h3>
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col span={12}>
+                  <h3>Tổng thanh toán</h3>
+                </Col>
+                <Col span={12}>
+                  <h3 className="text-money-total">
+                    : {formatMoney(totalAfter)}{" "}
+                  </h3>
+                </Col>
+              </Row>
             </div>
             <div className="form-submit-payment-acc">
               <div className="button-submit-buy-acc" onClick={payment}>
