@@ -371,35 +371,6 @@ public class BillServiceImpl implements BillService {
             }
             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(optional.get());
-            request.getPaymentsMethodRequests().forEach(item -> {
-                if (item != null) {
-                    if (item.getMethod() != StatusMethod.CHUYEN_KHOAN) {
-                        PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                                .method(item.getMethod())
-                                .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                                .employees(optional.get().getEmployees())
-                                .totalMoney(item.getTotalMoney())
-                                .description(item.getActionDescription())
-                                .bill(optional.get())
-                                .build();
-                        paymentsMethodRepository.save(paymentsMethod);
-                    }
-                }
-
-            });
-            billRepository.save(optional.get());
-
-            billDetailResponse.forEach(item -> {
-                Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
-                if (!productDetail.isPresent()) {
-                    throw new RestApiException(Message.NOT_EXISTS);
-                }
-                productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
-                productDetailRepository.save(productDetail.get());
-            });
-            billDetailRepository.deleteAllByIdBill(optional.get().getId());
-            paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
-            voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
             request.getBillDetailRequests().forEach(billDetailRequest -> {
                 Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
