@@ -2950,13 +2950,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               align={"end"}
               style={{ fontSize: "18px", fontWeight: "bold", color: "red" }}
             >
-              {formatCurrency(
+               {isOpenDelivery? formatCurrency(
                 products.reduce((accumulator, currentValue) => {
                   return (
                     accumulator + currentValue.price * currentValue.quantity
                   );
                 }, 0) +
-                  shipFee -
+                shipFee  -
+                  voucher.discountPrice
+              ): formatCurrency(
+                products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) -
                   voucher.discountPrice
               )}
             </Col>
