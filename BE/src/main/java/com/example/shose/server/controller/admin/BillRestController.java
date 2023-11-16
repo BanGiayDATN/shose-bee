@@ -110,7 +110,7 @@ public class BillRestController {
         return  new ResponseObject(billService.ChangeAllEmployee(shoseSession.getEmployee().getId(), request));
     }
 
-    @PutMapping("/changel-employee")
+    @PutMapping("/change-employee")
     public ResponseObject ChangeEmployeeInBill(@RequestBody ChangeEmployeeRequest request) {
         return  new ResponseObject(billService.ChangeEmployee(shoseSession.getEmployee().getId(), request));
     }

@@ -35,6 +35,7 @@ import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/Payments
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import "./detail.css";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -1219,6 +1220,38 @@ function DetailBill() {
   };
   // end delete product
 
+  // thay đổi nhân viên
+
+  const [isModalOpenAccountEmployee, setIsModalOpenAccountEmployee] =
+    useState(false);
+
+  const showModalAccountEmployee = () => {
+    setIsModalOpenAccountEmployee(true);
+  };
+
+  const handleOkAccountEmployee = () => {
+    setIsModalOpenAccountEmployee(false);
+  };
+
+  const handleCancelAccountEmployee = () => {
+    setIsModalOpenAccountEmployee(false);
+    BillApi.fetchDetailBill(id).then((res) => {
+      dispatch(getBill(res.data.data));
+      var index = listStatus.findIndex(
+        (item) => item.status == res.data.data.statusBill
+      );
+      if (res.data.data.statusBill == "TRA_HANG") {
+        index = 6;
+      }
+      if (res.data.data.statusBill == "DA_HUY") {
+        index = 7;
+      }
+      dispatch(addStatusPresent(index));
+    });
+  };
+
+  // end thay đổi nhân viên
+
   return (
     <div>
       <Row style={{ width: "100%" }}>
@@ -1584,14 +1617,32 @@ function DetailBill() {
               </h2>
             </Col>
             <Col span={2}>
-              <Button
-                type="dashed"
-                align={"end"}
-                style={{ margin: "" }}
-                onClick={(e) => showModalBill(e)}
-              >
-                Thay đổi
-              </Button>
+              {statusPresent < 5 ? (
+                <Button
+                  type="dashed"
+                  align={"end"}
+                  style={{ margin: "" }}
+                  onClick={(e) => showModalBill(e)}
+                >
+                  Thay đổi
+                </Button>
+              ) : (
+                <div></div>
+              )}
+            </Col>
+            <Col span={2}>
+              {statusPresent < 5 ? (
+                <Button
+                  type="dashed"
+                  align={"end"}
+                  style={{ margin: "" }}
+                  onClick={(e) => showModalAccountEmployee()}
+                >
+                  Chuyển nhân viên
+                </Button>
+              ) : (
+                <div></div>
+              )}
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
@@ -2458,6 +2509,22 @@ function DetailBill() {
       </Modal>
       {/* end bigin modal product */}
 
+      {/*  thay thay đổi nhân viên  */}
+      <Modal
+        title="Chuyển hóa đơn cho nhân viên"
+        open={isModalOpenAccountEmployee}
+        onOk={handleOkAccountEmployee}
+        onCancel={handleCancelAccountEmployee}
+        footer={null}
+        width={1000}
+      >
+        <ModalAccountEmployee
+          dataIdCheck={id}
+          handleCancel={handleCancelAccountEmployee}
+          status={true}
+        />
+      </Modal>
+      {/* end thay đổi nhân viên  */}
       <ToastContainer
         position="top-right"
         autoClose={500}

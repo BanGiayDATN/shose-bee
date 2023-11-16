@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { BillApi } from "../../../api/employee/bill/bill.api";
+import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 
 function TabBills({ statusBill, dataFillter, addNotify }) {
   const [dataBill, setDataBill] = useState([]);
@@ -121,13 +122,13 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       data.status = [
         "CHO_XAC_NHAN",
         "XAC_NHAN",
-      "CHO_VAN_CHUYEN",
-      "VAN_CHUYEN",
-      "DA_THANH_TOAN",
-      "THANH_CONG",
-      "TRA_HANG",
-      "DA_HUY",
-      ]
+        "CHO_VAN_CHUYEN",
+        "VAN_CHUYEN",
+        "DA_THANH_TOAN",
+        "THANH_CONG",
+        "TRA_HANG",
+        "DA_HUY",
+      ];
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
@@ -139,15 +140,15 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     dataFillter.status = [statusBill];
     if (statusBill == "") {
       data.status = [
-      "CHO_XAC_NHAN",
-      "XAC_NHAN",
-      "CHO_VAN_CHUYEN",
-      "VAN_CHUYEN",
-      "DA_THANH_TOAN",
-      "THANH_CONG",
-      "TRA_HANG",
-      "DA_HUY",
-      ]
+        "CHO_XAC_NHAN",
+        "XAC_NHAN",
+        "CHO_VAN_CHUYEN",
+        "VAN_CHUYEN",
+        "DA_THANH_TOAN",
+        "THANH_CONG",
+        "TRA_HANG",
+        "DA_HUY",
+      ];
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
@@ -155,31 +156,36 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
   }, [dataFillter]);
 
   const convertString = (key) => {
-    return  key === ""
-    ? "Tất cả"
-    : key === "CHO_XAC_NHAN"
-    ? " xác nhận"
-    : key === "XAC_NHAN"
-    ? "Chờ vận chuyển"
-    : key === "CHO_VAN_CHUYEN"
-    ? " Vận chuyển"
-    : key === "VAN_CHUYEN"
-    ? "Xác nhận thanh Toán"
-    : key === "DA_THANH_TOAN" 
-    ? "Hoàn thành" 
-    : key === "THANH_CONG"
-    ? "Hoàn thành"
-    : "Hủy"
-  }
+    return key === ""
+      ? "Tất cả"
+      : key === "CHO_XAC_NHAN"
+      ? " xác nhận"
+      : key === "XAC_NHAN"
+      ? "Chờ vận chuyển"
+      : key === "CHO_VAN_CHUYEN"
+      ? " Vận chuyển"
+      : key === "VAN_CHUYEN"
+      ? "Xác nhận thanh Toán"
+      : key === "DA_THANH_TOAN"
+      ? "Hoàn thành"
+      : key === "THANH_CONG"
+      ? "Hoàn thành"
+      : "Hủy";
+  };
 
   const nextStatusBill = () => {
-    return  statusBill == "CHO_XAC_NHAN" ? 
-    "XAC_NHAN" : statusBill == "XAC_NHAN" ? 
-    "CHO_VAN_CHUYEN" : statusBill == "CHO_VAN_CHUYEN" ? 
-    "VAN_CHUYEN" :  statusBill == "VAN_CHUYEN" ? "DA_THANH_TOAN" :
-    statusBill == "DA_THANH_TOAN" ?
-    "THANH_CONG" : "HUY"
-  }
+    return statusBill == "CHO_XAC_NHAN"
+      ? "XAC_NHAN"
+      : statusBill == "XAC_NHAN"
+      ? "CHO_VAN_CHUYEN"
+      : statusBill == "CHO_VAN_CHUYEN"
+      ? "VAN_CHUYEN"
+      : statusBill == "VAN_CHUYEN"
+      ? "DA_THANH_TOAN"
+      : statusBill == "DA_THANH_TOAN"
+      ? "THANH_CONG"
+      : "HUY";
+  };
   const changeStatusBill = (e) => {
     Modal.confirm({
       title: "Xác nhận",
@@ -205,6 +211,26 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
         });
       },
       onCancel: () => {},
+    });
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+     BillApi.fetchAll(fillter).then((res) => {
+      setDataBill(res.data.data);
+    });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+     BillApi.fetchAll(fillter).then((res) => {
+      setDataBill(res.data.data);
     });
   };
 
@@ -252,10 +278,18 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
               {convertString(statusBill)}
             </Button>
           </Col>
+          <Col span={3} style={{ marginRight: "10px" }}>
+            <Button  onClick={showModal}>
+              Chọn nhân viên
+            </Button>
+          </Col>
         </Row>
       ) : (
         <Row></Row>
       )}
+      <Modal title="Chuyển hóa đơn cho nhân viên " open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null} width={1000}>
+        <ModalAccountEmployee dataIdCheck={dataIdCheck} handleCancel={handleCancel} status={true}/>
+      </Modal>
     </div>
   );
 }
