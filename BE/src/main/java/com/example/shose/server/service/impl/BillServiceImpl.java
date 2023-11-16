@@ -4,6 +4,8 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
+import com.example.shose.server.dto.request.bill.ChangeEmployeeRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
@@ -853,6 +855,46 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return bill.get();
+    }
+
+    @Override
+    public boolean ChangeAllEmployee(String id, ChangeAllEmployeeRequest request) {
+        Optional<Account> checkAccount = accountRepository.findById(id);
+        if(checkAccount.get().getRoles() != Roles.ROLE_ADMIN){
+            throw new RestApiException(Message.ACCOUNT_NOT_ROLE);
+        }
+        request.getIds().forEach(idBill -> {
+            Optional<Bill> bill = billRepository.findById(idBill);
+            Optional<Account> account = accountRepository.findById(request.getIdEmployee());
+            if (!bill.isPresent()) {
+                throw new RestApiException(Message.BILL_NOT_EXIT);
+            }
+            if (!account.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            bill.get().setEmployees(account.get());
+            billRepository.save(bill.get());
+        });
+        return true;
+    }
+
+    @Override
+    public boolean ChangeEmployee(String id, ChangeEmployeeRequest request) {
+        Optional<Account> checkAccount = accountRepository.findById(id);
+        if(checkAccount.get().getRoles() != Roles.ROLE_ADMIN){
+            throw new RestApiException(Message.ACCOUNT_NOT_ROLE);
+        }
+            Optional<Bill> bill = billRepository.findById(request.getId());
+            Optional<Account> account = accountRepository.findById(request.getIdEmployee());
+            if (!bill.isPresent()) {
+                throw new RestApiException(Message.BILL_NOT_EXIT);
+            }
+            if (!account.isPresent()) {
+                throw new RestApiException(Message.NOT_EXISTS);
+            }
+            bill.get().setEmployees(account.get());
+            billRepository.save(bill.get());
+            return true;
     }
 
     public boolean createFilePdfAtCounter(String idBill, HttpServletRequest request) {
