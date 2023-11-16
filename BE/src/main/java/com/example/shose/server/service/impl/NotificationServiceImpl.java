@@ -11,6 +11,7 @@ import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> getListNotiOfAdmin() {
-        return notificationRepository.findAllByReceiver("admin");
+        Sort sort = Sort.by(Sort.Order.asc("status"));
+        return notificationRepository.findAllByReceiver("admin",sort);
     }
 
     @Override
@@ -53,5 +55,20 @@ public class NotificationServiceImpl implements NotificationService {
                 .account(optionalAccount.get())
                 .bill(optionalBill.get()).build();
         return notificationRepository.save(notification);
+    }
+
+    @Override
+    public Notification updateStatusNoti(String id) {
+        Optional<Notification> optional = notificationRepository.findById(id);
+        if(!optional.isPresent()){
+            throw new RestApiException("Thông báo không tồn tại");
+        }
+
+        Notification notification  = optional.get();
+        if(notification.getStatus().equals(Status.CHUA_DOC)){
+            notification.setStatus(Status.DA_DOC);
+            notificationRepository.save(notification);
+        }
+        return notification;
     }
 }

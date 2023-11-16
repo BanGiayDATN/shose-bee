@@ -13,5 +13,11 @@ export class NotificationClientApi {
           url: `/client/notification/listAdminNotRead`,
         });
       };
+      static setStatus = (id) => {
+        return request({
+          method: "POST",
+          url: `/client/notification/setStatus/${id}`,
+        });
+      };
 }
 

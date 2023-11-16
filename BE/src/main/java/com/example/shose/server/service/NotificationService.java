@@ -11,5 +11,6 @@ public interface NotificationService {
      List<Notification> getListNotiOfAdminnotRead();
 
      Notification createNoti(CreateNotificationRequest request);
+     Notification updateStatusNoti(String id);
 
 }
