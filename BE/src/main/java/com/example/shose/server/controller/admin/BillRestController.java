@@ -3,6 +3,8 @@ package com.example.shose.server.controller.admin;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
+import com.example.shose.server.dto.request.bill.ChangeEmployeeRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
@@ -101,4 +103,16 @@ public class BillRestController {
     public ResponseObject getInvoice(@PathVariable("id") String id, HttpServletRequest requests)  {
         return new ResponseObject(billService.createFilePdf(id,requests));
     }
+
+
+    @PutMapping("/change-all-employee")
+    public ResponseObject ChangeAllEmployeeInBill(@RequestBody ChangeAllEmployeeRequest request) {
+        return  new ResponseObject(billService.ChangeAllEmployee(shoseSession.getEmployee().getId(), request));
+    }
+
+    @PutMapping("/change-employee")
+    public ResponseObject ChangeEmployeeInBill(@RequestBody ChangeEmployeeRequest request) {
+        return  new ResponseObject(billService.ChangeEmployee(shoseSession.getEmployee().getId(), request));
+    }
+
 }

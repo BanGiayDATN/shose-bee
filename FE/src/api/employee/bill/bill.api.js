@@ -154,4 +154,21 @@ export class BillApi {
         url: `/admin/bill/invoice/${id}`,
       });
     };
+
+
+    static ChangeAllEmployeeInBill = (data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/change-all-employee`,
+        data: data,
+      });
+    };
+
+    static ChangeEmployeeInBill = (data) => {
+      return request({
+        method: "PUT",
+        url: `/admin/bill/change-employee`,
+        data: data,
+      });
+    };
 }
