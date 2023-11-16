@@ -143,13 +143,13 @@ function Payment() {
         phoneNumber: !formBill.phoneNumber
           ? "Vui lòng nhập số điện thoại"
           : !phoneNumberPattern.test(formBill.phoneNumber)
-          ? "Vui lòng nhập đúng định dạng số điện thoại"
-          : "",
+            ? "Vui lòng nhập đúng định dạng số điện thoại"
+            : "",
         email: !formBill.email
           ? "Vui lòng nhập email"
           : !emailPattern.test(formBill.email)
-          ? "Vui lòng nhập đúng định dạng email"
-          : "",
+            ? "Vui lòng nhập đúng định dạng email"
+            : "",
         address: !formBill.address ? "Vui lòng nhập địa chỉ" : "",
         province:
           formBill.province === undefined || !formBill.province
@@ -178,7 +178,7 @@ function Payment() {
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
             vnp_Ammount: totalBillToPay,
-            billDetail: listproductOfBill,
+            billDetail: formBill.billDetail
           };
           PaymentClientApi.paymentVnpay(data).then(
             (res) => {
@@ -195,7 +195,6 @@ function Payment() {
               console.log("thanh toán khi nhận hàng!");
               const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
               const updatelist = cartLocal.filter((item) => {
-                // Kiểm tra xem item.idProductDetail có tồn tại trong formBill.billDetail hay không
                 return !formBill.billDetail.some(
                   (itemBill) =>
                     item.idProductDetail === itemBill.idProductDetail
@@ -211,7 +210,6 @@ function Payment() {
               navigate(`/home`);
             },
             (err) => {
-             toast.error(err.response.data.message);
             }
           );
         }
@@ -520,17 +518,15 @@ function Payment() {
               <div className="title-method-payment">PHƯƠNG THỨC THANH TOÁN</div>
               <div className="method-payment">
                 <div
-                  className={`payment-when-recevie ${
-                    keyMethodPayment === "paymentReceive" ? "click" : ""
-                  }`}
+                  className={`payment-when-recevie ${keyMethodPayment === "paymentReceive" ? "click" : ""
+                    }`}
                   onClick={paymentReceive}
                 >
                   Thanh toán khi nhận hàng
                 </div>
                 <div
-                  className={`payment-by-vnpay ${
-                    keyMethodPayment === "paymentVnpay" ? "click" : ""
-                  }`}
+                  className={`payment-by-vnpay ${keyMethodPayment === "paymentVnpay" ? "click" : ""
+                    }`}
                   onClick={paymentVnpay}
                 >
                   Thanh toán VnPay{" "}
@@ -668,7 +664,7 @@ function Payment() {
                       fontSize: "20px",
                       marginLeft: "auto",
                       color: " #ff4400",
-                      fontWeight: "700",
+                      fontWeight: "500",
                     }}
                   >
                     {formatMoney(totalBillToPay)}

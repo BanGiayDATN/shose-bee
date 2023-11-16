@@ -1,47 +1,33 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./style-payment-account.css";
-import {
-  Row,
-  Col,
-  InputNumber,
-  Input,
-  Select,
-  Form,
-  Modal,
-  Button,
-  Radio,
-} from "antd";
-import { CloseOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
-import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
-import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
-import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
 import {
   faCarRear,
-  faTags,
   faLocationDot,
+  faTags,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button, Col, Modal, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
-import { useCart } from "../cart/CartContext";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
+import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
+import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 import ModalCreateAddress from "../../customer/payment/modal/ModalCreateAddress";
 import ModalUpdateAddress from "../../customer/payment/modal/ModalUpdateAddress";
+import { useCart } from "../cart/CartContext";
+import { AddressClientApi } from "./../../../api/customer/address/addressClient.api";
+import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
+import "./style-payment-account.css";
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
   const [modalAddressAccount, setModalAddressAccount] = useState(false);
   const { updateTotalQuantity } = useCart();
-  const { Option } = Select;
   const idAccount = sessionStorage.getItem("idAccount");
-  const [listCity, setListCity] = useState([]);
-  const [listDistrict, setListDistrict] = useState([]);
   const [addressDefault, setAddressDefault] = useState({});
-  const [listWard, setListWard] = useState([]);
   const [formBill, setFormBill] = useState({
     address: "",
     billDetail: [],
@@ -57,7 +43,6 @@ function PaymentAccount() {
   const [dayShip, setDayShip] = useState("");
   const [keyMethodPayment, setKeyMethodPayment] = useState("paymentReceive");
   const [totalBill, setTotalBill] = useState(0);
-  const [formGetMoneyShip, setFormGetMoneyShip] = useState([]);
   const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
   const voucher = JSON.parse(sessionStorage.getItem("voucher"));
   const comercial = [
@@ -148,31 +133,53 @@ function PaymentAccount() {
     );
   };
   const payment = () => {
-    if (formBill.paymentMethod === "paymentVnpay") {
-      const data = {
-        vnp_Ammount: totalBefore,
-        billDetail: listproductOfBill,
-      };
-      console.log(listproductOfBill);
-      PaymentClientApi.paymentVnpay(data).then(
-        (res) => {
-          window.location.replace(res.data.data);
-          sessionStorage.setItem("formBill", JSON.stringify(formBill));
-        },
-        (err) => {
-          toast.error(err.response.data.message);
+    console.log(addressDefault);
+    Modal.confirm({
+      title: "Xác nhận đặt hàng",
+      content: "Bạn có chắc chắn muốn đặt hàng ?",
+      okText: "Đặt hàng",
+      okType: "primary",
+      cancelText: "Hủy",
+      onOk() {
+        if (addressDefault === null) {
+          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
+          return;
         }
-      );
-    } else {
-      BillClientApi.createBillAccountOnline(formBill).then(
-        (res) => {
-          nav("/home");
-        },
-        (err) => {
-          console.log(err);
+
+        if (formBill.paymentMethod === "paymentVnpay") {
+          const data = {
+            vnp_Ammount: totalBefore,
+            billDetail: formBill.billDetail,
+          };
+          console.log(listproductOfBill);
+          PaymentClientApi.paymentVnpay(data).then(
+            (res) => {
+              window.location.replace(res.data.data);
+              sessionStorage.setItem("formBill", JSON.stringify(formBill));
+            },
+            (err) => {}
+          );
+        } else {
+          BillClientApi.createBillAccountOnline(formBill).then(
+            (res) => {
+              CartClientApi.quantityInCart(idAccount).then(
+                (res) => {
+                  updateTotalQuantity(res.data.data);
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+              toast.success("Bạn đặt hàng thành công.");
+              nav("/home");
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
         }
-      );
-    }
+      },
+    });
   };
 
   const getMoneyShip = (districtId, wardCode) => {
@@ -403,15 +410,17 @@ function PaymentAccount() {
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
-                  }`}
+                className={`payment-when-recevie-acc ${
+                  keyMethodPayment === "paymentReceive" ? "click" : ""
+                }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
-                  }`}
+                className={`payment-by-vnpay-acc ${
+                  keyMethodPayment === "paymentVnpay" ? "click" : ""
+                }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}
@@ -430,20 +439,34 @@ function PaymentAccount() {
               <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
             </div>
             <div className="titles-money-payment-acc">
-              <div className="box-title-money">
-                <h3 className="title-money">Tổng tiền</h3>{" "}
-                <div className="text-money"> {formatMoney(totalBefore)}</div>
-              </div>
-              <div className="box-title-money">
-                <h3 className="title-money">Phí vận chuyển</h3>{" "}
-                <div className="text-money">{formatMoney(moneyShip)} </div>
-              </div>
-              <div className="box-title-money">
-                <h3 className="title-money">Tổng thanh toán</h3>{" "}
-                <div className="text-money-total">
-                  {formatMoney(totalAfter)}{" "}
-                </div>
-              </div>
+              <Row>
+                <Col span={12}>
+                  <h3>Tổng tiền</h3>
+                </Col>
+                <Col span={12}>
+                  <h3> : {formatMoney(totalBefore)}</h3>
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col span={12}>
+                  <h3>Phí vận chuyển</h3>
+                </Col>
+                <Col span={12}>
+                  <h3> : {formatMoney(moneyShip)}</h3>
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col span={12}>
+                  <h3>Tổng thanh toán</h3>
+                </Col>
+                <Col span={12}>
+                  <h3 className="text-money-total">
+                    : {formatMoney(totalAfter)}{" "}
+                  </h3>
+                </Col>
+              </Row>
             </div>
             <div className="form-submit-payment-acc">
               <div className="button-submit-buy-acc" onClick={payment}>

@@ -15,6 +15,7 @@ public interface VoucherService {
 
     List<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest);
     List<Voucher> findAll();
+    List<Voucher> findByStatus();
     Voucher add(CreateVoucherRequest request);
     Voucher update(UpdateVoucherRequest request);
     Voucher updateStatus(String id);

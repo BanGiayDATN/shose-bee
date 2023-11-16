@@ -25,7 +25,8 @@ public interface CartRepository extends JpaRepository<Cart,String> {
                       REPLACE(c.code, '#','%23') as codeColor,
                       GROUP_CONCAT(i.name) as image,
                       cd.price as price,
-                      cd.quantity as quantity
+                      cd.quantity as quantity,
+                      pd.quantity as quantityProductDetail
                FROM cart cart
                         JOIN account a on a.id = cart.id_account
                         JOIN cart_detail cd on cart.id = cd.id_cart

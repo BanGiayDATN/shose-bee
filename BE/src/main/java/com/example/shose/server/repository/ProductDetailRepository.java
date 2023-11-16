@@ -46,7 +46,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status = 'DANG_KICH_HOAT')
                    AS promotion,
                    detail.quantity,
                    s2.name AS size,
@@ -95,12 +95,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 p.code AS codeProduct,
                 p.name AS nameProduct,
                 detail.price AS price,
-                (select sum(pr2.value
-                ) from product_detail pd2
-                     LEFT JOIN promotion_product_detail ppd2 on pd2.id = ppd2.id_product_detail
-                     LEFT JOIN promotion pr2 on pr2.id = ppd2.id_promotion
-                     where ppd2.status = 'DANG_SU_DUNG' AND pd2.id = detail.id
-                )  AS value,
+                (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id )
+                AS value,
                 detail.created_date AS created_date,
                 detail.gender AS gender,
                 detail.status AS status,
@@ -363,7 +363,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status = 'DANG_KICH_HOAT')
                    AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
@@ -469,7 +469,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status ='DANG_KICH_HOAT')
                    AS promotion,
                    detail.quantity,
                    s2.name AS size,

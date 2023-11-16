@@ -199,7 +199,7 @@ public class AddressServiceImpl implements AddressService {
                 .user(user.get())
                 .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
-                .status(Status.DANG_SU_DUNG)
+                .status(req.getStatus())
                 .ward(req.getWard())
                 .wardCode(req.getWardCode())
                 .district(req.getDistrict())

@@ -13,6 +13,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CardItem from "../component/Card";
+import { sync } from "framer-motion";
 
 function DetailProduct() {
     const idAccountLocal = sessionStorage.getItem("idAccount");
@@ -20,6 +21,7 @@ function DetailProduct() {
     const [infoAndSize, setInfoAndSize] = useState(1);
     const id = useParams()
     const [listSize, setListSize] = useState([]);
+    const [cartAccount, setCartAccount] = useState([]);
     const itemsPerPage = 4;
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageIndex, setImageIndex] = useState(0);
@@ -52,6 +54,10 @@ function DetailProduct() {
 
     useEffect(() => {
         getDetailProduct(id.id)
+        CartClientApi.listCart(idAccountLocal).then((response) => {
+            setCartAccount(response.data.data)
+            console.log(response.data.data);
+        })
     }, [])
     useEffect(() => {
         setImage(detailProduct.image.split(",")[0])
@@ -137,19 +143,26 @@ function DetailProduct() {
             }
         );
     };
-    const fetchData = async () => {
-        try {
-            const response = await CartClientApi.listCart(idAccountLocal);
-            const cartAccount = response.data.data;
-            return cartAccount;
-        } catch (error) {
-            console.error(error);
-            throw error;
-        }
-    };
+
+    const handleAddCartLocal = (newCartItem) => {
+        setCartLocal((prev) => {
+            console.log(cartLocal);
+            const exists = prev.find(
+                (item) => item.idProductDetail === newCartItem.idProductDetail
+            );
+            if (!exists) {
+                return [...prev, newCartItem];
+            } else {
+                return prev.map((item) =>
+                    item.idProductDetail === newCartItem.idProductDetail
+                        ? { ...item, quantity: item.quantity + newCartItem.quantity }
+                        : item
+                );
+            }
+        });
+    }
     // them san pham vao gio hang
     const addToCard = async () => {
-
         if (detailProduct.quantity === 0) {
             toast.error("Sản phẩm đã hết hàng", {
                 autoClose: 3000,
@@ -157,34 +170,21 @@ function DetailProduct() {
             return;
         }
         if (idAccountLocal === null) {
+            const newCartItem = {
+                idProductDetail: detailProduct.idProductDetail,
+                image: detailProduct.image,
+                price: detailProduct.price,
+                quantity: quantity,
+                nameProduct: detailProduct.nameProduct,
+                codeColor: detailProduct.codeColor,
+                nameSize: detailProduct.nameSize,
+                quantityProductDetail: detailProduct.quantity
+            };
             const detailProductCart = cartLocal.find((item) => item.idProductDetail === id.id)
             if (detailProductCart !== undefined) {
-                if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
-                    const newCartItem = {
-                        idProductDetail: detailProduct.idProductDetail,
-                        image: detailProduct.image,
-                        price: detailProduct.price,
-                        quantity: quantity,
-                        nameProduct: detailProduct.nameProduct,
-                        codeColor: detailProduct.codeColor,
-                        nameSize: detailProduct.nameSize,
-                    };
+                if (parseInt(quantity) + parseInt(detailProductCart.quantity) <= detailProduct.quantity) {
 
-                    setCartLocal((prev) => {
-                        console.log(cartLocal);
-                        const exists = prev.find(
-                            (item) => item.idProductDetail === newCartItem.idProductDetail
-                        );
-                        if (!exists) {
-                            return [...prev, newCartItem];
-                        } else {
-                            return prev.map((item) =>
-                                item.idProductDetail === newCartItem.idProductDetail
-                                    ? { ...item, quantity: item.quantity + newCartItem.quantity }
-                                    : item
-                            );
-                        }
-                    });
+                    handleAddCartLocal(newCartItem)
                     window.location.href = "/cart";
                     toast.success("Thêm giỏ hàng thành công", {
                         autoClose: 3000,
@@ -194,31 +194,7 @@ function DetailProduct() {
                 }
 
             } else {
-                const newCartItem = {
-                    idProductDetail: detailProduct.idProductDetail,
-                    image: detailProduct.image,
-                    price: detailProduct.price,
-                    quantity: quantity,
-                    nameProduct: detailProduct.nameProduct,
-                    codeColor: detailProduct.codeColor,
-                    nameSize: detailProduct.nameSize,
-                };
-
-                setCartLocal((prev) => {
-                    console.log(cartLocal);
-                    const exists = prev.find(
-                        (item) => item.idProductDetail === newCartItem.idProductDetail
-                    );
-                    if (!exists) {
-                        return [...prev, newCartItem];
-                    } else {
-                        return prev.map((item) =>
-                            item.idProductDetail === newCartItem.idProductDetail
-                                ? { ...item, quantity: item.quantity + newCartItem.quantity }
-                                : item
-                        );
-                    }
-                });
+                handleAddCartLocal(newCartItem)
                 window.location.href = "/cart";
                 toast.success("Thêm giỏ hàng thành công", {
                     autoClose: 3000,
@@ -226,31 +202,17 @@ function DetailProduct() {
             }
 
         } else {
-
-            // );
-
-            const cartAccount = await fetchData()
-
+            const newCartItem = {
+                idAccount: idAccountLocal,
+                idProductDetail: detailProduct.idProductDetail,
+                price: detailProduct.price,
+                quantity: quantity,
+            };
             const detailProductCart = cartAccount.find((item) => item.idProductDetail === id.id)
 
             if (detailProductCart !== undefined) {
-                if (quantity + detailProductCart.quantity <= detailProduct.quantity) {
-
-                    const newCartItem = {
-                        idAccount: idAccountLocal,
-                        idProductDetail: detailProduct.idProductDetail,
-                        price: detailProduct.price,
-                        quantity: quantity,
-                    };
-
-                    CartClientApi.addCart(newCartItem).then(
-                        (res) => {
-                            console.log(res.data.data);
-                        },
-                        (err) => {
-                            console.log(err);
-                        }
-                    );
+                if (parseInt(quantity) + parseInt(detailProductCart.quantity) <= detailProduct.quantity) {
+                    await CartClientApi.addCart(newCartItem);
                     window.location.href = "/cart";
                     toast.success("Thêm giỏ hàng thành công", {
                         autoClose: 3000,
@@ -260,21 +222,7 @@ function DetailProduct() {
                 }
 
             } else {
-                const newCartItem = {
-                    idAccount: idAccountLocal,
-                    idProductDetail: detailProduct.idProductDetail,
-                    price: detailProduct.price,
-                    quantity: quantity,
-                };
-
-                CartClientApi.addCart(newCartItem).then(
-                    (res) => {
-                        console.log(res.data.data);
-                    },
-                    (err) => {
-                        console.log(err);
-                    }
-                );
+                await CartClientApi.addCart(newCartItem);
                 window.location.href = "/cart";
                 toast.success("Thêm giỏ hàng thành công", {
                     autoClose: 3000,

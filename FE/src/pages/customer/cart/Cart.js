@@ -9,24 +9,24 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus, faTags, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
-  Row,
+  Button,
+  Checkbox,
   Col,
   Input,
-  Checkbox,
-  InputNumber,
   Modal,
-  Button,
   Radio,
+  Row,
   Tooltip,
 } from "antd";
-import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
-import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
+import dayjs from "dayjs";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { CartDetailClientApi } from "./../../../api/customer/cartdetail/cartDetailClient.api";
-import dayjs from "dayjs";
+import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
+import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
+import "./style-cart.css";
 
 function Cart() {
-  const nav = useNavigate()
+  const nav = useNavigate();
   const idAccountLocal = sessionStorage.getItem("idAccount");
   const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
   const [cart, setCart] = useState([]);
@@ -37,6 +37,7 @@ function Cart() {
   const [modalSize, setModalSize] = useState(false);
   const [modalVoucher, setModalVoucher] = useState(false);
   const [listSize, setListSize] = useState([]);
+  const [listQuantity, setListQuantity] = useState([]);
   const [listVoucher, setListVoucher] = useState([]);
   const [detailProductNew, setDetailProductNew] = useState({});
   const [detailProductOld, setDetailProductOld] = useState({});
@@ -58,20 +59,44 @@ function Cart() {
     }));
   };
   const submitVoucher = () => {
+    if (Object.keys(selectedItem).length > 0) {
+      setVoucher(selectedItem);
+    }
+    console.log(selectedItem);
     setModalVoucher(false);
-    setVoucher(selectedItem);
+    
   };
   useEffect(() => {
     console.log(idAccountLocal);
     if (idAccountLocal === null) {
-      setCart(cartLocal);
+      console.log(cartLocal.quantity);
+      cartLocal.map((item) =>
+        ProductDetailClientApi.getDetailProductOfClient(item.idProductDetail).then((res) => {
+          const data = res.data.data;
+          setCart((prev) => [
+            ...prev,
+            {
+              codeColor: item.codeColor,
+              idProductDetail: item.idProductDetail,
+              image: item.image,
+              nameProduct: item.nameProduct,
+              nameSize: item.nameSize,
+              price: item.price,
+              quantity: item.quantity,
+              quantityProductDetail: data.quantity
+            }
+          ]);
+          const quantity = res.data.data.quantity;
+          return quantity;
+          ;
+        }))
     } else {
       getListCart(idAccountLocal);
       setTotalPrice(0);
     }
     console.log(chooseItemCart.length, cart.length);
     if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
-      setSelectAllChecked(true)
+      setSelectAllChecked(true);
     }
   }, []);
 
@@ -87,6 +112,7 @@ function Cart() {
       localStorage.setItem("cartLocal", JSON.stringify(cart));
       const total = cart.reduce((acc, item) => acc + item.quantity, 0);
       updateTotalQuantity(total);
+
     } else {
       getQuantityInCart(idAccountLocal);
     }
@@ -96,9 +122,9 @@ function Cart() {
   useEffect(() => {
     console.log(chooseItemCart.length, cart.length);
     if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
-      setSelectAllChecked(true)
+      setSelectAllChecked(true);
     } else if (chooseItemCart.length !== cart.length) {
-      setSelectAllChecked(false)
+      setSelectAllChecked(false);
     }
   }, [chooseItemCart]);
   useEffect(() => {
@@ -136,9 +162,7 @@ function Cart() {
   const getListCart = (id) => {
     CartClientApi.listCart(id).then(
       (res) => {
-        const respone = res.data.data;
-        console.log(respone);
-        setCart(respone);
+        setCart(res.data.data);
       },
       (err) => {
         console.log(err);
@@ -152,15 +176,12 @@ function Cart() {
       setTotalPrice(0);
     } else {
       // Nếu checkbox "Select All" chưa được chọn, chọn tất cả các sản phẩm
-      const allItems = cart.map((item) => ({
-        nameProduct: item.nameProduct,
-        idProductDetail: item.idProductDetail,
-        price: item.price,
-        quantity: item.quantity,
-        nameSize: item.nameSize,
-        image: item.image,
-      }));
-      setChooseItemCart(allItems);
+      const itemOutNumber = cart.find((item) => item.quantityProductDetail === 0);
+      if (itemOutNumber) {
+        toast.warning("Có sản phẩm đã bán hết, vui lòng xoá!")
+        return;
+      }
+      setChooseItemCart(cart);
       const totalPrice = cart.reduce(
         (total, item) => total + parseInt(item.price) * item.quantity,
         0
@@ -200,7 +221,7 @@ function Cart() {
       });
     } else {
       setModalVoucher(true);
-      VoucherClientApi.getListVoucherByAccount(idAcccount).then(
+      VoucherClientApi.getListVoucher().then(
         (res) => {
           setListVoucher(res.data.data);
           console.log(listVoucher);
@@ -364,13 +385,22 @@ function Cart() {
       },
     });
   };
-  const changeQuantity = (itemOld, value) => {
+  const changeQuantity = (itemOld, value, quantityProductDetail) => {
+
+    if (value > quantityProductDetail) {
+      toast.warning(`Số sản phẩm tối đa là ${quantityProductDetail}`)
+      return
+    }
     chooseItemCart.map((item) => {
       if (item.idProductDetail === itemOld.idProductDetail) {
         if (itemOld.quantity < value) {
-          setTotalPrice(totalPrice + parseInt(itemOld.price * (value - itemOld.quantity)));
+          setTotalPrice(
+            totalPrice + parseInt(itemOld.price * (value - itemOld.quantity))
+          );
         } else {
-          setTotalPrice(totalPrice - parseInt(itemOld.price * (itemOld.quantity - value)));
+          setTotalPrice(
+            totalPrice - parseInt(itemOld.price * (itemOld.quantity - value))
+          );
         }
       }
     });
@@ -400,6 +430,10 @@ function Cart() {
     }
   };
   const chooseCartForBill = (item, value) => {
+    if (item.quantityProductDetail === 0) {
+      toast.error("Sản phẩm đã bán hết");
+      return
+    }
     const itemDetail = {
       nameProduct: item.nameProduct,
       idProductDetail: item.idProductDetail,
@@ -468,8 +502,8 @@ function Cart() {
   };
   const payment = () => {
     if (chooseItemCart.length === 0) {
-      toast.success("Quý khách chưa chọn sản phẩm ạ!", {
-        autoClose: 3000,
+      toast.warning("Quý khách chưa chọn sản phẩm để thanh toán!", {
+        autoClose: 2000,
       });
     } else {
       if (idAccountLocal === null) {
@@ -481,12 +515,6 @@ function Cart() {
       }
     }
   };
-  const modalProps = {
-    draggable: false, // Tắt tính năng kéo thả
-  };
-
-
-
 
   return (
     <div className="cart">
@@ -506,13 +534,14 @@ function Cart() {
               <div className="info-cart">
                 <div
                   style={{
-                    height: "30px",
+                    height: "30pxe",
                     display: "flex",
-                    padding: "30px",
+                    padding: "20px 30px",
                     alignItems: "center",
                     marginTop: "60px",
-                    borderRadius: "10px",
-                    backgroundColor: "rgb(139 139 139)",
+                    marginBottom:30,
+                    backgroundColor:"white",
+                    border: "1px solid #ebebeb"
                   }}
                 >
                   <div>
@@ -526,7 +555,7 @@ function Cart() {
                     style={{
                       marginLeft: "7%",
                       fontWeight: "bold",
-                      color: "white",
+                      color: "gray",
                       fontSize: "15px",
                     }}
                   >
@@ -536,7 +565,7 @@ function Cart() {
                     style={{
                       marginLeft: "20%",
                       fontWeight: "bold",
-                      color: "white",
+                      color: "gray",
                       fontSize: "15px",
                     }}
                   >
@@ -546,7 +575,7 @@ function Cart() {
                     style={{
                       marginLeft: "35%",
                       fontWeight: "bold",
-                      color: "white",
+                      color: "gray",
                       fontSize: "15px",
                     }}
                   >
@@ -556,16 +585,16 @@ function Cart() {
 
                 <div>
                   {cart.length === 0 ? (
-                    <div className="cart-is-empty">
-                      <div> Giỏ hàng trống! </div>
-                      <Link to={"/home"}>Mua hàng</Link>
-                    </div>
+                    <Tooltip title="Bấm để mua hàng">
+                      <Link className="cart-is-empty" to={"/home"}></Link>
+                    </Tooltip>
                   ) : (
                     <>
                       {cart.map((item, index) => (
                         <div
-                          className={`item-cart ${index === cart.length - 1 ? "last-item" : ""
-                            }`}
+                          className={`item-cart ${
+                            index === cart.length - 1 ? "last-item" : ""
+                          }`}
                           key={index}
                         >
                           <div key={index} className="box-cart-img">
@@ -610,16 +639,19 @@ function Cart() {
                             >
                               <div>
                                 <div
-                                  style={{ fontWeight: "bold", marginRight: 10 }}
+                                  style={{
+                                    fontWeight: "bold",
+                                    marginRight: 10,
+                                  }}
                                 >
                                   Số lượng
                                 </div>
                                 <div className="form-change-quantity">
-
                                   <FontAwesomeIcon
                                     icon={faMinus} className="button-minus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) - 1) < 1 ? 1 : (parseInt(item.quantity) - 1))} />
                                   <Input className="quantity-product-in-cart"
                                     min={1}
+                                    max={item.quantityProductDetail}
                                     value={item.quantity}
                                     onChange={(value) =>
                                       changeQuantity(item, value.target.value < 1 ? 1 : value.target.value)
@@ -628,10 +660,25 @@ function Cart() {
                                   <FontAwesomeIcon icon={faPlus} className="button-plus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) + 1) < 1 ? 1 : (parseInt(item.quantity) + 1))} />
                                 </div>
                               </div>
-
                             </div>
                           </div>
                           <div className="form-status-cart">
+                            <div
+                              style={{
+                                fontSize: "17px",
+                                fontWeight: "500",
+                                textAlign: "center",
+                                marginBottom: "10%",
+                                width: "150px",
+                                color: "#ff4400"
+                              }}
+                            >
+                              {
+                                item.quantityProductDetail > 0 ? "Còn hàng" : "Hết hàng"
+
+                              }
+
+                            </div>
                             <div
                               style={{
                                 fontSize: "17px",
@@ -655,7 +702,6 @@ function Cart() {
                                 />
                               </Tooltip>
                             </div>
-
                           </div>
                         </div>
                       ))}
@@ -663,14 +709,17 @@ function Cart() {
                   )}
                 </div>
                 {cart.length !== 0 ? (
-                  <div style={{ display: "flex" }}>
-                    <div className="button-delete-all-cart">Xóa tất cả</div>
+                  <div style={{ display: "flex", marginTop: 70 }}>
+                    <div className="button-delete-all-cart">XOÁ TẤT CẢ</div>
 
-                    <div className="button-continue-to-buy" onClick={() => nav("/home")}  >
-                      Tiếp tục mua hàng
+                    <div
+                      className="button-continue-to-buy"
+                      onClick={() => nav("/home")}
+                    >
+                      TIẾP TỤC MUA HÀNG
                     </div>
-                  </div>) : (null)}
-
+                  </div>
+                ) : null}
               </div>
               {/* bill of cart */}
               <div className="bill-of-cart" style={{ borderRadius: "20px" }}>
@@ -719,8 +768,9 @@ function Cart() {
                   )}
 
                   <div
-                    className={`value-bill-of-cart ${idAccountLocal !== null ? "acc" : ""
-                      }`}
+                    className={`value-bill-of-cart ${
+                      idAccountLocal !== null ? "acc" : ""
+                    }`}
                   >
                     <div style={{ display: "flex" }}>
                       <div
@@ -777,8 +827,9 @@ function Cart() {
             listSize.sort().map((item, index) => (
               <div
                 key={index}
-                className={`item-size-of-cart ${clickedIndex === index ? "clicked" : ""
-                  }`}
+                className={`item-size-of-cart ${
+                  clickedIndex === index ? "clicked" : ""
+                }`}
                 tabIndex="0"
                 onClick={() => getDetailProduct(index, item)}
               >
@@ -807,8 +858,6 @@ function Cart() {
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
         width={600}
-        height={1000}
-        {...modalProps}
       >
         <div className="category-voucher">
           <h1>Chọn mã khuyến mãi</h1>
@@ -822,8 +871,9 @@ function Cart() {
               }}
             />
             <div
-              className={`button-submit-voucher-cart ${!formSearch ? "" : "show"
-                }`}
+              className={`button-submit-voucher-cart ${
+                !formSearch ? "" : "show"
+              }`}
               onClick={() => {
                 getVoucher(formSearch);
               }}

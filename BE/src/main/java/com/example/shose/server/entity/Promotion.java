@@ -2,6 +2,7 @@ package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusPromotion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,5 +40,5 @@ public class Promotion extends PrimaryEntity {
     private Long endDate;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusPromotion status;
 }
