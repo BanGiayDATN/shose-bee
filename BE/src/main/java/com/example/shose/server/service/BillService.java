@@ -23,7 +23,7 @@ import java.util.List;
  */
 public interface BillService {
 
-    List<BillResponse> getAll(BillRequest request);
+    List<BillResponse> getAll(String id, BillRequest request);
 
     List<UserBillResponse> getAllUserInBill();
 
