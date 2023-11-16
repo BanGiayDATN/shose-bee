@@ -38,7 +38,7 @@ public class BillRestController {
 
     @GetMapping
     public ResponseObject getAll(BillRequest request){
-        return  new ResponseObject(billService.getAll(request));
+        return  new ResponseObject(billService.getAll(shoseSession.getEmployee().getId(),request));
     }
 
     @GetMapping("/detail/{id}")
