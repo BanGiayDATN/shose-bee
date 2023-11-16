@@ -680,6 +680,12 @@ public class BillServiceImpl implements BillService {
         }
 
         sendMailOnline(bill.getId());
+        Notification notification = Notification.builder()
+                .receiver("admin")
+                .notifyContent("Vừa mua đơn hàng")
+                .status(Status.CHUA_DOC)
+                .bill(bill).build();
+        notificationRepository.save(notification);
         return bill;
     }
 

@@ -31,6 +31,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public List<Notification> getListNotiOfAdminnotRead() {
+        return notificationRepository.findAllByReceiverAndStatus("admin",Status.CHUA_DOC);
+    }
+
+    @Override
     public Notification createNoti(CreateNotificationRequest request) {
         Optional<Account> optionalAccount = accountRepository.findById(request.getIdAccount());
         if (!optionalAccount.isPresent()){

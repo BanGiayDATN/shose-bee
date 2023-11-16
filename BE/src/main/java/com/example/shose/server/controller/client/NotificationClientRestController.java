@@ -19,4 +19,8 @@ public class NotificationClientRestController {
     public ResponseObject getListNotiAdmin() {
         return new ResponseObject(notificationService.getListNotiOfAdmin());
     }
+    @GetMapping("/listAdminNotRead")
+    public ResponseObject getListNotiAdminNotRead() {
+        return new ResponseObject(notificationService.getListNotiOfAdminnotRead());
+    }
 }

@@ -43,31 +43,43 @@ import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
 import { jwtDecode } from "jwt-decode";
 import { getCookie } from "../../helper/CookiesRequest";
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import { NotificationClientApi } from "../../api/customer/notification/notificationClient.api";
 const { Header, Sider, Content } = Layout;
 
 const DashBoardEmployee = ({ children }) => {
-  const [notificationCount, setNotificationCount] = useState(5);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [listNotification, setListNotification] = useState([]);
+  const [openInfor, setOpenInfo] = useState(false);
 
-  const socket = new SockJS('http://localhost:8080/ws');
+  const handleMenuHover = () => {
+    setOpenInfo(true);
+  };
+
+  const handleMenuLeave = () => {
+    setOpenInfo(false);
+  };
+  const socket = new SockJS("http://localhost:8080/ws");
   const stompClient = Stomp.over(socket);
   useEffect(() => {
-
+    NotificationClientApi.getNotRead().then(( res) => {
+      if (res.data.data.length > 0) {
+        setNotificationCount(res.data.data.length);
+      }
+    });
     NotificationClientApi.getAll().then((res) => {
-      setNotificationCount(res.data.data.length)
-      console.log(res.data.data.length);
-    })
-    // Kết nối đến WebSocket khi component được mount
+      setListNotification(res.data.data);
+    });
     stompClient.connect({}, () => {
-      // Đăng ký để nhận thông báo từ admin
-      stompClient.subscribe('/topic/admin-notifications', (response) => {
-        // Xử lý thông báo từ admin
+      stompClient.subscribe("/topic/admin-notifications", (response) => {
+        NotificationClientApi.getNotRead().then((res) => {
+          setNotificationCount(res.data.data.length);
+        });
         NotificationClientApi.getAll().then((res) => {
-          setNotificationCount(res.data.data.length)
-        })
-        toast.warning(response.body)
+          setListNotification(res.data.data);
+        });
+        toast.warning(response.body);
       });
     });
 
@@ -76,7 +88,6 @@ const DashBoardEmployee = ({ children }) => {
       stompClient.disconnect();
     };
   }, []);
-
 
   const [collapsed, setCollapsed] = useState(false);
   const nav = useNavigate();
@@ -132,9 +143,9 @@ const DashBoardEmployee = ({ children }) => {
             toast.success("Đổi mật khẩu thành công.");
             handleCancel();
           })
-          .catch((err) => { });
+          .catch((err) => {});
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const handleCancel = () => {
@@ -263,12 +274,6 @@ const DashBoardEmployee = ({ children }) => {
           >
             <Link to="/voucher-management">Khuyến Mãi</Link>
           </Menu.Item>
-          {/* <Menu.Item
-            key="10"
-            icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
-          >
-            <Link to="/address">Quản lý địa chỉ</Link>
-          </Menu.Item> */}
         </Menu>
       </Sider>
       <Layout>
@@ -293,11 +298,36 @@ const DashBoardEmployee = ({ children }) => {
             }}
           />
           <div style={{ display: "flex", alignItems: "center" }}>
-            <Badge count={notificationCount} style={{ backgroundColor: "red" }} >
-              <Button type="text">
-                <BellOutlined />
-              </Button>
-            </Badge>
+            <div
+              className="content-header-account"
+              onMouseEnter={handleMenuHover}
+              onMouseLeave={handleMenuLeave}
+            >
+              <Badge
+                count={notificationCount}
+                style={{ backgroundColor: "red" }}
+              >
+                <Button type="text">
+                  <BellOutlined />
+                </Button>
+              </Badge>
+              {openInfor ? (
+                <ul className="dropdown-list">
+                  {listNotification.map((item, index) => {
+                    <li
+                      key={index}
+                      className="dropdown-item"
+                      onClick={() => (window.location.href = "/profile")}
+                    >
+                      {item.bill.code}
+                    </li>;
+                  })}
+                </ul>
+              ) : (
+                ""
+              )}
+            </div>
+
             <span style={{ fontWeight: "bold", marginLeft: "20px" }}>
               {user !== null && user.fullName}
             </span>

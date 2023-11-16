@@ -7,5 +7,11 @@ export class NotificationClientApi {
           url: `/client/notification/listAdmin`,
         });
       };
-    
+      static getNotRead = () => {
+        return request({
+          method: "GET",
+          url: `/client/notification/listAdminNotRead`,
+        });
+      };
 }
+
