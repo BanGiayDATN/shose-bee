@@ -32,10 +32,7 @@ import {
   faPercent,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
-import {
-  deleteToken,
-  deleteUserToken,
-} from "../../helper/useCookies";
+import { deleteToken, deleteUserToken } from "../../helper/useCookies";
 import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
 import { jwtDecode } from "jwt-decode";
@@ -214,26 +211,18 @@ const DashBoardEmployee = ({ children }) => {
               <Link to="/customer-management">Khách Hàng</Link>
             </Menu.Item>
           </SubMenu>
-          <Menu.Item
+          <SubMenu
             key="8"
-            icon={
-              <FontAwesomeIcon icon={faPercent} style={{ color: "white" }} />
-            }
-          >
-            <Link to="/promotion-management">Khuyến Mại</Link>
-          </Menu.Item>
-          <Menu.Item
-            key="9"
             icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
+            title="Quản Lý Giảm Giá"
           >
-            <Link to="/voucher-management">Khuyến Mãi</Link>
-          </Menu.Item>
-          {/* <Menu.Item
-            key="10"
-            icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
-          >
-            <Link to="/address">Quản lý địa chỉ</Link>
-          </Menu.Item> */}
+            <Menu.Item key="8.0">
+              <Link to="/promotion-management">Đợt Giảm Giá</Link>
+            </Menu.Item>
+            <Menu.Item key="8.1">
+              <Link to="/voucher-management">Phiếu Giảm Giá</Link>
+            </Menu.Item>
+          </SubMenu>
         </Menu>
       </Sider>
       <Layout>
