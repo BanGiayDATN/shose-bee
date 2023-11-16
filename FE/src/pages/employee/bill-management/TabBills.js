@@ -287,7 +287,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       ) : (
         <Row></Row>
       )}
-      <Modal title="Chuyển hóa đơn cho nhân viên " open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null} width={1000}>
+      <Modal title="Chuyển hóa đơn cho nhân viên " open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null} width={1100}>
         <ModalAccountEmployee dataIdCheck={dataIdCheck} handleCancel={handleCancel} status={true}/>
       </Modal>
     </div>

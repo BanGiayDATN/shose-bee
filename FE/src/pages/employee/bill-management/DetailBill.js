@@ -1605,7 +1605,7 @@ function DetailBill() {
               padding: "12px",
             }}
           >
-            <Col span={22}>
+            <Col span={18}>
               <h2
                 className="text-center"
                 style={{
@@ -1616,6 +1616,7 @@ function DetailBill() {
                 Thông tin đơn hàng: {bill.code}
               </h2>
             </Col>
+            <Col span={1}></Col>
             <Col span={2}>
               {statusPresent < 5 ? (
                 <Button
@@ -1630,8 +1631,8 @@ function DetailBill() {
                 <div></div>
               )}
             </Col>
-            <Col span={2}>
-              {statusPresent < 5 ? (
+            <Col span={3}>
+              {statusPresent < 6 ? (
                 <Button
                   type="dashed"
                   align={"end"}
@@ -2516,12 +2517,12 @@ function DetailBill() {
         onOk={handleOkAccountEmployee}
         onCancel={handleCancelAccountEmployee}
         footer={null}
-        width={1000}
+        width={1100}
       >
         <ModalAccountEmployee
           dataIdCheck={id}
           handleCancel={handleCancelAccountEmployee}
-          status={true}
+          status={false}
         />
       </Modal>
       {/* end thay đổi nhân viên  */}
