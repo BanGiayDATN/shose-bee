@@ -11,7 +11,6 @@ import {
   Row,
   Select,
   Space,
-  Spin,
   Table,
   Tooltip,
   Upload,
@@ -30,7 +29,6 @@ import { BrandApi } from "../../../api/employee/brand/Brand.api";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
-import { GetSize } from "../../../app/reducer/Size.reducer";
 import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
 import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
 import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
@@ -52,6 +50,7 @@ import AddColorModal from "./modal/ModalAddListColor";
 import { useNavigate } from "react-router-dom";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
 import useDebounce from "../../custom-hook/useDebounce";
+import ModalPriceAndQuantity from "./modal/ModalPriceAndQuantity";
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -620,39 +619,30 @@ const CreateProductManagment = () => {
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
-    selections: [
-      Table.SELECTION_ALL,
-      Table.SELECTION_INVERT,
-      Table.SELECTION_NONE,
-      {
-        key: "odd",
-        text: "Select Odd Row",
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return false;
-            }
-            return true;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-      {
-        key: "even",
-        text: "Select Even Row",
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return true;
-            }
-            return false;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-    ],
+  };
+
+  const [openQuantityAndPrice, setQuantityAndPrice] = useState(false);
+  const handleUpdateQuantityAndPrice = (newValues) => {
+    const updatedData = tableData.map((record) => {
+      if (selectedRowKeys.includes(record.key)) {
+        return {
+          ...record,
+          quantity: newValues.quantityCustom,
+          price: newValues.priceCustom,
+        };
+      }
+      return record;
+    });
+
+    setTableData(updatedData);
+    setQuantityAndPrice(false);
+  };
+
+  const showModalQuantityAndPrice = () => {
+    setQuantityAndPrice(true);
+  };
+  const handleCancelQuantityAndPrice = () => {
+    setQuantityAndPrice(false);
   };
 
   return (
@@ -1124,6 +1114,20 @@ const CreateProductManagment = () => {
         </div>
         <Form.Item>
           <Row gutter={16} justify={"end"}>
+            <Tooltip title=" Chỉnh số lượng và giá chung">
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={showModalQuantityAndPrice}
+                style={{
+                  height: "40px",
+                  fontWeight: "bold",
+                  margin: "0px 20px",
+                }}
+              >
+                Chỉnh số lượng và giá chung
+              </Button>
+            </Tooltip>
             <Tooltip title="Thêm sản phẩm chi tiết">
               <Button
                 type="primary"
@@ -1138,17 +1142,21 @@ const CreateProductManagment = () => {
                 Hoàn Tất
               </Button>
             </Tooltip>
-            {/* </Col> */}
           </Row>
         </Form.Item>
         <Table
-          rowKey="id"
+          rowKey="key"
           rowSelection={rowSelection}
           columns={columns}
           dataSource={tableData}
           pagination={{ pageSize: 5 }}
         />
       </div>
+      <ModalPriceAndQuantity
+        open={openQuantityAndPrice}
+        onCancel={handleCancelQuantityAndPrice}
+        onUpdate={handleUpdateQuantityAndPrice}
+      />
     </>
   );
 };

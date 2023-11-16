@@ -59,27 +59,32 @@ public interface PromotionRepository extends JpaRepository<Promotion,String> {
             nativeQuery = true )
     List<PromotionRespone> getAllPromotion(@Param("req") FindPromotionRequest req);
     @Query(value = """
-               SELECT               
-                    po.id as id,
-                    po.code as code,
-                    po.name as name,
-                    po.value as value,
-                    po.start_date as startDate,
-                    po.end_date as endDate,
-                    po.status as status,
-                    (select GROUP_CONCAT(DISTINCT pd.id ) from product_detail pd join promotion_product_detail ppd on pd.id = ppd.id_product_detail
-                     where ppd.status ='DANG_SU_DUNG'and ppd.id_promotion = po.id) as productDetail,
-                     GROUP_CONCAT(DISTINCT pd.id ) as productDetailUpdate,
-                    GROUP_CONCAT(DISTINCT p.id) as product,
-                    GROUP_CONCAT(DISTINCT ppd.id) AS promotionProductDetail
-                
-            FROM promotion po 
-              LEFT JOIN promotion_product_detail ppd on po.id = ppd.id_promotion
-              LEFT JOIN product_detail pd on pd.id = ppd.id_product_detail
-               LEFT JOIN product p on p.id = pd.id_product
-               where po.id = :id
-               group by po.id
-               """,nativeQuery = true )
+            SELECT
+                po.id as id,
+                po.code as code,
+                po.name as name,
+                po.value as value,
+                po.start_date as startDate,
+                po.end_date as endDate,
+                po.status as status,
+                (select GROUP_CONCAT(DISTINCT pd.id ) from product_detail pd join promotion_product_detail ppd on pd.id = ppd.id_product_detail
+                 where ppd.status ='DANG_SU_DUNG'and ppd.id_promotion = po.id) as productDetail,
+                GROUP_CONCAT(DISTINCT pd.id ) as productDetailUpdate,
+                (select GROUP_CONCAT(DISTINCT p1.id ) from product_detail pd
+                                                              join promotion_product_detail ppd on pd.id = ppd.id_product_detail
+                                                              JOIN product p1 on p1.id = pd.id_product
+
+                 where  ppd.id_promotion = po.id and p.id in (select pd.id_product from product_detail pd join promotion_product_detail ppd on pd.id = ppd.id_product_detail
+                                                              where ppd.status ='DANG_SU_DUNG' )) as product,
+                GROUP_CONCAT(DISTINCT ppd.id) AS promotionProductDetail
+
+            FROM promotion po
+                     LEFT JOIN promotion_product_detail ppd on po.id = ppd.id_promotion
+                     LEFT JOIN product_detail pd on pd.id = ppd.id_product_detail
+                     LEFT JOIN product p on p.id = pd.id_product
+                             where po.id = :id
+                             group by po.id,p.id
+                             """,nativeQuery = true )
     PromotionByIdRespone getByIdPromotion(@Param("id") String id);
     @Query(value = """
                  select

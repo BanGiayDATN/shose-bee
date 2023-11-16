@@ -25,6 +25,7 @@ import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Roles;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.constant.StatusBill;
+import com.example.shose.server.infrastructure.constant.StatusPromotion;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.AccountVoucherRepository;
@@ -785,22 +786,22 @@ public class DBGenerator implements CommandLineRunner {
         Promotion promotion1 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
                 .name("diem").value(new BigDecimal(10))
                 .startDate(new ConvertDateToLong().dateToLong("25/04/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
-                .status(Status.DANG_SU_DUNG).build();
+                .status(StatusPromotion.DANG_KICH_HOAT).build();
         Promotion promotion2 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
                 .name("diem2003").value(new BigDecimal(100))
                 .startDate(new ConvertDateToLong().dateToLong("15/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/07/2023"))
-                .status(Status.KHONG_SU_DUNG).build();
+                .status(StatusPromotion.HET_HAN_KICH_HOAT).build();
         promotionRepository.save(promotion1);
         promotionRepository.save(promotion2);
 
         PromotionProductDetail promotionProductDetail1 = PromotionProductDetail.builder().promotion(promotion1)
                 .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
         PromotionProductDetail promotionProductDetail2 = PromotionProductDetail.builder().promotion(promotion2)
-                .productDetail(productDetail2).status(Status.DANG_SU_DUNG).build();
+                .productDetail(productDetail2).status(Status.KHONG_SU_DUNG).build();
         PromotionProductDetail promotionProductDetail3 = PromotionProductDetail.builder().promotion(promotion1)
                 .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
         PromotionProductDetail promotionProductDetail4 = PromotionProductDetail.builder().promotion(promotion2)
-                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
+                .productDetail(productDetail1).status(Status.KHONG_SU_DUNG).build();
 
         promotionProductDetailRepository.save(promotionProductDetail1);
         promotionProductDetailRepository.save(promotionProductDetail2);

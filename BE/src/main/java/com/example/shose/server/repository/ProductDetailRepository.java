@@ -11,7 +11,9 @@ import com.example.shose.server.dto.response.productdetail.GetDetailProductOfCli
 import com.example.shose.server.dto.response.productdetail.GetProductDetail;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.dto.response.promotion.GetPromotionOfProductDetail;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.Promotion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,7 +48,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status = 'DANG_KICH_HOAT')
                    AS promotion,
                    detail.quantity,
                    s2.name AS size,
@@ -95,12 +97,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 p.code AS codeProduct,
                 p.name AS nameProduct,
                 detail.price AS price,
-                (select sum(pr2.value
-                ) from product_detail pd2
-                     LEFT JOIN promotion_product_detail ppd2 on pd2.id = ppd2.id_product_detail
-                     LEFT JOIN promotion pr2 on pr2.id = ppd2.id_promotion
-                     where ppd2.status = 'DANG_SU_DUNG' AND pd2.id = detail.id
-                )  AS value,
+                (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id )
+                AS value,
                 detail.created_date AS created_date,
                 detail.gender AS gender,
                 detail.status AS status,
@@ -177,10 +179,11 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                      LEFT JOIN (
                 SELECT
                     pd.id as pd_id,
-                    SUM(po.value) as valuePromotion
+                    max(po.value) as valuePromotion
                 FROM product_detail pd
                          LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                          LEFT JOIN promotion po ON po.id = ppd.id_promotion
+                          WHERE  ppd.status = 'DANG_SU_DUNG' and po.status = 'DANG_KICH_HOAT'
                 GROUP BY pd.id
             ) promotion_summary ON pd.id = promotion_summary.pd_id
                       
@@ -210,20 +213,21 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                      LEFT JOIN (
                 SELECT
                     pd.id as pd_id,
-                    SUM(po.value) as valuePromotion,
-                    ppd.status as status
+                    max(po.value) as valuePromotion,
+                    ppd.status as status,
+                    po.status as statusPromotion
                 FROM product_detail pd
                          LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                          LEFT JOIN promotion po ON po.id = ppd.id_promotion
-                        
-                GROUP BY pd.id , ppd.status
+                WHERE  ppd.status = 'DANG_SU_DUNG'  and po.status = 'DANG_KICH_HOAT'
+                GROUP BY pd.id , ppd.status,po.status
             ) promotion_summary ON pd.id = promotion_summary.pd_id
                         
                      JOIN product p ON pd.id_product = p.id
                      JOIN color c ON c.id = pd.id_color
                      JOIN size s ON s.id = pd.id_size
                      LEFT JOIN image i ON i.id_product_detail = pd.id
-            where promotion_summary.status ='DANG_SU_DUNG'
+            where promotion_summary.status ='DANG_SU_DUNG' and promotion_summary.statusPromotion = 'DANG_KICH_HOAT'
             group by pd.id
                 """, nativeQuery = true)
     Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable);
@@ -244,11 +248,11 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                      LEFT JOIN (
                 SELECT
                     pd.id as pd_id,
-                    SUM(po.value) as valuePromotion
+                    max(po.value) as valuePromotion
                 FROM product_detail pd
                          LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                          LEFT JOIN promotion po ON po.id = ppd.id_promotion
-                WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+                WHERE  ppd.status = 'DANG_SU_DUNG' and po.status = 'DANG_KICH_HOAT'
                 GROUP BY pd.id
             ) promotion_summary ON pd.id = promotion_summary.pd_id
                       
@@ -277,11 +281,11 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                      LEFT JOIN (
                 SELECT
                     pd.id as pd_id,
-                    SUM(po.value) as valuePromotion
+                    max(po.value) as valuePromotion
                 FROM product_detail pd
                          LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                          LEFT JOIN promotion po ON po.id = ppd.id_promotion
-                WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+                WHERE  ppd.status = 'DANG_SU_DUNG' and po.status = 'DANG_KICH_HOAT'
                 GROUP BY pd.id
             ) promotion_summary ON pd.id = promotion_summary.pd_id
                        
@@ -299,46 +303,46 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
 
     @Query(value = """
 
-                   SELECT
-                     pd.id as idProductDetail,
-                     GROUP_CONCAT(i.name)as image,
-                     p.name as nameProduct,
-                     pd.price as price,
-                     pd.quantity as quantity,
-                     (select sum(pr2.value) from product_detail pd2
-                     LEFT JOIN promotion_product_detail ppd2 on pd2.id = ppd2.id_product_detail
-                     LEFT JOIN promotion pr2 on pr2.id = ppd2.id_promotion
-                     where ppd2.status = 'DANG_SU_DUNG' AND pd2.id = pd.id)  as valuePromotion,
-                     pd.created_date as createdDate,
-                     c.code as codeColor,
-                     (select group_concat(s3.name,',',pd.id ORDER BY s3.name ASC) from product_detail pd
-                     join size s3 on pd.id_size = s3.id
-                     join color c3 on pd.id_color = c3.id
-                     join product p2 on pd.id_product = p2.id
-                     JOIN category c4 on pd.id_category = c4.id
-                     JOIN brand b1 on pd.id_brand = b1.id
-                     JOIN material m1 on pd.id_material = m1.id
-                     JOIN sole s4 on pd.id_sole = s4.id
-                     where c3.id = c.id and p2.id = p.id and c4.id = c2.id and b1.id = b.id and m1.id = m.id and s4.id = s2.id
-                    order by s3.name asc
-                     ) as listSize,
-                     s.name as nameSize,
-                     c2.name as nameCategory,
-                     b.name as nameBrand,
-                     m.name as nameMaterial,
-                     s2.name as nameSole
-                 
-                 from product_detail pd
-                          left JOIN image i on i.id_product_detail = pd.id
-                          JOIN product p on pd.id_product = p.id
-                          JOIN color c on c.id = pd.id_color
-                          JOIN size s on s.id = pd.id_size
-                          JOIN category c2 on pd.id_category = c2.id
-                          JOIN brand b on pd.id_brand = b.id
-                          JOIN material m on pd.id_material = m.id
-                          JOIN sole s2 on pd.id_sole = s2.id
-                   where pd.id = :id
-                        """, nativeQuery = true)
+              SELECT
+                pd.id as idProductDetail,
+                GROUP_CONCAT(i.name)as image,
+                p.name as nameProduct,
+                pd.price as price,
+                pd.quantity as quantity,
+                (select max(pr2.value) from product_detail pd2
+                LEFT JOIN promotion_product_detail ppd2 on pd2.id = ppd2.id_product_detail
+                LEFT JOIN promotion pr2 on pr2.id = ppd2.id_promotion
+                where ppd2.status = 'DANG_SU_DUNG' and pr2.status = 'DANG_KICH_HOAT' AND pd2.id = pd.id)  as valuePromotion,
+                pd.created_date as createdDate,
+                c.code as codeColor,
+                (select group_concat(s3.name,',',pd.id ORDER BY s3.name ASC) from product_detail pd
+                join size s3 on pd.id_size = s3.id
+                join color c3 on pd.id_color = c3.id
+                join product p2 on pd.id_product = p2.id
+                JOIN category c4 on pd.id_category = c4.id
+                JOIN brand b1 on pd.id_brand = b1.id
+                JOIN material m1 on pd.id_material = m1.id
+                JOIN sole s4 on pd.id_sole = s4.id
+                where c3.id = c.id and p2.id = p.id and c4.id = c2.id and b1.id = b.id and m1.id = m.id and s4.id = s2.id
+               order by s3.name asc
+                ) as listSize,
+                s.name as nameSize,
+                c2.name as nameCategory,
+                b.name as nameBrand,
+                m.name as nameMaterial,
+                s2.name as nameSole
+                             
+            from product_detail pd
+                     left JOIN image i on i.id_product_detail = pd.id
+                     JOIN product p on pd.id_product = p.id
+                     JOIN color c on c.id = pd.id_color
+                     JOIN size s on s.id = pd.id_size
+                     JOIN category c2 on pd.id_category = c2.id
+                     JOIN brand b on pd.id_brand = b.id
+                     JOIN material m on pd.id_material = m.id
+                     JOIN sole s2 on pd.id_sole = s2.id
+              where pd.id = :id
+                   """, nativeQuery = true)
     GetDetailProductOfClient getDetailProductOfClient(@Param("id") String id);
 
 
@@ -363,7 +367,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status = 'DANG_KICH_HOAT')
                    AS promotion
                 FROM product_detail detail
                 JOIN product p ON detail.id_product = p.id
@@ -411,17 +415,17 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 pd.price as price,
                 promotion_summary.valuePromotion as valuePromotion,
                 pd.created_date as createdDate
-            
+                        
             FROM product_detail pd
                      LEFT JOIN (
                 SELECT
                     pd.id as pd_id,
-                    SUM(po.value) as valuePromotion,
+                    max(po.value) as valuePromotion,
                     ppd.status as status
                 FROM product_detail pd
                          LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
                          LEFT JOIN promotion po ON po.id = ppd.id_promotion
-                       WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+                      WHERE  ppd.status = 'DANG_SU_DUNG' and po.status = 'DANG_KICH_HOAT'
                 GROUP BY pd.id , ppd.status
             ) promotion_summary ON pd.id = promotion_summary.pd_id
                      LEFT JOIN  product p ON pd.id_product = p.id
@@ -444,7 +448,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 AND  ( :#{#res.minPrice} IS NULL OR :#{#res.minPrice} ='' OR pd.price >= :#{#req.minPrice} ) 
                 AND  ( :#{#res.maxPrice} IS NULL  OR :#{#res.maxPrice} = '' OR  pd.price < :#{#req.maxPrice} )
                 AND  ( :#{#res.newProduct} IS NULL  OR :#{#res.newProduct} = '' OR DATE_FORMAT(FROM_UNIXTIME(pd.created_date / 1000), '%Y-%m-%d %H:%i:%s') between DATE_SUB(NOW(), INTERVAL 15 DAY)  and  NOW())
-                AND ( :#{#res.sellOff} IS NULL  OR :#{#res.sellOff} = '' OR promotion_summary.status =true)
+                AND ( :#{#res.sellOff} IS NULL  OR :#{#res.sellOff} = '' OR promotion_summary.status ='DANG_SU_DUNG')
                 GROUP BY pd.id,valuePromotion
                 """, nativeQuery = true)
     Page<GetProductDetail> getProductDetailByCategorys(Pageable pageable,
@@ -469,7 +473,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status ='DANG_KICH_HOAT')
                    AS promotion,
                    detail.quantity,
                    s2.name AS size,
@@ -506,4 +510,14 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """, nativeQuery = true)
     ProductDetailReponse getOneProductDetailByAll(@Param("req") CreateProductDetailRequest req);
 
+    @Query(value = """
+            SELECT
+                    max(po.value) as valuePromotion
+                FROM product_detail pd
+                         LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                         LEFT JOIN promotion po ON po.id = ppd.id_promotion
+                       WHERE  ppd.status = 'DANG_SU_DUNG' and po.status = 'DANG_KICH_HOAT'
+                GROUP BY pd.id , ppd.status
+            """, nativeQuery = true)
+    GetPromotionOfProductDetail getPromotionOfProductDetail(@Param("id") String id);
 }

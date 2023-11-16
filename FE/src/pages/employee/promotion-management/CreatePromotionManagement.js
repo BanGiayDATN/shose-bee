@@ -144,6 +144,11 @@ function CreateVoucherManagement() {
     return convertedFormData;
   };
   const handleSubmit = () => {
+    console.log(selectedRowKeysDetail);
+    if(selectedRowKeysDetail.length === 0){
+      toast.error("Vui lòng chọn sản phẩm để thêm")
+      return;
+    }
     Modal.confirm({
       title: "Xác nhận thêm",
       content: "Bạn có chắc chắn muốn thêm khuyến mại ?",

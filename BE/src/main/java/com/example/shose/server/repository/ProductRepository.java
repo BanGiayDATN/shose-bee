@@ -94,7 +94,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE p2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status ='DANG_KICH_HOAT')
                    AS promotion,
                    detail.quantity,
                    s2.name AS size,

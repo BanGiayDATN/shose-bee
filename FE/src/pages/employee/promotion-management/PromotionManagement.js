@@ -21,7 +21,7 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
@@ -184,10 +184,18 @@ const PromotionManagement = () => {
       align: "center",
       render: (text) => {
         const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+          text === "DANG_KICH_HOAT"
+            ? "trangthai-sd"
+            : text === "HET_HAN_KICH_HOAT"
+            ? "trangthai-ksd"
+            : "trangthai-ckh";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Còn hạn " : "Hết hạn"}
+            {text === "DANG_KICH_HOAT"
+              ? "Đang kích hoạt"
+              : text === "HET_HAN_KICH_HOAT"
+              ? "Ngừng kích hoạt"
+              : "Chưa kích hoạt"}
           </button>
         );
       },
@@ -316,8 +324,9 @@ const PromotionManagement = () => {
       label: "Trạng thái",
       align: "center",
       options: [
-        { value: "DANG_SU_DUNG", label: "Còn hạn" },
-        { value: "KHONG_SU_DUNG", label: "Hết hạn" },
+        { value: "DANG_KICH_HOAT", label: "Đang kích hoạt" },
+        { value: "CHUA_KICH_HOAT", label: "Chưa kích hoạt" },
+        { value: "HET_HAN_KICH_HOAT", label: "Ngừng kích hoạt" },
       ],
       class: "input-search-promotion",
       placeholder: "Tìm kiếm",

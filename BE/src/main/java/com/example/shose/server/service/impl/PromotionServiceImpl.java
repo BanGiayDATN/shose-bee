@@ -16,6 +16,7 @@ import com.example.shose.server.entity.PromotionProductDetail;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusPromotion;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.PromotionProductDetailRepository;
@@ -24,10 +25,13 @@ import com.example.shose.server.service.PromotionService;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PromotionServiceImpl implements PromotionService {
@@ -49,43 +53,36 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
+    @Transactional
     public Promotion add(CreatePromotionRequest request) throws Exception {
-        if(ObjectUtils.isEmpty(request.getIdProductDetails())){
+        if (ObjectUtils.isEmpty(request.getIdProductDetails())) {
             throw new RestApiException("Không có sản phẩm");
         }
         for (IdProductDetail x : request.getIdProductDetails()) {
             Optional<ProductDetail> optional = productDetailRepository.findById(x.getId());
-            if(!optional.isPresent()){
+            if (!optional.isPresent()) {
                 throw new RestApiException("Có sản phẩm không tồn tại");
             }
         }
-        long currentSeconds = (System.currentTimeMillis() / 1000)*1000;
-        Status status = (request.getStartDate() <= currentSeconds && currentSeconds <= request.getEndDate())
-                ? Status.DANG_SU_DUNG
-                : Status.KHONG_SU_DUNG;
-        Promotion promotion = Promotion.builder()
-                .code(request.getCode())
-                .name(request.getName())
-                .value(request.getValue())
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .status(status).build();
-
+        StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());
+        Promotion promotion = Promotion.builder().code(request.getCode()).name(request.getName()).value(request.getValue()).startDate(request.getStartDate()).endDate(request.getEndDate()).status(status).build();
         promotionRepository.save(promotion);
 
-
+        List<PromotionProductDetail> promotionProductDetails = new ArrayList<>();
         for (IdProductDetail x : request.getIdProductDetails()) {
             Optional<ProductDetail> optional = productDetailRepository.findById(x.getId());
             PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
             promotionProductDetail.setPromotion(promotion);
             promotionProductDetail.setProductDetail(optional.get());
-            promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
-            promotionProductDetailRepository.save(promotionProductDetail);
+            promotionProductDetail.setStatus(getStatus(status));
+            promotionProductDetails.add(promotionProductDetail);
         }
+        promotionProductDetailRepository.saveAll(promotionProductDetails);
         return promotion;
     }
 
     @Override
+    @Transactional
     public Promotion update(UpdatePromotionRequest request) {
         Optional<Promotion> optional = promotionRepository.findById(request.getId());
         if (!optional.isPresent()) {
@@ -93,78 +90,77 @@ public class PromotionServiceImpl implements PromotionService {
         }
         for (IdProductDetail x : request.getIdProductDetails()) {
             Optional<ProductDetail> optional1 = productDetailRepository.findById(x.getId());
-            if(!optional1.isPresent()){
+            if (!optional1.isPresent()) {
                 throw new RestApiException("Có sản phẩm không tồn tại");
             }
         }
+
+        StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());
         Promotion promotion = optional.get();
         promotion.setCode(request.getCode());
         promotion.setName(request.getName());
         promotion.setValue(request.getValue());
         promotion.setStartDate(request.getStartDate());
         promotion.setEndDate(request.getEndDate());
-        if(request.getStartDate()<= ( System.currentTimeMillis() / 1000)*1000 && ( System.currentTimeMillis() / 1000)*1000 <=request.getEndDate()){
-            promotion.setStatus(Status.DANG_SU_DUNG);
-        }else{
-            promotion.setStatus(Status.KHONG_SU_DUNG);
-        }
+        promotion.setStatus(status);
         promotionRepository.save(promotion);
 
-        PromotionByIdRespone promotionByIdRespone = promotionRepository.getByIdPromotion(request.getId());
-
-        if(promotionByIdRespone.getProductDetailUpdate() == null){
-            for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
+        // TODO check nếu status == HET_HAN_KICH_HOAT => các sản phẩm không được sử dụng khuyến mại này
+//        boolean checkStatus = updateProductDetailsStatus(promotion.getId(),promotion.getStatus());
+//
+//        if(checkStatus == false) {
+            PromotionByIdRespone promotionByIdRespone = promotionRepository.getByIdPromotion(request.getId());
+            List<PromotionProductDetail> promotionProductDetails = new ArrayList<>();
+            if (promotionByIdRespone.getProductDetailUpdate() == null) {
+                for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
                     PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
                     promotionProductDetail.setPromotion(promotion);
                     promotionProductDetail.setProductDetail(productDetailRepository.findById(idProductDetailNew.getId()).get());
-                    promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
-                    promotionProductDetailRepository.save(promotionProductDetail);
+                    promotionProductDetail.setStatus(getStatus(status));
+                    promotionProductDetails.add(promotionProductDetail);
+                }
+                promotionProductDetailRepository.saveAll(promotionProductDetails);
+            } else {
+                for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
+                    boolean foundInNew = false;
+                    for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
+                        if (idProductDetailNew.getId().contains(idProductDetailOld)) {
+                            foundInNew = true;
+                            break;
+                        }
+                    }
 
-            }
-
-        }else{
-            for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
-                boolean foundInNew = false;
-
+                    if (!foundInNew) {
+                        PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
+                        promotionProductDetail.setStatus(Status.KHONG_SU_DUNG);
+                        promotionProductDetailRepository.save(promotionProductDetail);
+                    } else {
+                        PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
+                        promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+                        promotionProductDetailRepository.save(promotionProductDetail);
+                    }
+                }
 
                 for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
-                    if (idProductDetailNew.getId().contains(idProductDetailOld)) {
-                        foundInNew = true;
-                        break;
+                    boolean foundInOld = false;
+
+                    for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
+                        if (idProductDetailOld.contains(idProductDetailNew.getId())) {
+                            foundInOld = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundInOld) {
+                        PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
+                        promotionProductDetail.setPromotion(promotion);
+                        promotionProductDetail.setProductDetail(productDetailRepository.findById(idProductDetailNew.getId()).get());
+                        promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
+                        promotionProductDetailRepository.save(promotionProductDetail);
                     }
                 }
-
-                if (!foundInNew) {
-                    PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
-                    promotionProductDetail.setStatus(Status.KHONG_SU_DUNG);
-                    promotionProductDetailRepository.save(promotionProductDetail);
-                }else{
-                    PromotionProductDetail promotionProductDetail = promotionProductDetailRepository.getByProductDetailAndPromotion(idProductDetailOld, promotionByIdRespone.getId());
-                    promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
-                    promotionProductDetailRepository.save(promotionProductDetail);
-                }
-            }
-
-            for (IdProductDetail idProductDetailNew : request.getIdProductDetails()) {
-                boolean foundInOld = false;
-
-                for (String idProductDetailOld : promotionByIdRespone.getProductDetailUpdate().split(",")) {
-                    if (idProductDetailOld.contains(idProductDetailNew.getId())) {
-                        foundInOld = true;
-                        break;
-                    }
-                }
-
-                if (!foundInOld) {
-                    PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
-                    promotionProductDetail.setPromotion(promotion);
-                    promotionProductDetail.setProductDetail(productDetailRepository.findById(idProductDetailNew.getId()).get());
-                    promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
-                    promotionProductDetailRepository.save(promotionProductDetail);
-                }
-            }
+//            }
         }
-
         return promotion;
     }
 
@@ -175,12 +171,12 @@ public class PromotionServiceImpl implements PromotionService {
             throw new RestApiException("Khuyến mại không tồn tại");
         }
         Promotion promotion = optional.get();
-        if(promotion.getStatus().equals(Status.DANG_SU_DUNG)){
-            promotion.setStatus(Status.KHONG_SU_DUNG);
-        }else{
-            promotion.setStatus(Status.DANG_SU_DUNG);
-        }
+        StatusPromotion status = getStatusPromotion(promotion.getStartDate(), promotion.getEndDate());
+        promotion.setStatus(status);
         promotionRepository.save(promotion);
+
+        // TODO check nếu status == HET_HAN_KICH_HOAT => các sản phẩm không được sử dụng khuyến mại này
+        updateProductDetailsStatus(promotion.getId(),promotion.getStatus());
         return promotion;
     }
 
@@ -196,7 +192,7 @@ public class PromotionServiceImpl implements PromotionService {
         List<Promotion> expiredPromotions = promotionRepository.findExpiredPromotions(System.currentTimeMillis());
 
         for (Promotion promotion : expiredPromotions) {
-            promotion.setStatus(Status.KHONG_SU_DUNG);
+            promotion.setStatus(StatusPromotion.DANG_KICH_HOAT);
             promotionRepository.save(promotion);
         }
         return expiredPromotions;
@@ -206,7 +202,7 @@ public class PromotionServiceImpl implements PromotionService {
     public List<Promotion> startVoucher() {
         List<Promotion> startPromotions = promotionRepository.findStartPromotions(System.currentTimeMillis());
         for (Promotion promotion : startPromotions) {
-            promotion.setStatus(Status.DANG_SU_DUNG);
+            promotion.setStatus(StatusPromotion.DANG_KICH_HOAT);
             promotionRepository.save(promotion);
         }
         return startPromotions;
@@ -221,4 +217,27 @@ public class PromotionServiceImpl implements PromotionService {
     public List<PromotionByProDuctDetail> getByIdProductDetail(String id) {
         return promotionRepository.getByIdProductDetail(id);
     }
+
+    private Status getStatus(StatusPromotion status) {
+        return status == StatusPromotion.DANG_KICH_HOAT ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
+    }
+
+    private StatusPromotion getStatusPromotion(long startDate, long endDate) {
+        long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
+        return (startDate > currentSeconds) ? StatusPromotion.CHUA_KICH_HOAT : (currentSeconds > endDate) ? StatusPromotion.HET_HAN_KICH_HOAT : StatusPromotion.DANG_KICH_HOAT;
+    }
+
+    private boolean updateProductDetailsStatus(String idPromotion, StatusPromotion status) {
+        List<PromotionProductDetail> promotionProductDetailList = promotionProductDetailRepository.findAllByIdPromotion(idPromotion);
+        if (status.equals(StatusPromotion.HET_HAN_KICH_HOAT)) {
+            List<PromotionProductDetail> updatePromotionProductDetails = promotionProductDetailList.stream().map(promotionProductDetail -> {
+                promotionProductDetail.setStatus(Status.KHONG_SU_DUNG);
+                return promotionProductDetail;
+            }).collect(Collectors.toList());
+            promotionProductDetailRepository.saveAll(updatePromotionProductDetails);
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -1,5 +1,13 @@
-import { faMinus, faPlus, faTags, faTrash } from "@fortawesome/free-solid-svg-icons";
+import imgShoe from "./../../../assets/images/third_slider_img03.png";
+import logoHidden from "./../../../assets/images/logo_client.png";
+import imgShoe1 from "./../../../assets/images/trending_banner02.jpg";
+import "./style-cart.css";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useCart } from "./CartContext";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinus, faPlus, faTags, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Checkbox,
@@ -11,21 +19,14 @@ import {
   Tooltip,
 } from "antd";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { CartDetailClientApi } from "./../../../api/customer/cartdetail/cartDetailClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
 import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
-import logoHidden from "./../../../assets/images/logo_client.png";
-import imgShoe from "./../../../assets/images/third_slider_img03.png";
-import imgShoe1 from "./../../../assets/images/trending_banner02.jpg";
-import { useCart } from "./CartContext";
 import "./style-cart.css";
 
 function Cart() {
-  const nav = useNavigate()
+  const nav = useNavigate();
   const idAccountLocal = sessionStorage.getItem("idAccount");
   const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
   const [cart, setCart] = useState([]);
@@ -63,7 +64,7 @@ function Cart() {
     }
     console.log(selectedItem);
     setModalVoucher(false);
-
+    
   };
   useEffect(() => {
     console.log(idAccountLocal);
@@ -95,7 +96,7 @@ function Cart() {
     }
     console.log(chooseItemCart.length, cart.length);
     if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
-      setSelectAllChecked(true)
+      setSelectAllChecked(true);
     }
   }, []);
 
@@ -121,9 +122,9 @@ function Cart() {
   useEffect(() => {
     console.log(chooseItemCart.length, cart.length);
     if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
-      setSelectAllChecked(true)
+      setSelectAllChecked(true);
     } else if (chooseItemCart.length !== cart.length) {
-      setSelectAllChecked(false)
+      setSelectAllChecked(false);
     }
   }, [chooseItemCart]);
   useEffect(() => {
@@ -393,9 +394,13 @@ function Cart() {
     chooseItemCart.map((item) => {
       if (item.idProductDetail === itemOld.idProductDetail) {
         if (itemOld.quantity < value) {
-          setTotalPrice(totalPrice + parseInt(itemOld.price * (value - itemOld.quantity)));
+          setTotalPrice(
+            totalPrice + parseInt(itemOld.price * (value - itemOld.quantity))
+          );
         } else {
-          setTotalPrice(totalPrice - parseInt(itemOld.price * (itemOld.quantity - value)));
+          setTotalPrice(
+            totalPrice - parseInt(itemOld.price * (itemOld.quantity - value))
+          );
         }
       }
     });
@@ -511,8 +516,6 @@ function Cart() {
     }
   };
 
-
-
   return (
     <div className="cart">
       <div className="img-banner">
@@ -536,8 +539,8 @@ function Cart() {
                     padding: "20px 30px",
                     alignItems: "center",
                     marginTop: "60px",
-                    marginBottom: 30,
-                    backgroundColor: "white",
+                    marginBottom:30,
+                    backgroundColor:"white",
                     border: "1px solid #ebebeb"
                   }}
                 >
@@ -582,16 +585,16 @@ function Cart() {
 
                 <div>
                   {cart.length === 0 ? (
-                    <div className="cart-is-empty">
-                      <div> Giỏ hàng trống! </div>
-                      <Link to={"/home"}>Mua hàng</Link>
-                    </div>
+                    <Tooltip title="Bấm để mua hàng">
+                      <Link className="cart-is-empty" to={"/home"}></Link>
+                    </Tooltip>
                   ) : (
                     <>
                       {cart.map((item, index) => (
                         <div
-                          className={`item-cart ${index === cart.length - 1 ? "last-item" : ""
-                            }`}
+                          className={`item-cart ${
+                            index === cart.length - 1 ? "last-item" : ""
+                          }`}
                           key={index}
                         >
                           <div key={index} className="box-cart-img">
@@ -636,26 +639,27 @@ function Cart() {
                             >
                               <div>
                                 <div
-                                  style={{ fontWeight: "bold", marginRight: 10 }}
+                                  style={{
+                                    fontWeight: "bold",
+                                    marginRight: 10,
+                                  }}
                                 >
                                   Số lượng
                                 </div>
                                 <div className="form-change-quantity">
-
                                   <FontAwesomeIcon
-                                    icon={faMinus} className="button-minus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) - 1) < 1 ? 1 : (parseInt(item.quantity) - 1), item.quantityProductDetail)} />
+                                    icon={faMinus} className="button-minus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) - 1) < 1 ? 1 : (parseInt(item.quantity) - 1))} />
                                   <Input className="quantity-product-in-cart"
                                     min={1}
                                     max={item.quantityProductDetail}
                                     value={item.quantity}
                                     onChange={(value) =>
-                                      changeQuantity(item, value.target.value < 1 ? 1 : value.target.value, item.quantityProductDetail)
+                                      changeQuantity(item, value.target.value < 1 ? 1 : value.target.value)
                                     }
                                   />
-                                  <FontAwesomeIcon icon={faPlus} className="button-plus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) + 1) < 1 ? 1 : (parseInt(item.quantity) + 1), item.quantityProductDetail)} />
+                                  <FontAwesomeIcon icon={faPlus} className="button-plus-quantity" onClick={() => changeQuantity(item, (parseInt(item.quantity) + 1) < 1 ? 1 : (parseInt(item.quantity) + 1))} />
                                 </div>
                               </div>
-
                             </div>
                           </div>
                           <div className="form-status-cart">
@@ -698,7 +702,6 @@ function Cart() {
                                 />
                               </Tooltip>
                             </div>
-
                           </div>
                         </div>
                       ))}
@@ -709,11 +712,14 @@ function Cart() {
                   <div style={{ display: "flex", marginTop: 70 }}>
                     <div className="button-delete-all-cart">XOÁ TẤT CẢ</div>
 
-                    <div className="button-continue-to-buy" onClick={() => nav("/home")}  >
+                    <div
+                      className="button-continue-to-buy"
+                      onClick={() => nav("/home")}
+                    >
                       TIẾP TỤC MUA HÀNG
                     </div>
-                  </div>) : (null)}
-
+                  </div>
+                ) : null}
               </div>
               {/* bill of cart */}
               <div className="bill-of-cart" style={{ borderRadius: "20px" }}>
@@ -762,8 +768,9 @@ function Cart() {
                   )}
 
                   <div
-                    className={`value-bill-of-cart ${idAccountLocal !== null ? "acc" : ""
-                      }`}
+                    className={`value-bill-of-cart ${
+                      idAccountLocal !== null ? "acc" : ""
+                    }`}
                   >
                     <div style={{ display: "flex" }}>
                       <div
@@ -820,8 +827,9 @@ function Cart() {
             listSize.sort().map((item, index) => (
               <div
                 key={index}
-                className={`item-size-of-cart ${clickedIndex === index ? "clicked" : ""
-                  }`}
+                className={`item-size-of-cart ${
+                  clickedIndex === index ? "clicked" : ""
+                }`}
                 tabIndex="0"
                 onClick={() => getDetailProduct(index, item)}
               >
@@ -850,7 +858,6 @@ function Cart() {
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
         width={600}
-
       >
         <div className="category-voucher">
           <h1>Chọn mã khuyến mãi</h1>
@@ -864,8 +871,9 @@ function Cart() {
               }}
             />
             <div
-              className={`button-submit-voucher-cart ${!formSearch ? "" : "show"
-                }`}
+              className={`button-submit-voucher-cart ${
+                !formSearch ? "" : "show"
+              }`}
               onClick={() => {
                 getVoucher(formSearch);
               }}

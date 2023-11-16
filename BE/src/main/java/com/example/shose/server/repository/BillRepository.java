@@ -27,7 +27,7 @@ import java.util.Optional;
 @Repository
 public interface BillRepository extends JpaRepository<Bill, String> {
         @Query(value = """
-                SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
+                SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
                 LEFT JOIN account ac ON ac.id = bi.id_account
                 LEFT JOIN account em ON em.id = bi.id_employees
                 LEFT JOIN customer cu ON cu.id = bi.id_customer
@@ -53,10 +53,12 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 AND ( :#{#request.type} IS NULL
                          OR :#{#request.type} LIKE ''
                          OR bi.type = :#{#request.type})
+               AND ( :role = 'ROLE_ADMIN' OR bi.id_employees = :id )
                 ORDER BY bi.last_modified_date DESC
+
                             
                 """, nativeQuery = true)
-        List<BillResponse> getAll( BillRequest request);
+        List<BillResponse> getAll(@Param("id") String id,@Param("role") String role, BillRequest request);
 
         @Query(value = """
                 SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,   bi.status_bill, bi.total_money, bi.item_discount, COUNT(bide.quantity) AS quantity FROM bill bi
@@ -73,7 +75,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          OR bi.user_name LIKE :#{#request.key}
                          OR bi.code LIKE :#{#request.key}
                          OR bi.phone_number LIKE :#{#request.key})
-               AND ( :role = 'ADMIN' OR bi.id_employees = :id )
+               AND ( :role = 'ROLE_ADMIN' OR bi.id_employees = :id )
                GROUP BY   bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name ) ,   bi.status_bill, bi.total_money, bi.item_discount 
                 ORDER BY bi.created_date ASC          
                 """, nativeQuery = true)
@@ -156,6 +158,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
         AND b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
    GROUP BY image, nameProduct, price
    ORDER BY sold desc
+   LIMIT 9
                                       """, nativeQuery = true)
     List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct(@Param("startOfMonth") Long startOfMonth, @Param("endOfMonth") Long endOfMonth);
 

@@ -23,4 +23,5 @@ public interface PromotionService {
     List<Promotion> startVoucher();
     PromotionByIdRespone getByIdPromotion(String id);
     List<PromotionByProDuctDetail> getByIdProductDetail(String id);
+
 }

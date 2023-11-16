@@ -103,7 +103,7 @@ public class BillServiceImpl implements BillService {
     private NotificationRepository notificationRepository;
 
     @Override
-    public List<BillResponse> getAll(BillRequest request) {
+    public List<BillResponse> getAll(String id,BillRequest request) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         request.setConverStatus(Arrays.toString(request.getStatus()));
         try {
@@ -122,7 +122,8 @@ public class BillServiceImpl implements BillService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        return billRepository.getAll(request);
+        Optional<Account> user = accountRepository.findById(id);
+        return billRepository.getAll(id,user.get().getRoles().name(), request);
     }
 
     @Override
@@ -351,35 +352,6 @@ public class BillServiceImpl implements BillService {
             }
             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(optional.get());
-            request.getPaymentsMethodRequests().forEach(item -> {
-                if (item != null) {
-                    if (item.getMethod() != StatusMethod.CHUYEN_KHOAN) {
-                        PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                                .method(item.getMethod())
-                                .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                                .employees(optional.get().getEmployees())
-                                .totalMoney(item.getTotalMoney())
-                                .description(item.getActionDescription())
-                                .bill(optional.get())
-                                .build();
-                        paymentsMethodRepository.save(paymentsMethod);
-                    }
-                }
-
-            });
-            billRepository.save(optional.get());
-
-            billDetailResponse.forEach(item -> {
-                Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
-                if (!productDetail.isPresent()) {
-                    throw new RestApiException(Message.NOT_EXISTS);
-                }
-                productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
-                productDetailRepository.save(productDetail.get());
-            });
-            billDetailRepository.deleteAllByIdBill(optional.get().getId());
-            paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
-            voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
             request.getBillDetailRequests().forEach(billDetailRequest -> {
                 Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
@@ -653,7 +625,7 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.CHUA_THANH_TOAN : StatusPayMents.DA_THANH_TOAN).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
 
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
@@ -758,7 +730,7 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.CHUA_THANH_TOAN : StatusPayMents.DA_THANH_TOAN).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
