@@ -123,7 +123,7 @@ public class BillServiceImpl implements BillService {
     private PaymentsMethodService paymentsMethodService;
 
     @Override
-    public List<BillResponse> getAll(BillRequest request) {
+    public List<BillResponse> getAll(String id,BillRequest request) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         request.setConverStatus(Arrays.toString(request.getStatus()));
         try {
@@ -142,7 +142,8 @@ public class BillServiceImpl implements BillService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        return billRepository.getAll(request);
+        Optional<Account> user = accountRepository.findById(id);
+        return billRepository.getAll(id,user.get().getRoles().name(), request);
     }
 
     @Override
