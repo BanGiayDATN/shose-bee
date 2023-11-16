@@ -31,4 +31,6 @@ public interface ListCart {
     @Value("#{target.quantity}")
     String getQuantity();
 
+    @Value("#{target.quantityProductDetail}")
+    Integer getQuantityProductDetail();
 }

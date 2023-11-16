@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, Col, Slider, Select, Input, Tooltip } from "antd";
 import "./style-product.css";
-import { useAppDispatch } from "../../../app/hook";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,7 +16,6 @@ import { ProducDetailtApi } from "../../../api/employee/product-detail/productDe
 import ModalDetailProductManagment from "./ModalDetailProductManagment";
 import { ProductApi } from "../../../api/employee/product/product.api";
 import { Option } from "antd/es/mentions";
-import useDebounce from "../../custom-hook/useDebounce";
 
 const ProductManagement = () => {
   const [listProduct, setListProduct] = useState([]);

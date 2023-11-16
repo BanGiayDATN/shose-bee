@@ -62,6 +62,16 @@ const VoucherManagement = () => {
     loadData();
   };
 
+  // format tiền
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+
   const convertToLongSearch = () => {
     const convertedFormDataSearch = { ...formDataSearch };
     if (formDataSearch.startDate) {
@@ -135,6 +145,7 @@ const VoucherManagement = () => {
       align: "center",
       key: "value",
       sorter: (a, b) => a.value - b.value,
+      render: (_, record) => formatCurrency(record.value),
     },
     {
       title: "Ngày bắt đầu",

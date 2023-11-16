@@ -24,6 +24,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email")
     Account getOneByEmail(@Param("email") String email);
+    Optional<Account> getByEmail(String email);
 
     @Query(value = """
              SELECT ac.id, us.full_name FROM account ac

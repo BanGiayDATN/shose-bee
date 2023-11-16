@@ -3,6 +3,7 @@ package com.example.shose.server.repository;
 import com.example.shose.server.dto.request.voucher.FindVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
 import com.example.shose.server.entity.Voucher;
+import com.example.shose.server.infrastructure.constant.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -93,4 +94,5 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
             " JOIN Account  ac on ac.id = avc.account.id" +
             " WHERE ac.id = :idAccount")
     List<Voucher> getVoucherByIdAccount(@Param("idAccount") String idAccount);
+    List<Voucher> findAllByStatus(Status status);
 }

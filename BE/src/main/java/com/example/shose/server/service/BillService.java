@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface BillService {
 
-    List<BillResponse> getAll(BillRequest request);
+    List<BillResponse> getAll(String id, BillRequest request);
 
     List<UserBillResponse> getAllUserInBill();
 
@@ -51,9 +51,9 @@ public interface BillService {
 
     Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request, HttpServletRequest requests);
 
-    String createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
+    Bill createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
 
-    String createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
+    Bill createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
     boolean createFilePdf(String idBill, HttpServletRequest request);
 

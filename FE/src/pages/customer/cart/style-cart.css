@@ -1,5 +1,6 @@
 .cart {
   padding-bottom: 100px;
+  background-color: #f7f7f7;
 }
 .img-shoe {
   width: 200px;
@@ -88,10 +89,10 @@
   height: 520px;
 }
 .content-bill-of-cart {
-  background-color: #e1e1e1;
+  background-color: #f1f1f1;
   padding: 20px;
   height: 500px;
-  border-radius: 15px;
+  border: 1px solid rgb(230, 230, 230);
 }
 .text-bill-in-cart {
   display: flex;
@@ -108,12 +109,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: url("https://bizweb.dktcdn.net/100/414/833/themes/803358/assets/empty-cart.png?1698141402395");
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-size: 70%;
   /* border: #7c7876 1px dotted; */
 }
 .item-cart {
   display: flex;
   height: 230px;
-  padding: 20px;
+  padding: 30px;
   border-bottom: dotted 1px rgb(195, 166, 156);
   background-color: #ffffff;
   margin-bottom: 20px;
@@ -169,7 +174,6 @@
   display: flex;
   justify-content: center;
   margin-top: 30px;
-  
 }
 .icon-button-delete-cart {
   color: rgb(249, 3, 3);
@@ -182,21 +186,21 @@
   align-items: center;
 }
 .button-delete-all-cart {
-  width: 150px;
+  width: 200px;
   height: 40px;
-  background-color: rgb(34, 32, 32);
+  background-color: #303030;
   color: white;
   font-size: 17px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  border-radius: 5px;
+  font-weight: 600;
 }
 .button-continue-to-buy {
-  width: 150px;
+  width: 200px;
   height: 40px;
-  background-color: rgb(34, 32, 32);
+  background-color: #303030;
   color: white;
   font-size: 17px;
   display: flex;
@@ -204,7 +208,7 @@
   align-items: center;
   margin-left: auto;
   cursor: pointer;
-  border-radius: 5px;
+  font-weight: 600;
 }
 
 .input-quantity-cart {
@@ -270,10 +274,13 @@
   border-color: #ff4400;
   border-radius: "20px";
 }
+.span.ant-checkbox-inner {
+  border-color: #ff4400;
+}
 .custom-checkbox-all .ant-checkbox-inner {
   background-color: rgb(255, 255, 255);
   border-color: #ff4400;
-  border-radius: "20px";
+  border-radius: 0;
 }
 
 .custom-checkbox-all .ant-checkbox-checked .ant-checkbox-inner {
@@ -289,7 +296,7 @@
 .custom-checkbox .ant-checkbox-inner {
   background-color: rgb(255, 255, 255);
   border-color: #ff4400;
-  border-radius: "20px";
+  border-radius: 0;
 }
 
 .custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
@@ -338,7 +345,7 @@
   font-size: 20px;
   margin-top: 30px;
   cursor: pointer;
-  border-radius: 10px;
+  font-weight: 700;
 }
 .button-pay:hover {
   background-color: #252323;
@@ -371,8 +378,7 @@
   padding: 8px;
   margin-left: 15px;
   color: #d1c9c6;
-  cursor: none;
-  /* pointer-events: none; */
+  cursor: not-allowed;
 }
 .button-submit-voucher-cart.show {
   border: #726a69 1px solid;

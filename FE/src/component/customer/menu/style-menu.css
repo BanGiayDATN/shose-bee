@@ -115,7 +115,7 @@
   height: 100vh;
   background-color: #ffffff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
+  z-index: 999;
   transition: transform 0.8s, opacity 0.8s ease;
 }
 .search-panel.hidden {

@@ -125,7 +125,7 @@ public class BillServiceImpl implements BillService {
     private PaymentsMethodService paymentsMethodService;
 
     @Override
-    public List<BillResponse> getAll(BillRequest request) {
+    public List<BillResponse> getAll(String id,BillRequest request) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         request.setConverStatus(Arrays.toString(request.getStatus()));
         try {
@@ -144,7 +144,8 @@ public class BillServiceImpl implements BillService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        return billRepository.getAll(request);
+        Optional<Account> user = accountRepository.findById(id);
+        return billRepository.getAll(id,user.get().getRoles().name(), request);
     }
 
     @Override
@@ -373,35 +374,6 @@ public class BillServiceImpl implements BillService {
             }
             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(optional.get());
-            request.getPaymentsMethodRequests().forEach(item -> {
-                if (item != null) {
-                    if (item.getMethod() != StatusMethod.CHUYEN_KHOAN) {
-                        PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                                .method(item.getMethod())
-                                .status(StatusPayMents.valueOf(request.getStatusPayMents()))
-                                .employees(optional.get().getEmployees())
-                                .totalMoney(item.getTotalMoney())
-                                .description(item.getActionDescription())
-                                .bill(optional.get())
-                                .build();
-                        paymentsMethodRepository.save(paymentsMethod);
-                    }
-                }
-
-            });
-            billRepository.save(optional.get());
-
-            billDetailResponse.forEach(item -> {
-                Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
-                if (!productDetail.isPresent()) {
-                    throw new RestApiException(Message.NOT_EXISTS);
-                }
-                productDetail.get().setQuantity(item.getQuantity() + productDetail.get().getQuantity());
-                productDetailRepository.save(productDetail.get());
-            });
-            billDetailRepository.deleteAllByIdBill(optional.get().getId());
-            paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
-            voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
             request.getBillDetailRequests().forEach(billDetailRequest -> {
                 Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
@@ -611,54 +583,30 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public String createBillCustomerOnlineRequest(CreateBillCustomerOnlineRequest request) {
-        if(!request.getPaymentMethod().equals("paymentReceive")){
-            if(!Config.decodeHmacSha512(request.getResponsePayment().toParamsString(), request.getResponsePayment().getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
-                throw new RestApiException(Message.ERROR_HASHSECRET);
-            }
-            List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(request.getResponsePayment().getVnp_TransactionNo());
-            if (findAllByVnpTransactionNo.size() > 0) {
-                throw new RestApiException(Message.PAYMENT_TRANSACTION);
-            }
-            request.getBillDetail().forEach(x -> {
-                ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
-                productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
-                if (productDetail.getStatus() == Status.HET_SAN_PHAM) {
-                    productDetail.setStatus(Status.DANG_SU_DUNG);
+
+    public Bill createBillCustomerOnlineRequest(CreateBillCustomerOnlineRequest request) {
+        if(request.getPaymentMethod().equals("paymentReceive")){
+            for (BillDetailOnline x : request.getBillDetail()){
+                Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
+                if(!optional.isPresent()){
+                    throw new RestApiException("Sản phẩm không tồn tại");
+                }
+
+                ProductDetail productDetail = optional.get();
+                if(productDetail.getQuantity()<x.getQuantity()){
+                    throw new RestApiException(Message.ERROR_QUANTITY);
+                }
+                if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                    throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
+                }
+                productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
+                if (productDetail.getQuantity() == 0) {
+                    productDetail.setStatus(Status.HET_SAN_PHAM);
                 }
                 productDetailRepository.save(productDetail);
-            });
-            if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
-                throw new RestApiException(Message.PAYMENT_ERROR);
+
             }
         }
-        User user = User.builder()
-                .fullName(request.getUserName())
-                .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
-                .status(Status.DANG_SU_DUNG)
-                .points(0).build();
-        userReposiory.save(user);
-        Account account = Account.builder()
-                .user(user)
-                .email(request.getEmail())
-                .status(Status.DANG_SU_DUNG)
-                .password(new RandomNumberGenerator().randomPassword())
-                .roles(Roles.ROLE_USER).build();
-
-        accountRepository.save(account);
-        Address address = Address.builder()
-                .status(Status.DANG_SU_DUNG)
-                .user(user)
-                .line(request.getAddress())
-                .ward(request.getWard())
-                .district(request.getDistrict())
-                .province(request.getProvince())
-                .provinceId(request.getProvinceId())
-                .wardCode(request.getWardCode())
-                .toDistrictId(request.getDistrictId()).build();
-        addressRepository.save(address);
-
         Bill bill = Bill.builder()
                 .code("HD" + RandomStringUtils.randomNumeric(6))
                 .phoneNumber(request.getPhoneNumber())
@@ -669,26 +617,23 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
                 .email(request.getEmail())
-                .statusBill(StatusBill.CHO_XAC_NHAN)
-                .account(account).build();
+                .statusBill(StatusBill.CHO_XAC_NHAN).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
         }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
-                .statusBill(StatusBill.CHO_XAC_NHAN)
+                .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
                 .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
         for (BillDetailOnline x : request.getBillDetail()) {
+            Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
+            if(!optional.isPresent()){
+                throw new RestApiException("Sản phẩm không tồn tại");
+            }
 
-            ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
-            if (productDetail.getQuantity() < x.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
-            }
-            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
-                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
-            }
+            ProductDetail productDetail = optional.get();
             BillDetail billDetail = BillDetail.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
                     .productDetail(productDetail)
@@ -696,17 +641,14 @@ public class BillServiceImpl implements BillService {
                     .quantity(x.getQuantity())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
-            productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
-            if (productDetail.getQuantity() == 0) {
-                productDetail.setStatus(Status.HET_SAN_PHAM);
-            }
-            productDetailRepository.save(productDetail);
+
         }
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(StatusPayMents.TRA_SAU).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
+
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
@@ -716,8 +658,11 @@ public class BillServiceImpl implements BillService {
         paymentsMethodRepository.save(paymentsMethod);
 
         if (!request.getIdVoucher().isEmpty()) {
-            Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
-
+            Optional<Voucher> optional = voucherRepository.findById(request.getIdVoucher());
+            if(!optional.isPresent()){
+                throw new RestApiException("Khuyến mãi không tồn tại");
+            }
+            Voucher voucher = optional.get();
             VoucherDetail voucherDetail = VoucherDetail.builder()
                     .voucher(voucher)
                     .bill(bill)
@@ -727,32 +672,37 @@ public class BillServiceImpl implements BillService {
                     .build();
             voucherDetailRepository.save(voucherDetail);
         }
+
         sendMailOnline(bill.getId());
-        return "thanh toán ok";
+        return bill;
     }
 
     @Override
-    public String createBillAccountOnlineRequest(CreateBillAccountOnlineRequest request) {
-        if(!request.getPaymentMethod().equals("paymentReceive")){
-            if(!Config.decodeHmacSha512(request.getResponsePayment().toParamsString(), request.getResponsePayment().getVnp_SecureHash(), VnPayConstant.vnp_HashSecret)){
-                throw new RestApiException(Message.ERROR_HASHSECRET);
-            }
-            List<String> findAllByVnpTransactionNo = paymentsMethodRepository.findAllByVnpTransactionNo(request.getResponsePayment().getVnp_TransactionNo());
-            if (findAllByVnpTransactionNo.size() > 0) {
-                throw new RestApiException(Message.PAYMENT_TRANSACTION);
-            }
-            request.getBillDetail().forEach(x -> {
-                ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
-                productDetail.setQuantity(productDetail.getQuantity() + x.getQuantity());
-                if (productDetail.getStatus() == Status.HET_SAN_PHAM) {
-                    productDetail.setStatus(Status.DANG_SU_DUNG);
+
+    public Bill createBillAccountOnlineRequest(CreateBillAccountOnlineRequest request) {
+        if(request.getPaymentMethod().equals("paymentReceive")){
+            for (BillDetailOnline x : request.getBillDetail()){
+                Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
+                if(!optional.isPresent()){
+                    throw new RestApiException("Sản phẩm không tồn tại");
+                }
+
+                ProductDetail productDetail = optional.get();
+                if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                    throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
+                }
+                if(productDetail.getQuantity()<x.getQuantity()){
+                    throw new RestApiException(Message.ERROR_QUANTITY);
+                }
+                productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
+                if (productDetail.getQuantity() == 0) {
+                    productDetail.setStatus(Status.HET_SAN_PHAM);
                 }
                 productDetailRepository.save(productDetail);
-            });
-            if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
-                throw new RestApiException(Message.PAYMENT_ERROR);
+
             }
         }
+
         Account account = accountRepository.findById(request.getIdAccount()).get();
         Bill bill = Bill.builder()
                 .code("HD" + RandomStringUtils.randomNumeric(6) )
@@ -773,17 +723,16 @@ public class BillServiceImpl implements BillService {
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
                 .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
-                .actionDescription("Đã thanh toán").build();
+                .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
         for (BillDetailOnline x : request.getBillDetail()) {
-            ProductDetail productDetail = productDetailRepository.findById(x.getIdProductDetail()).get();
-            if (productDetail.getQuantity() < x.getQuantity()) {
-                throw new RestApiException(Message.ERROR_QUANTITY);
+            Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
+            if(!optional.isPresent()){
+                throw new RestApiException("Sản phẩm không tồn tại");
             }
-            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
-                throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
-            }
+
+            ProductDetail productDetail = optional.get();
             BillDetail billDetail = BillDetail.builder()
                     .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
                     .productDetail(productDetail)
@@ -792,17 +741,12 @@ public class BillServiceImpl implements BillService {
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
 
-            productDetail.setQuantity(productDetail.getQuantity() - x.getQuantity());
-            if (productDetail.getQuantity() == 0) {
-                productDetail.setStatus(Status.HET_SAN_PHAM);
-            }
-            productDetailRepository.save(productDetail);
         }
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(StatusPayMents.TRA_SAU).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
@@ -812,7 +756,11 @@ public class BillServiceImpl implements BillService {
         paymentsMethodRepository.save(paymentsMethod);
 
         if (!request.getIdVoucher().isEmpty()) {
-            Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
+            Optional<Voucher> optional = voucherRepository.findById(request.getIdVoucher());
+            if(!optional.isPresent()){
+                throw new RestApiException("Khuyến mãi không tồn tại");
+            }
+            Voucher voucher = optional.get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
                     .voucher(voucher)
@@ -830,7 +778,7 @@ public class BillServiceImpl implements BillService {
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
         sendMailOnline(bill.getId());
-        return "thanh toán ok";
+        return bill;
     }
 
     @Override

@@ -19,7 +19,7 @@ public enum Message {
     ACCOUNT_NOT_EXIT("Tài khoản không tồn tại"),
     ACCOUNT_NOT_PERMISSION("Tài khoản không có quyền tạo hóa đơn"),
     BILL_NOT_REFUND("Hóa đơn không thể trả hàng"),
-    ERROR_QUANTITY("Số lượng không đủ"),
+    ERROR_QUANTITY("Số lượng sản phẩm không đủ để mua"),
     ERROR_TOTALMONEY("Tiền trả phải lớn hơn hoặc bằng phải trả"),
 
     PHONENUMBER_USER_EXIST("Số điện thoại người dùng đã tồn tại "),
@@ -36,8 +36,8 @@ public enum Message {
     ERROR_CANCEL_BILL("Lỗi khi hủy đơn hàng"),
     PAYMENT_TRANSACTION("Mã giao dịch đã tồn tại"),
     PAYMENT_ERROR("Thanh toán thất bại"),
-    NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán");
-
+    NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán"),
+    VALIDATE_PASSWORD("Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 số");
 
 
 
