@@ -53,10 +53,11 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 AND ( :#{#request.type} IS NULL
                          OR :#{#request.type} LIKE ''
                          OR bi.type = :#{#request.type})
+               AND ( :role = 'ADMIN' OR bi.id_employees = :id )
                 ORDER BY bi.created_date DESC
                             
                 """, nativeQuery = true)
-        List<BillResponse> getAll( BillRequest request);
+        List<BillResponse> getAll(@Param("id") String id,@Param("role") String role, BillRequest request);
 
         @Query(value = """
                 SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,   bi.status_bill, bi.total_money, bi.item_discount, COUNT(bide.quantity) AS quantity FROM bill bi
