@@ -333,7 +333,9 @@ const ModalAccountEmployee = ({ dataIdCheck, handleCancel, status }) => {
                 toast.success(`chuyển hóa đơn thành công`);
               }
               handleCancel();
-            });
+            }).catch((error) => {
+              toast.error(error.response.data.message);
+            });;
           }else{
             var data = {
               id: dataIdCheck,
@@ -344,11 +346,14 @@ const ModalAccountEmployee = ({ dataIdCheck, handleCancel, status }) => {
                 toast.success(`chuyển hóa đơn thành công`);
               }
               handleCancel();
-            });
+            }).catch((error) => {
+              toast.error(error.response.data.message);
+            });;
           }
          
         },
-        onCancel: () => {},
+        onCancel: () => {
+        },
       });
     }
   };

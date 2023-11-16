@@ -132,6 +132,8 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
+    }).catch((error) => {
+      toast.error(error.response.data.message);
     });
   }, []);
 
@@ -152,6 +154,8 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
+    }).catch((error) => {
+      toast.error(error.response.data.message);
     });
   }, [dataFillter]);
 
@@ -205,9 +209,13 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
             });
             toast.success(`${convertString(statusBill)} thành công`);
           }
+        }).catch((error) => {
+          toast.error(error.response.data.message);
         });
         await BillApi.fetchAll(fillter).then((res) => {
           setDataBill(res.data.data);
+        }).catch((error) => {
+          toast.error(error.response.data.message);
         });
       },
       onCancel: () => {},
@@ -224,14 +232,18 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     setIsModalOpen(false);
      BillApi.fetchAll(fillter).then((res) => {
       setDataBill(res.data.data);
-    });
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+    });;
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
      BillApi.fetchAll(fillter).then((res) => {
       setDataBill(res.data.data);
-    });
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+    });;
   };
 
   return (
