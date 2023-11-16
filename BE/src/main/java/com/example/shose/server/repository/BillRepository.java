@@ -53,7 +53,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 AND ( :#{#request.type} IS NULL
                          OR :#{#request.type} LIKE ''
                          OR bi.type = :#{#request.type})
-               AND ( :role = 'ADMIN' OR bi.id_employees = :id )
+               AND ( :role = 'ROLE_ADMIN' OR bi.id_employees = :id )
                 ORDER BY bi.last_modified_date DESC
 
                             
@@ -75,7 +75,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          OR bi.user_name LIKE :#{#request.key}
                          OR bi.code LIKE :#{#request.key}
                          OR bi.phone_number LIKE :#{#request.key})
-               AND ( :role = 'ADMIN' OR bi.id_employees = :id )
+               AND ( :role = 'ROLE_ADMIN' OR bi.id_employees = :id )
                GROUP BY   bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name ) ,   bi.status_bill, bi.total_money, bi.item_discount 
                 ORDER BY bi.created_date ASC          
                 """, nativeQuery = true)
