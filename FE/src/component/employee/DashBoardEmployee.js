@@ -29,13 +29,10 @@ import {
   faTags,
   faUserGroup,
   faBoxesPacking,
-  faPercent,
+  faTruckFast,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
-import {
-  deleteToken,
-  deleteUserToken,
-} from "../../helper/useCookies";
+import { deleteToken, deleteUserToken } from "../../helper/useCookies";
 import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
 import { jwtDecode } from "jwt-decode";
@@ -68,6 +65,8 @@ const DashBoardEmployee = ({ children }) => {
     loadUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+
+  const isAdmin = user?.role?.includes("ROLE_ADMIN");
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -141,15 +140,20 @@ const DashBoardEmployee = ({ children }) => {
         </Link>
         <div className="demo-logo-vertical" />
         <Menu theme="dark" mode="inline">
-          <Menu.Item
-            key="1"
-            className="menu-item"
-            icon={
-              <FontAwesomeIcon icon={faChartLine} style={{ color: "white" }} />
-            }
-          >
-            <Link to="/dashboard">Thống Kê</Link>
-          </Menu.Item>
+          {isAdmin && (
+            <Menu.Item
+              key="1"
+              className="menu-item"
+              icon={
+                <FontAwesomeIcon
+                  icon={faChartLine}
+                  style={{ color: "white" }}
+                />
+              }
+            >
+              <Link to="/dashboard">Thống Kê</Link>
+            </Menu.Item>
+          )}
           <Menu.Item
             key="3"
             icon={
@@ -172,33 +176,43 @@ const DashBoardEmployee = ({ children }) => {
           >
             <Link to="/bill-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
-
-          <SubMenu
-            key="6"
+          <Menu.Item
+            key="9"
             icon={
-              <FontAwesomeIcon
-                icon={faBoxesPacking}
-                style={{ color: "white" }}
-              />
+              <FontAwesomeIcon icon={faTruckFast} style={{ color: "white" }} />
             }
-            title="Quản Lý Sản Phẩm"
           >
-            <Menu.Item key="6.0">
-              <Link to="/product-management">Sản Phẩm</Link>
-            </Menu.Item>
-            <Menu.Item key="6.1">
-              <Link to="/category-management">Thể Loại</Link>
-            </Menu.Item>
-            <Menu.Item key="6.2">
-              <Link to="/sole-management">Đế Giày</Link>
-            </Menu.Item>
-            <Menu.Item key="6.3">
-              <Link to="/brand-management">Thương Hiệu</Link>
-            </Menu.Item>
-            <Menu.Item key="6.4">
-              <Link to="/material-management">Chất Liệu</Link>
-            </Menu.Item>
-          </SubMenu>
+            <Link to="/give-back-management">Trả Hàng</Link>
+          </Menu.Item>
+
+          {isAdmin && (
+            <SubMenu
+              key="6"
+              icon={
+                <FontAwesomeIcon
+                  icon={faBoxesPacking}
+                  style={{ color: "white" }}
+                />
+              }
+              title="Quản Lý Sản Phẩm"
+            >
+              <Menu.Item key="6.0">
+                <Link to="/product-management">Sản Phẩm</Link>
+              </Menu.Item>
+              <Menu.Item key="6.1">
+                <Link to="/category-management">Thể Loại</Link>
+              </Menu.Item>
+              <Menu.Item key="6.2">
+                <Link to="/sole-management">Đế Giày</Link>
+              </Menu.Item>
+              <Menu.Item key="6.3">
+                <Link to="/brand-management">Thương Hiệu</Link>
+              </Menu.Item>
+              <Menu.Item key="6.4">
+                <Link to="/material-management">Chất Liệu</Link>
+              </Menu.Item>
+            </SubMenu>
+          )}
 
           <SubMenu
             key="7"
@@ -207,33 +221,31 @@ const DashBoardEmployee = ({ children }) => {
             }
             title="Quản Lý Tài Khoản"
           >
-            <Menu.Item key="7.0">
-              <Link to="/staff-management">Nhân Viên</Link>
-            </Menu.Item>
+            {isAdmin && (
+              <Menu.Item key="7.0">
+                <Link to="/staff-management">Nhân Viên</Link>
+              </Menu.Item>
+            )}
             <Menu.Item key="7.1">
               <Link to="/customer-management">Khách Hàng</Link>
             </Menu.Item>
           </SubMenu>
-          <Menu.Item
-            key="8"
-            icon={
-              <FontAwesomeIcon icon={faPercent} style={{ color: "white" }} />
-            }
-          >
-            <Link to="/promotion-management">Khuyến Mại</Link>
-          </Menu.Item>
-          <Menu.Item
-            key="9"
-            icon={<FontAwesomeIcon icon={faTags} style={{ color: "white" }} />}
-          >
-            <Link to="/voucher-management">Khuyến Mãi</Link>
-          </Menu.Item>
-          {/* <Menu.Item
-            key="10"
-            icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
-          >
-            <Link to="/address">Quản lý địa chỉ</Link>
-          </Menu.Item> */}
+          {isAdmin && (
+            <SubMenu
+              key="8"
+              icon={
+                <FontAwesomeIcon icon={faTags} style={{ color: "white" }} />
+              }
+              title="Giảm Giá"
+            >
+              <Menu.Item key="8.0">
+                <Link to="/promotion-management">Đợt Giảm Giá</Link>
+              </Menu.Item>
+              <Menu.Item key="8.1">
+                <Link to="/voucher-management">Phiếu Giảm Giá</Link>
+              </Menu.Item>
+            </SubMenu>
+          )}
         </Menu>
       </Sider>
       <Layout>
