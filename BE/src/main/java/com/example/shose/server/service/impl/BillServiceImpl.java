@@ -34,6 +34,8 @@ import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
+import com.example.shose.server.infrastructure.poin.ConfigPoin;
+import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -78,6 +80,9 @@ import java.util.Optional;
 @Service
 @Transactional
 public class BillServiceImpl implements BillService {
+
+    @Autowired
+    private ConfigPoin configPoin;
 
     @Autowired
     private BillRepository billRepository;
@@ -205,17 +210,20 @@ public class BillServiceImpl implements BillService {
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
-
-        if (request.getIdUser() != null) {
-            Optional<Account> user = accountRepository.findById(request.getIdUser());
-            if (user.isPresent()) {
-                optional.get().setAccount(user.get());
-            }
-        }
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
+            if (request.getIdUser() != null) {
+                Optional<Account> account = accountRepository.findById(request.getIdUser());
+                if (account.isPresent()) {
+                    optional.get().setAccount(account.get());
+                    Poin poin = configPoin.readJsonFile();
+                    Optional<User> user = userReposiory.findById(account.get().getUser().getId());
+                    user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount())));
+                    userReposiory.save(user.get());
+                }
+            }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
@@ -486,6 +494,10 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            Poin poin = configPoin.readJsonFile();
+            Optional<User> user = userReposiory.findById(bill.get().getAccount().getUser().getId());
+            user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
+            userReposiory.save(user.get());
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         bill.get().setEmployees(account.get());
@@ -527,6 +539,10 @@ public class BillServiceImpl implements BillService {
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                Poin poin = configPoin.readJsonFile();
+                Optional<User> user = userReposiory.findById(bill.get().getAccount().getUser().getId());
+                user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
+                userReposiory.save(user.get());
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
             bill.get().setEmployees(account.get());
