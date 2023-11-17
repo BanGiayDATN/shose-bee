@@ -228,12 +228,6 @@ const DashBoardEmployee = ({ children }) => {
           >
             <Link to="/voucher-management">Khuyến Mãi</Link>
           </Menu.Item>
-          {/* <Menu.Item
-            key="10"
-            icon={<FontAwesomeIcon icon={faMap} style={{ color: "white" }} />}
-          >
-            <Link to="/address">Quản lý địa chỉ</Link>
-          </Menu.Item> */}
         </Menu>
       </Sider>
       <Layout>
