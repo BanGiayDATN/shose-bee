@@ -241,7 +241,7 @@ function PaymentAccount() {
   };
   const moneyBefore = () => {
     const money = listproductOfBill.reduce(
-      (total, item) => total + parseInt(item.price * item.quantity),
+      (total, item) => total + parseInt((parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100)))* item.quantity),
       0
     );
     const quantity = listproductOfBill.reduce(
@@ -382,13 +382,19 @@ function PaymentAccount() {
                   </div>
                   <span>{item.nameSize}</span>
                   <span style={{ marginLeft: "11%" }}>
-                    {" "}
-                    {formatMoney(item.price)}
+                    {item.valuePromotion !== null ? (
+                      <>
+                        <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
+                          item.price * (item.valuePromotion / 100)))}</span>
+                      
+                      </>
+                    ) : (formatMoney(item.price))}
+
                   </span>
                   <span style={{ marginLeft: "12%" }}>{item.quantity}</span>
                   <span style={{ marginLeft: "auto" }}>
                     {" "}
-                    {formatMoney(parseInt(item.price) * item.quantity)}
+                    {item.valuePromotion === null ? formatMoney(item.quantity * item.price) :formatMoney(item.quantity *  (parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100))))}
                   </span>
                 </div>
               ))}
@@ -420,17 +426,15 @@ function PaymentAccount() {
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${
-                  keyMethodPayment === "paymentReceive" ? "click" : ""
-                }`}
+                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
+                  }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${
-                  keyMethodPayment === "paymentVnpay" ? "click" : ""
-                }`}
+                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
+                  }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}

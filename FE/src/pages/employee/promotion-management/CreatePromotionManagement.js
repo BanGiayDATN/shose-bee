@@ -145,7 +145,7 @@ function CreateVoucherManagement() {
   };
   const handleSubmit = () => {
     console.log(selectedRowKeysDetail);
-    if(selectedRowKeysDetail.length === 0){
+    if (selectedRowKeysDetail.length === 0) {
       toast.error("Vui lòng chọn sản phẩm để thêm")
       return;
     }
@@ -161,7 +161,8 @@ function CreateVoucherManagement() {
           formData.value &&
           formData.startDate &&
           formData.endDate &&
-          formData.startDate < formData.endDate;
+          formData.startDate < formData.endDate &&
+          formData.endDate > dayjs().valueOf();
 
         if (!isFormValid) {
           const errors = {
@@ -173,8 +174,9 @@ function CreateVoucherManagement() {
             endDate: !formData.endDate
               ? "Vui lòng chọn ngày kết thúc"
               : formData.startDate >= formData.endDate
-              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-              : "",
+                ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+                : formData.endDate <= dayjs().valueOf()
+                 ? "Ngày kết thúc phải lớn hơn hiện tại" : "",
           };
           setFormErrors(errors);
           return;
@@ -599,18 +601,18 @@ function CreateVoucherManagement() {
               rowSelection={rowSelection}
               dataSource={updatedList}
               pagination={{ pageSize: 5 }}
-              // onRow={(record) => ({
-              //   onClick: () => {
-              //     const newSelectedRowKeys = [...selectedRowKeys];
-              //     if (newSelectedRowKeys.includes(record.id)) {
-              //       const index = newSelectedRowKeys.indexOf(record.id);
-              //       newSelectedRowKeys.splice(index, 1);
-              //     } else {
-              //       newSelectedRowKeys.push(record.id);
-              //     }
-              //     setSelectedRowKeys(newSelectedRowKeys);
-              //   },
-              // })}
+            // onRow={(record) => ({
+            //   onClick: () => {
+            //     const newSelectedRowKeys = [...selectedRowKeys];
+            //     if (newSelectedRowKeys.includes(record.id)) {
+            //       const index = newSelectedRowKeys.indexOf(record.id);
+            //       newSelectedRowKeys.splice(index, 1);
+            //     } else {
+            //       newSelectedRowKeys.push(record.id);
+            //     }
+            //     setSelectedRowKeys(newSelectedRowKeys);
+            //   },
+            // })}
             />
           </Col>
           <Col>

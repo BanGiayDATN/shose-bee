@@ -214,7 +214,8 @@ const PromotionManagement = () => {
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          <Link to="/update-promotion-management">
+          {record.status === "DANG_KICH_HOAT" || record.status === "CHUA_KICH_HOAT" ?(
+            <Link to="/update-promotion-management">
             <Button
               type="primary"
               title="Chỉnh sửa thể loại"
@@ -224,6 +225,7 @@ const PromotionManagement = () => {
               <FontAwesomeIcon icon={faEdit} />
             </Button>
           </Link>
+          ):null}
         </div>
       ),
     },

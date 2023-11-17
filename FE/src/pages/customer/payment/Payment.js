@@ -65,7 +65,7 @@ function Payment() {
   useEffect(() => {
     getCities();
     const totalPrice = listproductOfBill.reduce(
-      (total, item) => total + parseInt(item.price) * item.quantity,
+      (total, item) => total + parseInt((parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100)))* item.quantity),
       0
     );
     setTotalBill(totalPrice - voucher.value);
@@ -573,7 +573,10 @@ function Payment() {
                             color: "#716b6b",
                           }}
                         >
-                          {formatMoney(item.price)}
+                        {item.valuePromotion !== null ? (
+                        <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
+                          item.price * (item.valuePromotion / 100)))}</span>
+                    ) : (formatMoney(item.price))}
                         </p>
                       </div>
                       <div style={{ display: "flex" }}>

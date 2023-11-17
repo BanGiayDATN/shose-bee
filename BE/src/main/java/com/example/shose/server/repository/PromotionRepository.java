@@ -4,6 +4,7 @@ package com.example.shose.server.repository;
  */
 
 import com.example.shose.server.dto.request.promotion.FindPromotionRequest;
+import com.example.shose.server.dto.response.promotion.GetPromotionOfProductDetail;
 import com.example.shose.server.dto.response.promotion.PromotionByIdRespone;
 import com.example.shose.server.dto.response.promotion.PromotionRespone;
 import com.example.shose.server.dto.response.promotion.PromotionByProDuctDetail;
@@ -68,23 +69,23 @@ public interface PromotionRepository extends JpaRepository<Promotion,String> {
                 po.end_date as endDate,
                 po.status as status,
                 (select GROUP_CONCAT(DISTINCT pd.id ) from product_detail pd join promotion_product_detail ppd on pd.id = ppd.id_product_detail
-                 where ppd.status ='DANG_SU_DUNG'and ppd.id_promotion = po.id) as productDetail,
+                 where ppd.status ='DANG_SU_DUNG' and ppd.id_promotion = po.id) as productDetail,
                 GROUP_CONCAT(DISTINCT pd.id ) as productDetailUpdate,
                 (select GROUP_CONCAT(DISTINCT p1.id ) from product_detail pd
-                                                              join promotion_product_detail ppd on pd.id = ppd.id_product_detail
-                                                              JOIN product p1 on p1.id = pd.id_product
+                                                               join promotion_product_detail ppd on pd.id = ppd.id_product_detail
+                                                               JOIN product p1 on p1.id = pd.id_product
 
-                 where  ppd.id_promotion = po.id and p.id in (select pd.id_product from product_detail pd join promotion_product_detail ppd on pd.id = ppd.id_product_detail
-                                                              where ppd.status ='DANG_SU_DUNG' )) as product,
+                 where  ppd.id_promotion = po.id and p1.id in (select pd.id_product from product_detail pd join promotion_product_detail ppd on pd.id = ppd.id_product_detail
+                                                               where ppd.status ='DANG_SU_DUNG'and ppd.id_promotion = po.id )) as product,
                 GROUP_CONCAT(DISTINCT ppd.id) AS promotionProductDetail
 
             FROM promotion po
                      LEFT JOIN promotion_product_detail ppd on po.id = ppd.id_promotion
                      LEFT JOIN product_detail pd on pd.id = ppd.id_product_detail
                      LEFT JOIN product p on p.id = pd.id_product
-                             where po.id = :id
-                             group by po.id,p.id
-                             """,nativeQuery = true )
+                                         where po.id = :id
+                                         group by po.id
+                                         """,nativeQuery = true )
     PromotionByIdRespone getByIdPromotion(@Param("id") String id);
     @Query(value = """
                  select
@@ -108,4 +109,15 @@ public interface PromotionRepository extends JpaRepository<Promotion,String> {
     List<Promotion> findExpiredPromotions(@Param("currentDate") Long currentDate);
     @Query("SELECT po FROM Promotion po WHERE po.startDate = :currentDate")
     List<Promotion> findStartPromotions(@Param("currentDate") Long currentDate);
+
+    @Query(value = """
+            SELECT
+                    max(po.value) as valuePromotion
+                FROM product_detail pd
+                         LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                         LEFT JOIN promotion po ON po.id = ppd.id_promotion
+                       WHERE  ppd.status = 'DANG_SU_DUNG' and po.status = 'DANG_KICH_HOAT' and pd.id = :id
+                GROUP BY pd.id , ppd.status
+            """, nativeQuery = true)
+    GetPromotionOfProductDetail getPromotionOfProductDetail(@Param("id") String id);
 }

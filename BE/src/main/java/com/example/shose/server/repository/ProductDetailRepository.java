@@ -101,7 +101,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                        FROM promotion_product_detail ppd2
                        LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
                        LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
-                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id )
+                       WHERE ppd2.status='DANG_SU_DUNG' AND p2.status = 'DANG_KICH_HOAT' AND pd.id = detail.id )
                 AS value,
                 detail.created_date AS created_date,
                 detail.gender AS gender,
@@ -510,14 +510,5 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """, nativeQuery = true)
     ProductDetailReponse getOneProductDetailByAll(@Param("req") CreateProductDetailRequest req);
 
-    @Query(value = """
-            SELECT
-                    max(po.value) as valuePromotion
-                FROM product_detail pd
-                         LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
-                         LEFT JOIN promotion po ON po.id = ppd.id_promotion
-                       WHERE  ppd.status = 'DANG_SU_DUNG' and po.status = 'DANG_KICH_HOAT'
-                GROUP BY pd.id , ppd.status
-            """, nativeQuery = true)
-    GetPromotionOfProductDetail getPromotionOfProductDetail(@Param("id") String id);
+
 }

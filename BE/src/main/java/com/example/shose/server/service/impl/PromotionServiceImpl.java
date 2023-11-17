@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.productdetail.IdProductDetail;
 import com.example.shose.server.dto.request.promotion.CreatePromotionRequest;
 import com.example.shose.server.dto.request.promotion.FindPromotionRequest;
 import com.example.shose.server.dto.request.promotion.UpdatePromotionRequest;
+import com.example.shose.server.dto.response.promotion.GetPromotionOfProductDetail;
 import com.example.shose.server.dto.response.promotion.PromotionByIdRespone;
 import com.example.shose.server.dto.response.promotion.PromotionByProDuctDetail;
 import com.example.shose.server.dto.response.promotion.PromotionRespone;
@@ -64,6 +65,14 @@ public class PromotionServiceImpl implements PromotionService {
                 throw new RestApiException("Có sản phẩm không tồn tại");
             }
         }
+        if(request.getEndDate() <= request.getStartDate()){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+        }
+        long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
+        if(request.getEndDate() <=currentSeconds){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn hiện tại");
+        }
+
         StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());
         Promotion promotion = Promotion.builder().code(request.getCode()).name(request.getName()).value(request.getValue()).startDate(request.getStartDate()).endDate(request.getEndDate()).status(status).build();
         promotionRepository.save(promotion);
@@ -74,7 +83,7 @@ public class PromotionServiceImpl implements PromotionService {
             PromotionProductDetail promotionProductDetail = new PromotionProductDetail();
             promotionProductDetail.setPromotion(promotion);
             promotionProductDetail.setProductDetail(optional.get());
-            promotionProductDetail.setStatus(getStatus(status));
+            promotionProductDetail.setStatus(Status.DANG_SU_DUNG);
             promotionProductDetails.add(promotionProductDetail);
         }
         promotionProductDetailRepository.saveAll(promotionProductDetails);
@@ -106,9 +115,9 @@ public class PromotionServiceImpl implements PromotionService {
         promotionRepository.save(promotion);
 
         // TODO check nếu status == HET_HAN_KICH_HOAT => các sản phẩm không được sử dụng khuyến mại này
-//        boolean checkStatus = updateProductDetailsStatus(promotion.getId(),promotion.getStatus());
-//
-//        if(checkStatus == false) {
+        boolean checkStatus = updateProductDetailsStatus(promotion.getId(),promotion.getStatus());
+
+        if(checkStatus == false) {
             PromotionByIdRespone promotionByIdRespone = promotionRepository.getByIdPromotion(request.getId());
             List<PromotionProductDetail> promotionProductDetails = new ArrayList<>();
             if (promotionByIdRespone.getProductDetailUpdate() == null) {
@@ -159,7 +168,7 @@ public class PromotionServiceImpl implements PromotionService {
                         promotionProductDetailRepository.save(promotionProductDetail);
                     }
                 }
-//            }
+            }
         }
         return promotion;
     }
@@ -218,13 +227,18 @@ public class PromotionServiceImpl implements PromotionService {
         return promotionRepository.getByIdProductDetail(id);
     }
 
+    @Override
+    public GetPromotionOfProductDetail getPromotionOfProductDetail(String id) {
+        return promotionRepository.getPromotionOfProductDetail(id);
+    }
+
     private Status getStatus(StatusPromotion status) {
-        return status == StatusPromotion.DANG_KICH_HOAT ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
+        return status == StatusPromotion.DANG_KICH_HOAT || status ==  StatusPromotion.CHUA_KICH_HOAT ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG;
     }
 
     private StatusPromotion getStatusPromotion(long startDate, long endDate) {
         long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
-        return (startDate > currentSeconds) ? StatusPromotion.CHUA_KICH_HOAT : (currentSeconds > endDate) ? StatusPromotion.HET_HAN_KICH_HOAT : StatusPromotion.DANG_KICH_HOAT;
+        return (startDate > currentSeconds) ? StatusPromotion.CHUA_KICH_HOAT : (currentSeconds >= endDate ) ? StatusPromotion.HET_HAN_KICH_HOAT : StatusPromotion.DANG_KICH_HOAT;
     }
 
     private boolean updateProductDetailsStatus(String idPromotion, StatusPromotion status) {
