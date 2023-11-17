@@ -26,6 +26,7 @@ public enum Message {
     VOUCHER_NOT_USE("không thể sử dụng voucher"),
     STATUS_ADDRESS_EXIST("Trạng thái đang sử dụng đã được dùng cho địa chỉ khác"),
     ACCOUNT_NOT_ROLE_CANCEL_BILL("Bạn không có quyền huỷ hoá đơn"),
+    ACCOUNT_NOT_ROLE(" Bạn không đủ quyền hạn "),
     ACCOUNT_IS_EXIT("Vui lòng đăng nhập"),
     EMAIL_USER_EXIST("Email người dùng đã tồn tại"),
     PASSWORD_NOT_EXISTS("Password không đúng"),

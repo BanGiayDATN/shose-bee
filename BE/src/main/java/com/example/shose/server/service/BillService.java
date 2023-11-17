@@ -4,6 +4,8 @@ package com.example.shose.server.service;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
+import com.example.shose.server.dto.request.bill.ChangeEmployeeRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
@@ -56,4 +58,8 @@ public interface BillService {
     boolean createFilePdf(String idBill, HttpServletRequest request);
 
     Bill findByCode(String code, String phoneNumber);
+
+    boolean ChangeAllEmployee(String id, ChangeAllEmployeeRequest request);
+
+    boolean ChangeEmployee(String id, ChangeEmployeeRequest request);
 }
