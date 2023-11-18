@@ -604,9 +604,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [isPoin, setPoin] = useState(false);
   const [usePoin, setUsePoin] = useState(false);
   const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
-  const isOpenUsePoin = (e) => {
+  const isOpenUsePoin = (check) => {
     setUsePoin(true);
-    if(e ){
+    if(check ){
     setExchangeRateMoney(dataPoin.exchangeRateMoney * accountuser?.points);
     }else{
       setExchangeRateMoney(0)

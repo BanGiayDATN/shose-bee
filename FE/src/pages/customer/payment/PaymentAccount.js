@@ -21,6 +21,8 @@ import { AddressClientApi } from "./../../../api/customer/address/addressClient.
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
+import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
+import { AccountClientApi } from "../../../api/customer/account/accountClient.api";
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
@@ -55,16 +57,38 @@ function PaymentAccount() {
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
-
+  const [dataPoin, setDataPoin] = useState(null);
+  const [account, setAccount] = useState(null);
+  const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
+  const usePoin = (check) => {
+    if(check ){
+      setExchangeRateMoney(dataPoin.exchangeRateMoney * account?.points);
+      }else{
+        setExchangeRateMoney(0)
+      }
+  }
   useEffect(() => {
     getAddressDefault(idAccount);
     moneyBefore();
+    AccountPoinApi.findPoin().then((res) => {
+      setDataPoin(res.data.data);
+    })
+    .catch((error) => {
+      toast.error(error.response.data.message);
+    });
 
+    AccountClientApi.getById("").then((res) => {
+      setAccount(res.data.data);
+    })
+    .catch((error) => {
+      toast.error(error.response.data.message);
+    });
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % comercial.length);
     }, 3000);
 
     return () => clearInterval(interval);
+  
   }, []);
 
   useEffect(() => {
