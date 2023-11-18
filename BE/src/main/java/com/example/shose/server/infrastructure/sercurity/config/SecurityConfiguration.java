@@ -5,6 +5,7 @@ import com.example.shose.server.infrastructure.sercurity.token.JwtAuthentication
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -39,9 +40,20 @@ public class SecurityConfiguration {
                 .and()
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
+                        request -> request.requestMatchers("/login-v2/**" ,"/client/**","/cart/**","/cart-detail/**","/admin/promotion","/admin/voucher").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/admin/**").hasAnyRole("ADMIN","EMLOYEE")
+                                .requestMatchers("/admin/bill-detail/**").hasAnyRole("EMLOYEE","ADMIN")
+                                .requestMatchers("/admin/bill-history/**").hasAnyRole("EMLOYEE","ADMIN")
+                                .requestMatchers("/admin/bill/**").hasAnyRole("EMLOYEE","ADMIN")
+                                .requestMatchers("/admin/customer/**").hasAnyRole("EMLOYEE","ADMIN")
+                                .requestMatchers("/admin/payment/**").hasAnyRole("EMLOYEE","ADMIN")
+                                .requestMatchers("/admin/product/**").hasAnyRole("EMLOYEE","ADMIN")
+                                .requestMatchers(HttpMethod.POST,"/admin/**").hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT,"/admin/**").hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE,"/admin/**").hasAnyRole("ADMIN")
                         request -> request.requestMatchers("/login-v2/**","/admin/poin" ,"/client/**","/cart/**","/cart-detail/**","/admin/promotion","/admin/voucher").permitAll()
 
-                                .requestMatchers("/admin/**").hasAnyRole("ADMIN")
+
 
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

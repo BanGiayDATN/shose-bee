@@ -7,6 +7,7 @@ import { LoginApi } from "../../../api/employee/login/Login.api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import { setToken, setUserToken } from "../../../helper/useCookies";
+import { jwtDecode } from "jwt-decode";
 const LoginManagement = () => {
   const [form] = Form.useForm();
   const nav = useNavigate();
@@ -24,10 +25,15 @@ const LoginManagement = () => {
   const onFinish = (values) => {
     LoginApi.authenticationIn(values)
       .then((res) => {
-        toast.success("Đăng nhập thành công");
         setToken(res.data.token);
         setUserToken(res.data.token);
-        nav("/dashboard");
+        const decodedToken = jwtDecode(res.data.token);
+        if (decodedToken.role.includes("ROLE_ADMIN")) {
+          nav("/dashboard");
+        } else {
+          nav("/sale-counter");
+        }
+        toast.success("Đăng nhập thành công");
       })
       .catch((error) => {});
   };
