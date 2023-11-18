@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                 .and()
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        request -> request.requestMatchers("/login-v2/**" ,"/client/**","/cart/**","/cart-detail/**","/admin/promotion","/admin/voucher").permitAll()
+                        request -> request.requestMatchers("/login-v2/**","/admin/poin" ,"/client/**","/cart/**","/cart-detail/**","/admin/promotion","/admin/voucher").permitAll()
 
                                 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
 

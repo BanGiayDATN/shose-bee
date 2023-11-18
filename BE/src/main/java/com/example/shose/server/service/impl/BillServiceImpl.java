@@ -210,6 +210,7 @@ public class BillServiceImpl implements BillService {
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
+
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
@@ -218,10 +219,14 @@ public class BillServiceImpl implements BillService {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
                 if (account.isPresent()) {
                     optional.get().setAccount(account.get());
+                    User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
-                    Optional<User> user = userReposiory.findById(account.get().getUser().getId());
-                    user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount())));
-                    userReposiory.save(user.get());
+                    if(request.isOpenUsePoin()){
+                        user.setPoints(poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount())));
+                    }else{
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount())));
+                    }
+                    userReposiory.save(user);
                 }
             }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
@@ -495,9 +500,9 @@ public class BillServiceImpl implements BillService {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             Poin poin = configPoin.readJsonFile();
-            Optional<User> user = userReposiory.findById(bill.get().getAccount().getUser().getId());
-            user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
-            userReposiory.save(user.get());
+            User user = account.get().getUser();
+            user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
+            userReposiory.save(user);
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         bill.get().setEmployees(account.get());
@@ -540,9 +545,9 @@ public class BillServiceImpl implements BillService {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
                 Poin poin = configPoin.readJsonFile();
-                Optional<User> user = userReposiory.findById(bill.get().getAccount().getUser().getId());
-                user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
-                userReposiory.save(user.get());
+               User user = bill.get().getAccount().getUser();
+                user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
+                userReposiory.save(user);
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
             bill.get().setEmployees(account.get());

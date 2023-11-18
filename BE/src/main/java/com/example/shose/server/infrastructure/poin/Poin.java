@@ -42,9 +42,9 @@ public class Poin {
         if(discountBill || discountProduct || paymentRewardPoints){
             return  0;
         }
-        if(discountBill && discount.compareTo(BigDecimal.ZERO) != 0){
-            return 0;
-        }
+//        if(discountBill && discount.compareTo(BigDecimal.ZERO) != 0){
+//            return 0;
+//        }
         if(totalMoney.compareTo(minMoney) < 0){
             return 0;
         }

@@ -54,6 +54,8 @@ public class CreateBillOfflineRequest {
 
     private boolean openDelivery;
 
+    private boolean openUsePoin;
+
     private String moneyShip;
 
     private String email;
