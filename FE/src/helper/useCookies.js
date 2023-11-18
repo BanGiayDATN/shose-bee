@@ -15,7 +15,7 @@ export const setToken = (token) => {
     avata: decodedToken.avata,
     expirationTime: new Date(decodedToken.exp * 1000),
   };
-  const cookieName = user.role === "ROLE_ADMIN" ? "userToken" : "customerToken";
+  const cookieName = user.role === "ROLE_USER" ? "customerToken" : "userToken";
   setCookie(cookieName, token, 1);
 };
 
@@ -35,7 +35,7 @@ export const setUserToken = (token) => {
     expirationTime: new Date(decodedToken.exp * 1000),
   };
   const cookieName =
-    user.role === "ROLE_ADMIN" ? "userToken1" : "customerToken1";
+    user.role === "ROLE_USER" ? "customerToken1" : "userToken1";
   setCookie(cookieName, token, 1);
 };
 

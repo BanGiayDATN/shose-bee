@@ -77,7 +77,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
         }
         //check email có tồn tại không
-        User checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
+        Account checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
         if (checkUserEmail != null) {
             throw new RestApiException(Message.EMAIL_USER_EXIST);
         }

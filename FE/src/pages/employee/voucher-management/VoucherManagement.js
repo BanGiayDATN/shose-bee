@@ -274,13 +274,17 @@ const VoucherManagement = () => {
     <div className="promotion">
       <h1 className="title-promotion">
         {" "}
-        <FontAwesomeIcon icon={faKaaba} /> Quản lý khuyến mãi
+        <FontAwesomeIcon icon={faKaaba} /> Quản lý phiếu giảm giá
       </h1>
 
       <div className="form-search">
-        <h3>
-          <FontAwesomeIcon icon={faFilter} /> Bộ lọc
-        </h3>
+        <Row>
+          <FontAwesomeIcon
+            icon={faFilter}
+            style={{ fontSize: "26px", marginRight: "10px" }}
+          />
+          <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
+        </Row>
         <hr></hr>
 
         <div className="row-search">
@@ -526,11 +530,15 @@ const VoucherManagement = () => {
           </Button>
         </div>
       </div>
-
-      <h3>
-        {" "}
-        <FontAwesomeIcon icon={faListAlt} /> Danh sách khuyến mãi{" "}
-      </h3>
+      <Row>
+        <FontAwesomeIcon
+          icon={faListAlt}
+          style={{ fontSize: "26px", marginRight: "10px" }}
+        />
+        <span style={{ fontSize: "18px", fontWeight: "500" }}>
+          Danh sách phiếu giảm giá
+        </span>
+      </Row>
       <hr></hr>
       <div className="manager-promotion">
         <Button
