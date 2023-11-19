@@ -626,9 +626,6 @@ public class BillServiceImpl implements BillService {
             }
         }
 
-//        if (!paymentsMethodService.refundVnpay(idEmployees, request.isStatusCancel(), bill.get().getCode())) {
-//            throw new RestApiException(Message.ERROR_CANCEL_BILL);
-//        }
         return billRepository.save(bill.get());
     }
 

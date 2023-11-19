@@ -1,5 +1,6 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
@@ -51,8 +52,8 @@ public class BillDetailServiceImpl implements BillDetailService {
     private FormUtils formUtils = new FormUtils();
 
     @Override
-    public List<BillDetailResponse> findAllByIdBill(String idBill) {
-        return billDetailRepository.findAllByIdBill(idBill);
+    public List<BillDetailResponse> findAllByIdBill(BillDetailRequest request) {
+        return billDetailRepository.findAllByIdBill(request);
     }
 
     @Override
