@@ -858,13 +858,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ship = shipFee;
     }
     setIsModalPayMentOpen(true);
-    var total =
+    var total =  Math.max(
+      0,
       products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
       }, 0) +
       ship -
       exchangeRateMoney -
-      voucher.discountPrice;
+      voucher.discountPrice);
     setTotalMoneyPayment(Math.round(total));
   };
   const handleOkPayMent = () => {
@@ -962,14 +963,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ship -
       exchangeRateMoney -
       voucher.discountPrice)
-      dataPayMentTraSau = [
-        {
-          actionDescription: "",
-          method: "TIEN_MAT",
-          totalMoney: total,
-          status: "TRA_SAU",
-        },
-      ];
+      if(total > 0){
+        dataPayMentTraSau = [
+          {
+            actionDescription: "",
+            method: "TIEN_MAT",
+            totalMoney: total,
+            status: "TRA_SAU",
+          },
+        ];
+      }
       totaPayMent = total;
     }
     
@@ -3142,7 +3145,8 @@ function tinhSoDiemCanThanhToan( ) {
           {isOpenDelivery ? (
             <Row style={{ width: "100%", margin: "10px 0 " }}>
               <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
-                {dataPayment.reduce((accumulator, currentValue) => {
+                {  Math.max(
+                    0,dataPayment.reduce((accumulator, currentValue) => {
                   return accumulator + currentValue.totalMoney;
                 }, 0) <
                 products.reduce((accumulator, currentValue) => {
@@ -3152,7 +3156,7 @@ function tinhSoDiemCanThanhToan( ) {
                 }, 0) +
                   shipFee -
                   -exchangeRateMoney -
-                  voucher.discountPrice
+                  voucher.discountPrice)
                   ? "Tiền thiếu"
                   : "Tiền thừa"}
               </Col>
@@ -3227,7 +3231,8 @@ function tinhSoDiemCanThanhToan( ) {
                 align={"end"}
                 style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
               >
-                {dataPayment.reduce((accumulator, currentValue) => {
+                {Math.max(
+                    0,dataPayment.reduce((accumulator, currentValue) => {
                   return accumulator + currentValue.totalMoney;
                 }, 0) <
                 products.reduce((accumulator, currentValue) => {
@@ -3235,8 +3240,9 @@ function tinhSoDiemCanThanhToan( ) {
                     accumulator + currentValue.price * currentValue.quantity
                   );
                 }, 0) -
-                  voucher.discountPrice
-                  ? formatCurrency(
+                  voucher.discountPrice)
+                  ? formatCurrency(Math.max(
+                    0,
                       products.reduce((accumulator, currentValue) => {
                         return (
                           accumulator +
@@ -3247,9 +3253,10 @@ function tinhSoDiemCanThanhToan( ) {
                         voucher.discountPrice -
                         dataPayment.reduce((accumulator, currentValue) => {
                           return accumulator + currentValue.totalMoney;
-                        }, 0)
+                        }, 0))
                     )
-                  : formatCurrency(
+                  : formatCurrency(Math.max(
+                    0,
                       dataPayment.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue.totalMoney;
                       }, 0) -
@@ -3260,7 +3267,7 @@ function tinhSoDiemCanThanhToan( ) {
                           );
                         }, 0) -
                           exchangeRateMoney -
-                          voucher.discountPrice)
+                          voucher.discountPrice))
                     )}
               </Col>
             </Row>
