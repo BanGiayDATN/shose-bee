@@ -243,7 +243,7 @@ public class BillServiceImpl implements BillService {
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
                     if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                        int Pointotal = user.getPoints() - request.getPoin() ;
                         user.setPoints(Pointotal);
                     }
                     userReposiory.save(user);

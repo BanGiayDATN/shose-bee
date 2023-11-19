@@ -957,13 +957,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var dataPayMentTraSau = dataPayment;
     if (traSau) {
-      var total =
-        products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0) +
-        ship -
-        exchangeRateMoney -
-        voucher.discountPrice;
+      var total = Math.max(0,
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) +
+      ship -
+      exchangeRateMoney -
+      voucher.discountPrice)
       dataPayMentTraSau = [
         {
           actionDescription: "",
