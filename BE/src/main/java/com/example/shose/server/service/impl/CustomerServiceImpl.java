@@ -93,7 +93,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .status(request.getStatus())
                 .dateOfBirth(request.getDateOfBirth())
                 .gender(request.getGender())
-                .points(0)
                 .citizenIdentity(request.getCitizenIdentity())
                 .avata(urlImage) // đường dẫn ảnh từ url
                 .build();
@@ -105,6 +104,7 @@ public class CustomerServiceImpl implements CustomerService {
         Account account = new Account();
         account.setUser(user);
         account.setRoles(Roles.ROLE_USER);
+        account.setPoints(0);
         account.setEmail(user.getEmail());
         account.setPassword(passwordEncoder.encode(password));
         account.setStatus(Status.DANG_SU_DUNG);
@@ -156,7 +156,6 @@ public class CustomerServiceImpl implements CustomerService {
         user.setEmail(request.getEmail());
         user.setGender(request.getGender());
         user.setStatus(request.getStatus());
-        user.setPoints(0);
         user.setCitizenIdentity(request.getCitizenIdentity());
         user.setAvata(urlImage);
         user.setDateOfBirth(request.getDateOfBirth());
@@ -241,7 +240,6 @@ public class CustomerServiceImpl implements CustomerService {
 //                .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .gender(request.getGender())
-                .points(0)
                 .build();
         userReposiory.save(user);
         User addressUser = userReposiory.getById(user.getId());
@@ -250,6 +248,7 @@ public class CustomerServiceImpl implements CustomerService {
         account.setUser(user);
         account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
+        account.setPoints(0);
         account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         account.setStatus(Status.DANG_SU_DUNG);
         accountRepository.save(account);

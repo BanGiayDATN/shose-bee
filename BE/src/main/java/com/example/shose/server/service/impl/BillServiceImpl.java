@@ -220,15 +220,14 @@ public class BillServiceImpl implements BillService {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
                 if (account.isPresent()) {
                     optional.get().setAccount(account.get());
-                    User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
                     if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
-                        user.setPoints(Pointotal);
+                        int Pointotal = account.get().getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                        account.get().setPoints(Pointotal);
                     }else{
-                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                        account.get().setPoints(account.get().getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
                     }
-                    userReposiory.save(user);
+                    accountRepository.save(account.get());
                 }
             }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
@@ -240,13 +239,12 @@ public class BillServiceImpl implements BillService {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
                 if (account.isPresent()) {
                     optional.get().setAccount(account.get());
-                    User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
                     if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() ;
-                        user.setPoints(Pointotal);
+                        int Pointotal = account.get().getPoints() - request.getPoin() ;
+                        account.get().setPoints(Pointotal);
                     }
-                    userReposiory.save(user);
+                    accountRepository.save(account.get());
                 }
             }
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
@@ -516,10 +514,10 @@ public class BillServiceImpl implements BillService {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             if(bill.get().getAccount() != null){
-                User user = bill.get().getAccount().getUser();
+                Account accountUser = bill.get().getAccount();
                     Poin poin = configPoin.readJsonFile();
-                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                    userReposiory.save(user);
+                accountUser.setPoints(accountUser.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    accountRepository.save(accountUser);
             }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -563,10 +561,10 @@ public class BillServiceImpl implements BillService {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
                 if(bill.get().getAccount() != null){
-                    User user = bill.get().getAccount().getUser();
+                    Account accountUser = bill.get().getAccount();
                         Poin poin = configPoin.readJsonFile();
-                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                        userReposiory.save(user);
+                    accountUser.setPoints(accountUser.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                        accountRepository.save(accountUser);
                 }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -620,9 +618,8 @@ public class BillServiceImpl implements BillService {
         Account checkAccount = bill.get().getAccount();
         if(checkAccount != null){
             if(bill.get().getPoinUse() > 0){
-                User user =  checkAccount.getUser();
-                user.setPoints(user.getPoints() + bill.get().getPoinUse());
-                userReposiory.save(user);
+                checkAccount.setPoints(checkAccount.getPoints() + bill.get().getPoinUse());
+                accountRepository.save(checkAccount);
             }
         }
 
@@ -755,9 +752,8 @@ public class BillServiceImpl implements BillService {
 
         Account account = accountRepository.findById(request.getIdAccount()).get();
         if(request.getPoin() > 0 ){
-            User user = account.getUser();
-            user.setPoints(user.getPoints() - request.getPoin());
-            userReposiory.save(user);
+            account.setPoints(account.getPoints() - request.getPoin());
+            accountRepository.save(account);
         }
         Bill bill = Bill.builder()
                 .code("HD" + RandomStringUtils.randomNumeric(6))

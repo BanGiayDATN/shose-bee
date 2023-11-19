@@ -350,15 +350,15 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                    bill.get().setStatusBill(StatusBill.THANH_CONG);
                    bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
                    if(bill.get().getAccount() != null){
-                       User user = bill.get().getAccount().getUser();
+                       Account accountUser = bill.get().getAccount();
                        BigDecimal totalDisCount = voucherDetailRepository.getTotolDiscountBill(bill.get().getId());
                        Poin poin = configPoin.readJsonFile();
                        if(bill.get().getPoinUse() > 0){
-                           int Pointotal = user.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney());
-                           user.setPoints(Pointotal);
+                           int Pointotal = accountUser.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney());
+                           accountUser.setPoints(Pointotal);
                        }
-                       user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                       userReposiory.save(user);
+                       accountUser.setPoints(accountUser.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                       accountRepository.save(accountUser);
                    }
                    billRepository.save(bill.get());
                } else {
