@@ -129,7 +129,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       poin = tinhSoDiemCanThanhToan()
     }
     var itemDiscount = voucher.discountPrice + exchangeRateMoney
-    if (accountuser != null) {
+    if (accountuser != null && usePoin) {
       idAccount = accountuser.idAccount;
       if(poin < accountuser?.points){
         itemDiscount = Math.round(totalBill) - voucher.discountPrice 
@@ -210,7 +210,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         poin = tinhSoDiemCanThanhToan()
       }
       var itemDiscount = voucher.discountPrice + exchangeRateMoney
-      if (accountuser != null) {
+      if (accountuser != null && usePoin) {
         idAccount = accountuser.idAccount;
         if(poin < accountuser?.points){
           itemDiscount = Math.round(totalBill) - voucher.discountPrice 
@@ -928,10 +928,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if(usePoin){
       poin = tinhSoDiemCanThanhToan()
     }
-    console.log(poin);
-    console.log(accountuser?.points);
     var itemDiscount = voucher.discountPrice + exchangeRateMoney
-    if (accountuser != null) {
+    if (accountuser != null && usePoin) {
       idAccount = accountuser.idAccount;
       if(poin < accountuser?.points){
         console.log(accountuser?.points);
