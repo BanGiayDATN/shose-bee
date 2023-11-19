@@ -1,13 +1,14 @@
 import {
   faCarRear,
+  faCoins,
   faLocationDot,
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Col, Modal, Radio, Row } from "antd";
+import { Button, Checkbox, Col, Modal, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { parseInt } from "lodash";
+import { isBuffer, parseInt } from "lodash";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -23,6 +24,7 @@ import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
 import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
 import { AccountClientApi } from "../../../api/customer/account/accountClient.api";
+import { UserPoinApi } from "../../../api/customer/user/user.api";
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
@@ -60,13 +62,14 @@ function PaymentAccount() {
   const [dataPoin, setDataPoin] = useState(null);
   const [account, setAccount] = useState(null);
   const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
-  const usePoin = (check) => {
-    if(check ){
+
+  const onChange = (e) => {
+    if(e.target.checked ){
       setExchangeRateMoney(dataPoin.exchangeRateMoney * account?.points);
       }else{
         setExchangeRateMoney(0)
       }
-  }
+  };
   useEffect(() => {
     getAddressDefault(idAccount);
     moneyBefore();
@@ -77,8 +80,9 @@ function PaymentAccount() {
       toast.error(error.response.data.message);
     });
 
-    AccountClientApi.getById("").then((res) => {
+    UserPoinApi.findUser().then((res) => {
       setAccount(res.data.data);
+      console.log(res.data.data);
     })
     .catch((error) => {
       toast.error(error.response.data.message);
@@ -98,16 +102,20 @@ function PaymentAccount() {
     formBillChange("totalMoney", totalBefore);
   }, [totalBefore]);
   useEffect(() => {
-    setTotalBefore(total.totalMoney - voucher.value);
+    setTotalBefore(total.totalMoney - voucher.value + moneyShip  - exchangeRateMoney);
   }, [total]);
   useEffect(() => {
     formBillChange("afterPrice", totalAfter);
   }, [totalAfter]);
 
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip);
+    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
+  useEffect(() => {
+    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
+    formBillChange("moneyShip", moneyShip);
+  }, [exchangeRateMoney]);
   useEffect(() => {
     if (addressDefault !== null) {
       getMoneyShip(addressDefault.districtId, addressDefault.wardCode);
@@ -165,26 +173,33 @@ function PaymentAccount() {
       okType: "primary",
       cancelText: "Hủy",
       onOk() {
+        var dataBill = formBill
+        dataBill.itemDiscount += exchangeRateMoney;
+        var poin = 0
+        if(exchangeRateMoney > 0){
+          poin = account?.points
+        }
+        dataBill.poin = poin
+        console.log(dataBill);
         if (addressDefault === null) {
           toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
           return;
         }
-
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: totalBefore,
-            billDetail: formBill.billDetail,
+            vnp_Ammount: totalBefore   ,
+            billDetail: dataBill.billDetail,
           };
           console.log(listproductOfBill);
           PaymentClientApi.paymentVnpay(data).then(
             (res) => {
               window.location.replace(res.data.data);
-              sessionStorage.setItem("formBill", JSON.stringify(formBill));
+              sessionStorage.setItem("formBill", JSON.stringify(dataBill));
             },
             (err) => {}
           );
         } else {
-          BillClientApi.createBillAccountOnline(formBill).then(
+          BillClientApi.createBillAccountOnline(dataBill).then(
             (res) => {
               CartClientApi.quantityInCart(idAccount).then(
                 (res) => {
@@ -417,6 +432,7 @@ function PaymentAccount() {
             </div>
           </div>
           <div className="voucher-payment-acc">
+            <Row style={{display: "flex"}}>
             <span style={{ fontSize: 20 }}>
               <FontAwesomeIcon
                 style={{ color: "#ff4400", marginRight: 10 }}
@@ -427,6 +443,28 @@ function PaymentAccount() {
             <span className="money-reduce-payment-acc">
               - {formatMoney(voucher.value)}
             </span>
+            </Row>
+            <Row style={{marginTop: "15px"}}>
+           <Col span={12}>
+           <span style={{ fontSize: 20 }}>
+              <FontAwesomeIcon
+                style={{ color: "#ff4400", marginRight: 10 }}
+                icon={faCoins}
+              />{" "}
+              Bee điểm: <span style={{color:  "#ff4400", marginLeft: 5}}>{(account?.points == null) ? 0 : account?.points}</span>
+            </span>
+           </Col>
+           <Col span={12}>
+           <span className="money-reduce-coin-acc" >
+              <Row>
+                <Col span={20}  align={"end"} style={{color: exchangeRateMoney== 0 ? '#ccc': '#ff4400', fontSize: "14px", fontWeight: "600" }}>{formatMoney(exchangeRateMoney)}</Col>
+                <Col span={4} align={"end"}>
+                <Checkbox disabled={(account?.points == null || account?.points == 0) ? true : false} onChange={onChange}></Checkbox>
+                </Col>
+              </Row>
+           </span>
+           </Col>
+            </Row>
           </div>
           <div className="footer-payment-acc">
             <div className="method-payment-acc">

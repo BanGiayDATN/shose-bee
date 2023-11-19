@@ -27,7 +27,12 @@ import java.util.Optional;
 @Repository
 public interface BillRepository extends JpaRepository<Bill, String> {
         @Query(value = """
-                SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
+                SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill,  
+                CASE
+                WHEN total_money + money_ship - item_discount < 0 THEN 0
+                ELSE total_money + money_ship - item_discount 
+                END  AS total_money
+                , bi.item_discount  FROM bill bi
                 LEFT JOIN account ac ON ac.id = bi.id_account
                 LEFT JOIN account em ON em.id = bi.id_employees
                 LEFT JOIN customer cu ON cu.id = bi.id_customer

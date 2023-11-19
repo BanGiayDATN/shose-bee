@@ -47,14 +47,14 @@ public class CreateBillOfflineRequest {
     @NotEmpty
     private String code;
 
+    private int poin;
+
     @NotEmpty
     private String statusPayMents;
 
     private String deliveryDate;
 
     private boolean openDelivery;
-
-    private boolean openUsePoin;
 
     private String moneyShip;
 

@@ -124,8 +124,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         address.city;
     }
     var idAccount = "";
+    var poin = 0;
     if (accountuser != null) {
       idAccount = accountuser.idAccount;
+    }
+    if(usePoin){
+      poin = accountuser?.points;
     }
     var typeBill = "OFFLINE";
     var statusPayMents = "THANH_TOAN";
@@ -145,7 +149,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       note: billRequest.note.trim(),
       statusPayMents: statusPayMents,
       typeBill: typeBill,
-      email: billRequest.email.trim(),
+      email: billRequest.email,
       moneyShip: ship,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
@@ -154,7 +158,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       deliveryDate: dayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      openUsePoin: usePoin
+       poin: poin
     };
     BillApi.updateBillWait(data)
       .then((res) => {
@@ -194,9 +198,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           address.city;
       }
       var idAccount = "";
-      if (accountuser != null) {
-        idAccount = accountuser.idAccount;
-      }
+      var poin = 0;
+    if (accountuser != null) {
+      idAccount = accountuser.idAccount;
+    }
+    if(usePoin){
+      poin = accountuser?.points;
+    }
       var typeBill = "OFFLINE";
       var statusPayMents = "THANH_TOAN";
       if (traSau) {
@@ -215,7 +223,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         note: billRequest.note.trim(),
         statusPayMents: statusPayMents,
         typeBill: typeBill,
-        email: billRequest.email.trim(),
+        email: billRequest.email,
         moneyShip: ship,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
@@ -224,7 +232,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         deliveryDate: dayShip,
         code: code,
         openDelivery: isOpenDelivery,
-        openUsePoin: usePoin
+        poin: poin
       };
       console.log(data);
       BillApi.updateBillWait(data)
@@ -621,43 +629,43 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }, 0);
     setPoin(record?.points > 0 && totalBill >= dataPoin.minMoney);
     setIsModalAccountOpen(true);
-    // AddressApi.fetchAllAddressByUser(record.id).then((res) => {
-    //   setListAddress(res.data.data);
-    // });
-    // AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
-    //   const addressData = res.data.data;
-    //   const formValues = {
-    //     phoneNumber: record.phoneNumber,
-    //     name: record.fullName,
-    //     email: record.email
-    //   };
-    //   if (addressData) {
-    //     setAddress({
-    //       city: addressData.province,
-    //       district: addressData.district,
-    //       wards: addressData.ward,
-    //       detail: addressData.line,
-    //     });
-    //     addressFull(
-    //       addressData.provinceId,
-    //       addressData.toDistrictId,
-    //       addressData.wardCode
-    //     );
-    //     setAddressId({
-    //       provinceId: addressData.provinceId,
-    //       toDistrictId: addressData.toDistrictId,
-    //       wardCode: addressData.wardCode
-    //     })
+    AddressApi.fetchAllAddressByUser(record.id).then((res) => {
+      setListAddress(res.data.data);
+    });
+    AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
+      const addressData = res.data.data;
+      const formValues = {
+        phoneNumber: record.phoneNumber,
+        name: record.fullName,
+        email: record.email
+      };
+      if (addressData) {
+        setAddress({
+          city: addressData.province,
+          district: addressData.district,
+          wards: addressData.ward,
+          detail: addressData.line,
+        });
+        addressFull(
+          addressData.provinceId,
+          addressData.toDistrictId,
+          addressData.wardCode
+        );
+        setAddressId({
+          provinceId: addressData.provinceId,
+          toDistrictId: addressData.toDistrictId,
+          wardCode: addressData.wardCode
+        })
 
-    //     formValues.name = addressData.fullName;
-    //     formValues.phoneNumber = addressData.phoneNumber;
-    //     formValues.city = addressData.province;
-    //     formValues.district = addressData.district;
-    //     formValues.wards = addressData.ward;
-    //     formValues.detail = addressData.line;
-    //   }
-    //   form.setFieldsValue(formValues);
-    // });
+        formValues.name = addressData.fullName;
+        formValues.phoneNumber = addressData.phoneNumber;
+        formValues.city = addressData.province;
+        formValues.district = addressData.district;
+        formValues.wards = addressData.ward;
+        formValues.detail = addressData.line;
+      }
+      form.setFieldsValue(formValues);
+    });
 
     setBillRequest({
       ...billRequest,
@@ -902,8 +910,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         address.city;
     }
     var idAccount = "";
+    var poin = 0;
     if (accountuser != null) {
       idAccount = accountuser.idAccount;
+    }
+    if(usePoin){
+      poin = accountuser?.points;
     }
     var typeBill = "OFFLINE";
     // if (isOpenDelivery) {
@@ -943,7 +955,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       itemDiscount: voucher.discountPrice + exchangeRateMoney,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
-      email: billRequest.email.trim(),
+      email: billRequest.email,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
       moneyShip: ship,
@@ -954,7 +966,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       deliveryDate: dayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      openUsePoin: usePoin
+      poin: poin
     };
     if (isOpenDelivery) {
       if (
@@ -1512,7 +1524,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     const timeInMillis = new Date().getTime();
     const data = {
       vnp_Ammount: Math.round(
-        totalBill + ship - voucher.discountPrice - totaPayMent
+        totalBill + ship - voucher.discountPrice -exchangeRateMoney - totaPayMent
       ),
       vnp_TxnRef: billRequest.code + "-" + timeInMillis,
     };
@@ -2605,6 +2617,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   align={"end"}
                 >
                   {formatCurrency(
+                     Math.max(
+                      0,
                     products.reduce((accumulator, currentValue) => {
                       return (
                         accumulator + currentValue.price * currentValue.quantity
@@ -2613,6 +2627,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       shipFee -
                       exchangeRateMoney -
                       voucher.discountPrice
+                     )
                   )}
                 </Col>
               ) : (
@@ -2627,6 +2642,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   align={"end"}
                 >
                   {formatCurrency(
+                      Math.max(
+                        0,
                     products.reduce((accumulator, currentValue) => {
                       return (
                         accumulator + currentValue.price * currentValue.quantity
@@ -2634,6 +2651,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     }, 0) -
                       exchangeRateMoney -
                       voucher.discountPrice
+                      )
                   )}
                 </Col>
               )}
@@ -3110,7 +3128,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                           currentValue.price * currentValue.quantity
                         );
                       }, 0) +
-                        shipFee -
+                        shipFee -exchangeRateMoney -
                         voucher.discountPrice -
                         dataPayment.reduce((accumulator, currentValue) => {
                           return accumulator + currentValue.totalMoney;
