@@ -8,9 +8,16 @@ import com.example.shose.server.dto.request.bill.ChangeEmployeeRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
+import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,7 +27,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author thangdt
@@ -113,6 +124,34 @@ public class BillRestController {
     @PutMapping("/change-employee")
     public ResponseObject ChangeEmployeeInBill(@RequestBody ChangeEmployeeRequest request) {
         return  new ResponseObject(billService.ChangeEmployee(shoseSession.getEmployee().getId(), request));
+    }
+
+    @GetMapping("/give-back-information")
+    public ResponseObject BillGiveBackInformation (@RequestParam("codeBill") String codeBill){
+        return new ResponseObject(billService.getBillGiveBackInformation(codeBill));
+    }
+
+    @GetMapping("/give-back")
+    public ResponseObject BillGiveBack (@RequestParam("idBill") String ibBill){
+        return new ResponseObject(billService.getBillGiveBack(ibBill));
+    }
+
+    @PostMapping("/give-back")
+    public ResponseObject UpdateBillGiveBack (@RequestParam("updateBill") String updateBill,
+                                              @RequestParam("data") String data){
+
+        Gson gson = new Gson();
+        UpdateBillGiveBack updateBillGiveBack = gson.fromJson(updateBill, UpdateBillGiveBack.class);
+
+        JsonArray jsonData = JsonParser.parseString(data).getAsJsonArray();
+        List<UpdateBillDetailGiveBack> listDataBillDetail =  new ArrayList<>();
+        for (JsonElement dataBillDetail : jsonData) {
+            UpdateBillDetailGiveBack detail = gson.fromJson(dataBillDetail, UpdateBillDetailGiveBack.class);
+            listDataBillDetail.add(detail);
+        }
+        System.out.println(listDataBillDetail);
+        return new ResponseObject(billService.UpdateBillGiveBack(updateBillGiveBack, listDataBillDetail));
+//        return null;
     }
 
 }

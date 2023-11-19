@@ -10,7 +10,7 @@ import {
   Row,
   Select,
   Switch,
-  Table
+  Table,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import moment from "moment";
@@ -61,7 +61,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     code: "",
     email: "",
   });
-
 
   const [address, setAddress] = useState({
     city: "",
@@ -131,9 +130,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (traSau) {
       statusPayMents = "TRA_SAU";
     }
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
     }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
@@ -144,7 +143,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       note: billRequest.note.trim(),
       statusPayMents: statusPayMents,
       typeBill: typeBill,
-      email:billRequest.email.trim(),
+      email: billRequest.email ? billRequest.email.trim() : null,
       moneyShip: ship,
       billDetailRequests: newProduct,
       paymentsMethodRequests: dataPayment,
@@ -154,10 +153,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       code: code,
       openDelivery: isOpenDelivery,
     };
-    BillApi.updateBillWait(data).then((res) => {
-      console.log(data);
-    }).catch((error) => {
-          toast.error(error.response.data.message);
+    BillApi.updateBillWait(data)
+      .then((res) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
       });
   };
 
@@ -198,10 +199,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       if (traSau) {
         statusPayMents = "TRA_SAU";
       }
-      var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
-    }
+      var ship = 0;
+      if (isOpenDelivery) {
+        ship = shipFee;
+      }
       var data = {
         phoneNumber: billRequest.phoneNumber.trim(),
         address: addressuser.trim(),
@@ -211,7 +212,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         note: billRequest.note.trim(),
         statusPayMents: statusPayMents,
         typeBill: typeBill,
-        email:billRequest.email.trim(),
+        email: billRequest.email ? billRequest.email.trim() : null,
         moneyShip: ship,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
@@ -221,10 +222,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         code: code,
         openDelivery: isOpenDelivery,
       };
-      console.log(data)
-      BillApi.updateBillWait(data).then((res) => {}).catch((error) => {
-            toast.error(error.response.data.message);
-      });
+      console.log(data);
+      BillApi.updateBillWait(data)
+        .then((res) => {})
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
     }
   };
 
@@ -280,44 +283,47 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       vnp_TxnRef: code,
     });
     // });
-    BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-      const data = res.data.data.map((item) => {
-        return {
-          image: item.image,
-          productName: item.productName,
-          nameSize: item.nameSize,
-          idProduct: item.idProduct,
-          quantity: item.quantity,
-          price: item.price,
-          idSizeProduct: item.idProduct,
-          maxQuantity: item.maxQuantity,
-          promotion: item.promotion,
-        };
-      });
-      setProducts(data);
-    }).catch((error) => {
+    BillApi.fetchAllProductsInBillByIdBill(id)
+      .then((res) => {
+        const data = res.data.data.map((item) => {
+          return {
+            image: item.image,
+            productName: item.productName,
+            nameSize: item.nameSize,
+            idProduct: item.idProduct,
+            quantity: item.quantity,
+            price: item.price,
+            idSizeProduct: item.idProduct,
+            maxQuantity: item.maxQuantity,
+            promotion: item.promotion,
+          };
+        });
+        setProducts(data);
+      })
+      .catch((error) => {
         toast.error(error.response.data.message);
       });
-    BillApi.fetchDetailBill(id).then((res) => {
-      setBillRequest({
-        phoneNumber: res.data.data.phoneNumber,
-        address: res.data.data.address,
-        userName: res.data.data.userName,
-        idUser: res.data.data.account?.id,
-        itemDiscount: res.data.data.itemDiscount,
-        totalMoney: res.data.data.totalMoney,
-        note: res.data.data.note,
-        moneyShip: res.data.data.moneyShip,
-        email: res.data.data.email,
-        billDetailRequests: [],
-        vouchers: [],
-        code: res.data.data.code,
-      });
-    }).catch((error) => {
+    BillApi.fetchDetailBill(id)
+      .then((res) => {
+        setBillRequest({
+          phoneNumber: res.data.data.phoneNumber,
+          address: res.data.data.address,
+          userName: res.data.data.userName,
+          idUser: res.data.data.account?.id,
+          itemDiscount: res.data.data.itemDiscount,
+          totalMoney: res.data.data.totalMoney,
+          note: res.data.data.note,
+          moneyShip: res.data.data.moneyShip,
+          email: res.data.data.email,
+          billDetailRequests: [],
+          vouchers: [],
+          code: res.data.data.code,
+        });
+      })
+      .catch((error) => {
         toast.error(error.response.data.message);
       });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
-
       const data = res.data.data.map((item) => {
         return {
           actionDescription: "",
@@ -328,30 +334,34 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       });
       setDataPayMent(data);
     });
-    AccountApi.getAccountUserByIdBill(id).then((res) => {
-      setAccountUser(res.data.data);
-    }).catch((error) => {
+    AccountApi.getAccountUserByIdBill(id)
+      .then((res) => {
+        setAccountUser(res.data.data);
+      })
+      .catch((error) => {
         toast.error(error.response.data.message);
       });
-    VoucherDetailApi.getVoucherDetailByIdBill(id).then((res) => {
-      if (res.data.data != null) {
-        setVoucher({
-          idVoucher: res.data.data.id,
-          beforPrice: res.data.data.beforPrice,
-          afterPrice: res.data.data.afterPrice,
-          discountPrice: res.data.data.discountPrice,
-        });
-        setCodeVoucher(res.data.data?.name);
-      } else {
-        setVoucher({
-          idVoucher: "",
-          beforPrice: 0,
-          afterPrice: 0,
-          discountPrice: 0,
-        });
-      }
-    }).catch((error) => {
-      toast.error(error.response.data.message);
+    VoucherDetailApi.getVoucherDetailByIdBill(id)
+      .then((res) => {
+        if (res.data.data != null) {
+          setVoucher({
+            idVoucher: res.data.data.id,
+            beforPrice: res.data.data.beforPrice,
+            afterPrice: res.data.data.afterPrice,
+            discountPrice: res.data.data.discountPrice,
+          });
+          setCodeVoucher(res.data.data?.name);
+        } else {
+          setVoucher({
+            idVoucher: "",
+            beforPrice: 0,
+            afterPrice: 0,
+            discountPrice: 0,
+          });
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
       });
   }, []);
 
@@ -360,7 +370,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       handleWardChange(valueAddressShip.children, valueAddressShip);
     }
   }, [products]);
-
 
   const loadData = () => {
     CustomerApi.fetchAll().then(
@@ -423,14 +432,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
     setAddress({ ...address, wards: valueWard.value });
-    const totalQuantity = products.length > 0 ? products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.quantity;
-    }, 0) : 1;
-    setValueAddressShip(valueWard)
+    const totalQuantity =
+      products.length > 0
+        ? products.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue.quantity;
+          }, 0)
+        : 1;
+    setValueAddressShip(valueWard);
     // số lượng sản phầm lớn hơn 2 free ship
     if (totalQuantity > 2) {
       setShipFee(0);
-
     } else {
       AddressApi.fetchAllMoneyShip(
         valueWard.valueDistrict,
@@ -438,7 +449,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         totalQuantity
       ).then((res) => {
         setShipFee(res.data.data.total);
-    })}
+      });
+    }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -587,7 +599,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       const formValues = {
         phoneNumber: record.phoneNumber,
         name: record.fullName,
-        email: record.email
+        email: record.email,
       };
       if (addressData) {
         setAddress({
@@ -604,8 +616,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         setAddressId({
           provinceId: addressData.provinceId,
           toDistrictId: addressData.toDistrictId,
-          wardCode: addressData.wardCode
-        })
+          wardCode: addressData.wardCode,
+        });
 
         formValues.name = addressData.fullName;
         formValues.phoneNumber = addressData.phoneNumber;
@@ -622,7 +634,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       phoneNumber: record.phoneNumber,
       userName: record.fullName,
       idUser: record.id,
-      email: record.email
+      email: record.email,
     });
     // dispatch(addUserBillWait(record));
     setAccountUser(record);
@@ -680,34 +692,34 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var check = !traSau;
     if (check) {
       // loadPayMentTraSau()
-       setDataPayMent([]);
+      setDataPayMent([]);
     } else {
       setDataPayMent([]);
     }
   };
   const loadPayMentTraSau = () => {
     var total =
-        products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0) +
-        shipFee -
-        voucher.discountPrice;
-      var list = [
-        {
-          actionDescription: "",
-          method: "TIEN_MAT",
-          totalMoney: total,
-          status: "THANH_TOAN",
-        },
-      ];
-      setDataPayMent(list);
-  }
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) +
+      shipFee -
+      voucher.discountPrice;
+    var list = [
+      {
+        actionDescription: "",
+        method: "TIEN_MAT",
+        totalMoney: total,
+        status: "THANH_TOAN",
+      },
+    ];
+    setDataPayMent(list);
+  };
   const formRef = React.useRef(null);
 
-  const addPayMent = async(e, method) => {
+  const addPayMent = async (e, method) => {
     if (method == "CHUYEN_KHOAN") {
-     await updateBillWhenSavePayMent([...dataPayment]);
-     await submitCodeTransactionNext(e);
+      await updateBillWhenSavePayMent([...dataPayment]);
+      await submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -728,7 +740,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           setTotalMoneyPayment("");
           // form.resetFields();
         },
-        onCancel: () => { },
+        onCancel: () => {},
       });
     }
   };
@@ -767,8 +779,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-              ? "Chuyển khoản"
-              : "Thẻ"}
+            ? "Chuyển khoản"
+            : "Thẻ"}
         </Button>
       ),
     },
@@ -788,9 +800,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     },
   ];
   const showModalPayMent = (e) => {
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
     }
     setIsModalPayMentOpen(true);
     var total =
@@ -826,10 +838,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (voucher.idVoucher != "") {
       newVoucher.push(voucher);
     }
-    var totalBill =
-      products.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) ;
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
@@ -869,28 +880,28 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var statusPayMents = "THANH_TOAN";
     if (traSau) {
       statusPayMents = "TRA_SAU";
-
     }
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
     }
-    var dataPayMentTraSau = dataPayment
-    if(traSau){
+    var dataPayMentTraSau = dataPayment;
+    if (traSau) {
       var total =
-      products.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) + ship  -
-      voucher.discountPrice;
+        products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0) +
+        ship -
+        voucher.discountPrice;
       dataPayMentTraSau = [
-      {
-        actionDescription: "",
-        method: "TIEN_MAT",
-        totalMoney: total,
-        status: "TRA_SAU",
-      },
-    ];
-    totaPayMent = total
+        {
+          actionDescription: "",
+          method: "TIEN_MAT",
+          totalMoney: total,
+          status: "TRA_SAU",
+        },
+      ];
+      totaPayMent = total;
     }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
@@ -899,7 +910,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       itemDiscount: voucher.discountPrice,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
-      email:billRequest.email.trim(),
+      email: billRequest.email ? billRequest.email.trim() : null,
       statusPayMents: statusPayMents,
       typeBill: typeBill,
       moneyShip: ship,
@@ -922,7 +933,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         billRequest.userName != ""
       ) {
         if (totalBill > 0) {
-          if (Math.round(totaPayMent) >= Math.round(totalBill + shipFee- voucher.discountPrice)) {
+          if (
+            Math.round(totaPayMent) >=
+            Math.round(totalBill + shipFee - voucher.discountPrice)
+          ) {
             Modal.confirm({
               title: "Xác nhận",
               content: "Bạn có xác nhận đặt hàng không?",
@@ -952,7 +966,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
     } else {
       if (totalBill > 0) {
-        if (Math.round(totaPayMent) >= Math.round(totalBill - voucher.discountPrice)) {
+        if (
+          Math.round(totaPayMent) >=
+          Math.round(totalBill - voucher.discountPrice)
+        ) {
           Modal.confirm({
             title: "Xác nhận",
             content: "Bạn có xác nhận đặt hàng không?",
@@ -1015,7 +1032,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         // dispatch(SetPromotion(data));
         setDataVoucher(data);
       },
-      (err) => { }
+      (err) => {}
     );
   };
   // const dataVoucher = useAppSelector(GetPromotion);
@@ -1358,7 +1375,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const addressFull = (provinceId, toDistrictId, wardCode) => {
     AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
-        setShipFee(res.data.data.total);
+      setShipFee(res.data.data.total);
     });
     AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
       const leadtimeInSeconds = res.data.data.leadtime;
@@ -1448,22 +1465,23 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   //   payment vnpay
 
   const submitCodeTransactionNext = (e) => {
-    var totalBill =
-      products.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) ;
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
     }
     // Lấy thời điểm hiện tại dạng long
-     const timeInMillis = new Date().getTime();
+    const timeInMillis = new Date().getTime();
     const data = {
-      vnp_Ammount: Math.round((totalBill + ship - voucher.discountPrice) - totaPayMent),
-      vnp_TxnRef: billRequest.code + "-"+ timeInMillis,
+      vnp_Ammount: Math.round(
+        totalBill + ship - voucher.discountPrice - totaPayMent
+      ),
+      vnp_TxnRef: billRequest.code + "-" + timeInMillis,
     };
     localStorage.setItem("code", billRequest.code);
     PaymentsMethodApi.paymentVnpay(data).then((res) => {
@@ -1530,7 +1548,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
@@ -2525,51 +2542,47 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   Tổng tiền:
                 </span>{" "}
               </Col>
-                   {
-                    isOpenDelivery ? (
-                       <Col
-                span={10}
-                style={{
-                  color: "red",
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  marginRight: "10px",
-                }}
-                align={"end"}
-              >
-                 
-                {formatCurrency(
-                  products.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0) +
-                    shipFee -
-                    voucher.discountPrice
-                )}
-              </Col>
-                    ) : (  <Col
-                span={10}
-                style={{
-                  color: "red",
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  marginRight: "10px",
-                }}
-                align={"end"}
-              >
-                 
-                {formatCurrency(
-                  products.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator + currentValue.price * currentValue.quantity
-                    );
-                  }, 0)  -
-                    voucher.discountPrice
-                )}
-              </Col>)
-                  }
-             
+              {isOpenDelivery ? (
+                <Col
+                  span={10}
+                  style={{
+                    color: "red",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    marginRight: "10px",
+                  }}
+                  align={"end"}
+                >
+                  {formatCurrency(
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
+                      shipFee -
+                      voucher.discountPrice
+                  )}
+                </Col>
+              ) : (
+                <Col
+                  span={10}
+                  style={{
+                    color: "red",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    marginRight: "10px",
+                  }}
+                  align={"end"}
+                >
+                  {formatCurrency(
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) - voucher.discountPrice
+                  )}
+                </Col>
+              )}
             </Row>
             <Row style={{ margin: "60px 20px 30px 0" }} justify="end">
               <Button
@@ -2796,14 +2809,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     {
                       validator: (_, value) => {
                         if (value && value.trim() === "") {
-                          return Promise.reject("Không được chỉ nhập khoảng trắng");
+                          return Promise.reject(
+                            "Không được chỉ nhập khoảng trắng"
+                          );
                         }
-                        if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                        if (
+                          !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                            value
+                          )
+                        ) {
                           return Promise.reject(
                             "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                           );
                         }
-        
+
                         return Promise.resolve();
                       },
                     },
@@ -2880,12 +2899,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         message: "Vui lòng nhập số tiền",
                       },
                       {
-      validator: (_, value) => {
-        if ( totalMoneyPayMent < 1000) {
-          return Promise.reject("Giá tiền phải lớn hơn 1000");
-        }
-      },
-    },
+                        validator: (_, value) => {
+                          if (totalMoneyPayMent < 1000) {
+                            return Promise.reject("Giá tiền phải lớn hơn 1000");
+                          }
+                        },
+                      },
                     ]}
                   >
                     <NumberFormat
@@ -2911,7 +2930,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-          <Col span={12} style={{ marginTop: "10px" }}>
+            <Col span={12} style={{ marginTop: "10px" }}>
               <Button
                 type="primary"
                 onClick={(e) => addPayMent(e, "TIEN_MAT")}
@@ -2921,7 +2940,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   width: "98%",
                   alignItems: "center",
                 }}
-                disabled={(totalMoneyPayMent < 1000 ) ? true : false}
+                disabled={totalMoneyPayMent < 1000 ? true : false}
               >
                 Tiền mặt
               </Button>
@@ -2950,22 +2969,23 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               align={"end"}
               style={{ fontSize: "18px", fontWeight: "bold", color: "red" }}
             >
-               {isOpenDelivery? formatCurrency(
-                products.reduce((accumulator, currentValue) => {
-                  return (
-                    accumulator + currentValue.price * currentValue.quantity
-                  );
-                }, 0) +
-                shipFee  -
-                  voucher.discountPrice
-              ): formatCurrency(
-                products.reduce((accumulator, currentValue) => {
-                  return (
-                    accumulator + currentValue.price * currentValue.quantity
-                  );
-                }, 0) -
-                  voucher.discountPrice
-              )}
+              {isOpenDelivery
+                ? formatCurrency(
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) +
+                      shipFee -
+                      voucher.discountPrice
+                  )
+                : formatCurrency(
+                    products.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator + currentValue.price * currentValue.quantity
+                      );
+                    }, 0) - voucher.discountPrice
+                  )}
             </Col>
           </Row>
           <Row style={{ width: "100%", marginTop: "10px" }}>
@@ -2993,108 +3013,121 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               )}
             </Col>
           </Row>
-{isOpenDelivery ? (<Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
-              {dataPayment.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.totalMoney;
-              }, 0) <
-              products.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.price * currentValue.quantity;
-              }, 0) +
-                shipFee -
-                voucher.discountPrice
-                ? "Tiền thiếu"
-                : "Tiền thừa"}
-            </Col>
-            <Col
-              span={16}
-              align={"end"}
-              style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
-            >
-              {dataPayment.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.totalMoney;
-              }, 0) <
-              products.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.price * currentValue.quantity;
-              }, 0) +
-                shipFee -
-                voucher.discountPrice
-                ? formatCurrency(
-                    products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) +
-                      shipFee -
-                      voucher.discountPrice -
-                      dataPayment.reduce((accumulator, currentValue) => {
-                        return accumulator + currentValue.totalMoney;
-                      }, 0)
-                  )
-                : formatCurrency(
-                    dataPayment.reduce((accumulator, currentValue) => {
-                      return accumulator + currentValue.totalMoney;
-                    }, 0) -
-                      (products.reduce((accumulator, currentValue) => {
+          {isOpenDelivery ? (
+            <Row style={{ width: "100%", margin: "10px 0 " }}>
+              <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+                {dataPayment.reduce((accumulator, currentValue) => {
+                  return accumulator + currentValue.totalMoney;
+                }, 0) <
+                products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) +
+                  shipFee -
+                  voucher.discountPrice
+                  ? "Tiền thiếu"
+                  : "Tiền thừa"}
+              </Col>
+              <Col
+                span={16}
+                align={"end"}
+                style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
+              >
+                {dataPayment.reduce((accumulator, currentValue) => {
+                  return accumulator + currentValue.totalMoney;
+                }, 0) <
+                products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) +
+                  shipFee -
+                  voucher.discountPrice
+                  ? formatCurrency(
+                      products.reduce((accumulator, currentValue) => {
                         return (
                           accumulator +
                           currentValue.price * currentValue.quantity
                         );
                       }, 0) +
                         shipFee -
-                        voucher.discountPrice)
-                  )}
-            </Col>
-          </Row>):(<Row style={{ width: "100%", margin: "10px 0 " }}>
-            <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
-              {dataPayment.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.totalMoney;
-              }, 0) <
-              products.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.price * currentValue.quantity;
-              }, 0)  -
-                voucher.discountPrice
-                ? "Tiền thiếu"
-                : "Tiền thừa"}
-            </Col>
-            <Col
-              span={16}
-              align={"end"}
-              style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
-            >
-              {dataPayment.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.totalMoney;
-              }, 0) <
-              products.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.price * currentValue.quantity;
-              }, 0) -
-                voucher.discountPrice
-                ? formatCurrency(
-                    products.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) -
-                      voucher.discountPrice -
+                        voucher.discountPrice -
+                        dataPayment.reduce((accumulator, currentValue) => {
+                          return accumulator + currentValue.totalMoney;
+                        }, 0)
+                    )
+                  : formatCurrency(
                       dataPayment.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue.totalMoney;
-                      }, 0)
-                  )
-                : formatCurrency(
-                    dataPayment.reduce((accumulator, currentValue) => {
-                      return accumulator + currentValue.totalMoney;
-                    }, 0) -
-                      (products.reduce((accumulator, currentValue) => {
+                      }, 0) -
+                        (products.reduce((accumulator, currentValue) => {
+                          return (
+                            accumulator +
+                            currentValue.price * currentValue.quantity
+                          );
+                        }, 0) +
+                          shipFee -
+                          voucher.discountPrice)
+                    )}
+              </Col>
+            </Row>
+          ) : (
+            <Row style={{ width: "100%", margin: "10px 0 " }}>
+              <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
+                {dataPayment.reduce((accumulator, currentValue) => {
+                  return accumulator + currentValue.totalMoney;
+                }, 0) <
+                products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) -
+                  voucher.discountPrice
+                  ? "Tiền thiếu"
+                  : "Tiền thừa"}
+              </Col>
+              <Col
+                span={16}
+                align={"end"}
+                style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
+              >
+                {dataPayment.reduce((accumulator, currentValue) => {
+                  return accumulator + currentValue.totalMoney;
+                }, 0) <
+                products.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator + currentValue.price * currentValue.quantity
+                  );
+                }, 0) -
+                  voucher.discountPrice
+                  ? formatCurrency(
+                      products.reduce((accumulator, currentValue) => {
                         return (
                           accumulator +
                           currentValue.price * currentValue.quantity
                         );
                       }, 0) -
-                        voucher.discountPrice)
-                  )}
-            </Col>
-          </Row>)}
-          
+                        voucher.discountPrice -
+                        dataPayment.reduce((accumulator, currentValue) => {
+                          return accumulator + currentValue.totalMoney;
+                        }, 0)
+                    )
+                  : formatCurrency(
+                      dataPayment.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.totalMoney;
+                      }, 0) -
+                        (products.reduce((accumulator, currentValue) => {
+                          return (
+                            accumulator +
+                            currentValue.price * currentValue.quantity
+                          );
+                        }, 0) -
+                          voucher.discountPrice)
+                    )}
+              </Col>
+            </Row>
+          )}
         </Form>
       </Modal>
 

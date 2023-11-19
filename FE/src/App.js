@@ -69,6 +69,7 @@ import SignUp from "./pages/customer/signup/SignUp";
 import GiveBackManagement from "./pages/employee/give-back-management/GiveBackManagement";
 import NotFound from "./pages/404";
 import NotAuthorized from "./pages/403";
+import DetailBillGiveBack from "./pages/employee/give-back-management/DetailBill";
 function App() {
   const pathname = window.location.pathname;
   useEffect(() => {
@@ -426,6 +427,16 @@ function App() {
             element={
               <AuthGuard>
                 <LoginManagement />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/detail-give-back/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <DetailBillGiveBack />
+                </DashBoardEmployee>
               </AuthGuard>
             }
           />
