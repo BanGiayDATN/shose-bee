@@ -34,6 +34,8 @@ import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
+import com.example.shose.server.infrastructure.poin.ConfigPoin;
+import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -78,6 +80,9 @@ import java.util.Optional;
 @Service
 @Transactional
 public class BillServiceImpl implements BillService {
+
+    @Autowired
+    private ConfigPoin configPoin;
 
     @Autowired
     private BillRepository billRepository;
@@ -181,6 +186,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
         optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
+        optional.get().setPoinUse(request.getPoin());
 
         List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
         billDetailResponse.forEach(item -> {
@@ -206,21 +212,43 @@ public class BillServiceImpl implements BillService {
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
 
-        if (request.getIdUser() != null) {
-            Optional<Account> user = accountRepository.findById(request.getIdUser());
-            if (user.isPresent()) {
-                optional.get().setAccount(user.get());
-            }
-        }
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
+            if (request.getIdUser() != null) {
+                Optional<Account> account = accountRepository.findById(request.getIdUser());
+                if (account.isPresent()) {
+                    optional.get().setAccount(account.get());
+                    User user = account.get().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    if(request.getPoin() > 0){
+                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                        user.setPoints(Pointotal);
+                    }else{
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                    }
+                    userReposiory.save(user);
+                }
+            }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         } else {
+            if (request.getIdUser() != null) {
+                Optional<Account> account = accountRepository.findById(request.getIdUser());
+                if (account.isPresent()) {
+                    optional.get().setAccount(account.get());
+                    User user = account.get().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    if(request.getPoin() > 0){
+                        int Pointotal = user.getPoints() - request.getPoin() ;
+                        user.setPoints(Pointotal);
+                    }
+                    userReposiory.save(user);
+                }
+            }
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
@@ -332,6 +360,7 @@ public class BillServiceImpl implements BillService {
             optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
             optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
             optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
+            optional.get().setPoinUse(request.getPoin());
             billRepository.save(optional.get());
 
             List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
@@ -486,6 +515,12 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            if(bill.get().getAccount() != null){
+                User user = bill.get().getAccount().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    userReposiory.save(user);
+            }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         bill.get().setEmployees(account.get());
@@ -527,6 +562,12 @@ public class BillServiceImpl implements BillService {
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                if(bill.get().getAccount() != null){
+                    User user = bill.get().getAccount().getUser();
+                        Poin poin = configPoin.readJsonFile();
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                        userReposiory.save(user);
+                }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
             bill.get().setEmployees(account.get());
@@ -576,6 +617,15 @@ public class BillServiceImpl implements BillService {
             }
             productDetailRepository.save(productDetail.get());
         });
+        Account checkAccount = bill.get().getAccount();
+        if(checkAccount != null){
+            if(bill.get().getPoinUse() > 0){
+                User user =  checkAccount.getUser();
+                user.setPoints(user.getPoints() + bill.get().getPoinUse());
+                userReposiory.save(user);
+            }
+        }
+
         if (!paymentsMethodService.refundVnpay(idEmployees, request.isStatusCancel(), bill.get().getCode(), requests)) {
             throw new RestApiException(Message.ERROR_CANCEL_BILL);
         }
@@ -704,6 +754,11 @@ public class BillServiceImpl implements BillService {
         }
 
         Account account = accountRepository.findById(request.getIdAccount()).get();
+        if(request.getPoin() > 0 ){
+            User user = account.getUser();
+            user.setPoints(user.getPoints() - request.getPoin());
+            userReposiory.save(user);
+        }
         Bill bill = Bill.builder()
                 .code("HD" + RandomStringUtils.randomNumeric(6))
                 .phoneNumber(request.getPhoneNumber())
@@ -715,6 +770,7 @@ public class BillServiceImpl implements BillService {
                 .typeBill(TypeBill.ONLINE)
                 .email(account.getEmail())
                 .statusBill(StatusBill.CHO_XAC_NHAN)
+                .poinUse(request.getPoin())
                 .account(account).build();
         if (!request.getPaymentMethod().equals("paymentReceive")) {
             bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);

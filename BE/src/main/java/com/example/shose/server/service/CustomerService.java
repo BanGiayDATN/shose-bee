@@ -43,5 +43,5 @@ public interface CustomerService {
 
     EmployeeResponse getOneByPhoneNumber(String phoneNumber);
 
-
+    User findByEmail(String email);
 }
