@@ -27,6 +27,8 @@ public class CreateBillAccountOnlineRequest {
     private List<BillDetailOnline> billDetail;
     private BigDecimal afterPrice;
 
+    private int poin;
+
     private String idVoucher;
     private String idAccount;
 

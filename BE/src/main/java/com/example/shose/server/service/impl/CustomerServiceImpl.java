@@ -264,4 +264,9 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return optional.get();
     }
+
+    @Override
+    public User findByEmail(String email) {
+        return userReposiory.findByEmail(email).get();
+    }
 }

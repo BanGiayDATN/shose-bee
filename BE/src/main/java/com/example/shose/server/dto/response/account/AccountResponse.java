@@ -26,4 +26,7 @@ public interface AccountResponse {
     @Value("#{target.email}")
     String getEmail();
 
+    @Value("#{target.points}")
+    int getPoints();
+
 }

@@ -47,6 +47,8 @@ public class CreateBillOfflineRequest {
     @NotEmpty
     private String code;
 
+    private int poin;
+
     @NotEmpty
     private String statusPayMents;
 
