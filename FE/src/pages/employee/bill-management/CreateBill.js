@@ -125,11 +125,18 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var idAccount = "";
     var poin = 0;
-    if (accountuser != null) {
-      idAccount = accountuser.idAccount;
-    }
     if(usePoin){
       poin = tinhSoDiemCanThanhToan()
+    }
+    var itemDiscount = voucher.discountPrice + exchangeRateMoney
+    if (accountuser != null) {
+      idAccount = accountuser.idAccount;
+      if(poin < accountuser?.points){
+        itemDiscount = Math.round(totalBill) - voucher.discountPrice 
+        if(isOpenDelivery){
+          itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
+        }
+      }
     }
     var typeBill = "OFFLINE";
     var statusPayMents = "THANH_TOAN";
@@ -144,7 +151,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
       userName: billRequest.userName.trim(),
-      itemDiscount: voucher.discountPrice + exchangeRateMoney,
+      itemDiscount: itemDiscount,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
       statusPayMents: statusPayMents,
@@ -199,12 +206,19 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
       var idAccount = "";
       var poin = 0;
-    if (accountuser != null) {
-      idAccount = accountuser.idAccount;
-    }
-    if(usePoin){
-      poin = tinhSoDiemCanThanhToan()
-    }
+      if(usePoin){
+        poin = tinhSoDiemCanThanhToan()
+      }
+      var itemDiscount = voucher.discountPrice + exchangeRateMoney
+      if (accountuser != null) {
+        idAccount = accountuser.idAccount;
+        if(poin < accountuser?.points){
+          itemDiscount = Math.round(totalBill) - voucher.discountPrice 
+          if(isOpenDelivery){
+            itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
+          }
+        }
+      }
       var typeBill = "OFFLINE";
       var statusPayMents = "THANH_TOAN";
       if (traSau) {
@@ -218,7 +232,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         phoneNumber: billRequest.phoneNumber.trim(),
         address: addressuser.trim(),
         userName: billRequest.userName.trim(),
-        itemDiscount: voucher.discountPrice + exchangeRateMoney,
+        itemDiscount: itemDiscount,
         totalMoney: Math.round(totalBill),
         note: billRequest.note.trim(),
         statusPayMents: statusPayMents,
@@ -911,12 +925,24 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var idAccount = "";
     var poin = 0;
-    if (accountuser != null) {
-      idAccount = accountuser.idAccount;
-    }
     if(usePoin){
       poin = tinhSoDiemCanThanhToan()
     }
+    console.log(poin);
+    console.log(accountuser?.points);
+    var itemDiscount = voucher.discountPrice + exchangeRateMoney
+    if (accountuser != null) {
+      idAccount = accountuser.idAccount;
+      if(poin < accountuser?.points){
+        console.log(accountuser?.points);
+        itemDiscount = Math.round(totalBill) - voucher.discountPrice 
+        if(isOpenDelivery){
+          itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
+        }
+      }
+    }
+    console.log(itemDiscount);
+    
     var typeBill = "OFFLINE";
     // if (isOpenDelivery) {
     //   typeBill = "ONLINE";
@@ -948,11 +974,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ];
       totaPayMent = total;
     }
+    
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
       userName: billRequest.userName.trim(),
-      itemDiscount: voucher.discountPrice + exchangeRateMoney,
+      itemDiscount: itemDiscount,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
       email: billRequest.email,
@@ -2576,7 +2603,7 @@ function tinhSoDiemCanThanhToan( ) {
             </Row>
             {isPoin ? (
               <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-                <Col span={10} style={{ display: "flex", alignItems: "center",  margin: "2px",
+                <Col span={7} style={{ display: "flex", alignItems: "center",  margin: "2px",
                   fontWeight: "bold",
                   fontSize: "15px", }}>
                   {" "}
@@ -3136,7 +3163,7 @@ function tinhSoDiemCanThanhToan( ) {
                 align={"end"}
                 style={{ fontSize: "18px", fontWeight: "600", color: "blue" }}
               >
-                {dataPayment.reduce((accumulator, currentValue) => {
+                { Math.max(0, dataPayment.reduce((accumulator, currentValue) => {
                   return accumulator + currentValue.totalMoney;
                 }, 0) <
                 products.reduce((accumulator, currentValue) => {
@@ -3146,7 +3173,7 @@ function tinhSoDiemCanThanhToan( ) {
                 }, 0) +
                   shipFee -
                   exchangeRateMoney -
-                  voucher.discountPrice
+                  voucher.discountPrice)
                   ? formatCurrency(
                     Math.max(
                       0,

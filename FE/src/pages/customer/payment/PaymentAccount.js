@@ -96,13 +96,14 @@ function PaymentAccount() {
   }, []);
 
   function tinhSoDiemCanThanhToan( ) {
-    var tongTienGiam = voucher.discountPrice + exchangeRateMoney;
+    var tongTienGiamVoucher = (voucher?.discountPrice !== undefined && !isNaN(voucher?.discountPrice)) ? voucher.discountPrice : 0;
+    var tongTienGiam = tongTienGiamVoucher + exchangeRateMoney;
     var tongTienThanhToan =  formBill.billDetail.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
-    }, 0);
-
+    }, 0) + moneyShip;
     if (tongTienGiam >= tongTienThanhToan) {
         var soDiemCanThanhToan = Math.floor(tongTienThanhToan / dataPoin.exchangeRateMoney);
+
         return soDiemCanThanhToan;
     } else {
         return account?.points; 
@@ -116,19 +117,19 @@ function PaymentAccount() {
     formBillChange("totalMoney", totalBefore);
   }, [totalBefore]);
   useEffect(() => {
-    setTotalBefore(total.totalMoney - voucher.value + moneyShip  - exchangeRateMoney);
+    setTotalBefore(total.totalMoney);
   }, [total]);
-  useEffect(() => {
-    formBillChange("afterPrice", totalAfter);
-  }, [totalAfter]);
+  // useEffect(() => {
+  //   formBillChange("afterPrice", totalAfter);
+  // }, [totalAfter]);
 
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
+    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney  - voucher.value );
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
   useEffect(() => {
     setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
-    formBillChange("moneyShip", moneyShip);
+    console.log( exchangeRateMoney);
   }, [exchangeRateMoney]);
   useEffect(() => {
     if (addressDefault !== null) {
@@ -179,7 +180,8 @@ function PaymentAccount() {
     );
   };
   const payment = () => {
-    console.log(addressDefault);
+    console.log(tinhSoDiemCanThanhToan()< account?.points);
+    console.log(account?.points);
     Modal.confirm({
       title: "Xác nhận đặt hàng",
       content: "Bạn có chắc chắn muốn đặt hàng ?",
@@ -193,8 +195,11 @@ function PaymentAccount() {
         if(exchangeRateMoney > 0){
           poin = tinhSoDiemCanThanhToan()
         }
+        if(poin < account?.points){
+          dataBill.itemDiscount = totalBefore + moneyShip
+        }
         dataBill.poin = poin
-        
+        dataBill.totalMoney = totalBefore
         if (addressDefault === null) {
           toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
           return;
@@ -539,7 +544,8 @@ function PaymentAccount() {
                 </Col>
                 <Col span={12}>
                   <h3 className="text-money-total">
-                    : {formatMoney(totalAfter)}{" "}
+                    : {formatMoney( Math.max(
+                    0,totalAfter))}{" "}
                   </h3>
                 </Col>
               </Row>
