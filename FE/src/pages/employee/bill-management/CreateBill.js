@@ -3060,6 +3060,8 @@ function tinhSoDiemCanThanhToan( ) {
             >
               {isOpenDelivery
                 ? formatCurrency(
+                  Math.max(
+                    0,
                     products.reduce((accumulator, currentValue) => {
                       return (
                         accumulator + currentValue.price * currentValue.quantity
@@ -3069,7 +3071,10 @@ function tinhSoDiemCanThanhToan( ) {
                       exchangeRateMoney -
                       voucher.discountPrice
                   )
+                  )
                 : formatCurrency(
+                  Math.max(
+                    0,
                     products.reduce((accumulator, currentValue) => {
                       return (
                         accumulator + currentValue.price * currentValue.quantity
@@ -3077,6 +3082,7 @@ function tinhSoDiemCanThanhToan( ) {
                     }, 0) -
                       exchangeRateMoney -
                       voucher.discountPrice
+                  )
                   )}
             </Col>
           </Row>
@@ -3099,9 +3105,12 @@ function tinhSoDiemCanThanhToan( ) {
               style={{ fontSize: "18px", fontWeight: "600", color: "red" }}
             >
               {formatCurrency(
+                 Math.max(
+                  0,
                 dataPayment.reduce((accumulator, currentValue) => {
                   return accumulator + currentValue.totalMoney;
                 }, 0)
+                 )
               )}
             </Col>
           </Row>
@@ -3139,6 +3148,8 @@ function tinhSoDiemCanThanhToan( ) {
                   exchangeRateMoney -
                   voucher.discountPrice
                   ? formatCurrency(
+                    Math.max(
+                      0,
                       products.reduce((accumulator, currentValue) => {
                         return (
                           accumulator +
@@ -3150,8 +3161,10 @@ function tinhSoDiemCanThanhToan( ) {
                         dataPayment.reduce((accumulator, currentValue) => {
                           return accumulator + currentValue.totalMoney;
                         }, 0)
-                    )
+                    ))
                   : formatCurrency(
+                    Math.max(
+                      0,
                       dataPayment.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue.totalMoney;
                       }, 0) -
@@ -3164,6 +3177,7 @@ function tinhSoDiemCanThanhToan( ) {
                           shipFee -
                           exchangeRateMoney -
                           voucher.discountPrice)
+                    )
                     )}
               </Col>
             </Row>
