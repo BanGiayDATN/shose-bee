@@ -51,9 +51,6 @@ public class Account extends PrimaryEntity  implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(name = "points")
-    private Integer points;
-
     @OneToOne
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;

@@ -46,6 +46,9 @@ public class User extends PrimaryEntity {
     @Column(name = "avata")
     private String avata;
 
+    @Column(name = "points")
+    private Integer points;
+
     @Column(name = "citizen_identity ")
     private String citizenIdentity;
 

@@ -463,46 +463,55 @@ public class DBGenerator implements CommandLineRunner {
                 .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaIP8Lvis7vhRKgCFKfPoWTxrNE4HnQ18gdg&usqp=CAU")
                 .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2000")).email("vinhnvph23849@fpt.edu.vn")
                 .gender(true).phoneNumber("0378530273").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User user2 = User.builder()
                 .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4RGwl1mqaD9sd_JO7m0KPAlgZmnClgtkEqQ&usqp=CAU")
                 .fullName("Đinh Khắc Diệm").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2003")).email("diem@gmail.com")
                 .gender(true).phoneNumber("0963852741").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User user3 = User.builder()
                 .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
                 .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdt@fpt.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User hao = User.builder()
                 .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666367/cWpkaDhwaW90bTJoeTRtMnd2d20=/grid_landscape")
                 .fullName("Ngô Vũ Ngọc Hào").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("haonvnph23574@fpt.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User diem = User.builder()
                 .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698665394/bWJob2E4eGVqY2tvODU2a3owZW4=/grid_landscape")
                 .fullName("Đinh Khắc Diệm").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("diemdkph23701@fpt.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User oanh = User.builder()
                 .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
                 .fullName("Nguyễn Thi Phương Oanh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("oanhntpph26142@fpt.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User tuThang = User.builder()
                 .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666418/cmFqOGRqc2xvMWdlcHBscTdzMnA=/grid_landscape")
                 .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdtph27626@fpt.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User vinh = User.builder()
                 .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
                 .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("vinhnvph23845@fpt.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
         User T_Nguyen = User.builder()
                 .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
                 .fullName("Vũ Văn Nguyên").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/1998")).email("nguyenvv6@fe.edu.vn")
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
                 .build();
 
         userReposiory.save(user1);
@@ -515,15 +524,15 @@ public class DBGenerator implements CommandLineRunner {
         userReposiory.save(tuThang);
         userReposiory.save(T_Nguyen);
 
-        Account account1 = Account.builder().points(12).user(user1).email(user1.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account account2 = Account.builder().points(12).user(user3).email(user2.getEmail()).password("123").roles(Roles.ROLE_EMLOYEE).build();
-        Account account3 = Account.builder().points(12).user(user2).email(user3.getEmail()).password("123").roles(Roles.ROLE_USER).build();
-        Account accountHao = Account.builder().points(12).user(hao).email(hao.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountVinh = Account.builder().points(12).user(vinh).email(vinh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountTu = Account.builder().points(12).user(tuThang).email(tuThang.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountDiem = Account.builder().points(12).user(diem).email(diem.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountOanh = Account.builder().points(12).user(oanh).email(oanh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountT_Nguyen = Account.builder().points(12).user(T_Nguyen).email(T_Nguyen.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account account1 = Account.builder().user(user1).email(user1.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account account2 = Account.builder().user(user3).email(user2.getEmail()).password("123").roles(Roles.ROLE_EMLOYEE).build();
+        Account account3 = Account.builder().user(user2).email(user3.getEmail()).password("123").roles(Roles.ROLE_USER).build();
+        Account accountHao = Account.builder().user(hao).email(hao.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountVinh = Account.builder().user(vinh).email(vinh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountTu = Account.builder().user(tuThang).email(tuThang.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountDiem = Account.builder().user(diem).email(diem.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountOanh = Account.builder().user(oanh).email(oanh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountT_Nguyen = Account.builder().user(T_Nguyen).email(T_Nguyen.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
         accountRepository.save(account1);
         accountRepository.save(account2);
         accountRepository.save(account3);
