@@ -38,16 +38,7 @@ public class Poin {
 
     // Getters and setters (hoặc sử dụng các annotation của Lombok để tự động tạo)
 
-    public int ConvertMoneyToPoints(BigDecimal totalMoney, BigDecimal discount){
-        if(discountBill || discountProduct || paymentRewardPoints){
-            return  0;
-        }
-//        if(discountBill && discount.compareTo(BigDecimal.ZERO) != 0){
-//            return 0;
-//        }
-        if(totalMoney.compareTo(minMoney) < 0){
-            return 0;
-        }
+    public int ConvertMoneyToPoints(BigDecimal totalMoney){
         return totalMoney.divide(exchangeRatePoin, 0, BigDecimal.ROUND_DOWN).intValue();
 
     }

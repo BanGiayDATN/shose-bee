@@ -354,10 +354,10 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        BigDecimal totalDisCount = voucherDetailRepository.getTotolDiscountBill(bill.get().getId());
                        Poin poin = configPoin.readJsonFile();
                        if(bill.get().getPoinUse() > 0){
-                           int Pointotal = user.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getMoneyShip());
+                           int Pointotal = user.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney());
                            user.setPoints(Pointotal);
                        }
-                       user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
+                       user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());

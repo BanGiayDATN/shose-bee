@@ -223,10 +223,10 @@ public class BillServiceImpl implements BillService {
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
                     if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount()));
+                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
                         user.setPoints(Pointotal);
                     }else{
-                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount())));
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
                     }
                     userReposiory.save(user);
                 }
@@ -243,7 +243,7 @@ public class BillServiceImpl implements BillService {
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
                     if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount()));
+                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
                         user.setPoints(Pointotal);
                     }
                     userReposiory.save(user);
@@ -515,14 +515,11 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-            if(!bill.get().getEmail().isEmpty()){
-                Optional<User> user = userReposiory.findByEmail(bill.get().getEmail());
-                if(user.isPresent()){
+            if(bill.get().getAccount() != null){
+                User user = bill.get().getAccount().getUser();
                     Poin poin = configPoin.readJsonFile();
-                    user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
-                    userReposiory.save(user.get());
-                }
-
+                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    userReposiory.save(user);
             }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -565,13 +562,11 @@ public class BillServiceImpl implements BillService {
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                if(!bill.get().getEmail().isEmpty()){
-                    Optional<User> user = userReposiory.findByEmail(bill.get().getEmail());
-                    if(user.isPresent()){
+                if(bill.get().getAccount() != null){
+                    User user = bill.get().getAccount().getUser();
                         Poin poin = configPoin.readJsonFile();
-                        user.get().setPoints(user.get().getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney(), bill.get().getItemDiscount()));
-                        userReposiory.save(user.get());
-                    }
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                        userReposiory.save(user);
                 }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
