@@ -129,7 +129,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       idAccount = accountuser.idAccount;
     }
     if(usePoin){
-      poin = accountuser?.points;
+      poin = tinhSoDiemCanThanhToan()
     }
     var typeBill = "OFFLINE";
     var statusPayMents = "THANH_TOAN";
@@ -203,7 +203,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       idAccount = accountuser.idAccount;
     }
     if(usePoin){
-      poin = accountuser?.points;
+      poin = tinhSoDiemCanThanhToan()
     }
       var typeBill = "OFFLINE";
       var statusPayMents = "THANH_TOAN";
@@ -613,7 +613,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [usePoin, setUsePoin] = useState(false);
   const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
   const isOpenUsePoin = (check) => {
-    setUsePoin(true);
+    setUsePoin(check);
     if(check ){
     setExchangeRateMoney(dataPoin.exchangeRateMoney * accountuser?.points);
     }else{
@@ -915,7 +915,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       idAccount = accountuser.idAccount;
     }
     if(usePoin){
-      poin = accountuser?.points;
+      poin = tinhSoDiemCanThanhToan()
     }
     var typeBill = "OFFLINE";
     // if (isOpenDelivery) {
@@ -1506,6 +1506,23 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     });
     return formatter.format(value);
   };
+
+function tinhSoDiemCanThanhToan( ) {
+    var tongTienGiam = voucher.discountPrice + exchangeRateMoney;
+    var tongTienThanhToan =  products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    if(isOpenDelivery){
+      tongTienThanhToan += shipFee
+    }
+
+    if (tongTienGiam >= tongTienThanhToan) {
+        var soDiemCanThanhToan = Math.floor(tongTienThanhToan / dataPoin.exchangeRateMoney);
+        return soDiemCanThanhToan;
+    } else {
+        return accountuser?.points; 
+    }
+}
 
   //   payment vnpay
 

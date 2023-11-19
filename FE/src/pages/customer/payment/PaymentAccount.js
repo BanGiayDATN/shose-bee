@@ -95,6 +95,20 @@ function PaymentAccount() {
   
   }, []);
 
+  function tinhSoDiemCanThanhToan( ) {
+    var tongTienGiam = voucher.discountPrice + exchangeRateMoney;
+    var tongTienThanhToan =  formBill.billDetail.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+
+    if (tongTienGiam >= tongTienThanhToan) {
+        var soDiemCanThanhToan = Math.floor(tongTienThanhToan / dataPoin.exchangeRateMoney);
+        return soDiemCanThanhToan;
+    } else {
+        return account?.points; 
+    }
+}
+
   useEffect(() => {
     console.log(formBill);
   }, [formBill]);
@@ -177,10 +191,10 @@ function PaymentAccount() {
         dataBill.itemDiscount += exchangeRateMoney;
         var poin = 0
         if(exchangeRateMoney > 0){
-          poin = account?.points
+          poin = tinhSoDiemCanThanhToan()
         }
         dataBill.poin = poin
-        console.log(dataBill);
+        
         if (addressDefault === null) {
           toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
           return;

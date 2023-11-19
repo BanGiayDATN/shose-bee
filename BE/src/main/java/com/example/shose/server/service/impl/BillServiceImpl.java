@@ -236,6 +236,19 @@ public class BillServiceImpl implements BillService {
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         } else {
+            if (request.getIdUser() != null) {
+                Optional<Account> account = accountRepository.findById(request.getIdUser());
+                if (account.isPresent()) {
+                    optional.get().setAccount(account.get());
+                    User user = account.get().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    if(request.getPoin() > 0){
+                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()), new BigDecimal(request.getItemDiscount()));
+                        user.setPoints(Pointotal);
+                    }
+                    userReposiory.save(user);
+                }
+            }
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
