@@ -172,7 +172,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill save(String id, HttpServletRequest requests, CreateBillOfflineRequest request) {
+    public Bill save(String id,  CreateBillOfflineRequest request) {
         Optional<Bill> optional = billRepository.findByCode(request.getCode());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -308,7 +308,7 @@ public class BillServiceImpl implements BillService {
             VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        createFilePdfAtCounter(optional.get().getId(), requests);
+        createFilePdfAtCounter(optional.get().getId());
         return optional.get();
     }
 
@@ -489,7 +489,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests) {
+    public Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
@@ -507,7 +507,7 @@ public class BillServiceImpl implements BillService {
         if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.CHO_VAN_CHUYEN) {
-            createFilePdf(bill.get().getId(), requests);
+            createFilePdf(bill.get().getId());
         } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
@@ -540,7 +540,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, HttpServletRequest requests, String idEmployees) {
+    public boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request,  String idEmployees) {
         request.getIds().forEach(id -> {
             Optional<Bill> bill = billRepository.findById(id);
             Optional<Account> account = accountRepository.findById(idEmployees);
@@ -553,9 +553,9 @@ public class BillServiceImpl implements BillService {
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
             if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-                createFilePdf(id, requests);
+                createFilePdf(id);
             } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
-                createFilePdf(id, requests);
+                createFilePdf(id);
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
@@ -582,7 +582,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill cancelBill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests) {
+    public Bill cancelBill(String id, String idEmployees, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
@@ -626,9 +626,9 @@ public class BillServiceImpl implements BillService {
             }
         }
 
-        if (!paymentsMethodService.refundVnpay(idEmployees, request.isStatusCancel(), bill.get().getCode(), requests)) {
-            throw new RestApiException(Message.ERROR_CANCEL_BILL);
-        }
+//        if (!paymentsMethodService.refundVnpay(idEmployees, request.isStatusCancel(), bill.get().getCode())) {
+//            throw new RestApiException(Message.ERROR_CANCEL_BILL);
+//        }
         return billRepository.save(bill.get());
     }
 
@@ -838,7 +838,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public boolean createFilePdf(String idBill, HttpServletRequest request) {
+    public boolean createFilePdf(String idBill) {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
@@ -848,7 +848,7 @@ public class BillServiceImpl implements BillService {
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, request, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
         return true;
     }
 
@@ -903,7 +903,7 @@ public class BillServiceImpl implements BillService {
         return true;
     }
 
-    public boolean createFilePdfAtCounter(String idBill, HttpServletRequest request) {
+    public boolean createFilePdfAtCounter(String idBill) {
         //     begin   create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
@@ -914,7 +914,7 @@ public class BillServiceImpl implements BillService {
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, request, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
 //     end   create file pdf
         return true;
     }

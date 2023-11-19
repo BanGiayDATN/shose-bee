@@ -319,7 +319,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
     @Override
-    public boolean paymentSuccess(String idEmployees, PayMentVnpayResponse response, HttpServletRequest requests) {
+    public boolean paymentSuccess(String idEmployees, PayMentVnpayResponse response) {
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -356,16 +356,27 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        if(bill.get().getPoinUse() > 0){
                            int Pointotal = user.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney());
                            user.setPoints(Pointotal);
+                       }else{
+                           user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                        }
-                       user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());
                } else {
+                   if(bill.get().getAccount() != null){
+                       User user = bill.get().getAccount().getUser();
+                       BigDecimal totalDisCount = voucherDetailRepository.getTotolDiscountBill(bill.get().getId());
+                       Poin poin = configPoin.readJsonFile();
+                       if(bill.get().getPoinUse() > 0){
+                           int Pointotal = user.getPoints() - bill.get().getPoinUse();
+                           user.setPoints(Pointotal);
+                       }
+                       userReposiory.save(user);
+                   }
                    bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
                    billRepository.save(bill.get());
                }
-               createFilePdfAtCounter(bill.get().getId(), requests);
+               createFilePdfAtCounter(bill.get().getId());
                return true;
            }else{
                throw new RestApiException(Message.PAYMENT_ERROR);
@@ -541,7 +552,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     }
 
 
-    public boolean createFilePdfAtCounter(String idBill, HttpServletRequest request) {
+    public boolean createFilePdfAtCounter(String idBill) {
         //     begin   create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
@@ -553,7 +564,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, request, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml, optional.get().getCode());
 //     end   create file pdf
         return true;
     }

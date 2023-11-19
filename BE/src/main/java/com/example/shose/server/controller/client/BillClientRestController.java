@@ -49,7 +49,7 @@ public class BillClientRestController {
     }
 
     @PutMapping("/cancel-status/{id}")
-    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request, requests));
+    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request));
     }
 }
