@@ -1744,10 +1744,6 @@ function DetailBill() {
                 </Col>
               </Row>
             </Col>
-
-            {/* <Col span={12} className="text">
-              <div style={{ marginLeft: "20px" }}>Gmail: {bill.account != null ? bill.account.email : bill.account.customer }</div>
-            </Col> */}
             <Col span={12} className="text">
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                 <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
