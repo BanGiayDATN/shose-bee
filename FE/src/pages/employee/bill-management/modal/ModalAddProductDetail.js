@@ -375,7 +375,7 @@ function ModalAddProductDetail({
       data.quantity = list[index].quantity + quantity;
       list.splice(index, 1, data);
     }
-    toast.success("thêm thành công", {
+    toast.success("Thêm thành công", {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,

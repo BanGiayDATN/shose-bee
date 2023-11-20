@@ -6,21 +6,14 @@ import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodR
 import com.example.shose.server.dto.request.paymentsmethod.QuantityProductPaymentRequest;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
-import com.example.shose.server.entity.Account;
-import com.example.shose.server.entity.Bill;
-import com.example.shose.server.entity.BillHistory;
-import com.example.shose.server.entity.PaymentsMethod;
-import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.*;
 import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
-import com.example.shose.server.repository.AccountRepository;
-import com.example.shose.server.repository.BillDetailRepository;
-import com.example.shose.server.repository.BillHistoryRepository;
-import com.example.shose.server.repository.BillRepository;
-import com.example.shose.server.repository.PaymentsMethodRepository;
-import com.example.shose.server.repository.ProductDetailRepository;
+import com.example.shose.server.infrastructure.poin.ConfigPoin;
+import com.example.shose.server.infrastructure.poin.Poin;
+import com.example.shose.server.repository.*;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.FormUtils;
 import com.example.shose.server.util.payMent.Config;
@@ -83,10 +76,19 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     private BillRepository billRepository;
 
     @Autowired
+    private VoucherDetailRepository voucherDetailRepository;
+
+    @Autowired
     private ExportFilePdfFormHtml exportFilePdfFormHtml;
 
     @Autowired
     private SendEmailService sendEmailService;
+
+    @Autowired
+    private ConfigPoin configPoin;
+
+    @Autowired
+    private UserReposiory userReposiory;
 
 
     private FormUtils formUtils = new FormUtils();
@@ -347,6 +349,17 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                if (checkBill) {
                    bill.get().setStatusBill(StatusBill.THANH_CONG);
                    bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                   if(bill.get().getAccount() != null){
+                       User user = bill.get().getAccount().getUser();
+                       BigDecimal totalDisCount = voucherDetailRepository.getTotolDiscountBill(bill.get().getId());
+                       Poin poin = configPoin.readJsonFile();
+                       if(bill.get().getPoinUse() > 0){
+                           int Pointotal = user.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney());
+                           user.setPoints(Pointotal);
+                       }
+                       user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                       userReposiory.save(user);
+                   }
                    billRepository.save(bill.get());
                } else {
                    bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);

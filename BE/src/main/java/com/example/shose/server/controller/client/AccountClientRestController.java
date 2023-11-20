@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.address.UpdateAddressClientRequest;
 import com.example.shose.server.dto.request.customer.ChangePasswordRequest;
 import com.example.shose.server.dto.request.customer.UpdateInfoClient;
 import com.example.shose.server.infrastructure.exception.rest.CustomListValidationException;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.AccountService;
 import com.example.shose.server.service.CustomerService;
 import com.example.shose.server.util.ResponseObject;
@@ -22,6 +23,10 @@ public class AccountClientRestController {
     private AccountService accountService;
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private ShoseSession shoseSession;
+
     @PostMapping("/changePassword")
     public ResponseObject update(@Valid @RequestBody  ChangePasswordRequest request, BindingResult bindingResult) throws CustomListValidationException {
         if(bindingResult.hasErrors()){
@@ -31,7 +36,7 @@ public class AccountClientRestController {
     }
     @GetMapping("/{id}")
     public ResponseObject getById(@PathVariable("id")String id)  {
-        return new ResponseObject(accountService.getAccountById(id));
+        return new ResponseObject(accountService.getAccountById(shoseSession.getEmployee().getId()));
     }
     @PostMapping(value = "/updateInfo",consumes = "multipart/form-data")
     public ResponseObject updateInfo( UpdateInfoClient req)  {

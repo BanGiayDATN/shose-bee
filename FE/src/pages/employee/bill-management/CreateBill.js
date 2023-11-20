@@ -10,7 +10,7 @@ import {
   Row,
   Select,
   Switch,
-  Table
+  Table,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import moment from "moment";
@@ -38,6 +38,7 @@ import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import "./style-bill.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
+import { PoinApi } from "../../../api/employee/poin/poin.api";
 
 function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const listProduct = useSelector((state) => state.bill.billWaitProduct.value);
@@ -47,6 +48,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [dataPayment, setDataPayMent] = useState([]);
   const [accountuser, setAccountUser] = useState(null);
   const [valueAddressShip, setValueAddressShip] = useState(null);
+  const [dataPoin, setDataPoin] = useState(null);
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -61,7 +63,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     code: "",
     email: "",
   });
-
 
   const [address, setAddress] = useState({
     city: "",
@@ -123,6 +124,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         address.city;
     }
     var idAccount = "";
+    var poin = 0;
+    if(usePoin){
+      poin = tinhSoDiemCanThanhToan()
+    }
+    var itemDiscount = voucher.discountPrice + exchangeRateMoney
+    if (accountuser != null && usePoin) {
+      if(poin < accountuser?.points){
+        console.log(accountuser?.points);
+        itemDiscount = Math.round(totalBill) - voucher.discountPrice 
+        if(isOpenDelivery){
+          itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
+        }
+      }
+    }
     if (accountuser != null) {
       idAccount = accountuser.idAccount;
     }
@@ -131,15 +146,17 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (traSau) {
       statusPayMents = "TRA_SAU";
     }
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+    var ngayShip = ""
+    if (isOpenDelivery) {
+      ship = shipFee;
+      ngayShip = dayShip
     }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
       userName: billRequest.userName.trim(),
-      itemDiscount: voucher.discountPrice,
+      itemDiscount: itemDiscount,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
       statusPayMents: statusPayMents,
@@ -150,14 +167,17 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
       idUser: idAccount,
-      deliveryDate: dayShip,
+      deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
+       poin: poin
     };
-    BillApi.updateBillWait(data).then((res) => {
-      console.log(data);
-    }).catch((error) => {
-          toast.error(error.response.data.message);
+    BillApi.updateBillWait(data)
+      .then((res) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
       });
   };
 
@@ -190,23 +210,39 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           address.city;
       }
       var idAccount = "";
-      if (accountuser != null) {
-        idAccount = accountuser.idAccount;
+      var poin = 0;
+      if(usePoin){
+        poin = tinhSoDiemCanThanhToan()
       }
+      var itemDiscount = voucher.discountPrice + exchangeRateMoney
+     if (accountuser != null && usePoin) {
+      if(poin < accountuser?.points){
+        console.log(accountuser?.points);
+        itemDiscount = Math.round(totalBill) - voucher.discountPrice 
+        if(isOpenDelivery){
+          itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
+        }
+      }
+    }
+    if (accountuser != null) {
+      idAccount = accountuser.idAccount;
+    }
       var typeBill = "OFFLINE";
       var statusPayMents = "THANH_TOAN";
       if (traSau) {
         statusPayMents = "TRA_SAU";
       }
-      var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+      var ship = 0;
+       var ngayShip = ""
+    if (isOpenDelivery) {
+      ship = shipFee;
+      ngayShip = dayShip
     }
       var data = {
         phoneNumber: billRequest.phoneNumber.trim(),
         address: addressuser.trim(),
         userName: billRequest.userName.trim(),
-        itemDiscount: voucher.discountPrice,
+        itemDiscount: itemDiscount,
         totalMoney: Math.round(totalBill),
         note: billRequest.note.trim(),
         statusPayMents: statusPayMents,
@@ -217,14 +253,17 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         paymentsMethodRequests: dataPaymentRequest,
         vouchers: newVoucher,
         idUser: idAccount,
-        deliveryDate: dayShip,
+        deliveryDate: ngayShip,
         code: code,
         openDelivery: isOpenDelivery,
+        poin: poin
       };
-      console.log(data)
-      BillApi.updateBillWait(data).then((res) => {}).catch((error) => {
-            toast.error(error.response.data.message);
-      });
+      console.log(data);
+      BillApi.updateBillWait(data)
+        .then((res) => {})
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
     }
   };
 
@@ -298,26 +337,27 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }).catch((error) => {
         toast.error(error.response.data.message);
       });
-    BillApi.fetchDetailBill(id).then((res) => {
-      setBillRequest({
-        phoneNumber: res.data.data.phoneNumber,
-        address: res.data.data.address,
-        userName: res.data.data.userName,
-        idUser: res.data.data.account?.id,
-        itemDiscount: res.data.data.itemDiscount,
-        totalMoney: res.data.data.totalMoney,
-        note: res.data.data.note,
-        moneyShip: res.data.data.moneyShip,
-        email: res.data.data.email,
-        billDetailRequests: [],
-        vouchers: [],
-        code: res.data.data.code,
-      });
-    }).catch((error) => {
+    BillApi.fetchDetailBill(id)
+      .then((res) => {
+        setBillRequest({
+          phoneNumber: res.data.data.phoneNumber,
+          address: res.data.data.address,
+          userName: res.data.data.userName,
+          idUser: res.data.data.account?.id,
+          itemDiscount: res.data.data.itemDiscount,
+          totalMoney: res.data.data.totalMoney,
+          note: res.data.data.note,
+          moneyShip: res.data.data.moneyShip,
+          email: res.data.data.email,
+          billDetailRequests: [],
+          vouchers: [],
+          code: res.data.data.code,
+        });
+      })
+      .catch((error) => {
         toast.error(error.response.data.message);
       });
     PaymentsMethodApi.findByIdBill(id).then((res) => {
-
       const data = res.data.data.map((item) => {
         return {
           actionDescription: "",
@@ -360,7 +400,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       handleWardChange(valueAddressShip.children, valueAddressShip);
     }
   }, [products]);
-
 
   const loadData = () => {
     CustomerApi.fetchAll().then(
@@ -423,14 +462,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
     setAddress({ ...address, wards: valueWard.value });
-    const totalQuantity = products.length > 0 ? products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.quantity;
-    }, 0) : 1;
-    setValueAddressShip(valueWard)
+    const totalQuantity =
+      products.length > 0
+        ? products.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue.quantity;
+          }, 0)
+        : 1;
+    setValueAddressShip(valueWard);
     // số lượng sản phầm lớn hơn 2 free ship
     if (totalQuantity > 2) {
       setShipFee(0);
-
     } else {
       AddressApi.fetchAllMoneyShip(
         valueWard.valueDistrict,
@@ -438,7 +479,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         totalQuantity
       ).then((res) => {
         setShipFee(res.data.data.total);
-    })}
+      });
+    }
     AddressApi.fetchAllDayShip(
       valueWard.valueDistrict,
       valueWard.valueWard
@@ -573,11 +615,25 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ),
     },
   ];
+  const [isPoin, setPoin] = useState(false);
+  const [usePoin, setUsePoin] = useState(false);
+  const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
+  const isOpenUsePoin = (check) => {
+    setUsePoin(check);
+    if(check ){
+    setExchangeRateMoney(dataPoin.exchangeRateMoney * accountuser?.points);
+    }else{
+      setExchangeRateMoney(0)
+    }
+  };
   const selectedAccount = (record) => {
     setShipFee(0);
     form.resetFields();
-    // dispatch(addUserBillWait(record));
     setAccountUser(record);
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    setPoin(record?.points > 0 && totalBill >= dataPoin.minMoney);
     setIsModalAccountOpen(true);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
@@ -587,7 +643,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       const formValues = {
         phoneNumber: record.phoneNumber,
         name: record.fullName,
-        email: record.email
+        email: record.email,
       };
       if (addressData) {
         setAddress({
@@ -604,8 +660,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         setAddressId({
           provinceId: addressData.provinceId,
           toDistrictId: addressData.toDistrictId,
-          wardCode: addressData.wardCode
-        })
+          wardCode: addressData.wardCode,
+        });
 
         formValues.name = addressData.fullName;
         formValues.phoneNumber = addressData.phoneNumber;
@@ -622,7 +678,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       phoneNumber: record.phoneNumber,
       userName: record.fullName,
       idUser: record.id,
-      email: record.email
+      email: record.email,
     });
     // dispatch(addUserBillWait(record));
     setAccountUser(record);
@@ -680,7 +736,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var check = !traSau;
     if (check) {
       // loadPayMentTraSau()
-       setDataPayMent([]);
+      setDataPayMent([]);
     } else {
       setDataPayMent([]);
     }
@@ -704,10 +760,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   }
   const formRef = React.useRef(null);
 
-  const addPayMent = async(e, method) => {
+  const addPayMent = async (e, method) => {
     if (method == "CHUYEN_KHOAN") {
-     await updateBillWhenSavePayMent([...dataPayment]);
-     await submitCodeTransactionNext(e);
+      await updateBillWhenSavePayMent([...dataPayment]);
+      await submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
         actionDescription: "",
@@ -728,7 +784,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           setTotalMoneyPayment("");
           // form.resetFields();
         },
-        onCancel: () => { },
+        onCancel: () => {},
       });
     }
   };
@@ -767,8 +823,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-              ? "Chuyển khoản"
-              : "Thẻ"}
+            ? "Chuyển khoản"
+            : "Thẻ"}
         </Button>
       ),
     },
@@ -788,17 +844,19 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     },
   ];
   const showModalPayMent = (e) => {
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
     }
     setIsModalPayMentOpen(true);
-    var total =
+    var total =  Math.max(
+      0,
       products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
       }, 0) +
       ship -
-      voucher.discountPrice;
+      exchangeRateMoney -
+      voucher.discountPrice);
     setTotalMoneyPayment(Math.round(total));
   };
   const handleOkPayMent = () => {
@@ -826,10 +884,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (voucher.idVoucher != "") {
       newVoucher.push(voucher);
     }
-    var totalBill =
-      products.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) ;
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
@@ -859,9 +916,25 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         address.city;
     }
     var idAccount = "";
+    var poin = 0;
+    if(usePoin){
+      poin = tinhSoDiemCanThanhToan()
+    }
+    var itemDiscount = voucher.discountPrice + exchangeRateMoney
+    if (accountuser != null && usePoin) {
+      if(poin < accountuser?.points){
+        console.log(accountuser?.points);
+        itemDiscount = Math.round(totalBill) - voucher.discountPrice 
+        if(isOpenDelivery){
+          itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
+        }
+      }
+    }
     if (accountuser != null) {
       idAccount = accountuser.idAccount;
     }
+    console.log(itemDiscount);
+    
     var typeBill = "OFFLINE";
     // if (isOpenDelivery) {
     //   typeBill = "ONLINE";
@@ -869,11 +942,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     var statusPayMents = "THANH_TOAN";
     if (traSau) {
       statusPayMents = "TRA_SAU";
-
     }
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+     var ngayShip = ""
+    if (isOpenDelivery) {
+      ship = shipFee;
+      ngayShip = dayShip
     }
     var dataPayMentTraSau = dataPayment
     if(traSau){
@@ -896,7 +970,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
       userName: billRequest.userName.trim(),
-      itemDiscount: voucher.discountPrice,
+      itemDiscount: itemDiscount,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
       email:billRequest.email.trim(),
@@ -907,11 +981,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       paymentsMethodRequests: dataPayMentTraSau,
       vouchers: newVoucher,
       idUser: idAccount,
-      deliveryDate: dayShip,
+      deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
+      poin: poin
     };
-
     if (isOpenDelivery) {
       if (
         address.detail != "" &&
@@ -1015,7 +1089,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         // dispatch(SetPromotion(data));
         setDataVoucher(data);
       },
-      (err) => { }
+      (err) => {}
     );
   };
   // const dataVoucher = useAppSelector(GetPromotion);
@@ -1358,7 +1432,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
   const addressFull = (provinceId, toDistrictId, wardCode) => {
     AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
-        setShipFee(res.data.data.total);
+      setShipFee(res.data.data.total);
     });
     AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
       const leadtimeInSeconds = res.data.data.leadtime;
@@ -1445,22 +1519,38 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     return formatter.format(value);
   };
 
+function tinhSoDiemCanThanhToan( ) {
+    var tongTienGiam = voucher.discountPrice + exchangeRateMoney;
+    var tongTienThanhToan =  products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    if(isOpenDelivery){
+      tongTienThanhToan += shipFee
+    }
+
+    if (tongTienGiam >= tongTienThanhToan) {
+        var soDiemCanThanhToan = Math.floor(tongTienThanhToan / dataPoin.exchangeRateMoney);
+        return soDiemCanThanhToan;
+    } else {
+        return accountuser?.points; 
+    }
+}
+
   //   payment vnpay
 
   const submitCodeTransactionNext = (e) => {
-    var totalBill =
-      products.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) ;
+    var totalBill = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
-    var ship = 0
-    if(isOpenDelivery){
-      ship = shipFee
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
     }
     // Lấy thời điểm hiện tại dạng long
-     const timeInMillis = new Date().getTime();
+    const timeInMillis = new Date().getTime();
     const data = {
       vnp_Ammount: Math.round((totalBill + ship - voucher.discountPrice) - totaPayMent),
       vnp_TxnRef: billRequest.code + "-"+ timeInMillis,
@@ -1530,7 +1620,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         </Col>
       </Row>
       <Row style={{ backgroundColor: "white", marginTop: "20px" }}>
-
         <Row style={{ width: "100%", minHeight: "211px" }}>
           {products.length != 0 ? (
             <Row
@@ -2374,6 +2463,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 </Button>
               </Col>
             </Row>
+            {}
             {isOpenDelivery ? (
               <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
                 <Col span={5} style={{ display: "flex", alignItems: "center" }}>
@@ -2385,15 +2475,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   className="debit"
                   style={{ display: "flex", alignItems: "center" }}
                 >
-                  {/* <input
-                    type="checkbox"
-                    id="switch2"
-                    
-                    onClick={(e) => traTienSau(e)}
-                  />
-                  <label for="switch2" className="labelSwitch">
-                    Toggle
-                  </label> */}
                   <Switch
                     defaultChecked={traSau}
                     onChange={(e) => traTienSau(e)}
@@ -2413,16 +2494,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 className="delivery"
                 style={{ display: "flex", alignItems: "center" }}
               >
-                {/* <input
-                  type="checkbox"
-                  id="switch"
-                  
-                  onChange={}
-                />
-                <label for="switch" className="labelSwitch">
-                  Toggle
-                </label> */}
-
                 <Switch
                   defaultChecked={isOpenDelivery}
                   onChange={(e) => {
@@ -2513,6 +2584,42 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 {formatCurrency(voucher.discountPrice)}
               </Col>
             </Row>
+            {isPoin ? (
+              <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
+                <Col span={7} style={{ display: "flex", alignItems: "center",  margin: "2px",
+                  fontWeight: "bold",
+                  fontSize: "15px", }}>
+                  {" "}
+                  Điểm hiện tại: <span style={{marginLeft: "10px"}}>{accountuser?.points}</span>
+                </Col>
+                <Col
+                  span={7}
+                  className="delivery"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <Switch
+                    defaultChecked={false}
+                    onChange={(e) => {
+                      isOpenUsePoin(e);
+                    }}
+                  />
+                </Col >
+                {usePoin ? (
+                  <Col span={6} align={"end"} style={{
+                    marginRight: "10px",
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    marginRight: "10px",
+                  }}>
+                    {formatCurrency(exchangeRateMoney)}
+                  </Col>
+                ) : (
+                  <Col span={4}></Col>
+                )}
+              </Row>
+            ) : (
+              <Row></Row>
+            )}
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={12}>
                 <span
@@ -2796,14 +2903,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     {
                       validator: (_, value) => {
                         if (value && value.trim() === "") {
-                          return Promise.reject("Không được chỉ nhập khoảng trắng");
+                          return Promise.reject(
+                            "Không được chỉ nhập khoảng trắng"
+                          );
                         }
-                        if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                        if (
+                          !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                            value
+                          )
+                        ) {
                           return Promise.reject(
                             "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
                           );
                         }
-        
+
                         return Promise.resolve();
                       },
                     },
@@ -2880,12 +2993,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         message: "Vui lòng nhập số tiền",
                       },
                       {
-      validator: (_, value) => {
-        if ( totalMoneyPayMent < 1000) {
-          return Promise.reject("Giá tiền phải lớn hơn 1000");
-        }
-      },
-    },
+                        validator: (_, value) => {
+                          if (totalMoneyPayMent < 1000) {
+                            return Promise.reject("Giá tiền phải lớn hơn 1000");
+                          }
+                        },
+                      },
                     ]}
                   >
                     <NumberFormat
@@ -2911,7 +3024,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             </Col>
           </Row>
           <Row style={{ width: "100%" }}>
-          <Col span={12} style={{ marginTop: "10px" }}>
+            <Col span={12} style={{ marginTop: "10px" }}>
               <Button
                 type="primary"
                 onClick={(e) => addPayMent(e, "TIEN_MAT")}
@@ -2921,7 +3034,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   width: "98%",
                   alignItems: "center",
                 }}
-                disabled={(totalMoneyPayMent < 1000 ) ? true : false}
+                disabled={totalMoneyPayMent < 1000 ? true : false}
               >
                 Tiền mặt
               </Button>
@@ -2987,9 +3100,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
               style={{ fontSize: "18px", fontWeight: "600", color: "red" }}
             >
               {formatCurrency(
+                 Math.max(
+                  0,
                 dataPayment.reduce((accumulator, currentValue) => {
                   return accumulator + currentValue.totalMoney;
                 }, 0)
+                 )
               )}
             </Col>
           </Row>

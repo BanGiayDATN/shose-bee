@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
 import java.util.List;
 /**
  * @author Nguyễn Vinh
@@ -31,6 +33,13 @@ public interface VoucherDetailRepository extends JpaRepository<VoucherDetail,Str
                            LIMIT 1;
             """, nativeQuery = true)
     VoucherDetailCustomAtCountry getVoucherDetailByIdBill(@Param("id") String idBill);
+
+    @Query(value = """
+          SELECT   sum(vode.discount_price)   FROM voucher_detail vode
+                           WHERE vode.id_bill  = :id
+                           ORDER BY vode.created_date
+            """, nativeQuery = true)
+    BigDecimal getTotolDiscountBill(@Param("id") String idBill);
 
     List<VoucherDetail> findAllByBill(Bill bill);
 }

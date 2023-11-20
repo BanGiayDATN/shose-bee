@@ -198,4 +198,5 @@ public interface UserReposiory extends JpaRepository<User, String> {
             """, nativeQuery = true)
     Optional<GetByAccountResponse> getByAccount(String idAccount);
 
+    Optional<User> findByEmail(String email);
 }

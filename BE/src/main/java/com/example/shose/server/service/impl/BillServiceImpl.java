@@ -13,13 +13,16 @@ import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
+import com.example.shose.server.dto.response.bill.BillGiveBack;
+import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
-import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
@@ -27,21 +30,31 @@ import com.example.shose.server.entity.Cart;
 import com.example.shose.server.entity.CartDetail;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.ProductDetailGiveBack;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
-import com.example.shose.server.infrastructure.constant.*;
+import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Roles;
+import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusBill;
+import com.example.shose.server.infrastructure.constant.StatusMethod;
+import com.example.shose.server.infrastructure.constant.StatusPayMents;
+import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
+import com.example.shose.server.infrastructure.session.ShoseSession;
+import com.example.shose.server.infrastructure.poin.ConfigPoin;
+import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
-import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
+import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.repository.VoucherDetailRepository;
@@ -49,8 +62,6 @@ import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
-import com.example.shose.server.util.RandomNumberGenerator;
-import com.example.shose.server.util.payMent.Config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -69,6 +80,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -78,6 +90,9 @@ import java.util.Optional;
 @Service
 @Transactional
 public class BillServiceImpl implements BillService {
+
+    @Autowired
+    private ConfigPoin configPoin;
 
     @Autowired
     private BillRepository billRepository;
@@ -107,9 +122,6 @@ public class BillServiceImpl implements BillService {
     private VoucherDetailRepository voucherDetailRepository;
 
     @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
     private UserReposiory userReposiory;
     @Autowired
     private CartRepository cartRepository;
@@ -124,6 +136,12 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private PaymentsMethodService paymentsMethodService;
+
+    @Autowired
+    private ShoseSession shoseSession;
+
+    @Autowired
+    private ProductDetailGiveBackRepository productDetailGiveBackRepository;
 
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
@@ -162,8 +180,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id, FindNewBillCreateAtCounterRequest request) {
-        Optional<Account> user = accountRepository.findById(id);
-        return billRepository.findAllBillAtCounterAndStatusNewBill(id, user.get().getRoles().name(), request);
+        return billRepository.findAllBillAtCounterAndStatusNewBill(id, request);
     }
 
     @Override
@@ -181,6 +198,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
         optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
+        optional.get().setPoinUse(request.getPoin());
 
         List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
         billDetailResponse.forEach(item -> {
@@ -206,21 +224,43 @@ public class BillServiceImpl implements BillService {
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
 
-        if (request.getIdUser() != null) {
-            Optional<Account> user = accountRepository.findById(request.getIdUser());
-            if (user.isPresent()) {
-                optional.get().setAccount(user.get());
-            }
-        }
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
+            if (request.getIdUser() != null) {
+                Optional<Account> account = accountRepository.findById(request.getIdUser());
+                if (account.isPresent()) {
+                    optional.get().setAccount(account.get());
+                    User user = account.get().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    if(request.getPoin() > 0){
+                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                        user.setPoints(Pointotal);
+                    }else{
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                    }
+                    userReposiory.save(user);
+                }
+            }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
         } else {
+            if (request.getIdUser() != null) {
+                Optional<Account> account = accountRepository.findById(request.getIdUser());
+                if (account.isPresent()) {
+                    optional.get().setAccount(account.get());
+                    User user = account.get().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    if(request.getPoin() > 0){
+                        int Pointotal = user.getPoints() - request.getPoin() ;
+                        user.setPoints(Pointotal);
+                    }
+                    userReposiory.save(user);
+                }
+            }
             optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
@@ -255,7 +295,7 @@ public class BillServiceImpl implements BillService {
             if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
                 throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
-            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             if (billDetailRequest.getPromotion() != null) {
                 billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
             }
@@ -332,6 +372,7 @@ public class BillServiceImpl implements BillService {
             optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
             optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
             optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
+            optional.get().setPoinUse(request.getPoin());
             billRepository.save(optional.get());
 
             List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
@@ -387,7 +428,7 @@ public class BillServiceImpl implements BillService {
                 if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
                     throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
                 }
-                BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+                BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
                 if (billDetailRequest.getPromotion() != null) {
                     billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
                 }
@@ -486,6 +527,12 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            if(bill.get().getAccount() != null){
+                User user = bill.get().getAccount().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    userReposiory.save(user);
+            }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         bill.get().setEmployees(account.get());
@@ -527,6 +574,12 @@ public class BillServiceImpl implements BillService {
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                if(bill.get().getAccount() != null){
+                    User user = bill.get().getAccount().getUser();
+                        Poin poin = configPoin.readJsonFile();
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                        userReposiory.save(user);
+                }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
             bill.get().setEmployees(account.get());
@@ -576,6 +629,15 @@ public class BillServiceImpl implements BillService {
             }
             productDetailRepository.save(productDetail.get());
         });
+        Account checkAccount = bill.get().getAccount();
+        if(checkAccount != null){
+            if(bill.get().getPoinUse() > 0){
+                User user =  checkAccount.getUser();
+                user.setPoints(user.getPoints() + bill.get().getPoinUse());
+                userReposiory.save(user);
+            }
+        }
+
         if (!paymentsMethodService.refundVnpay(idEmployees, request.isStatusCancel(), bill.get().getCode(), requests)) {
             throw new RestApiException(Message.ERROR_CANCEL_BILL);
         }
@@ -704,6 +766,11 @@ public class BillServiceImpl implements BillService {
         }
 
         Account account = accountRepository.findById(request.getIdAccount()).get();
+        if(request.getPoin() > 0 ){
+            User user = account.getUser();
+            user.setPoints(user.getPoints() - request.getPoin());
+            userReposiory.save(user);
+        }
         Bill bill = Bill.builder()
                 .code("HD" + RandomStringUtils.randomNumeric(6))
                 .phoneNumber(request.getPhoneNumber())
@@ -715,6 +782,7 @@ public class BillServiceImpl implements BillService {
                 .typeBill(TypeBill.ONLINE)
                 .email(account.getEmail())
                 .statusBill(StatusBill.CHO_XAC_NHAN)
+                .poinUse(request.getPoin())
                 .account(account).build();
         if (!request.getPaymentMethod().equals("paymentReceive")) {
             bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
@@ -847,6 +915,7 @@ public class BillServiceImpl implements BillService {
         return true;
     }
 
+
     public boolean createFilePdfAtCounter(String idBill, HttpServletRequest request) {
         //     begin   create file pdf
         String finalHtml = null;
@@ -881,6 +950,91 @@ public class BillServiceImpl implements BillService {
             String subject = "Biên lai thanh toán ";
             sendEmailService.sendBill(email, subject, finalHtmlSendMail);
         }
+    }
+
+    @Override
+    public BillGiveBackInformation getBillGiveBackInformation(String codeBill) {
+        Optional<Bill> optional = billRepository.findByCode(codeBill);
+        if (!optional.isPresent()) {
+            throw new RestApiException("Không tìm thấy mã  hóa đơn " + codeBill);
+        }
+        long currentSeconds = System.currentTimeMillis();
+        long givenBackCheck = optional.get().getCompletionDate() + 2 * 24 * 60 * 60 * 1000;
+        if (currentSeconds > givenBackCheck) {
+            throw new RestApiException("Đơn hàng đã hết hạn hoàn đổi.");
+        }
+        if (optional.get().getStatusBill().equals(StatusBill.TRA_HANG)) {
+            throw new RestApiException("Hóa đơn " + codeBill + " đã có sản phẩm trả hàng.");
+        }
+        return billRepository.getBillGiveBackInformation(codeBill);
+    }
+
+    @Override
+    public List<BillGiveBack> getBillGiveBack(String idBill) {
+        return billRepository.getBillGiveBack(idBill);
+    }
+
+    @Override
+    public Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
+        Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
+        Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
+        if (bill == null) {
+            throw new RestApiException("Không tìm thấy mã hóa đơn.");
+        }
+        // todo update stattus bill
+        bill.setStatusBill(StatusBill.TRA_HANG);
+        billRepository.save(bill);
+
+        BillHistory billHistory = BillHistory.builder()
+                .bill(bill).actionDescription(updateBillGiveBack.getNote())
+                .employees(account)
+                .statusBill(StatusBill.TRA_HANG)
+                .build();
+        billHistoryRepository.save(billHistory);
+
+        List<BillDetail> listUpdateBillDetail = updateBillDetailGiveBacks.stream().map((data) -> {
+            BillDetail billDetail = billDetailRepository.findById(data.getIdBillDetail())
+                    .orElseThrow(() -> new RuntimeException("Chi tiết hóa đơn không tồn tại."));
+            billDetail.setStatusBill(StatusBill.THANH_CONG);
+            billDetail.setQuantity(billDetail.getQuantity() - data.getQuantity());
+            return billDetail;
+        }).collect(Collectors.toList());
+
+        List<ProductDetailGiveBack> productDetailGiveBackList = new ArrayList<>();
+        List<BillDetail> listUpdateBillDetailGiveBack = updateBillDetailGiveBacks.stream().map((data) -> {
+            ProductDetail productDetail = productDetailRepository.findById(data.getIdProduct()).get();
+            BillDetail billDetail = new BillDetail();
+            billDetail.setStatusBill(StatusBill.TRA_HANG);
+            billDetail.setQuantity(data.getQuantity());
+            billDetail.setBill(bill);
+            billDetail.setProductDetail(productDetail);
+            billDetail.setPrice(new BigDecimal(data.getPrice()));
+            billDetail.setPromotion(data.getPromotion() == null ? null : new BigDecimal(data.getPromotion()));
+
+            // todo: create product detail give back
+            ProductDetailGiveBack giveBack =  new ProductDetailGiveBack();
+            giveBack.setIdProductDetail(productDetail.getId());
+            giveBack.setStatusBill(StatusBill.TRA_HANG);
+            giveBack.setQuantity(data.getQuantity());
+            productDetailGiveBackList.add(giveBack);
+            return billDetail;
+        }).collect(Collectors.toList());
+
+        System.out.println(productDetailGiveBackList);
+
+        List<ProductDetailGiveBack> addProductDetailGiveBacks = productDetailGiveBackList.stream().map(data->{
+            ProductDetailGiveBack productDetailGiveBack = productDetailGiveBackRepository.getOneByIdProductDetail(data.getIdProductDetail());
+            if(productDetailGiveBack != null){
+                productDetailGiveBack.setQuantity(productDetailGiveBack.getQuantity() + data.getQuantity());
+                return productDetailGiveBack;
+            }
+            return data;
+        }).collect(Collectors.toList());
+
+        billDetailRepository.saveAll(listUpdateBillDetail);
+        billDetailRepository.saveAll(listUpdateBillDetailGiveBack);
+        productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
+        return bill;
     }
 
 }

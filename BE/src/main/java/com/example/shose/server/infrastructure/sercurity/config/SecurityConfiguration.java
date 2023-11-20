@@ -40,7 +40,7 @@ public class SecurityConfiguration {
                 .and()
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        request -> request.requestMatchers("/login-v2/**" ,"/client/**","/cart/**","/cart-detail/**","/admin/promotion","/admin/voucher").permitAll()
+                        request -> request.requestMatchers("/login-v2/**" ,"/client/**","/cart/**","/admin/poin/**","/cart-detail/**","/admin/promotion","/admin/voucher").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/admin/**").hasAnyRole("ADMIN","EMLOYEE")
                                 .requestMatchers("/admin/bill-detail/**").hasAnyRole("EMLOYEE","ADMIN")
                                 .requestMatchers("/admin/bill-history/**").hasAnyRole("EMLOYEE","ADMIN")
@@ -51,9 +51,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST,"/admin/**").hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT,"/admin/**").hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE,"/admin/**").hasAnyRole("ADMIN")
-
-
-
+                                .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(

@@ -98,7 +98,7 @@
 .voucher-payment-acc {
   background-color: white;
   padding: 30px;
-  display: flex;
+  /* display: flex; */
   margin-bottom: 30px;
 }
 
@@ -107,6 +107,12 @@
   border: #ff4400 1px solid;
   padding: 5px;
   color: #ff4400;
+  border-radius: 5px;
+}
+
+.money-reduce-coin-acc {
+  margin-left: auto;
+  padding: 5px;
   border-radius: 5px;
 }
 

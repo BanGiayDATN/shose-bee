@@ -7,11 +7,15 @@ import PolicyCustomer from "./model/PolicyCustomer";
 import PaymentPolicy from "./model/PaymentPolicy";
 import CustomerObligations from "./model/CustomerObligations";
 import EmployeeObligations from "./model/EmployeeObligations";
+import Giveback from "./model/GiveBack";
 
 function ContentDisplay({ selectedItem }) {
   let content = 5;
 
   switch (selectedItem) {
+    case "4":
+      content = <Giveback />;
+      break;
     case "5":
       content = <PolicyProduct />;
       break;
