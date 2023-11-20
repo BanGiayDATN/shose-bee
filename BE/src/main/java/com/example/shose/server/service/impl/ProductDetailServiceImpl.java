@@ -22,6 +22,7 @@ import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.ProductDetailGiveBack;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.cloudinary.CloudinaryResult;
@@ -37,6 +38,7 @@ import com.example.shose.server.repository.CategoryRepository;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.repository.ImageRepository;
 import com.example.shose.server.repository.MaterialRepository;
+import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
 import com.example.shose.server.repository.SizeRepository;
@@ -107,6 +109,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
     private QRCodeAndCloudinary qrCodeAndCloudinary;
+
+    @Autowired
+    private ProductDetailGiveBackRepository productDetailGiveBackRepository;
 
 
     @Override
@@ -360,6 +365,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     public ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request) {
         return productDetailRepository.getOneProductDetailByAll(request);
+    }
+
+    @Override
+    public ProductDetailGiveBack getQuantityProductDetailGiveBack(String idProductDetail) {
+        return productDetailGiveBackRepository.getOneByIdProductDetail(idProductDetail);
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.example.shose.server.dto.response.productdetail.GetDetailProductOfCli
 import com.example.shose.server.dto.response.productdetail.GetProductDetail;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
+import com.example.shose.server.entity.ProductDetailGiveBack;
 import com.example.shose.server.infrastructure.common.PageableRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -62,4 +63,6 @@ public interface ProductDetailService {
 
     Page<GetProductDetail> getProductDetailByCategorys(FindProductDetailByCategorysRequest request,Pageable pageable);
     ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request);
+
+    ProductDetailGiveBack getQuantityProductDetailGiveBack(String idProductDetail);
 }

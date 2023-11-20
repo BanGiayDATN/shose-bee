@@ -8,6 +8,7 @@ export default function GiveBackManagement() {
   const nav = useNavigate();
 
   const onFinish = (values) => {
+    console.log(values);
     const bill = values.search;
     BillApi.BillGiveBackInformation(bill)
       .then(() => {
