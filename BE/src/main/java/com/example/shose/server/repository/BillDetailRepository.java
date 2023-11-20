@@ -36,7 +36,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             LEFT JOIN category ca ON ca.id = prde.id_category
             WHERE bi.id LIKE :#{#request.idBill}
              AND ( :#{#request.status} IS NULL
-                         OR :#{#request.status} LIKE ' '
+                         OR :#{#request.status} LIKE ''
                          OR bide.status_bill IN (:#{#request.status}))
              """, nativeQuery = true)
     List<BillDetailResponse> findAllByIdBill(BillDetailRequest request);

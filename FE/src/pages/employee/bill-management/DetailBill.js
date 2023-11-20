@@ -1,5 +1,6 @@
 import {
   Button,
+  Card,
   Col,
   Form,
   Input,
@@ -111,13 +112,14 @@ function DetailBill() {
       dispatch(getPaymentsMethod(res.data.data));
     });
     loadDataProvince();
-    PoinApi.findPoin().then((res) => {
-      setDataPoin(res.data.data);
-      console.log(res.data.data);
-    })
-    .catch((error) => {
-      toast.error(error.response.data.message);
-    });
+    PoinApi.findPoin()
+      .then((res) => {
+        setDataPoin(res.data.data);
+        console.log(res.data.data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
   }, []);
 
   //load data tỉnh
@@ -1058,17 +1060,10 @@ function DetailBill() {
           }}
         >
           <Col span={20}>
-            <h2
-              className="text-center"
-              style={{
-                width: "100%",
-                fontSize: "x-large",
-                fontWeight: "500",
-                // margin: "10px 20px 20px 20px",
-              }}
-            >
+            <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>
+              {" "}
               Lịch sử thanh toán
-            </h2>
+            </h1>
           </Col>
           {payMentNo && statusPresent == 4 ? (
             <Col span={4}>
@@ -1106,15 +1101,10 @@ function DetailBill() {
             }}
           >
             <Col span={18}>
-              <h2
-                className="text-center"
-                style={{
-                  fontSize: "x-large",
-                  fontWeight: "500",
-                }}
-              >
+              <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>
+                {" "}
                 Thông tin đơn hàng: {bill.code}
-              </h2>
+              </h1>
             </Col>
             <Col span={1}></Col>
             <Col span={2}>
@@ -1264,107 +1254,129 @@ function DetailBill() {
           </Row>
         </div>
       </Row>
-      <Row
-        style={{ width: "100%", backgroundColor: "white", marginTop: "20px" }}
-      >
-        {bill.statusBill == "TAO_HOA_DON" ? (
-          <Row style={{ width: "100%" }} justify="end">
-            <Button
-              type="primary"
-              style={{ margin: "10px 20px 0 0 " }}
-              onClick={(e) => showModalProduct(e)}
-            >
-              Thêm sản phẩm
-            </Button>
-          </Row>
-        ) : (
-          <div></div>
-        )}
-        <Row style={{width: "100%"}}><ManagerBillDetail  style={{width: "100%"}} id={id} status={bill.statusBill}></ManagerBillDetail></Row>
-        <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
-          <Col span={10}>
-            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-              <Col span={5}></Col>
-              <Col span={9} style={{ fontWeight: "bold", fontSize: "16px" }}>
-                Tiền hàng :
-              </Col>
-              <Col span={10} align={"end"}>
-                <span style={{ fontSize: "16px" }}>
-                  {formatCurrency(bill.totalMoney)}
-                </span>
-              </Col>
-            </Row>
-            {bill.moneyShip != undefined || bill.moneyShip != "" ? (
-              <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={5}></Col>
-                <Col span={9} style={{ fontWeight: "bold", fontSize: "16px" }}>
-                  Phí vận chuyển :
-                </Col>
-                <Col span={10} align={"end"}>
-                  <span style={{ fontSize: "16px" }}>
-                    {formatCurrency(bill.moneyShip)}
-                  </span>
-                </Col>
-              </Row>
-            ) : (
-              <Row></Row>
-            )}
-            {bill.poinUse > 0 ? (
-              <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={5}></Col>
-                <Col span={9} style={{ fontWeight: "bold", fontSize: "16px" }}>
-                  Điểm sử dụng :{bill.poinUse}
-                </Col>
-                <Col span={10} align={"end"}>
-                  <span style={{ fontSize: "16px" }}>
-                    {formatCurrency(bill?.poinUse * dataPoin?.exchangeRateMoney)}
-                  </span>
-                </Col>
-              </Row>
-            ) : (
-              <Row></Row>
-            )}
-            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-              <Col span={5}></Col>
-              <Col span={9} style={{ fontWeight: "bold", fontSize: "16px" }}>
-                Tiền giảm :{" "}
-              </Col>
-              <Col span={10} align={"end"}>
-                <span style={{ fontSize: "16px" }}>
-                  {formatCurrency(bill.itemDiscount)}
-                </span>
-              </Col>
-            </Row>
+      <Card style={{ marginTop: "30px" }}>
+        <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>
+          {" "}
+          Thông tin sản phẩm đã mua{" "}
+        </h1>
+        <Row>
+          <Col span={24}>
+            <ManagerBillDetail
+              id={id}
+              status={bill.statusBill}
+            ></ManagerBillDetail>
+          </Col>
+          <Col span={24}>
+            <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
+              <Col span={10}>
+                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                  <Col span={5}></Col>
+                  <Col
+                    span={9}
+                    style={{ fontWeight: "bold", fontSize: "16px" }}
+                  >
+                    Tiền hàng :
+                  </Col>
+                  <Col span={10} align={"end"}>
+                    <span
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                        color: "blue",
+                      }}
+                    >
+                      {formatCurrency(bill.totalMoney)}
+                    </span>
+                  </Col>
+                </Row>
+                {bill.moneyShip != undefined || bill.moneyShip != "" ? (
+                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                    <Col span={5}></Col>
+                    <Col
+                      span={9}
+                      style={{ fontWeight: "bold", fontSize: "16px" }}
+                    >
+                      Phí vận chuyển :
+                    </Col>
+                    <Col span={10} align={"end"}>
+                      <span style={{ fontSize: "16px" }}>
+                        {formatCurrency(bill.moneyShip)}
+                      </span>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row></Row>
+                )}
+                {bill.poinUse > 0 ? (
+                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                    <Col span={5}></Col>
+                    <Col
+                      span={9}
+                      style={{ fontWeight: "bold", fontSize: "16px" }}
+                    >
+                      Điểm sử dụng :{bill.poinUse}
+                    </Col>
+                    <Col span={10} align={"end"}>
+                      <span style={{ fontSize: "16px" }}>
+                        {formatCurrency(
+                          bill?.poinUse * dataPoin?.exchangeRateMoney
+                        )}
+                      </span>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row></Row>
+                )}
+                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                  <Col span={5}></Col>
+                  <Col
+                    span={9}
+                    style={{ fontWeight: "bold", fontSize: "16px" }}
+                  >
+                    Tiền giảm :{" "}
+                  </Col>
+                  <Col span={10} align={"end"}>
+                    <span style={{ fontSize: "16px" }}>
+                      {formatCurrency(bill.itemDiscount)}
+                    </span>
+                  </Col>
+                </Row>
 
-            <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-              <Col span={5}></Col>
-              <Col
-                span={9}
-                style={{
-                  marginBottom: "40px",
-                  fontWeight: "bold",
-                  fontSize: "16px",
-                }}
-              >
-                Tổng tiền:{" "}
-              </Col>
-              <Col span={10} align={"end"}>
-                <span
-                  style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
-                >
-                  {formatCurrency(
-                     Math.max(
-                      0,
-                      bill.totalMoney +
-                      bill.moneyShip -
-                      bill.itemDiscount)
-                  )}
-                </span>
+                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                  <Col span={5}></Col>
+                  <Col
+                    span={9}
+                    style={{
+                      marginBottom: "40px",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                    }}
+                  >
+                    Tổng tiền:{" "}
+                  </Col>
+                  <Col span={10} align={"end"}>
+                    <span
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                        color: "red",
+                      }}
+                    >
+                      {formatCurrency(
+                        Math.max(
+                          0,
+                          bill.totalMoney + bill.moneyShip - bill.itemDiscount
+                        )
+                      )}
+                    </span>
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Col>
         </Row>
-      </Row>
+      </Card>
+
       {/* begin modal payment  */}
       <Modal
         title="Thanh toán"
