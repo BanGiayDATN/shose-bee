@@ -29,7 +29,6 @@ const billSlice = createSlice({
       paymentsMethod: [],
       status: -1,
     },
-  
   },
   reducers: {
     addProductBillWait: (state, action) => {

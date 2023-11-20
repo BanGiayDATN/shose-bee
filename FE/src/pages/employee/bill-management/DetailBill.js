@@ -3,7 +3,6 @@ import {
   Col,
   Form,
   Input,
-  InputNumber,
   Modal,
   Row,
   Select,
@@ -19,14 +18,10 @@ import {
   getBill,
   getBillHistory,
   getPaymentsMethod,
-  getProductInBillDetail,
 } from "../../../app/reducer/Bill.reducer";
 import TimeLine from "./TimeLine";
 
-import { faBookmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TextArea from "antd/es/input/TextArea";
-import NumberFormat from "react-number-format";
 import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,9 +29,9 @@ import { AddressApi } from "../../../api/customer/address/address.api";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import "./detail.css";
-import ModalAddProductDetail from "./modal/ModalAddProductDetail";
-import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
+import ManagerBillDetail from "./tabBillDetail/ManagerBillDetail";
+import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -50,9 +45,6 @@ var listStatus = [
 
 function DetailBill() {
   const { id } = useParams();
-  const detailProductInBill = useSelector(
-    (state) => state.bill.bill.billDetail
-  );
   const billHistory = useSelector((state) => state.bill.bill.billHistory);
   const paymentsMethod = useSelector((state) => state.bill.bill.paymentsMethod);
   const bill = useSelector((state) => state.bill.bill.value);
@@ -86,9 +78,6 @@ function DetailBill() {
   };
 
   useEffect(() => {
-    BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-      dispatch(getProductInBillDetail(res.data.data));
-    });
     BillApi.fetchDetailBill(id).then((res) => {
       dispatch(getBill(res.data.data));
       console.log(res.data.data);
@@ -265,10 +254,6 @@ function DetailBill() {
         await PaymentsMethodApi.updateStatus(id, data).then((res) => {
           console.log(res.data.data);
         });
-        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-          console.log(res.data.data);
-          dispatch(getProductInBillDetail(res.data.data));
-        });
         await PaymentsMethodApi.findByIdBill(id).then((res) => {
           setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
           dispatch(getPaymentsMethod(res.data.data));
@@ -298,10 +283,7 @@ function DetailBill() {
     });
     form.resetFields();
   };
-  const showModalRefundPayMent = (e) => {
-    setIsModalPayMentOpen(true);
-    form.resetFields();
-  };
+
   const handleOkPayMent = () => {
     if (statusBill.actionDescription.trim().length > 0) {
       if (
@@ -319,9 +301,6 @@ function DetailBill() {
         onOk: async () => {
           await PaymentsMethodApi.refundPayment(id, statusBill).then((res) => {
             dispatch(addPaymentsMethod(res.data.data));
-          });
-          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-            dispatch(getProductInBillDetail(res.data.data));
           });
           await PaymentsMethodApi.findByIdBill(id).then((res) => {
             setPayMentNo(
@@ -512,255 +491,14 @@ function DetailBill() {
 
   // begin detail product
 
-  const [detaiProduct, setDetailProduct] = useState({});
   const [products, setProducts] = useState([]);
-
-  const typeAddProductBill = id;
-
-  //  end detail product
-
-  // begin modal refundProduct
-  const [refundProduct, setRefundProduct] = useState({
-    id: "",
-    idBill: id,
-    idProduct: "",
-    size: "",
-    quantity: 0,
-    note: "",
-  });
-
-  const [quantity, setQuantity] = useState(1);
-
-  const handleIncrease = () => {
-    if (quantity < detaiProduct.maxQuantity + detaiProduct.quantity) {
-      setQuantity((prevQuantity) => prevQuantity + 1);
-    }
-  };
-
-  const handleDecrease = () => {
-    if (quantity > 1) {
-      setQuantity((prevQuantity) => prevQuantity - 1);
-    }
-  };
-  const onChangeRefundProduct = (fileName, value) => {
-    setRefundProduct({ ...refundProduct, [fileName]: value });
-  };
-
-  const [isModaRefundProductOpen, setIsModalRefundProductOpen] =
-    useState(false);
-  const showModalRefundProduct = async (e, id) => {
-    await BillApi.getDetaiProductInBill(id).then((res) => {
-      setUpdateProduct({
-        ...refundProduct,
-        idProduct: res.data.data.idProduct,
-        size: res.data.data.nameSize,
-        id: res.data.data.id,
-      });
-
-      setDetailProduct(res.data.data);
-      setQuantity(res.data.data.quantity);
-    });
-    setIsModalRefundProductOpen(true);
-  };
-
-  const handleOkRefundProduct = () => {
-    if (quantity < 1) {
-      toast.warning("vui lòng nhập số lượng lớn hơn 0 ");
-    } else {
-      var listProduct = [...detailProductInBill];
-      var index = listProduct.findIndex((item) => item.id == idProductInBill);
-      var newProduct = { ...listProduct[index] };
-      newProduct.quantity = quantity;
-      listProduct.splice(index, 1, newProduct);
-      // newProduct.quantity = quantity
-      listProduct.splice(index, 1, newProduct);
-      var total = listProduct.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0);
-      setIsModalRefundProductOpen(false);
-      Modal.confirm({
-        title: "Xác nhận",
-        content: "Bạn có xác nhận Hoàn hàng không?",
-        okText: "Đồng ý",
-        cancelText: "Hủy",
-        onOk: async () => {
-          var data = {
-            id: refundProduct.id,
-            idBill: refundProduct.idBill,
-            idProduct: refundProduct.idProduct,
-            size: refundProduct.size,
-            quantity: quantity,
-            totalMoney: total,
-            note: refundProduct.note,
-          };
-          await BillApi.refundProduct(data).then((res) => {
-            toast.success("Hoàn hàng thành công");
-          });
-          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-            dispatch(getProductInBillDetail(res.data.data));
-          });
-          await BillApi.fetchDetailBill(id).then((res) => {
-            dispatch(getBill(res.data.data));
-            var index = listStatus.findIndex(
-              (item) => item.status == res.data.data.statusBill
-            );
-            if (res.data.data.statusBill == "TRA_HANG") {
-              index = 7;
-            }
-            if (res.data.data.statusBill == "DA_HUY") {
-              index = 8;
-            }
-            dispatch(addStatusPresent(index));
-          });
-          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-            dispatch(getBillHistory(res.data.data));
-          });
-
-          setIsModalRefundProductOpen(false);
-        },
-        onCancel: () => {
-          setIsModalRefundProductOpen(false);
-        },
-      });
-      setQuantity(1);
-    }
-  };
-  const handleCancelRefundProduct = () => {
-    setIsModalRefundProductOpen(false);
-    setQuantity(1);
-  };
-  // end modal refundProduct
-
-  // begin modal refundProduct
-  const [updateProduct, setUpdateProduct] = useState({
-    idBill: id,
-    idProduct: "",
-    size: "",
-    quantity: 0,
-    price: "",
-    totalMoney: "",
-  });
-
-  const [idProductInBill, setIdProductInBill] = useState("");
-
-  const onChangeUpdateProduct = (fileName, value) => {
-    setUpdateProduct({ ...updateProduct, [fileName]: value });
-  };
-
-  const [isModaUpdateProduct, setIsModalUpdateProduct] = useState(false);
-  const showModalUpdateProduct = async (e, id) => {
-    await BillApi.getDetaiProductInBill(id).then((res) => {
-      console.log(res);
-      setUpdateProduct({
-        ...updateProduct,
-        idProduct: res.data.data.idProduct,
-        size: res.data.data.nameSize,
-      });
-      setIdProductInBill(res.data.data.id);
-      setDetailProduct(res.data.data);
-      setQuantity(res.data.data.quantity);
-    });
-    setIsModalUpdateProduct(true);
-  };
-  const checkNotEmptyUpdateProduct = () => {
-    return Object.keys(refundProduct)
-      .filter((key) => key !== "note")
-      .every((key) => refundProduct[key] !== "");
-  };
-
-  const handleOkUpdateProduct = () => {
-    if (quantity < 1 && quantity < detaiProduct.quantity) {
-      toast.warning(
-        "vui lòng nhập số lượng lớn hơn 0 và nhỏ hơn " + detaiProduct.quantity
-      );
-    } else {
-      if (quantity == detaiProduct.quantity) {
-        setIsModalUpdateProduct(false);
-      } else {
-        var listProduct = [...detailProductInBill];
-        var index = listProduct.findIndex((item) => item.id == idProductInBill);
-        var newProduct = { ...listProduct[index] };
-        newProduct.quantity = quantity;
-        listProduct.splice(index, 1, newProduct);
-        // newProduct.quantity = quantity
-        listProduct.splice(index, 1, newProduct);
-        var total = listProduct.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0);
-        Modal.confirm({
-          title: "Xác nhận",
-          content: "Bạn có xác nhận thay đổi không?",
-          okText: "Đồng ý",
-          cancelText: "Hủy",
-          onOk: async () => {
-            var data = {
-              idBill: updateProduct.idBill,
-              idProduct: updateProduct.idProduct,
-              size: updateProduct.size,
-              quantity: quantity,
-              price: "",
-              totalMoney: total,
-            };
-            await BillApi.updateProductInBill(idProductInBill, data).then(
-              (res) => {
-                toast.success("Thay đổi thành công");
-              }
-            );
-            await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-              dispatch(getProductInBillDetail(res.data.data));
-            });
-            await BillApi.fetchDetailBill(id).then((res) => {
-              dispatch(getBill(res.data.data));
-              var index = listStatus.findIndex(
-                (item) => item.status == res.data.data.statusBill
-              );
-              if (res.data.data.statusBill == "TRA_HANG") {
-                index = 7;
-              }
-              if (res.data.data.statusBill == "DA_HUY") {
-                index = 8;
-              }
-              dispatch(addStatusPresent(index));
-            });
-            await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-              dispatch(getBillHistory(res.data.data));
-            });
-            setIsModalUpdateProduct(false);
-          },
-          onCancel: () => {
-            setIsModalUpdateProduct(false);
-          },
-        });
-        setIsModalUpdateProduct(false);
-        setQuantity(1);
-      }
-    }
-  };
-  const handleCancelUpdateProduct = () => {
-    setIsModalUpdateProduct(false);
-    setQuantity(1);
-  };
-  // end modal refundProduct
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
 
-  const handleQuantityDecrease = (record) => {};
-
-  const handleQuantityChange = (value, record) => {};
-
-  const handleQuantityIncrease = (record) => {};
-
   const showModalProduct = (e) => {
     setIsModalProductOpen(true);
   };
-  const handleOkProduct = () => {
-    setIsModalProductOpen(false);
-  };
-  const handleCancelProduct = () => {
-    setIsModalProductOpen(false);
-  };
-
   // dispatch(addProductBillWait(res.data.data));
 
   //  end modal product
@@ -890,149 +628,6 @@ function DetailBill() {
   };
 
   // end modal change statust
-
-  const columns = [
-    {
-      title: <div className="title-product">STT</div>,
-      dataIndex: "stt",
-      key: "stt",
-    },
-    {
-      title: "Ảnh",
-      dataIndex: "img",
-      key: "img",
-      render: (text, record) => (
-        <div style={{ position: "relative", display: "inline-block" }}>
-          <img
-            src={text}
-            alt="Ảnh sản phẩm"
-            style={{ width: "170px", borderRadius: "10%", height: "140px" }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              top: "0px",
-              right: "0px",
-              padding: "0px",
-              cursor: "pointer",
-              borderRadius: "50%",
-            }}
-          >
-            {/* <FontAwesomeIcon
-              icon={faBookmark}
-              style={{
-                ...getPromotionColor(record.promotion),
-                fontSize: "3.5em",
-              }}
-            /> */}
-            <span
-              style={{
-                position: "absolute",
-                top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
-                left: "50%", // Để "50%" nằm chính giữa biểu tượng
-                transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
-                fontSize: "0.8em",
-                fontWeight: "bold",
-                ...getPromotionStyle(record.promotion),
-              }}
-            >
-              {record.promotion == null ? "0%" : `${record.promotion}%`}
-            </span>
-            <span
-              style={{
-                position: "absolute",
-                top: "60%", // Để "Giảm" nằm chính giữa biểu tượng
-                left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
-                transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
-                fontSize: "0.8em",
-                fontWeight: "bold",
-                ...getPromotionStyle(record.promotion),
-              }}
-            >
-              Giảm
-            </span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: <div className="title-product">Mã sản phẩm</div>,
-      dataIndex: "codeProduct",
-      key: "codeProduct",
-    },
-    {
-      title: <div className="title-product">Tên Sản Phẩm</div>,
-      dataIndex: "productName",
-      key: "productName",
-    },
-    {
-      title: <div className="title-product">Kích thước</div>,
-      dataIndex: "nameSize",
-      key: "nameSize",
-    },
-    {
-      title: <div className="title-product">Màu</div>,
-      dataIndex: "nameColor",
-      key: "nameColor",
-    },
-    {
-      title: <div className="title-product">Đế giày</div>,
-      dataIndex: "nameSole",
-      key: "nameSole",
-    },
-    {
-      title: <div className="title-product">Chất liệu</div>,
-      dataIndex: "nameMaterial",
-      key: "nameMaterial",
-    },
-    {
-      title: <div className="title-product">Giá</div>,
-      dataIndex: "price",
-      key: "price",
-      render: (price) => <span>{formatCurrency(price)}</span>,
-    },
-    {
-      title: <div className="title-product">Số lượng </div>,
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title:
-        bill.statusBill == "DA_THANH_TOAN" ||
-        bill.statusBill == "TAO_HOA_DON" ? (
-          <div className="title-product">hành động</div>
-        ) : (
-          <div></div>
-        ),
-      dataIndex: "action",
-      key: "id",
-      render: (id) => (
-        <div style={{ display: "flex", gap: "10px" }}>
-          {bill.statusBill == "TAO_HOA_DON" ? (
-            <Button
-              type="primary"
-              title="Hủy"
-              style={{ backgroundColor: "red" }}
-              // onClick={() => handleViewDetail(record.id)}
-            >
-              Thay đổi
-            </Button>
-          ) : bill.statusBill == "DA_THANH_TOAN" ? (
-            <Button
-              type="primary"
-              title="Hủy"
-              style={{ backgroundColor: "red" }}
-              // onClick={() => handleViewDetail(record.id)}
-            >
-              Hủy
-            </Button>
-          ) : (
-            <div></div>
-          )}
-        </div>
-      ),
-    },
-  ];
 
   const columnsHistory = [
     {
@@ -1180,54 +775,6 @@ function DetailBill() {
   const getPromotionStyle = (promotion) => {
     return promotion >= 50 ? { color: "white" } : { color: "#000000" };
   };
-  const getPromotionColor = (promotion) => {
-    return promotion >= 50 ? { color: "#FF0000" } : { color: "#FFCC00" };
-  };
-
-  // begin delete product
-
-  const xuatPdf = () => {
-    BillApi.exportPdf(id).then(
-      (res) => {},
-      (err) => {
-        console.log(err);
-      }
-    );
-  };
-  const removeProductInBill = (idProduct, size) => {
-    Modal.confirm({
-      title: "Xác nhận",
-      content: "Bạn có xác nhận xóa sản phẩm không?",
-      okText: "Đồng ý",
-      cancelText: "Hủy",
-      onOk: async () => {
-        await BillApi.removeProductInBill(idProduct, size).then((res) => {
-          toast.warning("xóa thành công");
-        });
-        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-          dispatch(getProductInBillDetail(res.data.data));
-        });
-        await BillApi.fetchDetailBill(id).then((res) => {
-          dispatch(getBill(res.data.data));
-          var index = listStatus.findIndex(
-            (item) => item.status == res.data.data.statusBill
-          );
-          if (res.data.data.statusBill == "TRA_HANG") {
-            index = 6;
-          }
-          if (res.data.data.statusBill == "DA_HUY") {
-            index = 7;
-          }
-          dispatch(addStatusPresent(index));
-        });
-        await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
-          dispatch(getBillHistory(res.data.data));
-        });
-      },
-      onCancel: () => {},
-    });
-  };
-  // end delete product
 
   // thay đổi nhân viên
 
@@ -1423,48 +970,6 @@ function DetailBill() {
                   form={form}
                   initialValues={initialValues}
                 >
-                  {/* {
-                  paymentsMethod.some(
-                    (payment) => payment.status == "THANH_TOAN"
-                  ) ? (  <Row style={{ width: "100%" }}>
-                  <Col span={24} style={{ marginTop: "10px" }}>
-                    <label className="label-bill" style={{ marginTop: "2px" }}>
-                      Hình thức
-                    </label>
-                    <Select
-                      showSearch
-                      style={{
-                        width: "100%",
-                        margin: "10px 0",
-                        position: "relative",
-                      }}
-                      placeholder="Chọn hình thức"
-                      optionFilterProp="children"
-                      onChange={(value) => onChangeDescStatusBill("statusCancel", value)}
-                      defaultValue={statusBill.statusCancel}
-                      filterOption={(input, option) =>
-                        (option?.label ?? "")
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                      options={[
-                        {
-                          value: "false",
-                          label: "Liên hệ khách hàng",
-                         
-                        },
-                        {
-                          value: "true",
-                          label: "Chuyển khoản vnpay(Hoàn sau 30 ngày)",
-                          disabled: paymentsMethod.some(
-                            (payment) => payment.method == "TIEN_MAT"
-                          ) || paymentsMethod.length > 1 
-                        },
-                      ]}
-                    />
-                  </Col>
-                </Row>) : (<Row></Row>)
-                 }       */}
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
 
@@ -1579,20 +1084,6 @@ function DetailBill() {
           ) : (
             <div></div>
           )}
-          {/* {!paymentsMethod.some(payment =>( payment.status === "TRA_SAU" || payment.status == 'HOAN_TIEN')) && statusPresent == 8 ? (
-               <Col span={4}>
-              <Button
-                type="dashed"
-                align={"end"}
-                style={{ margin: "" }}
-                onClick={(e) => showModalRefundPayMent(e)}
-              >
-                Hoàn tiền 
-              </Button>
-            </Col>
-            ) : (
-              <div></div>
-            )} */}
         </Row>
         <Row style={{ width: "100%" }}>
           <Table
@@ -1789,228 +1280,7 @@ function DetailBill() {
         ) : (
           <div></div>
         )}
-        <Row
-          style={{
-            width: "100%",
-            marginTop: "20px",
-            borderBottom: "1px solid #ccc",
-            padding: "12px",
-          }}
-        >
-          {detailProductInBill.map((item, index) => {
-            return (
-              <Row style={{ marginTop: "10px", width: "100%" }}>
-                <Col
-                  span={1}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    fontSize: "21px",
-                    fontFamily: "500",
-                    margin: "auto",
-                  }}
-                >
-                  {index + 1}
-                </Col>
-                <Col span={5}>
-                  <div
-                    style={{ position: "relative", display: "inline-block" }}
-                  >
-                    <img
-                      src={item.image}
-                      alt="Ảnh sản phẩm"
-                      style={{
-                        width: "100px",
-                        borderRadius: "10%",
-                        height: "100px",
-                      }}
-                    />
-                    {item.promotion !== null && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "0px",
-                          right: "0px",
-                          padding: "0px",
-                          cursor: "pointer",
-                          borderRadius: "50%",
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={faBookmark}
-                          style={{
-                            ...getPromotionColor(item.promotion),
-                            fontSize: "3.5em",
-                          }}
-                        />
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
-                            left: "50%", // Để "50%" nằm chính giữa biểu tượng
-                            transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
-                            fontSize: "0.8em",
-                            fontWeight: "bold",
-                            ...getPromotionStyle(item.promotion),
-                          }}
-                        >
-                          {`${item.promotion}%`}
-                        </span>
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: "60%",
-                            left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
-                            transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
-                            fontSize: "0.8em",
-                            fontWeight: "bold",
-                            ...getPromotionStyle(item.promotion),
-                          }}
-                        >
-                          Giảm
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </Col>
-                <Col span={10}>
-                  <Row>
-                    {" "}
-                    <span
-                      style={{
-                        fontSize: "19",
-                        fontWeight: "500",
-                        marginTop: "10px",
-                      }}
-                    >
-                      {item.productName}
-                    </span>{" "}
-                  </Row>
-                  <Row>
-                    {item.promotion != null ? (
-                      <span style={{ fontSize: "12px", marginTop: "4px" }}>
-                        <del>
-                          {formatCurrency(
-                            item.price / (1 - item.promotion / 100)
-                          )}
-                        </del>
-                      </span>
-                    ) : (
-                      <span></span>
-                    )}
-                    <span
-                      style={{
-                        color: "red",
-                        fontWeight: "500",
-                        marginLeft: "5px",
-                      }}
-                    >
-                      {item.price >= 1000
-                        ? formatCurrency(item.price)
-                        : item.price + " VND"}
-                    </span>{" "}
-                  </Row>
-                  <Row>
-                    <span style={{ fontSize: "12", marginTop: "10px" }}>
-                      Size: {item.nameSize}
-                    </span>{" "}
-                  </Row>
-                  <Row>
-                    <span style={{ fontSize: "12" }}>x {item.quantity}</span>{" "}
-                  </Row>
-                </Col>
-                <Col span={3} style={{ display: "flex", alignItems: "center" }}>
-                  <span
-                    style={{
-                      color: "red",
-                      fontWeight: "bold",
-                      marginBottom: "30px",
-                    }}
-                  >
-                    {item.price * item.quantity >= 1000
-                      ? (item.price * item.quantity).toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      : item.price * item.quantity + " đ"}
-                  </span>{" "}
-                </Col>
-                {/* <Col span={5} style={{ display: "flex", alignItems: "center" }}>
-                  <Row>
-                    <Col span={12}>
-                      {bill.statusBill == "TAO_HOA_DON" ||
-                        bill.statusBill == "CHO_XAC_NHAN" ? (
-                        <Button
-                          type=""
-                          style={{
-                            color: "#00ffe0",
-                            fontWeight: "500",
-                            marginBottom: "30px",
-                            border: "1px solid #00ffe0",
-                            borderRadius: "10px",
-                          }}
-                          onClick={(e) => showModalUpdateProduct(e, item.id)}
-                        >
-                          Cập nhật
-                        </Button>
-                      ) : (
-                        <div></div>
-                      )}
-                    </Col>
-                    {bill.statusBill == "TAO_HOA_DON" ||
-                      bill.statusBill == "CHO_XAC_NHAN" ? (
-                      <Col span={12}>
-                        <Button
-                          type=""
-                          style={{
-                            color: "#eb5a36",
-                            marginLeft: "20px",
-                            fontWeight: "500",
-                            marginBottom: "30px",
-                            border: "1px solid #eb5a36",
-                            borderRadius: "10px",
-                          }}
-                          onClick={(e) =>
-                            removeProductInBill(item.id, item.idProduct)
-                          }
-                        >
-                          Xóa
-                        </Button>
-                      </Col>
-                    ) : (
-                      <div></div>
-                    )}
-                    {bill.statusBill == "DA_THANH_TOAN" ||
-                    bill.statusBill == "THANH_CONG" ||
-                    bill.statusBill == "TRA_HANG" ? (
-                      <Col span={12}>
-                        <Button
-                          type=""
-                          style={{
-                            color: "#eb5a36",
-                            marginLeft: "20px",
-                            fontWeight: "500",
-                            marginBottom: "30px",
-                            border: "1px solid #eb5a36",
-                            borderRadius: "10px",
-                          }}
-                          disabled={item.status == "TRA_HANG"}
-                          onClick={(e) => showModalRefundProduct(e, item.id)}
-                        >
-                          {item.status != "TRA_HANG"
-                            ? "Trả hàng"
-                            : "Đã hoàn hàng"}
-                        </Button>
-                      </Col>
-                    ) : (
-                      <div></div>
-                    )}
-                  </Row>
-                </Col> */}
-              </Row>
-            );
-          })}
-        </Row>
+        <Row style={{width: "100%"}}><ManagerBillDetail  style={{width: "100%"}} id={id} status={bill.statusBill}></ManagerBillDetail></Row>
         <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
           <Col span={10}>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
@@ -2085,11 +1355,7 @@ function DetailBill() {
                   {formatCurrency(
                      Math.max(
                       0,
-                    detailProductInBill.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) +
+                      bill.totalMoney +
                       bill.moneyShip -
                       bill.itemDiscount)
                   )}
@@ -2512,25 +1778,6 @@ function DetailBill() {
         </Form>
       </Modal>
       {/* end modal bill  */}
-
-      {/* begin modal product */}
-      <Modal
-        title="Basic Modal"
-        open={isModalProductOpen}
-        onOk={handleOkProduct}
-        onCancel={handleCancelProduct}
-        width={1000}
-        cancelText={"huỷ"}
-        okText={"Xác nhận"}
-      >
-        <ModalAddProductDetail
-          handleCancelProduct={handleCancelProduct}
-          products={products}
-          setProducts={setProducts}
-          typeAddProductBill={typeAddProductBill}
-        />
-      </Modal>
-      {/* end bigin modal product */}
 
       {/*  thay thay đổi nhân viên  */}
       <Modal

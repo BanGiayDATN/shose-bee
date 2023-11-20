@@ -1,6 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.BillDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,9 +34,12 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             LEFT JOIN sole so ON so.id = prde.id_sole
             LEFT JOIN material ma ON ma.id = prde.id_material
             LEFT JOIN category ca ON ca.id = prde.id_category
-            WHERE bi.id LIKE :idBill
+            WHERE bi.id LIKE :#{#request.idBill}
+             AND ( :#{#request.status} IS NULL
+                         OR :#{#request.status} LIKE ' '
+                         OR bide.status_bill IN (:#{#request.status}))
              """, nativeQuery = true)
-    List<BillDetailResponse> findAllByIdBill(String idBill);
+    List<BillDetailResponse> findAllByIdBill(BillDetailRequest request);
 
     @Query(value = """
             SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, prde.id AS id_product, im.name AS image, bi.id AS id_bill, bide.id, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity , prde.quantity AS max_quantity , bide.status_bill from bill_detail bide

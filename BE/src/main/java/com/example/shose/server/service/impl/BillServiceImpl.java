@@ -13,6 +13,7 @@ import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
 import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
 import com.example.shose.server.dto.response.bill.BillGiveBack;
@@ -62,7 +63,6 @@ import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +186,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill save(String id, HttpServletRequest requests, CreateBillOfflineRequest request) {
+    public Bill save(String id,  CreateBillOfflineRequest request) {
         Optional<Bill> optional = billRepository.findByCode(request.getCode());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -202,7 +202,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         optional.get().setPoinUse(request.getPoin());
 
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
         billDetailResponse.forEach(item -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
             if (!productDetail.isPresent()) {
@@ -232,8 +232,6 @@ public class BillServiceImpl implements BillService {
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
-                System.out.println(account.get());
-                System.out.println(request);
                 if (account.isPresent()) {
                     optional.get().setAccount(account.get());
                     User user = account.get().getUser();
@@ -324,7 +322,7 @@ public class BillServiceImpl implements BillService {
             VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        createFilePdfAtCounter(optional.get().getId(), requests);
+        createFilePdfAtCounter(optional.get().getId());
         return optional.get();
     }
 
@@ -379,7 +377,7 @@ public class BillServiceImpl implements BillService {
             optional.get().setPoinUse(request.getPoin());
             billRepository.save(optional.get());
 
-            List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+            List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
             billDetailResponse.forEach(item -> {
                 Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
                 if (!productDetail.isPresent()) {
@@ -505,7 +503,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests) {
+    public Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
@@ -523,7 +521,7 @@ public class BillServiceImpl implements BillService {
         if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.CHO_VAN_CHUYEN) {
-            createFilePdf(bill.get().getId(), requests);
+            createFilePdf(bill.get().getId());
         } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
@@ -531,11 +529,11 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-            if (bill.get().getAccount() != null) {
+            if(bill.get().getAccount() != null){
                 User user = bill.get().getAccount().getUser();
-                Poin poin = configPoin.readJsonFile();
-                user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                userReposiory.save(user);
+                    Poin poin = configPoin.readJsonFile();
+                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    userReposiory.save(user);
             }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -556,7 +554,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, HttpServletRequest requests, String idEmployees) {
+    public boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request,  String idEmployees) {
         request.getIds().forEach(id -> {
             Optional<Bill> bill = billRepository.findById(id);
             Optional<Account> account = accountRepository.findById(idEmployees);
@@ -569,20 +567,20 @@ public class BillServiceImpl implements BillService {
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
             if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-                createFilePdf(id, requests);
+                createFilePdf(id);
             } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
-                createFilePdf(id, requests);
+                createFilePdf(id);
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                if (bill.get().getAccount() != null) {
+                if(bill.get().getAccount() != null){
                     User user = bill.get().getAccount().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                    userReposiory.save(user);
+                        Poin poin = configPoin.readJsonFile();
+                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                        userReposiory.save(user);
                 }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -598,7 +596,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill cancelBill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests) {
+    public Bill cancelBill(String id, String idEmployees, ChangStatusBillRequest request) {
         Optional<Bill> bill = billRepository.findById(id);
         Optional<Account> account = accountRepository.findById(idEmployees);
         if (!bill.isPresent()) {
@@ -621,7 +619,7 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(bill.get().getId());
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.get().getId(), "THANH_CONG"));
         billDetailResponse.forEach(item -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
             if (!productDetail.isPresent()) {
@@ -634,17 +632,14 @@ public class BillServiceImpl implements BillService {
             productDetailRepository.save(productDetail.get());
         });
         Account checkAccount = bill.get().getAccount();
-        if (checkAccount != null) {
-            if (bill.get().getPoinUse() > 0) {
-                User user = checkAccount.getUser();
+        if(checkAccount != null){
+            if(bill.get().getPoinUse() > 0){
+                User user =  checkAccount.getUser();
                 user.setPoints(user.getPoints() + bill.get().getPoinUse());
                 userReposiory.save(user);
             }
         }
 
-        if (!paymentsMethodService.refundVnpay(idEmployees, request.isStatusCancel(), bill.get().getCode(), requests)) {
-            throw new RestApiException(Message.ERROR_CANCEL_BILL);
-        }
         return billRepository.save(bill.get());
     }
 
@@ -701,7 +696,7 @@ public class BillServiceImpl implements BillService {
 
             ProductDetail productDetail = optional.get();
             BillDetail billDetail = BillDetail.builder()
-                    .statusBill(StatusBill.CHO_XAC_NHAN)
+                    .statusBill(StatusBill.THANH_CONG)
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
@@ -770,7 +765,7 @@ public class BillServiceImpl implements BillService {
         }
 
         Account account = accountRepository.findById(request.getIdAccount()).get();
-        if (request.getPoin() > 0) {
+        if(request.getPoin() > 0 ){
             User user = account.getUser();
             user.setPoints(user.getPoints() - request.getPoin());
             userReposiory.save(user);
@@ -806,7 +801,7 @@ public class BillServiceImpl implements BillService {
 
             ProductDetail productDetail = optional.get();
             BillDetail billDetail = BillDetail.builder()
-                    .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                    .statusBill(StatusBill.THANH_CONG)
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
@@ -854,7 +849,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public boolean createFilePdf(String idBill, HttpServletRequest request) {
+    public boolean createFilePdf(String idBill) {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
@@ -864,7 +859,7 @@ public class BillServiceImpl implements BillService {
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, request, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
         return true;
     }
 
@@ -919,8 +914,7 @@ public class BillServiceImpl implements BillService {
         return true;
     }
 
-
-    public boolean createFilePdfAtCounter(String idBill, HttpServletRequest request) {
+    public boolean createFilePdfAtCounter(String idBill) {
         //     begin   create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
@@ -931,7 +925,7 @@ public class BillServiceImpl implements BillService {
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, request, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
 //     end   create file pdf
         return true;
     }
