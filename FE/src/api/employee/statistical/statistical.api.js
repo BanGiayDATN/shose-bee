@@ -18,10 +18,14 @@ export class StatisticalApi {
       url: `/admin/statistical/status-bill`,
     });
   };
-  static fetchAllStatisticalBestSellingProduct = () => {
+  static fetchAllStatisticalBestSellingProduct = (startDate, endDate) => {
     return request({
       method: "GET",
       url: `/admin/statistical/best-selling-product`,
+      params: {
+        startDate: startDate,
+        endDate: endDate,
+      },
     });
   };
   static fetchBillByDate = (startDate, endDate) => {
@@ -34,6 +38,18 @@ export class StatisticalApi {
         startDate: startDate,
         endDate: endDate,
       },
+    });
+  };
+  static fetchAllStatisticalGrowth = () => {
+    return request({
+      method: "GET",
+      url: `/admin/statistical/growth`,
+    });
+  };
+  static fetchAllStatisticalStock = () => {
+    return request({
+      method: "GET",
+      url: `/admin/statistical/stock`,
     });
   };
 }
