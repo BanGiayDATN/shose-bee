@@ -1,5 +1,5 @@
 :where(.css-dev-only-do-not-override-1m62vyb).ant-modal .ant-modal-content {
-  border-radius: 0px;
+  border-radius: 7px !important;
 }
 .input-create-address-account {
   border: 1px solid rgb(201, 201, 201);

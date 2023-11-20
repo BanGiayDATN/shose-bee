@@ -12,6 +12,10 @@ import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterReque
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
+import com.example.shose.server.dto.response.bill.BillGiveBack;
+import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.response.bill.BillResponse;
@@ -62,4 +66,9 @@ public interface BillService {
     boolean ChangeAllEmployee(String id, ChangeAllEmployeeRequest request);
 
     boolean ChangeEmployee(String id, ChangeEmployeeRequest request);
+
+    BillGiveBackInformation getBillGiveBackInformation(String codeBill);
+    List<BillGiveBack> getBillGiveBack(String idBill);
+
+    Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
 }

@@ -237,8 +237,8 @@ public class CustomerServiceImpl implements CustomerService {
 
         User user = User.builder()
                 .fullName(request.getFullName())
+                .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
-//                .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .gender(request.getGender())
                 .points(0)

@@ -30,6 +30,7 @@ export default function Policy() {
         getItem("Chính sách dành cho khách hàng", "8"),
         getItem("Chính sách thanh toán", "9"),
         getItem("Điều khoản dịch vụ", "10"),
+        getItem("Chính sách trả hàng", "4"),
       ]
     ),
     getItem(

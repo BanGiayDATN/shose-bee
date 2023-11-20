@@ -13,7 +13,10 @@ import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
-import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
+import com.example.shose.server.dto.response.bill.BillGiveBack;
+import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
@@ -27,6 +30,7 @@ import com.example.shose.server.entity.Cart;
 import com.example.shose.server.entity.CartDetail;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.ProductDetailGiveBack;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
@@ -40,16 +44,17 @@ import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.infrastructure.poin.ConfigPoin;
 import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
-import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
+import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.repository.VoucherDetailRepository;
@@ -57,6 +62,7 @@ import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +79,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -115,9 +123,6 @@ public class BillServiceImpl implements BillService {
     private VoucherDetailRepository voucherDetailRepository;
 
     @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
     private UserReposiory userReposiory;
     @Autowired
     private CartRepository cartRepository;
@@ -132,6 +137,13 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private PaymentsMethodService paymentsMethodService;
+
+    @Autowired
+    private ShoseSession shoseSession;
+
+    @Autowired
+    private ProductDetailGiveBackRepository productDetailGiveBackRepository;
+
 
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
@@ -170,8 +182,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id, FindNewBillCreateAtCounterRequest request) {
-        Optional<Account> user = accountRepository.findById(id);
-        return billRepository.findAllBillAtCounterAndStatusNewBill(id, user.get().getRoles().name(), request);
+        return billRepository.findAllBillAtCounterAndStatusNewBill(id, request);
     }
 
     @Override
@@ -225,10 +236,10 @@ public class BillServiceImpl implements BillService {
                     optional.get().setAccount(account.get());
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
-                    if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                    if (request.getPoin() > 0) {
+                        int Pointotal = user.getPoints() - request.getPoin() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
                         user.setPoints(Pointotal);
-                    }else{
+                    } else {
                         user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
                     }
                     userReposiory.save(user);
@@ -245,8 +256,8 @@ public class BillServiceImpl implements BillService {
                     optional.get().setAccount(account.get());
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
-                    if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() ;
+                    if (request.getPoin() > 0) {
+                        int Pointotal = user.getPoints() - request.getPoin();
                         user.setPoints(Pointotal);
                     }
                     userReposiory.save(user);
@@ -939,4 +950,102 @@ public class BillServiceImpl implements BillService {
         }
     }
 
+    @Override
+    public BillGiveBackInformation getBillGiveBackInformation(String codeBill) {
+        Optional<Bill> optional = billRepository.findByCode(codeBill);
+        if (!optional.isPresent()) {
+            throw new RestApiException("Không tìm thấy mã  hóa đơn " + codeBill);
+        }
+        long currentSeconds = System.currentTimeMillis();
+        long givenBackCheck = optional.get().getCompletionDate() + 2 * 24 * 60 * 60 * 1000;
+        if (currentSeconds > givenBackCheck) {
+            throw new RestApiException("Đơn hàng đã hết hạn hoàn đổi.");
+        }
+        if (optional.get().getStatusBill().equals(StatusBill.TRA_HANG)) {
+            throw new RestApiException("Hóa đơn " + codeBill + " đã có sản phẩm trả hàng.");
+        }
+        return billRepository.getBillGiveBackInformation(codeBill);
+    }
+
+    @Override
+    public List<BillGiveBack> getBillGiveBack(String idBill) {
+        return billRepository.getBillGiveBack(idBill);
+    }
+
+    @Override
+    public Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
+        Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
+        User customer = accountRepository.findById(updateBillGiveBack.getIdAccount()).get().getUser();
+        Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
+        if (bill == null) {
+            throw new RestApiException("Không tìm thấy mã hóa đơn.");
+        }
+        // todo update stattus bill
+        bill.setStatusBill(StatusBill.TRA_HANG);
+        billRepository.save(bill);
+
+        BillHistory billHistory = BillHistory.builder()
+                .bill(bill).actionDescription(updateBillGiveBack.getNote())
+                .employees(account)
+                .statusBill(StatusBill.TRA_HANG)
+                .build();
+        billHistoryRepository.save(billHistory);
+
+        List<BillDetail> listUpdateBillDetail = updateBillDetailGiveBacks.stream().map((data) -> {
+            BillDetail billDetail = billDetailRepository.findById(data.getIdBillDetail())
+                    .orElseThrow(() -> new RuntimeException("Chi tiết hóa đơn không tồn tại."));
+            billDetail.setStatusBill(StatusBill.THANH_CONG);
+            billDetail.setQuantity(billDetail.getQuantity() - data.getQuantity());
+            return billDetail;
+        }).collect(Collectors.toList());
+
+        List<ProductDetailGiveBack> productDetailGiveBackList = new ArrayList<>();
+        List<BillDetail> listUpdateBillDetailGiveBack = updateBillDetailGiveBacks.stream().map((data) -> {
+            ProductDetail productDetail = productDetailRepository.findById(data.getIdProduct()).get();
+            BillDetail billDetail = new BillDetail();
+            billDetail.setStatusBill(StatusBill.TRA_HANG);
+            billDetail.setQuantity(data.getQuantity());
+            billDetail.setBill(bill);
+            billDetail.setProductDetail(productDetail);
+            billDetail.setPrice(new BigDecimal(data.getPrice()));
+            billDetail.setPromotion(data.getPromotion() == null ? null : new BigDecimal(data.getPromotion()));
+
+            // todo: create product detail give back
+            ProductDetailGiveBack giveBack = new ProductDetailGiveBack();
+            giveBack.setIdProductDetail(productDetail.getId());
+            giveBack.setStatusBill(StatusBill.TRA_HANG);
+            giveBack.setQuantity(data.getQuantity());
+            productDetailGiveBackList.add(giveBack);
+            return billDetail;
+        }).collect(Collectors.toList());
+
+        // todo: update points user by totalBillGiveBack
+        customer.setPoints( customer.getPoints() - totalBillGivenBack(updateBillDetailGiveBacks,bill.getTotalMoney()));
+        userReposiory.save(customer);
+
+        // todo: create product detail give back
+        List<ProductDetailGiveBack> addProductDetailGiveBacks = productDetailGiveBackList.stream().map(data -> {
+            ProductDetailGiveBack productDetailGiveBack = productDetailGiveBackRepository.getOneByIdProductDetail(data.getIdProductDetail());
+            if (productDetailGiveBack != null) {
+                productDetailGiveBack.setQuantity(productDetailGiveBack.getQuantity() + data.getQuantity());
+                return productDetailGiveBack;
+            }
+            return data;
+        }).collect(Collectors.toList());
+
+        billDetailRepository.saveAll(listUpdateBillDetail);
+        billDetailRepository.saveAll(listUpdateBillDetailGiveBack);
+        productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
+        return bill;
+    }
+
+    private int totalBillGivenBack (List<UpdateBillDetailGiveBack> list , BigDecimal totalBill){
+        BigDecimal totalBillGive =  list.stream()
+                .map(UpdateBillDetailGiveBack::getTotalPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Tính tổng
+        Poin poin = configPoin.readJsonFile();
+        int pointGiveBack =  poin.ConvertMoneyToPoints(totalBill.subtract(totalBillGive));
+        return pointGiveBack;
+    }
 }
