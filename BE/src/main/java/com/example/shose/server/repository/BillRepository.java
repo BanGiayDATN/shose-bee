@@ -218,6 +218,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
        ORDER BY sold asc
                                       """, nativeQuery = true)
     List<StatisticalBestSellingProductResponse> getAllStatisticalProductStock();
+
+    @Query(value = """
             SELECT
                 bi.id AS idBill,
                 bi.code AS codeBill,
