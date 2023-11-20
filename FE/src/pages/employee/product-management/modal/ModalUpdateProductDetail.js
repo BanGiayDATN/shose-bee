@@ -48,6 +48,7 @@ import { GetColor, SetColor } from "../../../../app/reducer/Color.reducer";
 
 const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
   const [form] = Form.useForm();
+  const [productDetailGiveback, setProductDetailGiveback] = useState(null);
   const [initialValues, setInitialValues] = useState({
     id: "",
     description: "",
@@ -63,10 +64,16 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
     brandId: "",
     QRCode: "",
     sizeId: "",
+    giveBack: 0,
   });
 
   // lấy đối tượng theo id
   const getOne = () => {
+    ProducDetailtApi.getQuantityProductDetailGiveBack(id).then((data) => {
+      const productGiveBack = data.data.data;
+      setProductDetailGiveback(productGiveBack);
+    });
+
     ProducDetailtApi.getOne(id).then((productData) => {
       console.log(productData.data.data);
       setInitialValues({
@@ -84,8 +91,11 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
         QRCode: productData.data.data.qrcode,
         sizeId: productData.data.data.idSize,
         colorId: productData.data.data.idCode,
+        giveBack:
+          productDetailGiveback == null ? 0 : productDetailGiveback.quantity,
       });
     });
+    console.log(initialValues);
   };
 
   useEffect(() => {
@@ -621,7 +631,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
           <Row gutter={7} justify="space-around">
             <Col span={8}>
               <Form.Item
-                label="Số Lượng"
+                label="Số Lượng đang bán"
                 name="quantity"
                 style={{ fontWeight: "bold" }}
                 rules={[
@@ -665,7 +675,21 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
             <Col span={2}></Col>
           </Row>
 
-          <Row gutter={7} justify="start">
+          <Row gutter={7} justify="space-around">
+            <Col span={8}>
+              <Form.Item
+                label="Số Lượng Hàng Trả"
+                name="giveBack"
+                style={{ fontWeight: "bold" }}
+                rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+              >
+                <InputNumber
+                  readOnly
+                  style={{ fontWeight: "bold", width: "100%", height: "40px" }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={5}></Col>
             <Col span={8}>
               <Form.Item
                 label="QR Code : "
@@ -680,6 +704,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
                 />
               </Form.Item>
             </Col>
+            <Col span={2}></Col>
           </Row>
         </Form>
         <ModalCreateSole visible={modalAddSole} onCancel={handleCancel} />
