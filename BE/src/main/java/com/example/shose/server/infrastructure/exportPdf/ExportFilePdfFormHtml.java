@@ -1,5 +1,6 @@
 package com.example.shose.server.infrastructure.exportPdf;
 
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.response.bill.InvoiceItemResponse;
 import com.example.shose.server.dto.response.bill.InvoicePaymentResponse;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
@@ -127,7 +128,7 @@ public class ExportFilePdfFormHtml {
 
 
     public InvoiceResponse getInvoiceResponse(Bill bill) {
-        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(bill.getId());
+        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.getId(), "THANH_CONG"));
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill);
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
 

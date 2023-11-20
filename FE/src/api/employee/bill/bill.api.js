@@ -28,10 +28,11 @@ export class BillApi {
       });
     };
 
-    static fetchAllProductsInBillByIdBill = (id) => {
+    static fetchAllProductsInBillByIdBill = (data) => {
       return request({
         method: "GET",
-        url: `/admin/bill-detail/`+ id
+        url: `/admin/bill-detail`,
+        params: data,
       });
     };
 

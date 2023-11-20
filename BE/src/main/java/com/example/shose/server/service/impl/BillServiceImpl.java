@@ -13,13 +13,13 @@ import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Account;
-import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
@@ -30,7 +30,13 @@ import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
-import com.example.shose.server.infrastructure.constant.*;
+import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Roles;
+import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusBill;
+import com.example.shose.server.infrastructure.constant.StatusMethod;
+import com.example.shose.server.infrastructure.constant.StatusPayMents;
+import com.example.shose.server.infrastructure.constant.TypeBill;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
@@ -51,9 +57,6 @@ import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
-import com.example.shose.server.util.RandomNumberGenerator;
-import com.example.shose.server.util.payMent.Config;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,7 +191,7 @@ public class BillServiceImpl implements BillService {
         optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         optional.get().setPoinUse(request.getPoin());
 
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
         billDetailResponse.forEach(item -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
             if (!productDetail.isPresent()) {
@@ -283,7 +286,7 @@ public class BillServiceImpl implements BillService {
             if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
                 throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
-            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
             if (billDetailRequest.getPromotion() != null) {
                 billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
             }
@@ -363,7 +366,7 @@ public class BillServiceImpl implements BillService {
             optional.get().setPoinUse(request.getPoin());
             billRepository.save(optional.get());
 
-            List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(optional.get().getId());
+            List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
             billDetailResponse.forEach(item -> {
                 Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
                 if (!productDetail.isPresent()) {
@@ -416,7 +419,7 @@ public class BillServiceImpl implements BillService {
                 if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
                     throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
                 }
-                BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.TAO_HOA_DON).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+                BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
                 if (billDetailRequest.getPromotion() != null) {
                     billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
                 }
@@ -605,7 +608,7 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(bill.get().getId());
+        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.get().getId(), "THANH_CONG"));
         billDetailResponse.forEach(item -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
             if (!productDetail.isPresent()) {
@@ -682,7 +685,7 @@ public class BillServiceImpl implements BillService {
 
             ProductDetail productDetail = optional.get();
             BillDetail billDetail = BillDetail.builder()
-                    .statusBill(StatusBill.CHO_XAC_NHAN)
+                    .statusBill(StatusBill.THANH_CONG)
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
@@ -787,7 +790,7 @@ public class BillServiceImpl implements BillService {
 
             ProductDetail productDetail = optional.get();
             BillDetail billDetail = BillDetail.builder()
-                    .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                    .statusBill(StatusBill.THANH_CONG)
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
