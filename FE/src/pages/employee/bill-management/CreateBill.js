@@ -130,13 +130,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var itemDiscount = voucher.discountPrice + exchangeRateMoney
     if (accountuser != null && usePoin) {
-      idAccount = accountuser.idAccount;
       if(poin < accountuser?.points){
+        console.log(accountuser?.points);
         itemDiscount = Math.round(totalBill) - voucher.discountPrice 
         if(isOpenDelivery){
           itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
         }
       }
+    }
+    if (accountuser != null) {
+      idAccount = accountuser.idAccount;
     }
     var typeBill = "OFFLINE";
     var statusPayMents = "THANH_TOAN";
@@ -144,8 +147,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       statusPayMents = "TRA_SAU";
     }
     var ship = 0;
+    var ngayShip = ""
     if (isOpenDelivery) {
       ship = shipFee;
+      ngayShip = dayShip
     }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
@@ -162,7 +167,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       paymentsMethodRequests: dataPayment,
       vouchers: newVoucher,
       idUser: idAccount,
-      deliveryDate: dayShip,
+      deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
        poin: poin
@@ -210,24 +215,29 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         poin = tinhSoDiemCanThanhToan()
       }
       var itemDiscount = voucher.discountPrice + exchangeRateMoney
-      if (accountuser != null && usePoin) {
-        idAccount = accountuser.idAccount;
-        if(poin < accountuser?.points){
-          itemDiscount = Math.round(totalBill) - voucher.discountPrice 
-          if(isOpenDelivery){
-            itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
-          }
+     if (accountuser != null && usePoin) {
+      if(poin < accountuser?.points){
+        console.log(accountuser?.points);
+        itemDiscount = Math.round(totalBill) - voucher.discountPrice 
+        if(isOpenDelivery){
+          itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
         }
       }
+    }
+    if (accountuser != null) {
+      idAccount = accountuser.idAccount;
+    }
       var typeBill = "OFFLINE";
       var statusPayMents = "THANH_TOAN";
       if (traSau) {
         statusPayMents = "TRA_SAU";
       }
       var ship = 0;
-      if (isOpenDelivery) {
-        ship = shipFee;
-      }
+       var ngayShip = ""
+    if (isOpenDelivery) {
+      ship = shipFee;
+      ngayShip = dayShip
+    }
       var data = {
         phoneNumber: billRequest.phoneNumber.trim(),
         address: addressuser.trim(),
@@ -243,7 +253,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         paymentsMethodRequests: dataPaymentRequest,
         vouchers: newVoucher,
         idUser: idAccount,
-        deliveryDate: dayShip,
+        deliveryDate: ngayShip,
         code: code,
         openDelivery: isOpenDelivery,
         poin: poin
@@ -912,7 +922,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var itemDiscount = voucher.discountPrice + exchangeRateMoney
     if (accountuser != null && usePoin) {
-      idAccount = accountuser.idAccount;
       if(poin < accountuser?.points){
         console.log(accountuser?.points);
         itemDiscount = Math.round(totalBill) - voucher.discountPrice 
@@ -920,6 +929,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           itemDiscount = Math.round(totalBill) - voucher.discountPrice + shipFee 
         }
       }
+    }
+    if (accountuser != null) {
+      idAccount = accountuser.idAccount;
     }
     console.log(itemDiscount);
     
@@ -932,8 +944,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       statusPayMents = "TRA_SAU";
     }
     var ship = 0;
+     var ngayShip = ""
     if (isOpenDelivery) {
       ship = shipFee;
+      ngayShip = dayShip
     }
     var dataPayMentTraSau = dataPayment
     if(traSau){
@@ -967,7 +981,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       paymentsMethodRequests: dataPayMentTraSau,
       vouchers: newVoucher,
       idUser: idAccount,
-      deliveryDate: dayShip,
+      deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
       poin: poin
