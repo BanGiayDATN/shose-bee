@@ -1,7 +1,9 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.statistical.FindBillDateRequest;
+import com.example.shose.server.dto.response.bill.BillAccountResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.statistical.StatisticalBestSellingProductResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
@@ -55,10 +57,23 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          OR bi.type = :#{#request.type})
                AND ( :role = 'ROLE_ADMIN' OR bi.id_employees = :id )
                 ORDER BY bi.last_modified_date DESC
-
-                            
                 """, nativeQuery = true)
         List<BillResponse> getAll(@Param("id") String id,@Param("role") String role, BillRequest request);
+
+    @Query(value = """
+                SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill, bi.total_money, bi.item_discount  FROM bill bi
+                LEFT JOIN account ac ON ac.id = bi.id_account
+                LEFT JOIN account em ON em.id = bi.id_employees
+                LEFT JOIN customer cu ON cu.id = bi.id_customer
+                LEFT JOIN user usac ON usac.id = ac.id_user
+                LEFT JOIN user usem ON usem.id = em.id_user
+                WHERE  bi.id_account = :id   
+                AND ( :status  IS NULL
+                         OR :status LIKE ''
+                         OR bi.status_bill Like (:status))
+                ORDER BY bi.last_modified_date DESC
+                """, nativeQuery = true)
+    List<BillResponse> getAllBillUser(@Param("id") String id,@Param("status") String status);
 
         @Query(value = """
                 SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date DESC ) AS stt, bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName ,   bi.status_bill, bi.total_money, bi.item_discount, COUNT(bide.quantity) AS quantity FROM bill bi
@@ -190,4 +205,19 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     List<StatisticalProductDateResponse> getAllStatisticalProductDate(@Param("req") FindBillDateRequest req);
     Optional<Bill> findByCode(String code);
     Optional<Bill> findByCodeAndPhoneNumber(String code, String phoneNumber);
+
+    @Query(value = """
+     SELECT   bi.id as id,
+              bi.total_money as totalMoney,
+              bi.status_bill as statusBill,
+              (select group_concat(bd.id)  from bill_detail bd where bd.id_bill = bi.id) as billDetail
+     FROM bill bi
+               JOIN account ac ON ac.id = bi.id_account
+                WHERE  bi.id_account = :id   
+                AND ( :#{#req.status}  IS NULL
+                         OR :#{#req.status} LIKE ''
+                         OR bi.status_bill Like (:#{#req.status}))
+                ORDER BY bi.last_modified_date DESC
+                """, nativeQuery = true)
+    List<BillAccountResponse> getBillAccount(@Param("id") String id, StatusRequest req);
 }

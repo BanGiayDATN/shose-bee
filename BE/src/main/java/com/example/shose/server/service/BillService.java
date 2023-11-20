@@ -7,9 +7,11 @@ import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.dto.response.bill.BillAccountResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.response.bill.BillResponse;
@@ -24,6 +26,8 @@ import java.util.List;
 public interface BillService {
 
     List<BillResponse> getAll(String id, BillRequest request);
+
+    List<BillAccountResponse> getAllBillAccount(StatusRequest request);
 
     List<UserBillResponse> getAllUserInBill();
 

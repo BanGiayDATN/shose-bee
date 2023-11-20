@@ -7,10 +7,12 @@ import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.dto.response.bill.BillAccountResponse;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
@@ -21,6 +23,7 @@ import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.repository.*;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.PaymentsMethodService;
@@ -101,6 +104,8 @@ public class BillServiceImpl implements BillService {
     private PaymentsMethodService paymentsMethodService;
     @Autowired
     private NotificationRepository notificationRepository;
+    @Autowired
+    private ShoseSession shoseSession;
 
     @Override
     public List<BillResponse> getAll(String id,BillRequest request) {
@@ -124,6 +129,11 @@ public class BillServiceImpl implements BillService {
         }
         Optional<Account> user = accountRepository.findById(id);
         return billRepository.getAll(id,user.get().getRoles().name(), request);
+    }
+
+    @Override
+    public List<BillAccountResponse> getAllBillAccount(StatusRequest request) {
+        return billRepository.getBillAccount(shoseSession.getCustomer().getId(), request);
     }
 
     @Override
@@ -617,6 +627,7 @@ public class BillServiceImpl implements BillService {
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
+                    .promotion(x.getValuePromotion())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
 
@@ -722,6 +733,7 @@ public class BillServiceImpl implements BillService {
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
+                    .promotion(x.getValuePromotion())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
 

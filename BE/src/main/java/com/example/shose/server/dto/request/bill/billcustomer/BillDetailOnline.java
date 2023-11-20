@@ -13,5 +13,6 @@ public class BillDetailOnline {
     private String  idProductDetail;
     private BigDecimal price;
     private Integer quantity;
+    private BigDecimal valuePromotion;
 
 }

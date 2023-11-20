@@ -22,6 +22,13 @@ export class BillClientApi {
       url: `/client/bill/` + code + "/" + phoneNumber
     });
   };
+  static getBillAccount = (data) => {
+    return request({
+      method: "POST",
+      url: `/client/bill/status`,
+      data:data
+    });
+  };
   static fetchAllBillHistoryInBill = (id) => {
     return request({
       method: "GET",

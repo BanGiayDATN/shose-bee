@@ -180,7 +180,7 @@ function Payment() {
       onOk() {
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: totalBillToPay,
+            vnp_Ammount: totalBillToPay+moneyShip,
             billDetail: formBill.billDetail
           };
           PaymentClientApi.paymentVnpay(data).then(

@@ -1,6 +1,7 @@
 package com.example.shose.server.controller.client;
 
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.infrastructure.session.ShoseSession;
@@ -32,8 +33,10 @@ public class BillClientRestController {
     @Autowired
     private ShoseSession shoseSession;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    @PostMapping("/status")
+    public ResponseObject getAllBillAccount(@RequestBody StatusRequest request )  {
+        return new ResponseObject(billService.getAllBillAccount(request));
+    }
 
     @PostMapping("")
     public ResponseObject create(@RequestBody CreateBillCustomerOnlineRequest request)  {
