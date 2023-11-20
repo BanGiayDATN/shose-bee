@@ -379,7 +379,7 @@ function DetailBillClinet() {
             >
               <Row style={{ backgroundColor: "white", width: "100%" }}>
                 <TimeLine
-                  style={{ with: "100%" }}
+                  style={{ width: "100%" }}
                   listStatus={listStatus}
                   data={billHistory}
                   statusPresent={statusPresent}
@@ -666,14 +666,14 @@ function DetailBillClinet() {
               <Row style={{ width: "100%" }}>
                 {bill.statusBill != "TRA_HANG" ? (
                   <TabBillDetail
-                    style={{ with: "100%" }}
+                    style={{ width: "100%" }}
                     id={id}
                     dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
                   />
                 ) : (
                   <Tabs
                     type="card"
-                    style={{ with: "100%" }}
+                    style={{ width: "100%" }}
                     items={listtab.map((item) => {
                       return {
                         label: <span>{convertString(item)}</span>,
@@ -681,7 +681,7 @@ function DetailBillClinet() {
                         children: (
                           <TabBillDetail
                             id={id}
-                            style={{ with: "100%" }}
+                            style={{ width: "100%" }}
                             dataBillDetail={{ idBill: id, status: item }}
                           />
                         ),
