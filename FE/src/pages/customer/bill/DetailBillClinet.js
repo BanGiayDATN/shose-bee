@@ -1,4 +1,14 @@
-import { Button, Col, Form, Modal, Select, Result, Row, Table } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Modal,
+  Select,
+  Result,
+  Row,
+  Table,
+  Tabs,
+} from "antd";
 import TimeLine from "./TimeLine";
 import {
   addBillHistory,
@@ -16,13 +26,12 @@ import React from "react";
 import { useParams } from "react-router";
 import "./detail.css";
 import "react-toastify/dist/ReactToastify.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { BillClientApi } from "../../../api/customer/bill/billClient.api";
 import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
 import { toast } from "react-toastify";
+import TabBillDetail from "./tabBillDetail/TabBillDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -81,7 +90,10 @@ function DetailBillClinet() {
         BillClientApi.fetchAllPayMentlInBill(res.data.data.id).then((res) => {
           dispatch(getPaymentsMethod(res.data.data));
         });
-        BillClientApi.fetchAllBillDetailInBill({ idBill: res.data.data.id, status: "THANH_CONG" }).then((res) => {
+        BillClientApi.fetchAllBillDetailInBill({
+          idBill: res.data.data.id,
+          status: "THANH_CONG",
+        }).then((res) => {
           dispatch(getProductInBillDetail(res.data.data));
         });
       })
@@ -103,7 +115,10 @@ function DetailBillClinet() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
+  const listtab = ["THANH_CONG", "DA_HUY"];
+  const convertString = (key) => {
+    return key === "THANH_CONG" ? "Hoàn thành" : "Hoàn hàng";
+  };
   const columnsHistory = [
     {
       title: <div className="title-product">STT</div>,
@@ -648,158 +663,33 @@ function DetailBillClinet() {
                 padding: "12px",
               }}
             >
-              {detailProductInBill.map((item, index) => {
-                return (
-                  <Row style={{ marginTop: "10px", width: "100%" }}>
-                    <Col
-                      span={1}
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        fontSize: "21px",
-                        fontFamily: "500",
-                        margin: "auto",
-                      }}
-                    >
-                      {index + 1}
-                    </Col>
-                    <Col span={3}>
-                      <div
-                        style={{
-                          position: "relative",
-                          display: "inline-block",
-                        }}
-                      >
-                        <img
-                          src={item.image}
-                          alt="Ảnh sản phẩm"
-                          style={{
-                            width: "100px",
-                            borderRadius: "10%",
-                            height: "100px",
-                          }}
-                        />
-                        {item.promotion !== null && (
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: "0px",
-                              right: "0px",
-                              padding: "0px",
-                              cursor: "pointer",
-                              borderRadius: "50%",
-                            }}
-                          >
-                            <FontAwesomeIcon
-                              icon={faBookmark}
-                              style={{
-                                ...getPromotionColor(item.promotion),
-                                fontSize: "3.5em",
-                              }}
-                            />
-                            <span
-                              style={{
-                                position: "absolute",
-                                top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
-                                left: "50%", // Để "50%" nằm chính giữa biểu tượng
-                                transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
-                                fontSize: "0.8em",
-                                fontWeight: "bold",
-                                ...getPromotionStyle(item.promotion),
-                              }}
-                            >
-                              {`${item.promotion}%`}
-                            </span>
-                            <span
-                              style={{
-                                position: "absolute",
-                                top: "60%",
-                                left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
-                                transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
-                                fontSize: "0.8em",
-                                fontWeight: "bold",
-                                ...getPromotionStyle(item.promotion),
-                              }}
-                            >
-                              Giảm
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </Col>
-                    <Col span={15}>
-                      <Row>
-                        {" "}
-                        <span
-                          style={{
-                            fontSize: "19",
-                            fontWeight: "500",
-                            marginTop: "10px",
-                          }}
-                        >
-                          {item.productName}
-                        </span>{" "}
-                      </Row>
-                      <Row>
-                        {item.promotion != null ? (
-                          <span style={{ fontSize: "12px", marginTop: "4px" }}>
-                            <del>
-                              {formatCurrency(
-                                item.price / (1 - item.promotion / 100)
-                              )}
-                            </del>
-                          </span>
-                        ) : (
-                          <span></span>
-                        )}
-                        <span
-                          style={{
-                            color: "red",
-                            fontWeight: "500",
-                            marginLeft: "5px",
-                          }}
-                        >
-                          {item.price >= 1000
-                            ? formatCurrency(item.price)
-                            : item.price + " VND"}
-                        </span>{" "}
-                      </Row>
-                      <Row>
-                        <span style={{ fontSize: "12", marginTop: "10px" }}>
-                          Size: {item.nameSize}
-                        </span>{" "}
-                      </Row>
-                      <Row>
-                        <span style={{ fontSize: "12" }}>
-                          x {item.quantity}
-                        </span>{" "}
-                      </Row>
-                    </Col>
-                    <Col
-                      span={3}
-                      style={{ display: "flex", alignItems: "center" }}
-                    >
-                      <span
-                        style={{
-                          color: "red",
-                          fontWeight: "bold",
-                          marginBottom: "30px",
-                        }}
-                      >
-                        {item.price * item.quantity >= 1000
-                          ? (item.price * item.quantity).toLocaleString(
-                              "vi-VN",
-                              {
-                                style: "currency",
-                                currency: "VND",
-                              }
-                            )
-                          : item.price * item.quantity + " đ"}
-                      </span>{" "}
-                    </Col>
-                  </Row>
-                );
-              })}
+              <Row style={{ width: "100%" }}>
+                {bill.statusBill != "TRA_HANG" ? (
+                  <TabBillDetail
+                    style={{ with: "100%" }}
+                    id={id}
+                    dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
+                  />
+                ) : (
+                  <Tabs
+                    type="card"
+                    style={{ with: "100%" }}
+                    items={listtab.map((item) => {
+                      return {
+                        label: <span>{convertString(item)}</span>,
+                        key: item,
+                        children: (
+                          <TabBillDetail
+                            id={id}
+                            style={{ with: "100%" }}
+                            dataBillDetail={{ idBill: id, status: item }}
+                          />
+                        ),
+                      };
+                    })}
+                  />
+                )}
+              </Row>
             </Row>
             <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
               <Col span={10}>
