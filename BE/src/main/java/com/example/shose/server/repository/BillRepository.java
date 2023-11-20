@@ -231,7 +231,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 bi.address AS address,
                 bi.note AS note,
                 bi.completion_date AS completionDate,
-                bi.delivery_date AS deliveryDate
+                bi.delivery_date AS deliveryDate,
+                ac.id AS idAccount 
             FROM bill bi
             LEFT JOIN account ac ON ac.id = bi.id_account
             LEFT JOIN account em ON em.id = bi.id_employees

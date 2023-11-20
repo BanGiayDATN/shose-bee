@@ -79,6 +79,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -142,6 +143,7 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private ProductDetailGiveBackRepository productDetailGiveBackRepository;
+
 
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
@@ -230,14 +232,16 @@ public class BillServiceImpl implements BillService {
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
+                System.out.println(account.get());
+                System.out.println(request);
                 if (account.isPresent()) {
                     optional.get().setAccount(account.get());
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
-                    if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() +  poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                    if (request.getPoin() > 0) {
+                        int Pointotal = user.getPoints() - request.getPoin() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
                         user.setPoints(Pointotal);
-                    }else{
+                    } else {
                         user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
                     }
                     userReposiory.save(user);
@@ -254,8 +258,8 @@ public class BillServiceImpl implements BillService {
                     optional.get().setAccount(account.get());
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
-                    if(request.getPoin() > 0){
-                        int Pointotal = user.getPoints() - request.getPoin() ;
+                    if (request.getPoin() > 0) {
+                        int Pointotal = user.getPoints() - request.getPoin();
                         user.setPoints(Pointotal);
                     }
                     userReposiory.save(user);
@@ -527,11 +531,11 @@ public class BillServiceImpl implements BillService {
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-            if(bill.get().getAccount() != null){
+            if (bill.get().getAccount() != null) {
                 User user = bill.get().getAccount().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                    userReposiory.save(user);
+                Poin poin = configPoin.readJsonFile();
+                user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                userReposiory.save(user);
             }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -574,11 +578,11 @@ public class BillServiceImpl implements BillService {
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                if(bill.get().getAccount() != null){
+                if (bill.get().getAccount() != null) {
                     User user = bill.get().getAccount().getUser();
-                        Poin poin = configPoin.readJsonFile();
-                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                        userReposiory.save(user);
+                    Poin poin = configPoin.readJsonFile();
+                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    userReposiory.save(user);
                 }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -630,9 +634,9 @@ public class BillServiceImpl implements BillService {
             productDetailRepository.save(productDetail.get());
         });
         Account checkAccount = bill.get().getAccount();
-        if(checkAccount != null){
-            if(bill.get().getPoinUse() > 0){
-                User user =  checkAccount.getUser();
+        if (checkAccount != null) {
+            if (bill.get().getPoinUse() > 0) {
+                User user = checkAccount.getUser();
                 user.setPoints(user.getPoints() + bill.get().getPoinUse());
                 userReposiory.save(user);
             }
@@ -766,7 +770,7 @@ public class BillServiceImpl implements BillService {
         }
 
         Account account = accountRepository.findById(request.getIdAccount()).get();
-        if(request.getPoin() > 0 ){
+        if (request.getPoin() > 0) {
             User user = account.getUser();
             user.setPoints(user.getPoints() - request.getPoin());
             userReposiory.save(user);
@@ -977,6 +981,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
         Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
+        User customer = accountRepository.findById(updateBillGiveBack.getIdAccount()).get().getUser();
         Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
         if (bill == null) {
             throw new RestApiException("Không tìm thấy mã hóa đơn.");
@@ -1012,7 +1017,7 @@ public class BillServiceImpl implements BillService {
             billDetail.setPromotion(data.getPromotion() == null ? null : new BigDecimal(data.getPromotion()));
 
             // todo: create product detail give back
-            ProductDetailGiveBack giveBack =  new ProductDetailGiveBack();
+            ProductDetailGiveBack giveBack = new ProductDetailGiveBack();
             giveBack.setIdProductDetail(productDetail.getId());
             giveBack.setStatusBill(StatusBill.TRA_HANG);
             giveBack.setQuantity(data.getQuantity());
@@ -1020,11 +1025,14 @@ public class BillServiceImpl implements BillService {
             return billDetail;
         }).collect(Collectors.toList());
 
-        System.out.println(productDetailGiveBackList);
+        // todo: update points user by totalBillGiveBack
+        customer.setPoints( customer.getPoints() - totalBillGivenBack(updateBillDetailGiveBacks,bill.getTotalMoney()));
+        userReposiory.save(customer);
 
-        List<ProductDetailGiveBack> addProductDetailGiveBacks = productDetailGiveBackList.stream().map(data->{
+        // todo: create product detail give back
+        List<ProductDetailGiveBack> addProductDetailGiveBacks = productDetailGiveBackList.stream().map(data -> {
             ProductDetailGiveBack productDetailGiveBack = productDetailGiveBackRepository.getOneByIdProductDetail(data.getIdProductDetail());
-            if(productDetailGiveBack != null){
+            if (productDetailGiveBack != null) {
                 productDetailGiveBack.setQuantity(productDetailGiveBack.getQuantity() + data.getQuantity());
                 return productDetailGiveBack;
             }
@@ -1037,4 +1045,13 @@ public class BillServiceImpl implements BillService {
         return bill;
     }
 
+    private int totalBillGivenBack (List<UpdateBillDetailGiveBack> list , BigDecimal totalBill){
+        BigDecimal totalBillGive =  list.stream()
+                .map(UpdateBillDetailGiveBack::getTotalPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Tính tổng
+        Poin poin = configPoin.readJsonFile();
+        int pointGiveBack =  poin.ConvertMoneyToPoints(totalBill.subtract(totalBillGive));
+        return pointGiveBack;
+    }
 }

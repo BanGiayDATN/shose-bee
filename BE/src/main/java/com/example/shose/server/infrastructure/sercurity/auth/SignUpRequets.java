@@ -18,10 +18,15 @@ import lombok.ToString;
 @Builder
 @ToString
 public class SignUpRequets {
+
     @NotBlank(message = "Email trống")
     private String email;
+
     @NotBlank(message = "Mật khẩu trống")
     @Pattern(regexp = "^(?=.*[0-9])(.{8,})$", message = "Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 số")
     private String password;
+
     private Roles roles;
+
+    private String phoneNumber;
 }
