@@ -3,7 +3,6 @@ import {
   Col,
   Form,
   Input,
-  InputNumber,
   Modal,
   Row,
   Select,
@@ -19,14 +18,10 @@ import {
   getBill,
   getBillHistory,
   getPaymentsMethod,
-  getProductInBillDetail,
 } from "../../../app/reducer/Bill.reducer";
 import TimeLine from "./TimeLine";
 
-import { faBookmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TextArea from "antd/es/input/TextArea";
-import NumberFormat from "react-number-format";
 import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,10 +29,9 @@ import { AddressApi } from "../../../api/customer/address/address.api";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import "./detail.css";
-import ModalAddProductDetail from "./modal/ModalAddProductDetail";
-import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
 import ManagerBillDetail from "./tabBillDetail/ManagerBillDetail";
+import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -51,9 +45,6 @@ var listStatus = [
 
 function DetailBill() {
   const { id } = useParams();
-  const detailProductInBill = useSelector(
-    (state) => state.bill.bill.billDetail
-  );
   const billHistory = useSelector((state) => state.bill.bill.billHistory);
   const paymentsMethod = useSelector((state) => state.bill.bill.paymentsMethod);
   const bill = useSelector((state) => state.bill.bill.value);
@@ -87,13 +78,6 @@ function DetailBill() {
   };
 
   useEffect(() => {
-    const dataBillDetail= {
-      idBill: id,
-      status: ''
-    }
-    BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
-      dispatch(getProductInBillDetail(res.data.data));
-    });
     BillApi.fetchDetailBill(id).then((res) => {
       dispatch(getBill(res.data.data));
       console.log(res.data.data);
@@ -270,10 +254,6 @@ function DetailBill() {
         await PaymentsMethodApi.updateStatus(id, data).then((res) => {
           console.log(res.data.data);
         });
-        await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-          console.log(res.data.data);
-          dispatch(getProductInBillDetail(res.data.data));
-        });
         await PaymentsMethodApi.findByIdBill(id).then((res) => {
           setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
           dispatch(getPaymentsMethod(res.data.data));
@@ -303,6 +283,7 @@ function DetailBill() {
     });
     form.resetFields();
   };
+
   const handleOkPayMent = () => {
     if (statusBill.actionDescription.trim().length > 0) {
       if (
@@ -320,9 +301,6 @@ function DetailBill() {
         onOk: async () => {
           await PaymentsMethodApi.refundPayment(id, statusBill).then((res) => {
             dispatch(addPaymentsMethod(res.data.data));
-          });
-          await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
-            dispatch(getProductInBillDetail(res.data.data));
           });
           await PaymentsMethodApi.findByIdBill(id).then((res) => {
             setPayMentNo(
@@ -514,8 +492,6 @@ function DetailBill() {
   // begin detail product
 
   const [products, setProducts] = useState([]);
-
-  const [quantity, setQuantity] = useState(1);
 
   // begin modal product
   const [isModalProductOpen, setIsModalProductOpen] = useState(false);
@@ -1304,7 +1280,7 @@ function DetailBill() {
         ) : (
           <div></div>
         )}
-        <ManagerBillDetail id={id} status={bill.statusBill}></ManagerBillDetail>
+        <Row style={{width: "100%"}}><ManagerBillDetail  style={{width: "100%"}} id={id} status={bill.statusBill}></ManagerBillDetail></Row>
         <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
           <Col span={10}>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
@@ -1379,11 +1355,7 @@ function DetailBill() {
                   {formatCurrency(
                      Math.max(
                       0,
-                    detailProductInBill.reduce((accumulator, currentValue) => {
-                      return (
-                        accumulator + currentValue.price * currentValue.quantity
-                      );
-                    }, 0) +
+                      bill.totalMoney +
                       bill.moneyShip -
                       bill.itemDiscount)
                   )}

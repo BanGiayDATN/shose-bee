@@ -1,4 +1,4 @@
-import { Tabs } from "antd";
+import { Row, Tabs } from "antd";
 import React from "react";
 import TabBillDetail from "./TabBillDetail";
 
@@ -8,24 +8,25 @@ function ManagerBillDetail({ id, status }) {
     return key === "THANH_CONG" ? "Hoàn thành" : "Hoàn hàng";
   };
   return (
-    <div>
+    <Row style={{    width: "100%"}}>
       {status != 'TRA_HANG' ? (
-        <TabBillDetail dataBillDetail={{ idBill: id, status: "THANH_CONG" }} />
+        <TabBillDetail style={{with: "100%"}} dataBillDetail={{ idBill: id, status: "THANH_CONG" }} />
       ) : (
         <Tabs
           type="card"
+          style={{with: "100%"}}
           items={listtab.map((item) => {
             return {
               label: <span>{convertString(item)}</span>,
               key: item,
               children: (
-                <TabBillDetail dataBillDetail={{ idBill: id, status: item }} />
+                <TabBillDetail  style={{with: "100%"}} dataBillDetail={{ idBill: id, status: item }} />
               ),
             };
           })}
         />
       )}
-    </div>
+    </Row>
   );
 }
 

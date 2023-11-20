@@ -2,10 +2,9 @@ import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Col, Row } from "antd";
 import React, { useEffect, useState } from "react";
-import { BillApi } from "../../../../api/employee/bill/bill.api";
-import { useDispatch } from "react-redux";
+import { BillClientApi } from "../../../../api/customer/bill/billClient.api";
 
-function TabBillDetail({ dataBillDetail }) {
+function TabBillDetail({id, dataBillDetail }) {
   const getPromotionStyle = (promotion) => {
     return promotion >= 50 ? { color: "white" } : { color: "#000000" };
   };
@@ -21,11 +20,11 @@ function TabBillDetail({ dataBillDetail }) {
     return formatter.format(value);
   };
   useEffect(() => {
-    BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
+    BillClientApi.fetchAllBillDetailInBill(dataBillDetail).then((res) => {
       setBillDetail(res.data.data);
     });
   }, []);
-  const [billDetai, setBillDetail] = useState([]);
+  const [billDetail, setBillDetail] = useState([]);
   return (
     <Row style={{ width: "100%" }}>
       <Row
@@ -36,7 +35,7 @@ function TabBillDetail({ dataBillDetail }) {
           padding: "12px",
         }}
       >
-        {billDetai.map((item, index) => {
+        {billDetail.map((item, index) => {
           return (
             <Row style={{ marginTop: "10px", width: "100%" }}>
               <Col
