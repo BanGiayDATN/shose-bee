@@ -1020,8 +1020,6 @@ public class BillServiceImpl implements BillService {
             return billDetail;
         }).collect(Collectors.toList());
 
-        System.out.println(productDetailGiveBackList);
-
         List<ProductDetailGiveBack> addProductDetailGiveBacks = productDetailGiveBackList.stream().map(data->{
             ProductDetailGiveBack productDetailGiveBack = productDetailGiveBackRepository.getOneByIdProductDetail(data.getIdProductDetail());
             if(productDetailGiveBack != null){
