@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+
 @Setter
 @Getter
 @ToString
@@ -15,11 +17,13 @@ public class UpdateBillDetailGiveBack {
 
     private String idBillDetail;
 
-    private  String idProduct;
+    private String idProduct;
 
     private String price;
 
     private String promotion;
 
     private int quantity;
+
+    private BigDecimal totalPrice;
 }

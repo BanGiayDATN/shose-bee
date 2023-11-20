@@ -7,6 +7,9 @@ public interface BillGiveBackInformation {
     @Value("#{target.idBill}")
     String getIdBill();
 
+    @Value("#{target.idAccount}")
+    String getIdAccount();
+
     @Value("#{target.codeBill}")
     String getCodeBill();
 
