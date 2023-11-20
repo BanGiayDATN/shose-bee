@@ -15,5 +15,7 @@ public class UpdateBillGiveBack {
 
     private String idBill;
 
+    private String idAccount;
+
     private String note;
 }

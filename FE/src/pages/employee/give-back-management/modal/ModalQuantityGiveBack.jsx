@@ -29,6 +29,7 @@ export default function ModalQuantityGiveBack({
         visible={visible}
         onOk={handleOk}
         onCancel={onCancel}
+        style={{ borderRadius: "10px" }}
         footer={[
           <Button key="cancel" onClick={onCancel}>
             Hủy

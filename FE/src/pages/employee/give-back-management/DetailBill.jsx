@@ -538,10 +538,12 @@ export default function DetailBillGiveBack() {
         const updateBill = {
           note: values.note,
           idBill: bill.idBill,
+          idAccount: bill.idAccount,
         };
         const formData = new FormData();
         formData.append("data", JSON.stringify(dataProductGiveBack));
         formData.append("updateBill", JSON.stringify(updateBill));
+        console.log(dataProductGiveBack);
         BillApi.UpdateBillGiveBack(formData)
           .then(() => {
             nav("/give-back-management");

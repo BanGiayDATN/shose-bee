@@ -52,7 +52,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(optional.isPresent()){
             throw new RestApiException(Message.EMAIL_USER_EXIST);
         }
+        User checkUser = userReposiory.getOneUserByPhoneNumber(signUpRequets.getPhoneNumber());
+        if(checkUser != null){
+            throw new RestApiException("Số điện thoại đã được sử dụng.");
+        }
         User user = new User();
+        user.setEmail(signUpRequets.getEmail());
+        user.setPhoneNumber(signUpRequets.getPhoneNumber());
+        user.setStatus(Status.DANG_SU_DUNG);
         userReposiory.save(user);
 
         var check = accountRepository.getOneByEmail(signUpRequets.getEmail());
