@@ -151,7 +151,6 @@ public class BillRestController {
         }
         System.out.println(listDataBillDetail);
         return new ResponseObject(billService.UpdateBillGiveBack(updateBillGiveBack, listDataBillDetail));
-//        return null;
     }
 
 }

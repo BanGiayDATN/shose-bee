@@ -1,26 +1,31 @@
 import { Row, Tabs } from "antd";
 import React from "react";
 import TabBillDetail from "./TabBillDetail";
+import "./tabBillDetail.css";
 
 function ManagerBillDetail({ id, status }) {
-  const listtab = ["THANH_CONG", "DA_HUY"];
+  const listtab = [null, "THANH_CONG", "TRA_HANG"];
   const convertString = (key) => {
-    return key === "THANH_CONG" ? "Hoàn thành" : "Hoàn hàng";
+    return key === null
+      ? "Tất cả sản phẩm"
+      : key === "THANH_CONG"
+      ? "Sản phẩm mua thành công"
+      : "Sản phẩm trả hàng";
   };
   return (
-    <Row style={{    width: "100%"}}>
-      {status != 'TRA_HANG' ? (
-        <TabBillDetail style={{with: "100%"}} dataBillDetail={{ idBill: id, status: "THANH_CONG" }} />
+    <Row style={{ width: "100%" }}>
+      {status !== "TRA_HANG" ? (
+        <TabBillDetail dataBillDetail={{ idBill: id, status: "THANH_CONG" }} />
       ) : (
         <Tabs
           type="card"
-          style={{with: "100%"}}
+          className="tab-bill-detail"
           items={listtab.map((item) => {
             return {
               label: <span>{convertString(item)}</span>,
               key: item,
               children: (
-                <TabBillDetail  style={{with: "100%"}} dataBillDetail={{ idBill: id, status: item }} />
+                <TabBillDetail dataBillDetail={{ idBill: id, status: item }} />
               ),
             };
           })}

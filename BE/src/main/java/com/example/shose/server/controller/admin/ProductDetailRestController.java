@@ -108,5 +108,8 @@ public class ProductDetailRestController {
         return new ResponseObject(productDetailService.checkQuantityAndPriceByProducDetailByAll(request));
     }
 
-
+    @GetMapping("/quantity-product-detail-give-back")
+    public ResponseObject getQuantityProductDetailGiveBack(@RequestParam ("idProductDetail") String idProductDetail) {
+        return new ResponseObject(productDetailService.getQuantityProductDetailGiveBack(idProductDetail));
+    }
 }

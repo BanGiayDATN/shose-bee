@@ -975,11 +975,18 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
         Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
+
+        // todo: update points user by totalBillGiveBack
         User customer = accountRepository.findById(updateBillGiveBack.getIdAccount()).get().getUser();
+        if(customer != null){
+            customer.setPoints( customer.getPoints() - totalBillGivenBack(updateBillDetailGiveBacks,bill.getTotalMoney()));
+            userReposiory.save(customer);
+        }
         Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
         if (bill == null) {
             throw new RestApiException("Không tìm thấy mã hóa đơn.");
         }
+
         // todo update stattus bill
         bill.setStatusBill(StatusBill.TRA_HANG);
         billRepository.save(bill);
@@ -1019,9 +1026,7 @@ public class BillServiceImpl implements BillService {
             return billDetail;
         }).collect(Collectors.toList());
 
-        // todo: update points user by totalBillGiveBack
-        customer.setPoints( customer.getPoints() - totalBillGivenBack(updateBillDetailGiveBacks,bill.getTotalMoney()));
-        userReposiory.save(customer);
+
 
         // todo: create product detail give back
         List<ProductDetailGiveBack> addProductDetailGiveBacks = productDetailGiveBackList.stream().map(data -> {

@@ -200,7 +200,7 @@
   grid-template-columns: repeat(5, 1fr); /* 4 CardItem trong một hàng */
 }
 .ant-tabs-content-holder {
-  margin-top: 50px;
+  margin-top: 20px;
 }
 
 ::-webkit-scrollbar {

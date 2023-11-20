@@ -75,4 +75,11 @@ export class ProducDetailtApi {
       data: data,
     });
   };
+
+  static getQuantityProductDetailGiveBack = (idProductDetail) => {
+    return request({
+      method: "GET",
+      url: `/admin/product-detail/quantity-product-detail-give-back?idProductDetail=${idProductDetail}`,
+    });
+  };
 }

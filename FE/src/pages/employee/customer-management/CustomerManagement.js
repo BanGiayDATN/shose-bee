@@ -87,7 +87,7 @@ const CustomerManagement = () => {
     CustomerApi.fetchAll({ status }).then((res) => {
       const filteredCustomers = res.data.data
         .filter((customer) => {
-          const fullName = customer.fullName || ""; 
+          const fullName = customer.fullName || "";
           const phoneNumber = customer.phoneNumber || "";
           const toKeyword = keyword.toLowerCase();
 
@@ -263,7 +263,11 @@ const CustomerManagement = () => {
       key: "avata",
       render: (avata) => (
         <img
-          src={avata}
+          src={
+            avata == null
+              ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtp7SBv7iqt9a63k7ghTSJBMPKZF03MpmhDg&usqp=CAU"
+              : avata
+          }
           alt="Hình ảnh"
           style={{ width: "150px", height: "110px", borderRadius: "20px" }}
         />
