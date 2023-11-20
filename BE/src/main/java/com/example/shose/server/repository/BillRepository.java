@@ -131,8 +131,6 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             WHERE
                 completion_date >= :startOfDay AND completion_date <= :endOfDay
                 AND status_bill like 'THANH_CONG';                       
-                completion_date >= :currentDate
-                AND status_bill like 'THANH_CONG';
                           """, nativeQuery = true)
     List<StatisticalDayResponse> getAllStatisticalDay(@Param("startOfDay") Long startOfDay, @Param("endOfDay") Long endOfDay);
 
