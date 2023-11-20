@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.dto.response.user.GetByAccountResponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -160,8 +161,8 @@ public interface UserReposiory extends JpaRepository<User, String> {
     @Query("SELECT u FROM  User u WHERE u.phoneNumber =:phoneNumber")
     User getOneUserByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
-    @Query("SELECT u FROM  User u WHERE u.email =:email")
-    User getOneUserByEmail(@Param("email") String email);
+    @Query("SELECT u FROM  Account u WHERE u.email =:email")
+    Account getOneUserByEmail(@Param("email") String email);
 
     @Query(value = """
             SELECT
@@ -197,4 +198,5 @@ public interface UserReposiory extends JpaRepository<User, String> {
             """, nativeQuery = true)
     Optional<GetByAccountResponse> getByAccount(String idAccount);
 
+    Optional<User> findByEmail(String email);
 }

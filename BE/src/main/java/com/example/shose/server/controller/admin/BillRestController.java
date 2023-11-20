@@ -3,12 +3,21 @@ package com.example.shose.server.controller.admin;
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
+import com.example.shose.server.dto.request.bill.ChangeEmployeeRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
+import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
+import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +27,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author thangdt
@@ -52,18 +65,18 @@ public class BillRestController {
     }
 
     @PostMapping("")
-    public ResponseObject save(@RequestBody CreateBillOfflineRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.save(shoseSession.getEmployee().getId(),requests, request));
+    public ResponseObject save(@RequestBody CreateBillOfflineRequest request){
+        return  new ResponseObject(billService.save(shoseSession.getEmployee().getId(), request));
     }
 
     @PutMapping("/change-status/{id}")
-    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getEmployee().getId(), request, requests));
+    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getEmployee().getId(), request));
     }
 
     @PutMapping("/cancel-status/{id}")
-    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request, requests));
+    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request));
     }
 
     @GetMapping("/details-invoices-counter")
@@ -82,8 +95,8 @@ public class BillRestController {
     }
 
     @PutMapping("/change-status-bill")
-    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request, HttpServletRequest requests) {
-        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, shoseSession.getEmployee().getId()));
+    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request) {
+        return  new ResponseObject(billService.changeStatusAllBillByIds(request, shoseSession.getEmployee().getId()));
     }
 
     @GetMapping("/code-bill")
@@ -98,7 +111,46 @@ public class BillRestController {
 
 
     @GetMapping("/invoice/{id}")
-    public ResponseObject getInvoice(@PathVariable("id") String id, HttpServletRequest requests)  {
-        return new ResponseObject(billService.createFilePdf(id,requests));
+    public ResponseObject getInvoice(@PathVariable("id") String id)  {
+        return new ResponseObject(billService.createFilePdf(id));
     }
+
+
+    @PutMapping("/change-all-employee")
+    public ResponseObject ChangeAllEmployeeInBill(@RequestBody ChangeAllEmployeeRequest request) {
+        return  new ResponseObject(billService.ChangeAllEmployee(shoseSession.getEmployee().getId(), request));
+    }
+
+    @PutMapping("/change-employee")
+    public ResponseObject ChangeEmployeeInBill(@RequestBody ChangeEmployeeRequest request) {
+        return  new ResponseObject(billService.ChangeEmployee(shoseSession.getEmployee().getId(), request));
+    }
+
+    @GetMapping("/give-back-information")
+    public ResponseObject BillGiveBackInformation (@RequestParam("codeBill") String codeBill){
+        return new ResponseObject(billService.getBillGiveBackInformation(codeBill));
+    }
+
+    @GetMapping("/give-back")
+    public ResponseObject BillGiveBack (@RequestParam("idBill") String ibBill){
+        return new ResponseObject(billService.getBillGiveBack(ibBill));
+    }
+
+    @PostMapping("/give-back")
+    public ResponseObject UpdateBillGiveBack (@RequestParam("updateBill") String updateBill,
+                                              @RequestParam("data") String data){
+
+        Gson gson = new Gson();
+        UpdateBillGiveBack updateBillGiveBack = gson.fromJson(updateBill, UpdateBillGiveBack.class);
+
+        JsonArray jsonData = JsonParser.parseString(data).getAsJsonArray();
+        List<UpdateBillDetailGiveBack> listDataBillDetail =  new ArrayList<>();
+        for (JsonElement dataBillDetail : jsonData) {
+            UpdateBillDetailGiveBack detail = gson.fromJson(dataBillDetail, UpdateBillDetailGiveBack.class);
+            listDataBillDetail.add(detail);
+        }
+        System.out.println(listDataBillDetail);
+        return new ResponseObject(billService.UpdateBillGiveBack(updateBillGiveBack, listDataBillDetail));
+    }
+
 }

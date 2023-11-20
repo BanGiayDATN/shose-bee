@@ -2,8 +2,6 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import { AppConfig } from "./AppConfig";
 import { ToastContainer } from "react-toastify";
-import NotFound from "./pages/403";
-import NotAuthorized from "./pages/404";
 import AuthGuard from "./guard/AuthGuard";
 import GuestGuard from "./guard/GuestGuard";
 import DashBoardCustomer from "./component/customer/DashBoardCustomer";
@@ -70,6 +68,11 @@ import Policy from "./pages/customer/policy/Policy";
 import SignUp from "./pages/customer/signup/SignUp";
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
+
+import GiveBackManagement from "./pages/employee/give-back-management/GiveBackManagement";
+import NotFound from "./pages/404";
+import NotAuthorized from "./pages/403";
+import DetailBillGiveBack from "./pages/employee/give-back-management/DetailBill";
 function App() {
 
 
@@ -80,7 +83,7 @@ function App() {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }, [pathname]);
   const [showOnTop, setShowOnTop] = useState(false);
@@ -93,7 +96,7 @@ function App() {
         setShowOnTop(false);
       }
     };
- 
+
     // Gắn sự kiện cuộn vào cửa sổ
     window.addEventListener("scroll", handleScroll);
     // Gỡ bỏ sự kiện cuộn khi component bị hủy
@@ -182,13 +185,20 @@ function App() {
 
   return (
     <div className="App">
-      {showOnTop ? (<div className="button-on-top"
-        onClick={() => {
-          // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
-          scrollToTop() // Cuộn mượt lên đầu trang
-        }}
-      ><FontAwesomeIcon style={{ color: "white", fontSize: 20 }} icon={faArrowUp}
-        /></div>) : (null)}
+      {showOnTop ? (
+        <div
+          className="button-on-top"
+          onClick={() => {
+            // Khi nút lên đầu trang được nhấn, cuộn trang lên đầu
+            scrollToTop(); // Cuộn mượt lên đầu trang
+          }}
+        >
+          <FontAwesomeIcon
+            style={{ color: "white", fontSize: 20 }}
+            icon={faArrowUp}
+          />
+        </div>
+      ) : null}
 
       {isLoading && (
         <div className="loading-overlay">
@@ -208,11 +218,10 @@ function App() {
         pauseOnHover
       />
       <BrowserRouter basename={AppConfig.routerBase}>
-
         <Routes>
           <Route path="*" element={<NotFound />} />
-          <Route path="/layout-guard-roles" element={<NotAuthorized />} />
           <Route path="/" element={<Navigate replace to="/home" />} />
+          <Route path="/not-authorization" element={<NotAuthorized />} />
           <Route
             path="/login"
             element={
@@ -428,11 +437,31 @@ function App() {
             }
           />
           <Route
+            path="/detail-give-back/:id"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <DetailBillGiveBack />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
             path="/bill-management"
             element={
               <AuthGuard>
                 <DashBoardEmployee>
                   <BillManagement />
+                </DashBoardEmployee>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/give-back-management"
+            element={
+              <AuthGuard>
+                <DashBoardEmployee>
+                  <GiveBackManagement />
                 </DashBoardEmployee>
               </AuthGuard>
             }

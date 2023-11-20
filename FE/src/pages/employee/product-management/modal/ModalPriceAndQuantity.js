@@ -61,7 +61,7 @@ export default function ModalPriceAndQuantity({ open, onCancel, onUpdate }) {
             },
           ]}
         >
-          <InputNumber />
+          <InputNumber style={{ width: "100%" }} />
         </Form.Item>
         <Form.Item
           label="Đơn giá"

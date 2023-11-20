@@ -1,5 +1,6 @@
 package com.example.shose.server.controller.admin;
 
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
 import com.example.shose.server.service.BillDetailService;
@@ -27,9 +28,9 @@ public class BillDetailRestController {
     @Autowired
     private BillDetailService billDetailService;
 
-    @GetMapping("/{id}")
-    public ResponseObject findAllByIdBill(@PathVariable("id") String id){
-        return  new ResponseObject(billDetailService.findAllByIdBill(id));
+    @GetMapping("")
+    public ResponseObject findAllByIdBill(BillDetailRequest request){
+        return  new ResponseObject(billDetailService.findAllByIdBill(request));
     }
 
     @GetMapping("/detail/{id}")

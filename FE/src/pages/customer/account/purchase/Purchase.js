@@ -1,11 +1,7 @@
 import { Tabs } from "antd";
 import React, {useEffect, useState} from "react";
 import TabAllBill from "./tabscontent/TabAllBill";
-import TabChoThanhToan from "./tabscontent/TabChoThanhToan";
-import TabVanChuyen from "./tabscontent/TabVanChuyen";
-import TabChoGiaoHang from "./tabscontent/TabChoGiaoHang";
-import TabHoanThanh from "./tabscontent/TabHoanThanh";
-import TabHuy from "./tabscontent/TabHuy";
+
 import {BillClientApi} from "../../../../api/customer/bill/billClient.api";
 
 export default function Purchase() {
@@ -27,7 +23,7 @@ export default function Purchase() {
     BillClientApi.getBillAccount({ status }).then((res) => {
       const data = res.data.data;
       const promises = data.map((item) => {
-        return BillClientApi.fetchAllBillDetailInBill(item.id).then((res) => ({
+        return BillClientApi.fetchAllBillDetailByIdBill(item.id).then((res) => ({
           id: item.id,
           totalMoney: item.totalMoney,
           statusBill: item.statusBill,
@@ -40,6 +36,9 @@ export default function Purchase() {
       });
     });
   }, [key]);
+  useEffect(() => {
+    console.log(listBill)
+  }, [listBill]);
   const onChange = (key) => {
     setKey(key)
     console.log(key);

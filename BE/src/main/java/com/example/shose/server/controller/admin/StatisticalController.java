@@ -2,7 +2,10 @@ package com.example.shose.server.controller;
 
 import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.statistical.FindBillDateRequest;
+import com.example.shose.server.dto.response.statistical.StatisticalBestSellingProductResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalProductDateResponse;
 import com.example.shose.server.service.StatisticalService;
 import com.example.shose.server.util.ResponseObject;
@@ -48,8 +51,8 @@ public class StatisticalController {
         return new ResponseObject(statisticalService.getAllStatisticalStatusBill());
     }
     @GetMapping("/best-selling-product")
-    public ResponseObject statisticalBestSellingProduct() {
-        return new ResponseObject(statisticalService.getAllStatisticalBestSellingProduct());
+    public ResponseObject statisticalBestSellingProduct(final FindBillDateRequest req) {
+        return new ResponseObject(statisticalService.getAllStatisticalBestSellingProduct(req));
     }
     @GetMapping("/bill-date")
     public ResponseEntity<?> statisticalBillDate(final FindBillDateRequest req) {
@@ -62,5 +65,31 @@ public class StatisticalController {
         mapData.put("dataBill", listBillDay);
         mapData.put("dataProduct", listProductDay);
         return new ResponseEntity<>(mapData, HttpStatus.OK);
+    }
+
+    @GetMapping("/growth")
+    public ResponseEntity<?> statisticalGrowth() {
+        List<StatisticalDayResponse> listDay = statisticalService.getAllStatisticalDay();
+        List<StatisticalDayResponse> listDayPrevious = statisticalService.getAllStatisticalDayPrevious();
+        List<StatisticalMonthlyResponse> listMonth = statisticalService.getAllStatisticalMonth();
+        List<StatisticalMonthlyResponse> listMonthPrevious = statisticalService.getAllStatisticalMonthPrevious();
+        List<StatisticalMonthlyResponse> listYear = statisticalService.getAllStatisticalYear();
+        List<StatisticalMonthlyResponse> listYearPrevious = statisticalService.getAllStatisticalYearPrevious();
+
+        Map<String, Object> mapData = new HashMap<>();
+
+        mapData.put("listDay", listDay);
+        mapData.put("listDayPrevious", listDayPrevious);
+        mapData.put("listMonth", listMonth);
+        mapData.put("listMonthPrevious", listMonthPrevious);
+        mapData.put("listYear", listYear);
+        mapData.put("listYearPrevious", listYearPrevious);
+
+        return new ResponseEntity<>(mapData, HttpStatus.OK);
+    }
+
+    @GetMapping("/stock")
+    public ResponseObject statisticalStock() {
+        return new ResponseObject(statisticalService.getAllStatisticalProductStock());
     }
 }

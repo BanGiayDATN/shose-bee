@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {BillClientApi} from "../../../../../api/customer/bill/billClient.api";
+
 import "./style.css"
 
 export default function TabAllBill({listBill}) {

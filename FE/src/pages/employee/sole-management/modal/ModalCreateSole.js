@@ -18,7 +18,6 @@ const ModalCreateSole = ({ visible, onCancel }) => {
   // Trong hàm handleOk, chúng ta gọi form.validateFields() để kiểm tra và lấy giá trị
   // hàm onCreate để xử lý dữ liệu
   const handleOk = () => {
-    console.log(form);
     form
       .validateFields()
       .then((values) => {

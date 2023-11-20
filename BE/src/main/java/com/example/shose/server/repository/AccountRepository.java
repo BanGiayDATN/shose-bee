@@ -36,7 +36,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email AND ac.user.phoneNumber =:phoneNumber")
     Account resetPassword(@Param("email") String email , @Param("phoneNumber") String phoneNumber);
 
-    @Query(value = "SELECT ac.id, us.full_name AS fullName, us.phone_number AS phoneNumber,  us.email AS email" +
+    @Query(value = "SELECT ac.id, us.full_name AS fullName, us.phone_number AS phoneNumber,  us.email AS email, us.points" +
             " FROM account ac\n" +
             "LEFT JOIN user us ON us.id = ac.id_user\n" +
             "LEFT JOIN bill bi ON bi.id_account = ac.id\n" +
@@ -52,4 +52,5 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email AND ac.password =:password")
     Account getOneByEmailPassword(@Param("email") String email , @Param("password") String password);
 
+    Optional<Account> findByUser(User user);
 }

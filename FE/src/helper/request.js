@@ -32,12 +32,12 @@ request.interceptors.response.use(
     return response;
   },
   (error) => {
-    deleteToken();
     if (
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
       window.location.href = "/not-authorization";
+      deleteToken();
       return;
     }
     if (error.response != null && error.response.status === 400) {

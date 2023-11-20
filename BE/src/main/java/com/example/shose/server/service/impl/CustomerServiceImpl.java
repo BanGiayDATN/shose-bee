@@ -77,7 +77,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
         }
         //check email có tồn tại không
-        User checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
+        Account checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
         if (checkUserEmail != null) {
             throw new RestApiException(Message.EMAIL_USER_EXIST);
         }
@@ -237,8 +237,8 @@ public class CustomerServiceImpl implements CustomerService {
 
         User user = User.builder()
                 .fullName(request.getFullName())
+                .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
-//                .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .gender(request.getGender())
                 .points(0)
@@ -263,5 +263,10 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userReposiory.findByEmail(email).get();
     }
 }

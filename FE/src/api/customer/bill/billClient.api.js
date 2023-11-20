@@ -35,10 +35,18 @@ export class BillClientApi {
       url: `/client/bill-history/` + id
     });
   };
-  static fetchAllBillDetailInBill = (id) => {
+  static fetchAllBillDetailInBill = (data) => {
     return request({
       method: "GET",
-      url: `/client/bill-detail/` + id
+      url: `/client/bill-detail`,
+      params: data,
+
+    });
+  };
+  static fetchAllBillDetailByIdBill = (id) => {
+    return request({
+      method: "GET",
+      url: `/client/bill-detail/findByIdBill/${id}`,
     });
   };
 

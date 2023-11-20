@@ -1,5 +1,6 @@
 package com.example.shose.server.service.impl;
 
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
@@ -51,8 +52,13 @@ public class BillDetailServiceImpl implements BillDetailService {
     private FormUtils formUtils = new FormUtils();
 
     @Override
-    public List<BillDetailResponse> findAllByIdBill(String idBill) {
-        return billDetailRepository.findAllByIdBill(idBill);
+    public List<BillDetailResponse> findAllByIdBill(BillDetailRequest request) {
+        return billDetailRepository.findAllByIdBill(request);
+    }
+
+    @Override
+    public List<BillDetailResponse> findAllByIdBill(String id) {
+        return billDetailRepository.findByIdBill(id);
     }
 
     @Override
@@ -104,10 +110,6 @@ public class BillDetailServiceImpl implements BillDetailService {
     public String create(CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
         Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
-        Optional<Size> size = sizeRepository.findByName(request.getSize());
-        if (!size.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
         if(!bill.isPresent()){
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
@@ -135,11 +137,8 @@ public class BillDetailServiceImpl implements BillDetailService {
     public String update(String id, CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
         Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
-        Optional<Size> size = sizeRepository.findByName(request.getSize());
         Optional<BillDetail> billDetail = billDetailRepository.findById(id);
-        if (!size.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
-        }
+
         if(!bill.isPresent()){
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }

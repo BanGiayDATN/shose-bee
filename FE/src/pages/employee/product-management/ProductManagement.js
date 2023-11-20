@@ -21,7 +21,6 @@ const ProductManagement = () => {
   const [listProduct, setListProduct] = useState([]);
   const [modaleDetail, setModalDetail] = useState(false);
 
-
   const handleSubmitSearch = (event) => {
     event.preventDefault();
     ProducDetailtApi.fetchAll(selectedValues).then((res) => {
@@ -56,7 +55,6 @@ const ProductManagement = () => {
     }));
   };
 
-
   const handleChangeValueQuantity = (value) => {
     const [minQuantity, maxQuantity] = value;
 
@@ -67,7 +65,6 @@ const ProductManagement = () => {
     }));
   };
 
-
   const handleInputChangeSearch = (name, value) => {
     setSelectedValues((prevSearchCategory) => ({
       ...prevSearchCategory,
@@ -77,7 +74,6 @@ const ProductManagement = () => {
   const handleKeywordChange = (event) => {
     const { value } = event.target;
     handleInputChangeSearch("keyword", value);
-
   };
 
   const loadData = () => {

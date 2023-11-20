@@ -354,14 +354,17 @@ const PromotionManagement = () => {
     <div className="promotion">
       <h1 className="title-promotion">
         {" "}
-        <FontAwesomeIcon icon={faKaaba} /> Quản lý khuyến mại
+        <FontAwesomeIcon icon={faKaaba} /> Quản lý đợt giảm giá
       </h1>
 
       <div className="form-search">
-        <h3>
-          <FontAwesomeIcon icon={faFilter} style={{ fontSize: "30px" }} /> Bộ
-          lọc
-        </h3>
+        <Row>
+          <FontAwesomeIcon
+            icon={faFilter}
+            style={{ fontSize: "26px", marginRight: "10px" }}
+          />
+          <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
+        </Row>
         <hr></hr>
 
         <div className="row-search">
@@ -610,12 +613,15 @@ const PromotionManagement = () => {
           </Button>
         </div>
       </div>
-
-      <h3>
-        {" "}
-        <FontAwesomeIcon icon={faListAlt} style={{ fontSize: "30px" }} /> Danh
-        sách khuyến mại{" "}
-      </h3>
+      <Row>
+        <FontAwesomeIcon
+          icon={faListAlt}
+          style={{ fontSize: "26px", marginRight: "10px" }}
+        />
+        <span style={{ fontSize: "18px", fontWeight: "500" }}>
+          Danh sách đợt giảm giá
+        </span>
+      </Row>
       <hr></hr>
       <div className="manager-promotion">
         <Link to="/create-promotion-management">
