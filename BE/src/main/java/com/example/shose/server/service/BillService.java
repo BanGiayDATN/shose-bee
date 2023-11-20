@@ -41,25 +41,25 @@ public interface BillService {
 
     boolean updateBillWait(CreateBillOfflineRequest request);
 
-    Bill  save(String id,HttpServletRequest requests,  CreateBillOfflineRequest request);
+    Bill  save(String id, CreateBillOfflineRequest request);
 
     Bill updateBillOffline(String id, UpdateBillRequest bill);
 
     Bill detail(String id);
 
-    Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request, HttpServletRequest requests);
+    Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request);
 
     int countPayMentPostpaidByIdBill(String id);
 
-    boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, HttpServletRequest requests, String idEmployees);
+    boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, String idEmployees);
 
-    Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request, HttpServletRequest requests);
+    Bill cancelBill(String id,  String idEmployees,ChangStatusBillRequest request);
 
     Bill createBillCustomerOnlineRequest( CreateBillCustomerOnlineRequest request) ;
 
     Bill createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
-    boolean createFilePdf(String idBill, HttpServletRequest request);
+    boolean createFilePdf(String idBill);
 
     Bill findByCode(String code, String phoneNumber);
 

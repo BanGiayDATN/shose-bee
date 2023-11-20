@@ -30,7 +30,7 @@ public interface PaymentsMethodService {
 
     boolean refundPayment(String idUser, String codeBill, CreatePaymentsMethodRequest request);
 
-    boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response, HttpServletRequest requests);
+    boolean paymentSuccess( String idEmployees,PayMentVnpayResponse response);
 
     boolean changeQuantityProduct(QuantityProductPaymentRequest request);
 

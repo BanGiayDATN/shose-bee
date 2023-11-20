@@ -1,5 +1,6 @@
 package com.example.shose.server.controller.client;
 
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.service.BillDetailService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ public class BillDetailClinetRestControlle {
     @Autowired
     private BillDetailService billDetailService;
 
-    @GetMapping("/{id}")
-    public ResponseObject findAllByIdBill(@PathVariable("id") String id){
-        return  new ResponseObject(billDetailService.findAllByIdBill(id));
+    @GetMapping("")
+    public ResponseObject findAllByIdBill(BillDetailRequest request){
+        return  new ResponseObject(billDetailService.findAllByIdBill(request));
     }
 }

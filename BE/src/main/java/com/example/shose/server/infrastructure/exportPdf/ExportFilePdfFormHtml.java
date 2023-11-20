@@ -1,5 +1,6 @@
 package com.example.shose.server.infrastructure.exportPdf;
 
+import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.response.bill.InvoiceItemResponse;
 import com.example.shose.server.dto.response.bill.InvoicePaymentResponse;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
@@ -15,11 +16,13 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -44,6 +47,9 @@ public class ExportFilePdfFormHtml {
 
     @Autowired
     private PaymentsMethodRepository paymentsMethodRepository;
+
+    @Autowired
+    private ServletContext servletContext;
 
     public Context setData(InvoiceResponse invoice) {
 
@@ -71,12 +77,16 @@ public class ExportFilePdfFormHtml {
         return context;
     }
 
-    public String htmlToPdf(String processedHtml, HttpServletRequest request, String code) {
+    public String htmlToPdf(String processedHtml, String code) {
 
 //        Principal principal = request.getUserPrincipal();
 //        String downloadPath = principal.getPath();
         String downloadPath = System.getProperty("user.home") + "/Downloads";
 
+        String appRoot = servletContext.getRealPath("/");
+
+        // Xây dựng đường dẫn tới thư mục download của người dùng
+        String userDownloadDirectoryPath = appRoot + File.separator + "user" + File.separator + "Downloads";
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         try {
@@ -118,7 +128,7 @@ public class ExportFilePdfFormHtml {
 
 
     public InvoiceResponse getInvoiceResponse(Bill bill) {
-        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(bill.getId());
+        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.getId(), "THANH_CONG"));
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill);
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
 

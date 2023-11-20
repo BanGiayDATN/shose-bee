@@ -81,7 +81,7 @@ function DetailBillClinet() {
         BillClientApi.fetchAllPayMentlInBill(res.data.data.id).then((res) => {
           dispatch(getPaymentsMethod(res.data.data));
         });
-        BillClientApi.fetchAllBillDetailInBill(res.data.data.id).then((res) => {
+        BillClientApi.fetchAllBillDetailInBill({ idBill: res.data.data.id, status: "THANH_CONG" }).then((res) => {
           dispatch(getProductInBillDetail(res.data.data));
         });
       })

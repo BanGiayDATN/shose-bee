@@ -66,8 +66,8 @@ public class PaymentsMethodRestController {
     }
 
     @GetMapping("/payment-success")
-    public ResponseObject pay(final PayMentVnpayResponse response, HttpServletRequest requests){
-    return new ResponseObject(paymentsMethodService.paymentSuccess(shoseSession.getEmployee().getId(), response, requests)) ;
+    public ResponseObject pay(final PayMentVnpayResponse response){
+    return new ResponseObject(paymentsMethodService.paymentSuccess(shoseSession.getEmployee().getId(), response)) ;
     }
 
     @PostMapping("/refund-payment/{id}")

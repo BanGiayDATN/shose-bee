@@ -65,18 +65,18 @@ public class BillRestController {
     }
 
     @PostMapping("")
-    public ResponseObject save(@RequestBody CreateBillOfflineRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.save(shoseSession.getEmployee().getId(),requests, request));
+    public ResponseObject save(@RequestBody CreateBillOfflineRequest request){
+        return  new ResponseObject(billService.save(shoseSession.getEmployee().getId(), request));
     }
 
     @PutMapping("/change-status/{id}")
-    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getEmployee().getId(), request, requests));
+    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getEmployee().getId(), request));
     }
 
     @PutMapping("/cancel-status/{id}")
-    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
-        return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request, requests));
+    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
+        return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request));
     }
 
     @GetMapping("/details-invoices-counter")
@@ -95,8 +95,8 @@ public class BillRestController {
     }
 
     @PutMapping("/change-status-bill")
-    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request, HttpServletRequest requests) {
-        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, shoseSession.getEmployee().getId()));
+    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request) {
+        return  new ResponseObject(billService.changeStatusAllBillByIds(request, shoseSession.getEmployee().getId()));
     }
 
     @GetMapping("/code-bill")
@@ -111,8 +111,8 @@ public class BillRestController {
 
 
     @GetMapping("/invoice/{id}")
-    public ResponseObject getInvoice(@PathVariable("id") String id, HttpServletRequest requests)  {
-        return new ResponseObject(billService.createFilePdf(id,requests));
+    public ResponseObject getInvoice(@PathVariable("id") String id)  {
+        return new ResponseObject(billService.createFilePdf(id));
     }
 
 
