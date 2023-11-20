@@ -129,6 +129,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             FROM
                 bill
             WHERE
+                completion_date >= :startOfDay AND completion_date <= :endOfDay
+                AND status_bill like 'THANH_CONG';                       
                 completion_date >= :currentDate
                 AND status_bill like 'THANH_CONG';
                           """, nativeQuery = true)
@@ -146,29 +148,28 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     List<StatisticalStatusBillResponse> getAllStatisticalStatusBill();
 
     @Query(value = """
-            SELECT
-                i.name AS image,
-                p.name  AS nameProduct,
-                pd.price AS price,
-                SUM(bd.quantity) AS sold,
-                SUM(bd.price) AS sales
-            FROM bill_detail bd
-                     JOIN bill b on bd.id_bill = b.id
-                     JOIN product_detail pd on pd.id = bd.id_product_detail
-                     JOIN product p on pd.id_product = p.id
-                     JOIN (SELECT id_product_detail, MAX(id) AS max_image_id
-                           FROM image
-                           GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
-                     LEFT JOIN image i ON max_images.max_image_id = i.id
-            WHERE bd.id_product_detail IS NOT NULL
-                 AND b.status_bill like 'THANH_CONG'
-                 AND b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
-            GROUP BY image, nameProduct, price
-            ORDER BY sold desc
-            LIMIT 9
-                                               """, nativeQuery = true)
-    List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct(
-            @Param("startOfMonth") Long startOfMonth, @Param("endOfMonth") Long endOfMonth);
+   SELECT
+       i.name AS image,
+       p.name  AS nameProduct,
+       pd.price AS price,
+       SUM(bd.quantity) AS sold,
+       SUM(bd.price) AS sales
+   FROM bill_detail bd
+            JOIN bill b on bd.id_bill = b.id
+            JOIN product_detail pd on pd.id = bd.id_product_detail
+            JOIN product p on pd.id_product = p.id
+            JOIN (SELECT id_product_detail, MAX(id) AS max_image_id
+                  FROM image
+                  GROUP BY id_product_detail) max_images ON pd.id = max_images.id_product_detail
+            LEFT JOIN image i ON max_images.max_image_id = i.id
+   WHERE bd.id_product_detail IS NOT NULL 
+        AND b.status_bill like 'THANH_CONG'
+        AND b.completion_date >= :#{#req.startDate} AND b.completion_date <= :#{#req.endDate}
+   GROUP BY image, nameProduct, price
+   ORDER BY sold desc
+   LIMIT 9
+                                      """, nativeQuery = true)
+    List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct(@Param("req") FindBillDateRequest req);
 
     @Query(value = """
             SELECT
