@@ -9,18 +9,18 @@ function ManagerBillDetail({ id, status }) {
   };
   return (
     <Row style={{    width: "100%"}}>
-      {status != 'TRA_HANG' ? (
-        <TabBillDetail style={{with: "100%"}} dataBillDetail={{ idBill: id, status: "THANH_CONG" }} />
+      {status == 'TRA_HANG' ? (
+        <TabBillDetail style={{width: "100%"}} dataBillDetail={{ idBill: id, status: "THANH_CONG" }} />
       ) : (
         <Tabs
           type="card"
-          style={{with: "100%"}}
+          style={{width: "100%"}}
           items={listtab.map((item) => {
             return {
               label: <span>{convertString(item)}</span>,
               key: item,
               children: (
-                <TabBillDetail  style={{with: "100%"}} dataBillDetail={{ idBill: id, status: item }} />
+                <TabBillDetail  style={{width: "100%"}} dataBillDetail={{ idBill: id, status: item }} />
               ),
             };
           })}
