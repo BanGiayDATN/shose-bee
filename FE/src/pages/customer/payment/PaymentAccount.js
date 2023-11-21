@@ -106,9 +106,8 @@ function PaymentAccount() {
     var tongTienThanhToan =  formBill.billDetail.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0) + moneyShip;
-    if (tongTienGiam >= tongTienThanhToan) {
-        var soDiemCanThanhToan = Math.floor(tongTienThanhToan / dataPoin.exchangeRateMoney);
-
+    if (tongTienGiam > tongTienThanhToan) {
+        var soDiemCanThanhToan = Math.floor( (tongTienThanhToan - voucher.discountPrice) / dataPoin.exchangeRateMoney);
         return soDiemCanThanhToan;
     } else {
         return account?.points; 
