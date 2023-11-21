@@ -177,6 +177,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<BillAccountResponse> getAllBillAccount(StatusRequest request) {
+        System.out.println(shoseSession.getCustomer().getId());
         return billRepository.getBillAccount(shoseSession.getCustomer().getId(), request);
     }
 

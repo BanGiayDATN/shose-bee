@@ -1,19 +1,19 @@
 import {
   EnvironmentOutlined,
   FileSearchOutlined,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./style-header.css";
+import { deleteToken } from "../../../helper/useCookies";
 function SalesHeader() {
-const page = useNavigate()
   const idUser = sessionStorage.getItem("idAccount");
   const [openInfor, setOpenInfo] = useState(false);
 
   useEffect(() => {
     console.log(idUser);
-  }, [])
+  }, []);
   const handleMenuHover = () => {
     setOpenInfo(true);
   };
@@ -22,18 +22,20 @@ const page = useNavigate()
     setOpenInfo(false);
   };
 
-
-
   const logout = () => {
+    deleteToken();
     sessionStorage.removeItem("idAccount");
-    window.location.href = "/home"
+    window.location.href = "/home";
   };
 
   return (
     <div className="header">
       <div className="content-header-home">
         <Link to="/sreach-bill" className="title-header">
-          <span className="header-icon"><FileSearchOutlined /></span>  Tra cứu đơn hàng
+          <span className="header-icon">
+            <FileSearchOutlined />
+          </span>{" "}
+          Tra cứu đơn hàng
         </Link>
       </div>
 
@@ -42,30 +44,42 @@ const page = useNavigate()
           <span className="header-icon"><EnvironmentOutlined /></span> Tìm kiếm cửa hàng
         </Link>
       </div> */}
-      <div className="content-header-account"
+      <div
+        className="content-header-account"
         onMouseEnter={handleMenuHover}
         onMouseLeave={handleMenuLeave}
       >
-
-        <Link to={idUser === null ? "/login" : "#"} className="title-header-account">
-          <span className="header-icon"><UserOutlined /></span> {idUser === null ? "Đăng nhập" : "Thông tin"}
+        <Link
+          to={idUser === null ? "/login" : "#"}
+          className="title-header-account"
+        >
+          <span className="header-icon">
+            <UserOutlined />
+          </span>{" "}
+          {idUser === null ? "Đăng nhập" : "Thông tin"}
         </Link>
         {openInfor && idUser !== null ? (
-          <ul className="dropdown-list" >
-            <li className="dropdown-item" onClick={()=> window.location.href = "/profile"}>
+          <ul className="dropdown-list">
+            <li
+              className="dropdown-item"
+              onClick={() => (window.location.href = "/profile")}
+            >
               Tài khoản của tôi
             </li>
-            <li className="dropdown-item" onClick={()=>  window.location.href = "/purchase"} >
+            <li
+              className="dropdown-item"
+              onClick={() => (window.location.href = "/purchase")}
+            >
               Đơn mua
             </li>
             <li className="dropdown-item" onClick={logout}>
               Đăng xuất
             </li>
           </ul>
-        ) : ""}
+        ) : (
+          ""
+        )}
       </div>
-
-
     </div>
   );
 }

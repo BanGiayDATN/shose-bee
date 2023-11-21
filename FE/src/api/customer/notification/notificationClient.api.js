@@ -1,20 +1,20 @@
-import { request } from "../../../helper/request";
+import { requestCustomer } from "../../../helper/request";
 
 export class NotificationClientApi {
     static getAll = () => {
-        return request({
+        return requestCustomer({
           method: "GET",
           url: `/client/notification/listAdmin`,
         });
       };
       static getNotRead = () => {
-        return request({
+        return requestCustomer({
           method: "GET",
           url: `/client/notification/listAdminNotRead`,
         });
       };
       static setStatus = (id) => {
-        return request({
+        return requestCustomer({
           method: "POST",
           url: `/client/notification/setStatus/${id}`,
         });
