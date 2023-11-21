@@ -34,7 +34,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             LEFT JOIN sole so ON so.id = prde.id_sole
             LEFT JOIN material ma ON ma.id = prde.id_material
             LEFT JOIN category ca ON ca.id = prde.id_category
-            WHERE bi.id LIKE :#{#request.idBill}
+            WHERE bi.id LIKE :#{#request.idBill} AND bide.quantity <> 0 
              AND ( :#{#request.status} IS NULL
                          OR :#{#request.status} LIKE ''
                          OR bide.status_bill IN (:#{#request.status}))

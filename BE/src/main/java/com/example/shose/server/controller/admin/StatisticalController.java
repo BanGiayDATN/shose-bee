@@ -1,24 +1,18 @@
 package com.example.shose.server.controller;
 
-import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.statistical.FindBillDateRequest;
-import com.example.shose.server.dto.response.statistical.StatisticalBestSellingProductResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalProductDateResponse;
 import com.example.shose.server.service.StatisticalService;
 import com.example.shose.server.util.ResponseObject;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -56,11 +50,8 @@ public class StatisticalController {
     }
     @GetMapping("/bill-date")
     public ResponseEntity<?> statisticalBillDate(final FindBillDateRequest req) {
-        List<StatisticalProductDateResponse> listProductDay = new ArrayList<>();
-        List<StatisticalBillDateResponse> listBillDay = new ArrayList<>();
-        listBillDay = statisticalService.getAllStatisticalBillDate(req);
-        listProductDay = statisticalService.getAllStatisticalProductDate(req);
-
+        List<StatisticalProductDateResponse> listProductDay = statisticalService.getAllStatisticalProductDate(req);
+        List<StatisticalBillDateResponse> listBillDay = statisticalService.getAllStatisticalBillDate(req);
         Map<String, Object> mapData = new HashMap<>();
         mapData.put("dataBill", listBillDay);
         mapData.put("dataProduct", listProductDay);
