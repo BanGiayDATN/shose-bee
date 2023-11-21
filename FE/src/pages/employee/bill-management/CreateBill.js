@@ -1483,15 +1483,18 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     const timeInMillis = new Date().getTime();
     const data = {
       vnp_Ammount: Math.round(
-        totalBill + ship - voucher.discountPrice - totaPayMent
+        totalBill + ship - voucher.discountPrice - totaPayMent - exchangeRateMoney
       ),
       vnp_TxnRef: billRequest.code + "-" + timeInMillis,
     };
-    localStorage.setItem("code", billRequest.code);
-    PaymentsMethodApi.paymentVnpay(data).then((res) => {
-      window.open(res.data.data, "_self");
-    });
-
+    if(exchangeRateMoney + voucher.discountPrice > totalBill ){
+      toast.warning(" Hóa đơn đã thanh toán bằng điểm")
+    }else{
+      localStorage.setItem("code", billRequest.code);
+      PaymentsMethodApi.paymentVnpay(data).then((res) => {
+        window.open(res.data.data, "_self");
+      });
+    }
     setTotalMoneyPayment("");
     form.resetFields();
     formCheckCodeVnPay.resetFields();
@@ -2519,7 +2522,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
               <Col span={12}>
                 <Row>
-                <Col span={7} style={{ display: "flex", alignItems: "center",  margin: "2px",
+                <Col span={12} style={{ display: "flex", alignItems: "center",  margin: "2px",
                 fontWeight: "bold",
                 fontSize: "15px", }}>
                 {" "}
@@ -2542,12 +2545,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
              
               {usePoin ? (
                 <Col span={12} align={"end"} style={{
-                  marginRight: "10px",
                   fontSize: "15px",
                   fontWeight: "bold",
-                  marginRight: "10px",
                 }}>
+                  <span style={{marginRight: "10px"}}>
                   {formatCurrency(exchangeRateMoney)}
+                  </span>
                 </Col>
               ) : (
                 <Col span={12}></Col>
