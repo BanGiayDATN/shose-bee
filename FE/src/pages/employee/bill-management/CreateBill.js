@@ -1458,7 +1458,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
 
     if (tongTienGiam > tongTienThanhToan) {
       var soDiemCanThanhToan = Math.floor(
-        tongTienThanhToan - voucher.discountPrice / dataPoin.exchangeRateMoney
+        (tongTienThanhToan - voucher.discountPrice) / dataPoin.exchangeRateMoney
       );
       return soDiemCanThanhToan;
     } else {
