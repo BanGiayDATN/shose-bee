@@ -1487,15 +1487,18 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     const timeInMillis = new Date().getTime();
     const data = {
       vnp_Ammount: Math.round(
-        totalBill + ship - voucher.discountPrice - totaPayMent
+        totalBill + ship - voucher.discountPrice - totaPayMent - exchangeRateMoney
       ),
       vnp_TxnRef: billRequest.code + "-" + timeInMillis,
     };
-    localStorage.setItem("code", billRequest.code);
-    PaymentsMethodApi.paymentVnpay(data).then((res) => {
-      window.open(res.data.data, "_self");
-    });
-
+    if(exchangeRateMoney + voucher.discountPrice > totalBill ){
+      toast.warning(" Hóa đơn đã thanh toán bằng điểm")
+    }else{
+      localStorage.setItem("code", billRequest.code);
+      PaymentsMethodApi.paymentVnpay(data).then((res) => {
+        window.open(res.data.data, "_self");
+      });
+    }
     setTotalMoneyPayment("");
     form.resetFields();
     formCheckCodeVnPay.resetFields();

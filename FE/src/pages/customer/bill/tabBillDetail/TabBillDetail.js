@@ -20,10 +20,12 @@ function TabBillDetail({id, dataBillDetail }) {
     return formatter.format(value);
   };
   useEffect(() => {
+    console.log("id bill ");
+    console.log(id);
     BillClientApi.fetchAllBillDetailInBill(dataBillDetail).then((res) => {
       setBillDetail(res.data.data);
     });
-  }, []);
+  }, [id]);
   const [billDetail, setBillDetail] = useState([]);
   return (
     <Row style={{ width: "100%" }}>
