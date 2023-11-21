@@ -877,9 +877,7 @@ export default function DetailBillGiveBack() {
                   <Col span={12}>
                     <h3 style={{ color: "blue" }}>
                       {" "}
-                      {formatCurrency(
-                        totalMoneyBill() - totalMoneyBillGiveBack()
-                      )}
+                      {formatCurrency(totalMoneyBillGiveBack())}
                     </h3>
                   </Col>
                 </Row>
