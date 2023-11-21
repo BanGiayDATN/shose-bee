@@ -268,12 +268,12 @@ useEffect(()=>{
   return (
     <React.Fragment>
 
-      <Row style={{ marginTop: "30px", display: "flex" }}>
+      <Row style={{ marginTop: "100px", display: "flex" }}>
         <Col lg={{ span: 16, offset: 4 }}
           style={{ display: "flex", justifyContent: "center", padding: "auto" }}
         >
           <div className="category-of-products">
-            {/* search by gender */}
+           <div className="title-category-of-products">Bộ lọc sản phẩm</div>
             <ul className="category-gender">
               {categoryGender.map((item, index) => (
                 <>
@@ -450,6 +450,7 @@ useEffect(()=>{
           </div>
 
           <div className="box-products">
+          <div className="title-of-products">Sản phẩm</div>
             <div className="list-product">
               {list.map((item, index) => (
                 <CardItem item={item} index={index} />

@@ -26,7 +26,11 @@ public interface CartRepository extends JpaRepository<Cart,String> {
                       GROUP_CONCAT(i.name) as image,
                       cd.price as price,
                       cd.quantity as quantity,
-                      pd.quantity as quantityProductDetail
+                      pd.quantity as quantityProductDetail,
+                       (select max(pr2.value) from product_detail pd2
+                LEFT JOIN promotion_product_detail ppd2 on pd2.id = ppd2.id_product_detail
+                LEFT JOIN promotion pr2 on pr2.id = ppd2.id_promotion
+                where ppd2.status = 'DANG_SU_DUNG' and pr2.status = 'DANG_KICH_HOAT' AND pd2.id = pd.id)  as valuePromotion
                FROM cart cart
                         JOIN account a on a.id = cart.id_account
                         JOIN cart_detail cd on cart.id = cd.id_cart

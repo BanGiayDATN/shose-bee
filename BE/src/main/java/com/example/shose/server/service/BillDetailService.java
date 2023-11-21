@@ -14,6 +14,7 @@ import java.util.List;
 public interface BillDetailService {
 
     List<BillDetailResponse> findAllByIdBill(BillDetailRequest request);
+    List<BillDetailResponse> findAllByIdBill(String id);
 
     BillDetailResponse findBillById(String id);
 
