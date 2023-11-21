@@ -607,38 +607,40 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     setAccountUser(record);
     setPoin(record?.points > 0);
     setIsModalAccountOpen(true);
-    AddressApi.fetchAllAddressByUser(record.id).then((res) => {
+    AddressApi.fetchAllAddressByUserRoleEmployee(record.id).then((res) => {
       setListAddress(res.data.data);
     });
-    AddressApi.getAddressByUserIdAndStatus(record.id).then((res) => {
-      const addressData = res.data.data;
-      const formValues = {
-        phoneNumber: record.phoneNumber,
-        name: record.fullName,
-        email: record.email,
-      };
-      if (addressData) {
-        setAddress({
-          city: addressData.province,
-          district: addressData.district,
-          wards: addressData.ward,
-          detail: addressData.line,
-        });
-        addressFull(
-          addressData.provinceId,
-          addressData.toDistrictId,
-          addressData.wardCode
-        );
+    AddressApi.getAddressByUserIdAndStatusRoleEmployee(record.id).then(
+      (res) => {
+        const addressData = res.data.data;
+        const formValues = {
+          phoneNumber: record.phoneNumber,
+          name: record.fullName,
+          email: record.email,
+        };
+        if (addressData) {
+          setAddress({
+            city: addressData.province,
+            district: addressData.district,
+            wards: addressData.ward,
+            detail: addressData.line,
+          });
+          addressFull(
+            addressData.provinceId,
+            addressData.toDistrictId,
+            addressData.wardCode
+          );
 
-        formValues.name = addressData.fullName;
-        formValues.phoneNumber = addressData.phoneNumber;
-        formValues.city = addressData.province;
-        formValues.district = addressData.district;
-        formValues.wards = addressData.ward;
-        formValues.detail = addressData.line;
+          formValues.name = addressData.fullName;
+          formValues.phoneNumber = addressData.phoneNumber;
+          formValues.city = addressData.province;
+          formValues.district = addressData.district;
+          formValues.wards = addressData.ward;
+          formValues.detail = addressData.line;
+        }
+        form.setFieldsValue(formValues);
       }
-      form.setFieldsValue(formValues);
-    });
+    );
 
     setBillRequest({
       ...billRequest,
@@ -1487,13 +1489,17 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     const timeInMillis = new Date().getTime();
     const data = {
       vnp_Ammount: Math.round(
-        totalBill + ship - voucher.discountPrice - totaPayMent - exchangeRateMoney
+        totalBill +
+          ship -
+          voucher.discountPrice -
+          totaPayMent -
+          exchangeRateMoney
       ),
       vnp_TxnRef: billRequest.code + "-" + timeInMillis,
     };
-    if(exchangeRateMoney + voucher.discountPrice > totalBill ){
-      toast.warning(" Hóa đơn đã thanh toán bằng điểm")
-    }else{
+    if (exchangeRateMoney + voucher.discountPrice > totalBill) {
+      toast.warning(" Hóa đơn đã thanh toán bằng điểm");
+    } else {
       localStorage.setItem("code", billRequest.code);
       PaymentsMethodApi.paymentVnpay(data).then((res) => {
         window.open(res.data.data, "_self");

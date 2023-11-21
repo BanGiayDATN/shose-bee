@@ -871,7 +871,7 @@ public class BillServiceImpl implements BillService {
                 .status(Status.CHUA_DOC)
                 .account(account)
                 .bill(bill).build();
-         notificationRepository.save(notification);
+        notificationRepository.save(notification);
         return bill;
     }
 
@@ -1001,30 +1001,34 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
-        Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
-
-        BigDecimal totalBill = totalBillToProductDetail(getBillGiveBack(bill.getId()));
-
-        System.out.println(totalBill);
-
-        // todo: update points user by totalBillGiveBack
-        User customer = accountRepository.findById(updateBillGiveBack.getIdAccount()).get().getUser();
-        BigDecimal totalBillGive = totalBillGivenBack(updateBillDetailGiveBacks);
-        Poin poin = configPoin.readJsonFile();
-        int pointGiveBack = poin.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
-        if (customer != null) {
-            customer.setPoints(customer.getPoints() - pointGiveBack);
-            userReposiory.save(customer);
-        }
-
         Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
+        Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
         if (bill == null) {
             throw new RestApiException("Không tìm thấy mã hóa đơn.");
         }
 
+        // todo: update points user by totalBillGiveBack
+        BigDecimal totalBill = totalBillToProductDetail(getBillGiveBack(bill.getId()));
+        String idAccount = updateBillGiveBack.getIdAccount();
+        BigDecimal totalBillGive = totalBillGivenBack(updateBillDetailGiveBacks);
+        int checkTotal = totalBill.compareTo(totalBillGive);
+
+        Poin poin = configPoin.readJsonFile();
+        int pointGiveBack = poin.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
+        if (idAccount != null ) {
+            User customer = accountRepository.findById(idAccount).get().getUser();
+            if(checkTotal == 0) {
+                customer.setPoints(customer.getPoints() + bill.getPoinUse() - pointGiveBack);
+            }else {
+                customer.setPoints(customer.getPoints() - pointGiveBack);
+            }
+            userReposiory.save(customer);
+        }
+
+
         // todo update stattus bill
         bill.setStatusBill(StatusBill.TRA_HANG);
-        bill.setTotalMoney(totalBillGive);
+        bill.setTotalMoney(totalBill.subtract(totalBillGive));
         billRepository.save(bill);
 
         BillHistory billHistory = BillHistory.builder()
@@ -1081,7 +1085,6 @@ public class BillServiceImpl implements BillService {
     private BigDecimal totalBillGivenBack(List<UpdateBillDetailGiveBack> list) {
         BigDecimal totalBillGive = list.stream()
                 .map(UpdateBillDetailGiveBack::getTotalPrice)
-                .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Tính tổng
         return totalBillGive;
     }
@@ -1095,7 +1098,7 @@ public class BillServiceImpl implements BillService {
 
                     return promotion == null
                             ? price.multiply(new BigDecimal(quantity))
-                            : new BigDecimal(quantity).multiply(new BigDecimal(100 -promotion).multiply(price));
+                            : new BigDecimal(quantity).multiply(new BigDecimal(100 - promotion).multiply(price));
                 })
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Tính tổng

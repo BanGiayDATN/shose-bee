@@ -410,7 +410,10 @@ export default function DetailBillGiveBack() {
             ? {
                 ...item,
                 quantity: value,
-                totalPrice: value * item.price,
+                totalPrice:
+                  item.promotion === null
+                    ? item.quantity * item.price
+                    : item.quantity * (item.price * (100 - item.promotion)),
               }
             : item
         )
@@ -512,7 +515,14 @@ export default function DetailBillGiveBack() {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: () => {
-          setDataProductGiveBack(dataProductBill);
+          const newDataProductGiveBack = dataProductBill.map((item) => ({
+            ...item,
+            totalPrice:
+              item.promotion === null
+                ? item.quantity * item.price
+                : item.quantity * (item.price * (100 - item.promotion)),
+          }));
+          setDataProductGiveBack(newDataProductGiveBack);
           resolve();
         },
       });

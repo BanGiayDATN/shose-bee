@@ -1,4 +1,8 @@
-import {  requestAdress, requestCustomer } from "../../../helper/request";
+import {
+  request,
+  requestAdress,
+  requestCustomer,
+} from "../../../helper/request";
 export class AddressApi {
   static fetchAll = (filter) => {
     return requestCustomer({
@@ -25,6 +29,13 @@ export class AddressApi {
 
   static getAddressByUserIdAndStatus = (id) => {
     return requestCustomer({
+      method: "GET",
+      url: `/admin/address/address-user-status/${id}`,
+    });
+  };
+
+  static getAddressByUserIdAndStatusRoleEmployee = (id) => {
+    return request({
       method: "GET",
       url: `/admin/address/address-user-status/${id}`,
     });
@@ -115,6 +126,13 @@ export class AddressApi {
   };
   static fetchAllAddressByUser = (idUser) => {
     return requestCustomer({
+      method: "GET",
+      url: `/admin/address/address-user/${idUser}`,
+    });
+  };
+
+  static fetchAllAddressByUserRoleEmployee = (idUser) => {
+    return request({
       method: "GET",
       url: `/admin/address/address-user/${idUser}`,
     });
