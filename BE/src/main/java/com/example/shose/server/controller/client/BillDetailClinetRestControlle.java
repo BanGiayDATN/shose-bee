@@ -25,4 +25,8 @@ public class BillDetailClinetRestControlle {
     public ResponseObject findAllByIdBill(BillDetailRequest request){
         return  new ResponseObject(billDetailService.findAllByIdBill(request));
     }
+    @GetMapping("/findByIdBill/{id}")
+    public ResponseObject findByIdBill(@PathVariable("id") String id){
+        return  new ResponseObject(billDetailService.findAllByIdBill(id));
+    }
 }

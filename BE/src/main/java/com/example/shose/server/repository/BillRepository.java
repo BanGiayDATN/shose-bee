@@ -1,9 +1,12 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.statistical.FindBillDateRequest;
+import com.example.shose.server.dto.response.bill.BillAccountResponse;
 import com.example.shose.server.dto.response.bill.BillGiveBack;
 import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
+
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.statistical.StatisticalBestSellingProductResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
@@ -28,6 +31,7 @@ import java.util.Optional;
  */
 @Repository
 public interface BillRepository extends JpaRepository<Bill, String> {
+
 
     @Query(value = """
                SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill,
@@ -201,6 +205,22 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     Optional<Bill> findByCodeAndPhoneNumber(String code, String phoneNumber);
 
     @Query(value = """
+
+     SELECT   bi.id as id,
+              bi.total_money as totalMoney,
+              bi.status_bill as statusBill,
+              (select group_concat(bd.id)  from bill_detail bd where bd.id_bill = bi.id) as billDetail
+     FROM bill bi
+               JOIN account ac ON ac.id = bi.id_account
+                WHERE  bi.id_account = :id   
+                AND ( :#{#req.status}  IS NULL
+                         OR :#{#req.status} LIKE ''
+                         OR bi.status_bill Like (:#{#req.status}))
+                ORDER BY bi.last_modified_date DESC
+                """, nativeQuery = true)
+    List<BillAccountResponse> getBillAccount(@Param("id") String id, StatusRequest req);
+
+    @Query(value = """
        SELECT
            i.name AS image,
            p.name  AS nameProduct,
@@ -265,4 +285,5 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             WHERE bi.id = :idBill
             """, nativeQuery = true)
     List<BillGiveBack> getBillGiveBack(@Param("idBill") String idBill);
+
 }

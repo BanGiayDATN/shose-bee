@@ -9,10 +9,12 @@ import com.example.shose.server.dto.request.bill.ChangeEmployeeRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.BillDetailOnline;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+import com.example.shose.server.dto.response.bill.BillAccountResponse;
 import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
 import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
@@ -23,6 +25,8 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
+import com.example.shose.server.entity.*;
+import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
@@ -46,6 +50,7 @@ import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
 import com.example.shose.server.infrastructure.session.ShoseSession;
+import com.example.shose.server.repository.*;
 import com.example.shose.server.infrastructure.poin.ConfigPoin;
 import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
@@ -137,7 +142,8 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private PaymentsMethodService paymentsMethodService;
-
+    @Autowired
+    private NotificationRepository notificationRepository;
     @Autowired
     private ShoseSession shoseSession;
 
@@ -167,6 +173,11 @@ public class BillServiceImpl implements BillService {
         }
         Optional<Account> user = accountRepository.findById(id);
         return billRepository.getAll(id, user.get().getRoles().name(), request);
+    }
+
+    @Override
+    public List<BillAccountResponse> getAllBillAccount(StatusRequest request) {
+        return billRepository.getBillAccount(shoseSession.getCustomer().getId(), request);
     }
 
     @Override
@@ -700,6 +711,7 @@ public class BillServiceImpl implements BillService {
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
+                    .promotion(x.getValuePromotion())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
 
@@ -735,6 +747,12 @@ public class BillServiceImpl implements BillService {
         }
 
         sendMailOnline(bill.getId());
+        Notification notification = Notification.builder()
+                .receiver("admin")
+                .notifyContent("Vừa mua đơn hàng")
+                .status(Status.CHUA_DOC)
+                .bill(bill).build();
+        notificationRepository.save(notification);
         return bill;
     }
 
@@ -805,6 +823,7 @@ public class BillServiceImpl implements BillService {
                     .productDetail(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
+                    .promotion(x.getValuePromotion())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
 
@@ -845,6 +864,13 @@ public class BillServiceImpl implements BillService {
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
         sendMailOnline(bill.getId());
+        Notification notification = Notification.builder()
+                .receiver("admin")
+                .notifyContent("Vừa mua đơn hàng")
+                .status(Status.CHUA_DOC)
+                .account(account)
+                .bill(bill).build();
+         notificationRepository.save(notification);
         return bill;
     }
 

@@ -22,9 +22,12 @@ import { AddressClientApi } from "./../../../api/customer/address/addressClient.
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
 import { AccountClientApi } from "../../../api/customer/account/accountClient.api";
 import { UserPoinApi } from "../../../api/customer/user/user.api";
+
 dayjs.extend(utc);
 function PaymentAccount() {
   const nav = useNavigate();
@@ -59,6 +62,8 @@ function PaymentAccount() {
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
+  const socket = new SockJS('http://localhost:8080/ws');
+  const stompClient = Stomp.over(socket);
   const [dataPoin, setDataPoin] = useState(null);
   const [account, setAccount] = useState(null);
   const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
@@ -201,13 +206,17 @@ function PaymentAccount() {
         dataBill.poin = poin
         dataBill.totalMoney = totalBefore
         if (addressDefault === null) {
-          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
+          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!")
           return;
         }
+
+
         if (formBill.paymentMethod === "paymentVnpay") {
+
           const data = {
-            vnp_Ammount: totalBefore   ,
-            billDetail: dataBill.billDetail,
+            vnp_Ammount: totalBefore + moneyShip,
+            billDetail: formBill.billDetail,
+
           };
           console.log(listproductOfBill);
           PaymentClientApi.paymentVnpay(data).then(
@@ -215,7 +224,8 @@ function PaymentAccount() {
               window.location.replace(res.data.data);
               sessionStorage.setItem("formBill", JSON.stringify(dataBill));
             },
-            (err) => {}
+            (err) => {
+            }
           );
         } else {
           BillClientApi.createBillAccountOnline(dataBill).then(
@@ -223,6 +233,7 @@ function PaymentAccount() {
               CartClientApi.quantityInCart(idAccount).then(
                 (res) => {
                   updateTotalQuantity(res.data.data);
+                  stompClient.send('/app/notifyAdmin', {}, 'Có đơn hàng mới');
                 },
                 (err) => {
                   console.log(err);
@@ -235,9 +246,12 @@ function PaymentAccount() {
               console.log(err);
             }
           );
+
         }
-      },
-    });
+
+      }
+    })
+
   };
 
   const getMoneyShip = (districtId, wardCode) => {
@@ -289,7 +303,7 @@ function PaymentAccount() {
   };
   const moneyBefore = () => {
     const money = listproductOfBill.reduce(
-      (total, item) => total + parseInt(item.price * item.quantity),
+      (total, item) => total + parseInt((parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100)))* item.quantity),
       0
     );
     const quantity = listproductOfBill.reduce(
@@ -430,13 +444,19 @@ function PaymentAccount() {
                   </div>
                   <span>{item.nameSize}</span>
                   <span style={{ marginLeft: "11%" }}>
-                    {" "}
-                    {formatMoney(item.price)}
+                    {item.valuePromotion !== null ? (
+                      <>
+                        <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
+                          item.price * (item.valuePromotion / 100)))}</span>
+                      
+                      </>
+                    ) : (formatMoney(item.price))}
+
                   </span>
                   <span style={{ marginLeft: "12%" }}>{item.quantity}</span>
                   <span style={{ marginLeft: "auto" }}>
                     {" "}
-                    {formatMoney(parseInt(item.price) * item.quantity)}
+                    {item.valuePromotion === null ? formatMoney(item.quantity * item.price) :formatMoney(item.quantity *  (parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100))))}
                   </span>
                 </div>
               ))}
@@ -491,17 +511,15 @@ function PaymentAccount() {
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${
-                  keyMethodPayment === "paymentReceive" ? "click" : ""
-                }`}
+                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
+                  }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${
-                  keyMethodPayment === "paymentVnpay" ? "click" : ""
-                }`}
+                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
+                  }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}

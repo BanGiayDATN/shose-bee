@@ -1,6 +1,7 @@
 package com.example.shose.server.controller.client;
 
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
 import com.example.shose.server.infrastructure.session.ShoseSession;
@@ -8,6 +9,8 @@ import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +32,11 @@ public class BillClientRestController {
 
     @Autowired
     private ShoseSession shoseSession;
+
+    @PostMapping("/status")
+    public ResponseObject getAllBillAccount(@RequestBody StatusRequest request )  {
+        return new ResponseObject(billService.getAllBillAccount(request));
+    }
 
     @PostMapping("")
     public ResponseObject create(@RequestBody CreateBillCustomerOnlineRequest request)  {
@@ -52,4 +60,5 @@ public class BillClientRestController {
     public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
         return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request));
     }
+
 }

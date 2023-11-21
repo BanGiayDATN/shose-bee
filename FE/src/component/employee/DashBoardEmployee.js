@@ -32,16 +32,73 @@ import {
   faTruckFast,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
+import { GetNotification, SetNotification, UpdateNotification } from "../../../src/app/reducer/Notification.reducer";
+
 import { deleteToken, deleteUserToken } from "../../helper/useCookies";
 import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
 import { jwtDecode } from "jwt-decode";
 import { getCookie } from "../../helper/CookiesRequest";
-
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { NotificationClientApi } from "../../api/customer/notification/notificationClient.api";
+import dayjs from "dayjs";
+import { dispatch } from "../../app/store";
+import { useAppSelector } from "../../app/hook";
 const { Header, Sider, Content } = Layout;
-const notificationCount = 5; // Số lượng thông báo chưa đọc
 
 const DashBoardEmployee = ({ children }) => {
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [listNotification, setListNotification] = useState([]);
+  const [openInfor, setOpenInfo] = useState(false);
+
+  const handleMenuHover = () => {
+    setOpenInfo(true);
+  };
+
+  const handleMenuLeave = () => {
+    setOpenInfo(false);
+  };
+  const socket = new SockJS("http://localhost:8080/ws");
+  const stompClient = Stomp.over(socket);
+
+  const data = useAppSelector(GetNotification);
+  useEffect(() => {
+    if (data != null) {
+      setListNotification(data);
+      NotificationClientApi.getNotRead().then((res) => {
+        if (res.data.data.length > 0) {
+          setNotificationCount(res.data.data.length);
+        }
+      });
+    }
+  }, [data]);
+  useEffect(() => {
+
+    NotificationClientApi.getAll().then((res) => {
+      dispatch(SetNotification(res.data.data));
+      setListNotification(res.data.data);
+      console.log(res.data.data);
+    });
+    stompClient.connect({}, () => {
+      stompClient.subscribe("/topic/admin-notifications", (response) => {
+        NotificationClientApi.getNotRead().then((res) => {
+          setNotificationCount(res.data.data.length);
+        });
+        NotificationClientApi.getAll().then((res) => {
+          dispatch(SetNotification(res.data.data));
+          setListNotification(res.data.data);
+        });
+        toast.warning(response.body);
+      });
+    });
+
+    return () => {
+      // Ngắt kết nối khi component unmount
+      stompClient.disconnect();
+    };
+  }, []);
+
   const [collapsed, setCollapsed] = useState(false);
   const nav = useNavigate();
   const [form] = Form.useForm();
@@ -96,9 +153,9 @@ const DashBoardEmployee = ({ children }) => {
             toast.success("Đổi mật khẩu thành công.");
             handleCancel();
           })
-          .catch((err) => {});
+          .catch((err) => { });
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const handleCancel = () => {
@@ -129,6 +186,12 @@ const DashBoardEmployee = ({ children }) => {
       </Menu.Item>
     </Menu>
   );
+  const viewNotify = (idNotify, idBill) => {
+    NotificationClientApi.setStatus(idNotify).then((res) => {
+      dispatch(UpdateNotification(res.data.data))
+    });
+   window.location.href = `/bill-management/detail-bill/${idBill}`
+  }
 
   return (
     <Layout className="layout-employee">
@@ -230,6 +293,7 @@ const DashBoardEmployee = ({ children }) => {
               <Link to="/customer-management">Khách Hàng</Link>
             </Menu.Item>
           </SubMenu>
+
           {isAdmin && (
             <SubMenu
               key="8"
@@ -270,11 +334,48 @@ const DashBoardEmployee = ({ children }) => {
             }}
           />
           <div style={{ display: "flex", alignItems: "center" }}>
-            <Badge count={notificationCount} style={{ backgroundColor: "red" }}>
+            <Badge
+              className="content-notify"
+              onMouseEnter={handleMenuHover}
+              onMouseLeave={handleMenuLeave}
+              count={notificationCount}
+              style={{ backgroundColor: "red" }}
+            >
               <Button type="text">
                 <BellOutlined />
               </Button>
+
+              {openInfor ? (
+                <ul className="dropdown-list-notify">
+                  {listNotification.map((item, index) => (
+                    <li key={index} className="dropdown-item-notify" onClick={() => viewNotify(item.id, item.bill.id)}>
+                      <div style={{ marginRight: 20 }}>
+                        <BellOutlined />
+                      </div>
+                      <div>
+                        <div style={{ marginBottom: 10, display: "flex", alignItems: "center" }}>
+                          <div style={{ fontSize: 17, fontWeight: 600 }}>{item.bill.userName}</div>
+                          <div style={{ color: "#ff4400", marginLeft: "auto" }}>{item.notifyContent}</div>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                          <div style={{ fontSize: 12, fontWeight: 500 }}>
+                            <span style={{ fontSize: 14, fontWeight: 500 }}>Thời gian:</span> {dayjs(item.createdDate).format('HH:mm:ss DD-MM-YYYY')}
+                          </div>
+                          <div style={{ marginLeft: "20px", color: item.status === "CHUA_DOC" ? "blue" : "green" }}>
+                            {item.status === "CHUA_DOC" ? "Chưa đọc" : "Đã đọc"}
+                          </div>
+                        </div>
+                      </div>
+
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                ""
+              )}
             </Badge>
+
+
             <span style={{ fontWeight: "bold", marginLeft: "20px" }}>
               {user !== null && user.fullName}
             </span>
