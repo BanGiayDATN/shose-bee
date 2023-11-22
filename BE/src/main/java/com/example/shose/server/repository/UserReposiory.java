@@ -6,7 +6,9 @@ import com.example.shose.server.dto.response.user.GetByAccountResponse;
 import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -199,4 +201,14 @@ public interface UserReposiory extends JpaRepository<User, String> {
     Optional<GetByAccountResponse> getByAccount(String idAccount);
 
     Optional<User> findByEmail(String email);
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+            UPDATE user
+            SET points = 0
+            WHERE id = :id
+            """, nativeQuery = true)
+    void resetAllPoinUser(String id);
+
 }
