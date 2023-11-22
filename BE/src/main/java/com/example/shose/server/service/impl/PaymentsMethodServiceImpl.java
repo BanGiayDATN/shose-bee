@@ -388,7 +388,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        }
                        userReposiory.save(user);
                    }
-                   bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+                   bill.get().setStatusBill(StatusBill.XAC_NHAN);
                    billRepository.save(bill.get());
                }
                createFilePdfAtCounter(bill.get().getId());
