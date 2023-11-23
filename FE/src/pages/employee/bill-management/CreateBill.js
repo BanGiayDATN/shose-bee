@@ -876,7 +876,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         products.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.price * currentValue.quantity;
         }, 0) +
-        ship - exchangeRateMoney-
+        ship - exchangeRateMoney -
         voucher.discountPrice;
       dataPayMentTraSau = [
         {
@@ -1489,6 +1489,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     };
     if(exchangeRateMoney + voucher.discountPrice > totalBill ){
       toast.warning(" Hóa đơn đã thanh toán bằng điểm")
+    }else if(Math.round(totaPayMent + voucher.discountPrice + exchangeRateMoney) == Math.round(totalBill+ ship)){
+      toast.warning(" Hóa đơn đã thanh toán đủ tiền")
     }else{
       localStorage.setItem("code", billRequest.code);
       PaymentsMethodApi.paymentVnpay(data).then((res) => {
