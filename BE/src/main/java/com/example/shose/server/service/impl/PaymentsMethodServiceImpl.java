@@ -377,7 +377,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());
-                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).employees(optional.get().getEmployees()).build());
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(bill.get()).employees(bill.get().getEmployees()).build());
                } else {
                    if(bill.get().getAccount() != null){
                        User user = bill.get().getAccount().getUser();
