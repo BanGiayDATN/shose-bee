@@ -3077,8 +3077,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   accumulator + currentValue.price * currentValue.quantity
                 );
               }, 0) +
-                shipFee -
-                -exchangeRateMoney -
+                shipFee 
+                - exchangeRateMoney -
                 voucher.discountPrice)
                 ? "Tiền thiếu"
                 : "Tiền thừa"}
