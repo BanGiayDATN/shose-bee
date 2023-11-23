@@ -194,7 +194,7 @@ function PaymentAccount() {
         if(exchangeRateMoney > 0){
           poin = tinhSoDiemCanThanhToan()
         }
-        if(poin < account?.points){
+        if(poin > 0 && poin < account?.points){
           dataBill.itemDiscount = totalBefore + moneyShip
         }
         dataBill.poin = poin
