@@ -983,14 +983,22 @@ public class BillServiceImpl implements BillService {
         if (!optional.isPresent()) {
             throw new RestApiException("Không tìm thấy mã  hóa đơn " + codeBill);
         }
-        long currentSeconds = System.currentTimeMillis();
-        long givenBackCheck = optional.get().getCompletionDate() + 2 * 24 * 60 * 60 * 1000;
-        if (currentSeconds > givenBackCheck) {
-            throw new RestApiException("Đơn hàng đã hết hạn hoàn đổi.");
-        }
         if (optional.get().getStatusBill().equals(StatusBill.TRA_HANG)) {
             throw new RestApiException("Hóa đơn " + codeBill + " đã có sản phẩm trả hàng.");
         }
+
+        if (optional.get().getStatusBill().equals(StatusBill.DA_HUY)) {
+            throw new RestApiException("Hóa đơn " + codeBill + " đã bị hủy.");
+        }
+
+        if(optional.get().getStatusBill().equals(StatusBill.THANH_CONG)){
+            long currentSeconds = System.currentTimeMillis();
+            long givenBackCheck = optional.get().getCompletionDate() + 2 * 24 * 60 * 60 * 1000;
+            if (currentSeconds > givenBackCheck) {
+                throw new RestApiException("Đơn hàng đã hết hạn hoàn đổi.");
+            }
+        }
+
         return billRepository.getBillGiveBackInformation(codeBill);
     }
 

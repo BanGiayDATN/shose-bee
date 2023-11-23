@@ -220,7 +220,7 @@ function App() {
       <BrowserRouter basename={AppConfig.routerBase}>
         <Routes>
           <Route path="*" element={<NotFound />} />
-          <Route path="/" element={<Navigate replace to="/home" />} />
+          <Route path="/" element={<Navigate replace to="/home"/>} />
           <Route path="/not-authorization" element={<NotAuthorized />} />
           <Route
             path="/login"

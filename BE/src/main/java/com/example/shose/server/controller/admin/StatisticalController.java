@@ -1,4 +1,4 @@
-package com.example.shose.server.controller;
+package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.statistical.FindBillDateRequest;
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

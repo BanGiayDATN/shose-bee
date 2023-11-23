@@ -8,7 +8,6 @@ import {
 } from "../app/reducer/Loading.reducer";
 import {
   deleteToken,
-  getToken,
   getTokenCustomer,
   getTokenEmpoloyee,
 } from "./useCookies";
@@ -46,7 +45,9 @@ requestCustomer.interceptors.request.use((config) => {
   return config;
 });
 
+
 request.interceptors.response.use(
+
   (response) => {
     store.dispatch(SetLoadingFalse());
     return response;

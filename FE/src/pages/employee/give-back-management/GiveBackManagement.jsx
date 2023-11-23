@@ -4,11 +4,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTruckArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router";
 import { BillApi } from "../../../api/employee/bill/bill.api";
+import { useState } from "react";
+import QRScannerModal from "../product-management/modal/ModalQRScanner";
 export default function GiveBackManagement() {
   const nav = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = (data) => {
+    BillApi.BillGiveBackInformation(data)
+      .then(() => {
+        nav(`/detail-give-back/${data}`);
+        setIsModalOpen(false);
+      })
+      .catch((error) => {});
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const onFinish = (values) => {
-    console.log(values);
     const bill = values.search;
     BillApi.BillGiveBackInformation(bill)
       .then(() => {
@@ -54,8 +70,22 @@ export default function GiveBackManagement() {
                   Tìm kiếm
                 </Button>
               </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  style={{ height: "35px" }}
+                  onClick={showModal}
+                >
+                  QRCode
+                </Button>
+              </Form.Item>
             </Form>
           </Row>
+          <QRScannerModal
+            visible={isModalOpen}
+            onCancel={handleCancel}
+            onQRCodeScanned={handleOk}
+          />
         </div>
       </Card>
     </>

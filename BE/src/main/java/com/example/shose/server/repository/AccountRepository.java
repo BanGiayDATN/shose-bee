@@ -1,13 +1,10 @@
 package com.example.shose.server.repository;
 
-import com.example.shose.server.dto.response.LoginResponse;
 import com.example.shose.server.dto.response.account.AccountResponse;
-import com.example.shose.server.entity.Account;
 import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
-import com.example.shose.server.infrastructure.constant.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
