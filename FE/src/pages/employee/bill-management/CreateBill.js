@@ -123,12 +123,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var itemDiscount = voucher.discountPrice + exchangeRateMoney;
     if (accountuser != null && usePoin) {
-      if (poin < accountuser?.points) {
+      if ( poin > 0 && poin < accountuser?.points) {
         console.log(accountuser?.points);
-        itemDiscount = Math.round(totalBill) - voucher.discountPrice;
+        itemDiscount = Math.round(totalBill)
         if (isOpenDelivery) {
           itemDiscount =
-            Math.round(totalBill) - voucher.discountPrice + shipFee;
+            Math.round(totalBill) + shipFee;
         }
       }
     }
@@ -210,12 +210,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
       var itemDiscount = voucher.discountPrice + exchangeRateMoney;
       if (accountuser != null && usePoin) {
-        if (poin < accountuser?.points) {
+        if (poin > 0 && poin < accountuser?.points) {
           console.log(accountuser?.points);
-          itemDiscount = Math.round(totalBill) - voucher.discountPrice;
+          itemDiscount = Math.round(totalBill)
           if (isOpenDelivery) {
             itemDiscount =
-              Math.round(totalBill) - voucher.discountPrice + shipFee;
+              Math.round(totalBill) + shipFee;
           }
         }
       }
@@ -845,12 +845,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var itemDiscount = voucher.discountPrice + exchangeRateMoney;
     if (accountuser != null && usePoin) {
-      if (poin < accountuser?.points) {
+      if ( poin > 0 && poin < accountuser?.points) {
         console.log(accountuser?.points);
-        itemDiscount = Math.round(totalBill) - voucher.discountPrice;
+        itemDiscount = Math.round(totalBill) ;
         if (isOpenDelivery) {
           itemDiscount =
-            Math.round(totalBill) - voucher.discountPrice + shipFee;
+            Math.round(totalBill)  + shipFee;
         }
       }
     }

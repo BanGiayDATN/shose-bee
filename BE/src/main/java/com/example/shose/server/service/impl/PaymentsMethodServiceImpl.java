@@ -377,6 +377,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(bill.get()).employees(bill.get().getEmployees()).build());
                } else {
                    if(bill.get().getAccount() != null){
                        User user = bill.get().getAccount().getUser();
@@ -388,7 +389,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        }
                        userReposiory.save(user);
                    }
-                   bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+                   bill.get().setStatusBill(StatusBill.XAC_NHAN);
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
                    billRepository.save(bill.get());
                }
                createFilePdfAtCounter(bill.get().getId());

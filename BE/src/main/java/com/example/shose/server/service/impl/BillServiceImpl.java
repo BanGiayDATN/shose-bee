@@ -263,12 +263,11 @@ public class BillServiceImpl implements BillService {
                     userReposiory.save(user);
                 }
             }
-            optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+            optional.get().setStatusBill(StatusBill.XAC_NHAN);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
-        }
+            }
 
         request.getPaymentsMethodRequests().forEach(item -> {
             if (item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null) {
