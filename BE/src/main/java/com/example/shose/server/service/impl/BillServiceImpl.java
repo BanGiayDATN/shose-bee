@@ -919,7 +919,10 @@ public class BillServiceImpl implements BillService {
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         if(optional.get().getEmail() == null){
-            return false;
+            Context dataContext = exportFilePdfFormHtml.setData(invoice);
+            finalHtml = springTemplateEngine.process("templateBill", dataContext);
+            exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
+            return true;
         }
         if (optional.get().getStatusBill() != StatusBill.THANH_CONG &&  !optional.get().getEmail().isEmpty()) {
             invoice.setCheckShip(true);
