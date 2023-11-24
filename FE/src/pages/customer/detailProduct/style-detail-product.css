@@ -261,7 +261,7 @@
   padding: 10px;
   width: 100%;
   height: 200px;
-  border: black 1px solid;
+  border: #ec835c 2px dashed;
 }
 .item-policy {
   list-style: none;
@@ -324,7 +324,6 @@ div.slick-slide.slick-active {
     margin-left: 0;
     padding-left: 0%;
     margin-top: 50px;
-    
   }
   .img-slide-detail-product-pd {
     width: 176px;

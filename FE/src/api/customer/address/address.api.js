@@ -1,7 +1,11 @@
-import { request, requestAdress } from "../../../helper/request";
+import {
+  request,
+  requestAdress,
+  requestCustomer,
+} from "../../../helper/request";
 export class AddressApi {
   static fetchAll = (filter) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/admin/address?id_user=2dd6dc5e-ad8d-473b-a2aa-23f3477a6394`,
       params: filter,
@@ -9,7 +13,7 @@ export class AddressApi {
   };
 
   static create = (data) => {
-    return request({
+    return requestCustomer({
       method: "POST",
       url: `/admin/address`,
       data: data,
@@ -17,13 +21,20 @@ export class AddressApi {
   };
 
   static getOne = (id) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/admin/address/${id}`,
     });
   };
 
   static getAddressByUserIdAndStatus = (id) => {
+    return requestCustomer({
+      method: "GET",
+      url: `/admin/address/address-user-status/${id}`,
+    });
+  };
+
+  static getAddressByUserIdAndStatusRoleEmployee = (id) => {
     return request({
       method: "GET",
       url: `/admin/address/address-user-status/${id}`,
@@ -31,7 +42,7 @@ export class AddressApi {
   };
 
   static update = (id, data) => {
-    return request({
+    return requestCustomer({
       method: "PUT",
       url: `/admin/address/${id}`,
       data: data,
@@ -114,6 +125,13 @@ export class AddressApi {
     });
   };
   static fetchAllAddressByUser = (idUser) => {
+    return requestCustomer({
+      method: "GET",
+      url: `/admin/address/address-user/${idUser}`,
+    });
+  };
+
+  static fetchAllAddressByUserRoleEmployee = (idUser) => {
     return request({
       method: "GET",
       url: `/admin/address/address-user/${idUser}`,

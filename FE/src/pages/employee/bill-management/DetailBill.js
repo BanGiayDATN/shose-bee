@@ -774,12 +774,7 @@ function DetailBill() {
     },
   ];
 
-  const getPromotionStyle = (promotion) => {
-    return promotion >= 50 ? { color: "white" } : { color: "#000000" };
-  };
-
   // thay đổi nhân viên
-
   const [isModalOpenAccountEmployee, setIsModalOpenAccountEmployee] =
     useState(false);
 
@@ -809,6 +804,42 @@ function DetailBill() {
   };
 
   // end thay đổi nhân viên
+
+  // get sp mua theo bill
+  const [productDetailToBillDetail, setProductDetailToBillDetail] = useState(
+    []
+  );
+  const loadDataProductDetailToBillDetail = () => {
+    BillApi.BillGiveBack(id).then((res) => {
+      setProductDetailToBillDetail(res.data.data);
+      console.log(res.data.data);
+    });
+  };
+
+  useEffect(() => {
+    if (id !== null) {
+      loadDataProductDetailToBillDetail();
+    }
+  }, [id]);
+
+  // total product detail give back
+  const totalMoneyProduct = (product) => {
+    return product.promotion != null
+      ? (product.price * product.quantity * (100 - product.promotion)) / 100
+      : product.price * product.quantity;
+  };
+
+  const totalProductDetailGiveBack = () => {
+    let total = 0;
+    productDetailToBillDetail.map((data) => {
+      if (data.statusBillDetail === "TRA_HANG") {
+        const money = totalMoneyProduct(data);
+        total += money;
+      }
+    });
+    console.log(total);
+    return total;
+  };
 
   return (
     <div>
@@ -1341,8 +1372,34 @@ function DetailBill() {
                     </span>
                   </Col>
                 </Row>
+                {totalProductDetailGiveBack() > 0 && (
+                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                    <Col span={5}></Col>
+                    <Col
+                      span={9}
+                      style={{ fontWeight: "bold", fontSize: "16px" }}
+                    >
+                      Tổng tiền hàng trả :
+                    </Col>
+                    <Col span={10} align={"end"}>
+                      <span
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: "bold",
+                          color: "red",
+                        }}
+                      >
+                        {formatCurrency(totalProductDetailGiveBack())}
+                      </span>
+                    </Col>
+                  </Row>
+                )}
 
                 <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                  <Col span={5}></Col>
+                  <Col span={19}>
+                  <hr />
+                  </Col>
                   <Col span={5}></Col>
                   <Col
                     span={9}
@@ -1483,12 +1540,11 @@ function DetailBill() {
         open={isModaBillOpen}
         onOk={handleOkBill}
         onCancel={handleCancelBill}
-        cancelText={"huỷ"}
+        cancelText={"Huỷ"}
         okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}></Row>
-
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
               <label

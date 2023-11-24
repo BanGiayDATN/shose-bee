@@ -80,7 +80,8 @@ function CardItem({ item, index }) {
         nameProduct: detailProduct.nameProduct,
         codeColor: detailProduct.codeColor,
         nameSize: detailProduct.nameSize,
-        quantityProductDetail: detailProduct.quantity
+        quantityProductDetail: detailProduct.quantity,
+        valuePromotion: detailProduct.valuePromotion
       };
       const detailProductCart = cartLocal.find((item) => item.idProductDetail === id)
       if (detailProductCart !== undefined) {
@@ -255,7 +256,16 @@ function CardItem({ item, index }) {
                 {item.nameProduct} - [{item.nameSize}]
               </p>
             </div>
-            <p className="price-product">{formatMoney(item.price)}</p>
+            <p className="price-product">
+            {item.valuePromotion !== null ? (
+                  <>
+                    <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
+                      item.price * (item.valuePromotion / 100)))}</span>
+                    <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(item.price)}</del>
+                  </>
+                ) : (formatMoney(item.price))}
+              
+              </p>
           </Link>
         </div>
         <div
@@ -300,7 +310,13 @@ function CardItem({ item, index }) {
               <h1>{detailProduct.nameProduct}</h1>
               <div className="price-product">
                 {" "}
-                Giá: {formatMoney(detailProduct.price)}
+                {detailProduct.valuePromotion !== null ? (
+                  <>
+                    <span style={{ marginLeft: 5 }}> {formatMoney(detailProduct.price - (
+                      detailProduct.price * (detailProduct.valuePromotion / 100)))}</span>
+                    <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(detailProduct.price)}</del>
+                  </>
+                ) : (formatMoney(detailProduct.price))}
               </div>
               <div>
                 <div>

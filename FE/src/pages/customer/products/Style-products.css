@@ -7,7 +7,7 @@
   margin-left: auto;
   margin-bottom: 50px;
 }
-.box-pagination-products{
+.box-pagination-products {
   margin-top: 30px;
   text-align: center;
 }
@@ -15,6 +15,36 @@
   display: grid; /* Sử dụng CSS Grid để quản lý bố trí */
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 0px; /* Khoảng cách giữa các CardItem */
+}
+.title-category-of-products {
+  width: 100%;
+  height: 50px;
+  /* background-color: #f47d52; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  color: white;
+  font-size: 20px;
+  background: linear-gradient(
+    90deg,
+    /* rgb(255, 255, 255), */ rgb(59, 56, 55),
+    rgb(255, 255, 255)
+  );
+}
+.title-of-products {
+  width: 40%;
+  height: 50px;
+  /* background-color: #f47d52; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(90deg, rgb(255, 255, 255), rgb(9, 90, 49));
+  margin-bottom: 50px;
 }
 .category-gender {
   width: 100%;
@@ -95,30 +125,29 @@
 }
 @media screen and (max-width: 1170px) {
   .category-of-products {
-   display: none;
+    display: none;
   }
   .list-product {
     margin: 0 50px;
   }
-
 }
 @media screen and (max-width: 860px) {
   .list-product {
-    display: grid; 
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-gap: 0px; 
+    grid-gap: 0px;
   }
-  .box-products{
+  .box-products {
     padding: 70px;
   }
 }
 @media screen and (max-width: 580px) {
   .list-product {
-    display: grid; 
+    display: grid;
     grid-template-columns: repeat(1, 1fr);
-    grid-gap: 0px; 
+    grid-gap: 0px;
   }
-  .box-products{
+  .box-products {
     padding: 90px;
   }
 }

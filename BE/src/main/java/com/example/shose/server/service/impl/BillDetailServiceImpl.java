@@ -57,6 +57,11 @@ public class BillDetailServiceImpl implements BillDetailService {
     }
 
     @Override
+    public List<BillDetailResponse> findAllByIdBill(String id) {
+        return billDetailRepository.findByIdBill(id);
+    }
+
+    @Override
     public BillDetailResponse findBillById(String id) {
         return billDetailRepository.findBillById(id);
     }

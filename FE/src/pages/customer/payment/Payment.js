@@ -13,6 +13,8 @@ import "./style-payment.css";
 import { useCart } from "../cart/CartContext";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 dayjs.extend(utc);
 function Payment() {
   const { updateTotalQuantity } = useCart();
@@ -55,14 +57,15 @@ function Payment() {
     { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
-
+  const socket = new SockJS('http://localhost:8080/ws');
+  const stompClient = Stomp.over(socket);
   useEffect(() => {
     console.log(formErrors);
   }, [formErrors]);
   useEffect(() => {
     getCities();
     const totalPrice = listproductOfBill.reduce(
-      (total, item) => total + parseInt(item.price) * item.quantity,
+      (total, item) => total + parseInt((parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100)))* item.quantity),
       0
     );
     setTotalBill(totalPrice - voucher.value);
@@ -177,7 +180,7 @@ function Payment() {
       onOk() {
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: totalBillToPay,
+            vnp_Ammount: totalBillToPay+moneyShip,
             billDetail: formBill.billDetail
           };
           PaymentClientApi.paymentVnpay(data).then(
@@ -192,7 +195,7 @@ function Payment() {
         } else {
           BillClientApi.createBillOnline(formBill).then(
             (res) => {
-              console.log("thanh toán khi nhận hàng!");
+              stompClient.send('/app/notifyAdmin', {},  'Có đơn hàng mới' );
               const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
               const updatelist = cartLocal.filter((item) => {
                 return !formBill.billDetail.some(
@@ -570,7 +573,10 @@ function Payment() {
                             color: "#716b6b",
                           }}
                         >
-                          {formatMoney(item.price)}
+                        {item.valuePromotion !== null ? (
+                        <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
+                          item.price * (item.valuePromotion / 100)))}</span>
+                    ) : (formatMoney(item.price))}
                         </p>
                       </div>
                       <div style={{ display: "flex" }}>

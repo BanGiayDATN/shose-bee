@@ -9,5 +9,7 @@ public enum Status {
 
     KHONG_SU_DUNG,
 
-    HET_SAN_PHAM
+    HET_SAN_PHAM,
+    DA_DOC,
+    CHUA_DOC
 }
