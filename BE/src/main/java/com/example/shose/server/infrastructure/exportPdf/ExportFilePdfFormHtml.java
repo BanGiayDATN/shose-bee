@@ -17,7 +17,6 @@ import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
@@ -27,7 +26,6 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
@@ -185,9 +183,11 @@ public class ExportFilePdfFormHtml {
 
         BigDecimal totalPayment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.getId());
         invoice.setTotalPayment(formatter.format(totalPayment));
-        BigDecimal change = totalPayment.subtract(totalMoney);
+        BigDecimal change = totalPayment.add(bill.getItemDiscount()).subtract(totalMoney);
         invoice.setChange(formatter.format(change));
-
+        if (totalPayment.compareTo(totalMoney) == 0) {
+            invoice.setChange(formatter.format(new BigDecimal("0")));
+        }
         invoice.setPaymentsMethodRequests(paymentsMethodRequests);
         invoice.setItems(items);
 

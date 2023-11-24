@@ -123,12 +123,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var itemDiscount = voucher.discountPrice + exchangeRateMoney;
     if (accountuser != null && usePoin) {
-      if (poin < accountuser?.points) {
+      if ( poin > 0 && poin < accountuser?.points) {
         console.log(accountuser?.points);
-        itemDiscount = Math.round(totalBill) - voucher.discountPrice;
+        itemDiscount = Math.round(totalBill)
         if (isOpenDelivery) {
           itemDiscount =
-            Math.round(totalBill) - voucher.discountPrice + shipFee;
+            Math.round(totalBill) + shipFee;
         }
       }
     }
@@ -210,12 +210,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       }
       var itemDiscount = voucher.discountPrice + exchangeRateMoney;
       if (accountuser != null && usePoin) {
-        if (poin < accountuser?.points) {
+        if (poin > 0 && poin < accountuser?.points) {
           console.log(accountuser?.points);
-          itemDiscount = Math.round(totalBill) - voucher.discountPrice;
+          itemDiscount = Math.round(totalBill)
           if (isOpenDelivery) {
             itemDiscount =
-              Math.round(totalBill) - voucher.discountPrice + shipFee;
+              Math.round(totalBill) + shipFee;
           }
         }
       }
@@ -848,12 +848,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
     var itemDiscount = voucher.discountPrice + exchangeRateMoney;
     if (accountuser != null && usePoin) {
-      if (poin < accountuser?.points) {
+      if ( poin > 0 && poin < accountuser?.points) {
         console.log(accountuser?.points);
-        itemDiscount = Math.round(totalBill) - voucher.discountPrice;
+        itemDiscount = Math.round(totalBill) ;
         if (isOpenDelivery) {
           itemDiscount =
-            Math.round(totalBill) - voucher.discountPrice + shipFee;
+            Math.round(totalBill)  + shipFee;
         }
       }
     }
@@ -879,8 +879,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         products.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.price * currentValue.quantity;
         }, 0) +
-        ship -
-        exchangeRateMoney -
+        ship - exchangeRateMoney -
         voucher.discountPrice;
       dataPayMentTraSau = [
         {
@@ -1497,9 +1496,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ),
       vnp_TxnRef: billRequest.code + "-" + timeInMillis,
     };
-    if (exchangeRateMoney + voucher.discountPrice > totalBill) {
-      toast.warning(" Hóa đơn đã thanh toán bằng điểm");
-    } else {
+    if(exchangeRateMoney + voucher.discountPrice > totalBill ){
+      toast.warning(" Hóa đơn đã thanh toán bằng điểm")
+    }else if(Math.round(totaPayMent + voucher.discountPrice + exchangeRateMoney) == Math.round(totalBill+ ship)){
+      toast.warning(" Hóa đơn đã thanh toán đủ tiền")
+    }else{
       localStorage.setItem("code", billRequest.code);
       PaymentsMethodApi.paymentVnpay(data).then((res) => {
         window.open(res.data.data, "_self");
@@ -3055,7 +3056,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           </Row>
           <Row style={{ width: "100%", margin: "10px 0 " }}>
             <Col span={7} style={{ fontSize: "16px", fontWeight: "bold" }}>
-              Khách cần trả :
+              {  Math.max(
+                  0,dataPayment.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.totalMoney;
+              }, 0) <
+              products.reduce((accumulator, currentValue) => {
+                return (
+                  accumulator + currentValue.price * currentValue.quantity
+                );
+              }, 0) +
+                shipFee 
+                - exchangeRateMoney -
+                voucher.discountPrice)
+                ? "Tiền thiếu"
+                : "Tiền thừa"}
             </Col>
             <Col
               span={16}
