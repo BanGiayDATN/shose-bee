@@ -58,6 +58,9 @@ public class Bill extends PrimaryEntity {
     @Column(name = "delivery_date")
     private Long deliveryDate;
 
+    @Column(name = "shipping_time")
+    private Long shippingTime;
+
     @Column(name = "receive_date ")
     private Long receiveDate ;
 
@@ -75,6 +78,9 @@ public class Bill extends PrimaryEntity {
     private BigDecimal moneyShip;
 
     private int poinUse;
+
+    @Column(name = "qr_code_bill ")
+    private String qrcode;
 
     @Enumerated(EnumType.STRING)
     private StatusBill statusBill;

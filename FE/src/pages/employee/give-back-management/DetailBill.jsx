@@ -624,7 +624,8 @@ export default function DetailBillGiveBack() {
                     </Col>
                     <Col span={16}>
                       <span style={{ color: "black" }}>
-                        {moment(bill.deliveryDate).format("DD-MM-YYYY")}
+                        {bill.deliveryDate !== null &&
+                          moment(bill.deliveryDate).format("DD-MM-YYYY")}
                       </span>
                     </Col>
                   </Row>
@@ -654,7 +655,8 @@ export default function DetailBillGiveBack() {
                     </Col>
                     <Col span={16}>
                       <span style={{ color: "black" }}>
-                        {moment(bill.completionDate).format("DD-MM-YYYY")}
+                        {bill.completionDate !== null &&
+                          moment(bill.completionDate).format("DD-MM-YYYY")}
                       </span>
                     </Col>
                   </Row>

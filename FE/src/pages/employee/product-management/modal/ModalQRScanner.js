@@ -4,7 +4,7 @@ import { QrReader } from "react-qr-reader";
 
 const QRScannerModal = ({ visible, onCancel, onQRCodeScanned }) => {
   const [qrCode, setQRCode] = useState(null);
-  const qrReaderRef = useRef(null); 
+  const qrReaderRef = useRef(null);
 
   const handleScan = (data) => {
     if (data) {
@@ -39,7 +39,7 @@ const QRScannerModal = ({ visible, onCancel, onQRCodeScanned }) => {
       onCancel={handleCloseModal}
       footer={[
         <Button key="cancel" onClick={handleCloseModal}>
-          Cancel
+          Hủy
         </Button>,
       ]}
     >

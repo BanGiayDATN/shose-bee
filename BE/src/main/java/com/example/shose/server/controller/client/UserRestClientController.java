@@ -25,7 +25,6 @@ public class UserRestClientController {
 
     @GetMapping
     public ResponseObject getByEmail()  {
-        System.out.println(shoseSession.getCustomer().getEmail());
         return new ResponseObject(customerService.findByEmail(shoseSession.getCustomer().getEmail()));
     }
 }

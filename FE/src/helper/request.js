@@ -6,12 +6,7 @@ import {
   SetLoadingFalse,
   SetLoadingTrue,
 } from "../app/reducer/Loading.reducer";
-import {
-  deleteToken,
-  getToken,
-  getTokenCustomer,
-  getTokenEmpoloyee,
-} from "./useCookies";
+import { deleteToken, getTokenCustomer, getTokenEmpoloyee } from "./useCookies";
 
 export const request = axios.create({
   baseURL: AppConfig.apiUrl,
@@ -30,7 +25,6 @@ request.interceptors.request.use((config) => {
   const token = getTokenEmpoloyee();
 
   if (token) {
-    console.log(token);
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -40,7 +34,6 @@ requestCustomer.interceptors.request.use((config) => {
   store.dispatch(SetLoadingTrue());
   const token = getTokenCustomer();
   if (token) {
-    console.log(token);
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
