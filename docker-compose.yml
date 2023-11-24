@@ -13,7 +13,7 @@ services:
 
   # Container cho ứng dụng Spring Boot
   springboot-app:
-#    image: vinhnv06/server_shose:shose_version_1
+    image: vinhnv06/server_shose:shose_version_1
     container_name: springboot-container
     build:
       context: ./BE
@@ -28,7 +28,7 @@ services:
 
   # Container cho ứng dụng ReactJS
   react-app:
-#      image: vinhnv06/client_shose:shose_version_fe_1
+    image: vinhnv06/client_shose:shose_version_fe_1
     build:
       context: ./FE
     container_name: react-container

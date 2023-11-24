@@ -26,6 +26,7 @@ import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.*;
+import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
@@ -149,6 +150,9 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private ProductDetailGiveBackRepository productDetailGiveBackRepository;
+
+    @Autowired
+    private QRCodeAndCloudinary qrCodeAndCloudinary;
 
 
     @Override
@@ -352,16 +356,19 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill CreateCodeBill(String idEmployees) {
         Optional<Account> account = accountRepository.findById(idEmployees);
+        String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
+        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
                 .employees(account.get())
                 .typeBill(TypeBill.OFFLINE)
                 .statusBill(StatusBill.TAO_HOA_DON)
+                .qrcode(qrcode)
                 .userName("")
                 .note("")
                 .address("")
                 .phoneNumber("")
                 .email("")
-                .code("HD" + RandomStringUtils.randomNumeric(6))
+                .code(codeBill)
                 .itemDiscount(new BigDecimal("0"))
                 .totalMoney(new BigDecimal("0"))
                 .moneyShip(new BigDecimal("0")).build();
@@ -680,8 +687,12 @@ public class BillServiceImpl implements BillService {
 
             }
         }
+        String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
+        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
-                .code("HD" + RandomStringUtils.randomNumeric(6))
+                .code(codeBill)
+                .shippingTime(request.getShippingTime())
+                .qrcode(qrcode)
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
@@ -789,9 +800,13 @@ public class BillServiceImpl implements BillService {
             user.setPoints(user.getPoints() - request.getPoin());
             userReposiory.save(user);
         }
+        String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
+        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
-                .code("HD" + RandomStringUtils.randomNumeric(6))
+                .code(codeBill)
+                .qrcode(qrcode)
                 .phoneNumber(request.getPhoneNumber())
+                .shippingTime(request.getShippingTime())
                 .address(request.getAddress())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
@@ -990,6 +1005,7 @@ public class BillServiceImpl implements BillService {
         if (optional.get().getStatusBill().equals(StatusBill.DA_HUY)) {
             throw new RestApiException("Hóa đơn " + codeBill + " đã bị hủy.");
         }
+        
 
         if(optional.get().getStatusBill().equals(StatusBill.THANH_CONG)){
             long currentSeconds = System.currentTimeMillis();
