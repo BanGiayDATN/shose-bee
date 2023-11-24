@@ -25,9 +25,8 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
-import com.example.shose.server.entity.*;
+import com.example.shose.server.entity.Notification;
 import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
-import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
@@ -51,7 +50,6 @@ import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
 import com.example.shose.server.infrastructure.session.ShoseSession;
-import com.example.shose.server.repository.*;
 import com.example.shose.server.infrastructure.poin.ConfigPoin;
 import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
@@ -60,6 +58,7 @@ import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
+import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
@@ -87,6 +86,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 
@@ -337,7 +338,7 @@ public class BillServiceImpl implements BillService {
             VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        createFilePdfAtCounter(optional.get().getId());
+        CompletableFuture.runAsync(() -> createFilePdfAtCounter(optional.get().getId()), Executors.newCachedThreadPool());
         return optional.get();
     }
 
@@ -356,12 +357,10 @@ public class BillServiceImpl implements BillService {
     public Bill CreateCodeBill(String idEmployees) {
         Optional<Account> account = accountRepository.findById(idEmployees);
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
-        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
                 .employees(account.get())
                 .typeBill(TypeBill.OFFLINE)
                 .statusBill(StatusBill.TAO_HOA_DON)
-                .qrcode(qrcode)
                 .userName("")
                 .note("")
                 .address("")
@@ -687,11 +686,9 @@ public class BillServiceImpl implements BillService {
             }
         }
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
-        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
                 .code(codeBill)
                 .shippingTime(request.getShippingTime())
-                .qrcode(qrcode)
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
@@ -757,7 +754,7 @@ public class BillServiceImpl implements BillService {
             voucherDetailRepository.save(voucherDetail);
         }
 
-        sendMailOnline(bill.getId());
+        CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -800,10 +797,8 @@ public class BillServiceImpl implements BillService {
             userReposiory.save(user);
         }
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
-        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
                 .code(codeBill)
-                .qrcode(qrcode)
                 .phoneNumber(request.getPhoneNumber())
                 .shippingTime(request.getShippingTime())
                 .address(request.getAddress())
@@ -878,7 +873,7 @@ public class BillServiceImpl implements BillService {
             List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndProductDetail_Id(cart.getId(), x.getIdProductDetail());
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
-        sendMailOnline(bill.getId());
+        CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -960,19 +955,21 @@ public class BillServiceImpl implements BillService {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-        if(optional.get().getEmail() == null){
+        Bill bill = optional.get();
+        String email = bill.getEmail();
+        if(email == null){
             Context dataContext = exportFilePdfFormHtml.setData(invoice);
             finalHtml = springTemplateEngine.process("templateBill", dataContext);
-            exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
+            exportFilePdfFormHtml.htmlToPdf(finalHtml,  bill.getCode());
             return true;
         }
-        if (optional.get().getStatusBill() != StatusBill.THANH_CONG &&  !optional.get().getEmail().isEmpty()) {
+        if (bill.getStatusBill() != StatusBill.THANH_CONG &&  !email.isEmpty()) {
             invoice.setCheckShip(true);
-            sendMail(invoice, "http://localhost:3000/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
+              CompletableFuture.runAsync(() -> sendMail(invoice, "http://localhost:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml, bill.getCode());
 //     end   create file pdf
         return true;
     }
