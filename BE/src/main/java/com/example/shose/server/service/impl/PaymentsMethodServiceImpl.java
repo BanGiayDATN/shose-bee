@@ -377,6 +377,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(bill.get()).employees(bill.get().getEmployees()).build());
                } else {
                    if(bill.get().getAccount() != null){
                        User user = bill.get().getAccount().getUser();
@@ -388,7 +389,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        }
                        userReposiory.save(user);
                    }
-                   bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+                   bill.get().setStatusBill(StatusBill.XAC_NHAN);
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
                    billRepository.save(bill.get());
                }
                createFilePdfAtCounter(bill.get().getId());
@@ -572,8 +574,13 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-
-        if (optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())) {
+        if(optional.get().getEmail() == null){
+            Context dataContext = exportFilePdfFormHtml.setData(invoice);
+            finalHtml = springTemplateEngine.process("templateBill", dataContext);
+            exportFilePdfFormHtml.htmlToPdf(finalHtml, optional.get().getCode());
+            return true;
+        }
+        if (optional.get().getStatusBill() != StatusBill.THANH_CONG &&  !optional.get().getEmail().isEmpty()) {
             invoice.setCheckShip(true);
             sendMail(invoice, "http://localhost:3000/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
         }

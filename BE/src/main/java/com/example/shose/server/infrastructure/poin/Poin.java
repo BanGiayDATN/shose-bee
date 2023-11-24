@@ -21,22 +21,8 @@ public class Poin {
     @JsonProperty("exchangeRateMoney")
     private BigDecimal exchangeRateMoney;
 
-    @JsonProperty("discountBill")
-    private boolean discountBill;
-
-    @JsonProperty("discountProduct")
-    private boolean discountProduct;
-
-    @JsonProperty("paymentRewardPoints")
-    private boolean paymentRewardPoints;
-
-    @JsonProperty("quantityBill")
-    private BigDecimal quantityBill;
-
     @JsonProperty("minMoney")
     private BigDecimal minMoney;
-
-    // Getters and setters (hoặc sử dụng các annotation của Lombok để tự động tạo)
 
     public int ConvertMoneyToPoints(BigDecimal totalMoney){
         return totalMoney.divide(exchangeRatePoin, 0, BigDecimal.ROUND_DOWN).intValue();

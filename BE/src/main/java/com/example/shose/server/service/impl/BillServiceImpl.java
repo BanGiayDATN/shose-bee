@@ -279,12 +279,11 @@ public class BillServiceImpl implements BillService {
                     userReposiory.save(user);
                 }
             }
-            optional.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+            optional.get().setStatusBill(StatusBill.XAC_NHAN);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_VAN_CHUYEN).bill(optional.get()).employees(optional.get().getEmployees()).build());
-        }
+            }
 
         request.getPaymentsMethodRequests().forEach(item -> {
             if (item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null) {
@@ -895,7 +894,7 @@ public class BillServiceImpl implements BillService {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-        if (optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())) {
+        if (optional.get().getStatusBill() != StatusBill.THANH_CONG) {
             invoice.setTypeBill(true);
             invoice.setCheckShip(true);
         }
@@ -961,7 +960,13 @@ public class BillServiceImpl implements BillService {
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-        if (optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())) {
+        if(optional.get().getEmail() == null){
+            Context dataContext = exportFilePdfFormHtml.setData(invoice);
+            finalHtml = springTemplateEngine.process("templateBill", dataContext);
+            exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
+            return true;
+        }
+        if (optional.get().getStatusBill() != StatusBill.THANH_CONG &&  !optional.get().getEmail().isEmpty()) {
             invoice.setCheckShip(true);
             sendMail(invoice, "http://localhost:3000/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
         }
