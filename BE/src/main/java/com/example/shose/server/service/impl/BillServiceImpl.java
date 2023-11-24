@@ -956,7 +956,7 @@ public class BillServiceImpl implements BillService {
     }
 
     public boolean createFilePdfAtCounter(String idBill) {
-        //     begin   create file pdf
+        //     begin  create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
