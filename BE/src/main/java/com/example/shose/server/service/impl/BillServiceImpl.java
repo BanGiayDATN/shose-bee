@@ -356,12 +356,10 @@ public class BillServiceImpl implements BillService {
     public Bill CreateCodeBill(String idEmployees) {
         Optional<Account> account = accountRepository.findById(idEmployees);
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
-        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
                 .employees(account.get())
                 .typeBill(TypeBill.OFFLINE)
                 .statusBill(StatusBill.TAO_HOA_DON)
-                .qrcode(qrcode)
                 .userName("")
                 .note("")
                 .address("")
@@ -687,11 +685,9 @@ public class BillServiceImpl implements BillService {
             }
         }
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
-        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
                 .code(codeBill)
                 .shippingTime(request.getShippingTime())
-                .qrcode(qrcode)
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
@@ -800,10 +796,8 @@ public class BillServiceImpl implements BillService {
             userReposiory.save(user);
         }
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
-        String qrcode = qrCodeAndCloudinary.generateAndUploadQRCode(codeBill);
         Bill bill = Bill.builder()
                 .code(codeBill)
-                .qrcode(qrcode)
                 .phoneNumber(request.getPhoneNumber())
                 .shippingTime(request.getShippingTime())
                 .address(request.getAddress())
