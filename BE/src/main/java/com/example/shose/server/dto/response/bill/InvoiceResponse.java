@@ -34,6 +34,7 @@ public class InvoiceResponse {
     private Integer quantity;
     private String change;
     private List<InvoiceItemResponse> items;
+    private String qr;
     private List<InvoicePaymentResponse> paymentsMethodRequests;
 
 }

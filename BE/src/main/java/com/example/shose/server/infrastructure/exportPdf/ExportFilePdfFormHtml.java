@@ -7,6 +7,7 @@ import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.PaymentsMethod;
+import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
 import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -45,6 +46,9 @@ public class ExportFilePdfFormHtml {
 
     @Autowired
     private PaymentsMethodRepository paymentsMethodRepository;
+
+    @Autowired
+    private QRCodeAndCloudinary qrCodeAndCloudinary;
 
     @Autowired
     private ServletContext servletContext;
@@ -135,6 +139,7 @@ public class ExportFilePdfFormHtml {
                 .phoneNumber(bill.getPhoneNumber())
                 .address(bill.getAddress())
                 .userName(bill.getUserName())
+                .qr(qrCodeAndCloudinary.generateAndUploadQRCode(bill.getCode()))
                 .code(bill.getCode())
                 .ship(formatter.format(bill.getMoneyShip()))
                 .itemDiscount(formatter.format(bill.getItemDiscount()))

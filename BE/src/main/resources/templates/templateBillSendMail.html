@@ -43,6 +43,7 @@
     <div class="" style="margin-top: 10px; display: flex; justify-content: center">
       <p th:text="${'Mã hóa đơn: '+ invoice.code}"></p>
       <p style="margin-left: 30px" th:text="${ invoice.date}"></p>
+      <img style="position: absolute;top: 10px;right: 10px;" th:src="${invoice.qr}" alt="QR Code">
     </div>
   </div>
 </div>
