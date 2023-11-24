@@ -25,9 +25,8 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
-import com.example.shose.server.entity.*;
+import com.example.shose.server.entity.Notification;
 import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
-import com.example.shose.server.infrastructure.constant.*;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
@@ -51,7 +50,6 @@ import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
 import com.example.shose.server.infrastructure.session.ShoseSession;
-import com.example.shose.server.repository.*;
 import com.example.shose.server.infrastructure.poin.ConfigPoin;
 import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
@@ -60,6 +58,7 @@ import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
+import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
@@ -205,7 +204,6 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill save(String id, CreateBillOfflineRequest request) {
-        long startTime = System.currentTimeMillis();
         Optional<Bill> optional = billRepository.findByCode(request.getCode());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -340,11 +338,7 @@ public class BillServiceImpl implements BillService {
             VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        long endTime = System.currentTimeMillis();
-        System.out.println("Thời gian chạy1: " + (endTime - startTime) + " milliseconds");
-        createFilePdfAtCounter(optional.get().getId());
-        long endTime2 = System.currentTimeMillis();
-        System.out.println("Thời gian chạy2: " + (endTime2 - startTime) + " milliseconds");
+        CompletableFuture.runAsync(() -> createFilePdfAtCounter(optional.get().getId()), Executors.newCachedThreadPool());
         return optional.get();
     }
 
@@ -760,7 +754,7 @@ public class BillServiceImpl implements BillService {
             voucherDetailRepository.save(voucherDetail);
         }
 
-        sendMailOnline(bill.getId());
+        CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -879,7 +873,7 @@ public class BillServiceImpl implements BillService {
             List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndProductDetail_Id(cart.getId(), x.getIdProductDetail());
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
-        sendMailOnline(bill.getId());
+        CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -958,7 +952,6 @@ public class BillServiceImpl implements BillService {
 
     public boolean createFilePdfAtCounter(String idBill) {
         //     begin   create file pdf
-        long startTime = System.currentTimeMillis();
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
@@ -968,8 +961,6 @@ public class BillServiceImpl implements BillService {
             Context dataContext = exportFilePdfFormHtml.setData(invoice);
             finalHtml = springTemplateEngine.process("templateBill", dataContext);
             exportFilePdfFormHtml.htmlToPdf(finalHtml,  bill.getCode());
-            long endTime2 = System.currentTimeMillis();
-            System.out.println("Thời gian chạy pdf: " + (endTime2 - startTime) + " milliseconds");
             return true;
         }
         if (bill.getStatusBill() != StatusBill.THANH_CONG &&  !email.isEmpty()) {

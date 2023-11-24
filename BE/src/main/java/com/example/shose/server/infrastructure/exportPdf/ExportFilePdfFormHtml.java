@@ -123,7 +123,6 @@ public class ExportFilePdfFormHtml {
 
 
     public InvoiceResponse getInvoiceResponse(Bill bill) {
-        long startTime = System.currentTimeMillis();
         CompletableFuture<String> qrFuture = CompletableFuture.supplyAsync(() -> qrCodeAndCloudinary.generateAndUploadQRCode(bill.getCode()));
 
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.getId(), "THANH_CONG"));
@@ -131,12 +130,6 @@ public class ExportFilePdfFormHtml {
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
 
         NumberFormat formatter = formatCurrency();
-
-        // Thời gian chạy qr
-        long startTime2 = System.currentTimeMillis();
-//        String qr = qrCodeAndCloudinary.generateAndUploadQRCode(bill.getCode());
-        long endTime2 = System.currentTimeMillis();
-        System.out.println("Thời gian chạy qr: " + (endTime2 - startTime2) + " milliseconds");
 
         BigDecimal totalMoney = bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
 
@@ -212,8 +205,6 @@ public class ExportFilePdfFormHtml {
 
         try {
             invoice.setQr(qrFuture.join());
-            long endTime3 = System.currentTimeMillis();
-            System.out.println("Thời gian chạy get bill và qr: " + (endTime3 - startTime) + " milliseconds");
             return CompletableFuture.completedFuture(invoice).get();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
