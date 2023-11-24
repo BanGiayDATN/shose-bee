@@ -28,7 +28,6 @@ import moment from "moment/moment";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import { toast } from "react-toastify";
 
-const { Option } = Select;
 
 const ModalAccountEmployee = ({ dataIdCheck, handleCancel, status }) => {
   const [listAddress, setListAddress] = useState([]);

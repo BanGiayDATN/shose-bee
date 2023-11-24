@@ -13,6 +13,8 @@ import "./style-payment.css";
 import { useCart } from "../cart/CartContext";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 dayjs.extend(utc);
 function Payment() {
   const { updateTotalQuantity } = useCart();
@@ -55,14 +57,21 @@ function Payment() {
     { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
-
+  const socket = new SockJS("http://localhost:8080/ws");
+  const stompClient = Stomp.over(socket);
   useEffect(() => {
     console.log(formErrors);
   }, [formErrors]);
   useEffect(() => {
     getCities();
     const totalPrice = listproductOfBill.reduce(
-      (total, item) => total + parseInt(item.price) * item.quantity,
+      (total, item) =>
+        total +
+        parseInt(
+          (parseInt(item.price) -
+            parseInt(item.price) * (item.valuePromotion / 100)) *
+            item.quantity
+        ),
       0
     );
     setTotalBill(totalPrice - voucher.value);
@@ -143,13 +152,13 @@ function Payment() {
         phoneNumber: !formBill.phoneNumber
           ? "Vui lòng nhập số điện thoại"
           : !phoneNumberPattern.test(formBill.phoneNumber)
-            ? "Vui lòng nhập đúng định dạng số điện thoại"
-            : "",
+          ? "Vui lòng nhập đúng định dạng số điện thoại"
+          : "",
         email: !formBill.email
           ? "Vui lòng nhập email"
           : !emailPattern.test(formBill.email)
-            ? "Vui lòng nhập đúng định dạng email"
-            : "",
+          ? "Vui lòng nhập đúng định dạng email"
+          : "",
         address: !formBill.address ? "Vui lòng nhập địa chỉ" : "",
         province:
           formBill.province === undefined || !formBill.province
@@ -175,24 +184,31 @@ function Payment() {
       okType: "primary",
       cancelText: "Hủy",
       onOk() {
+        const dayShipObject = dayjs(dayShip, "DD-MM-YYYY");
+        const shippingTime = dayShipObject.diff(dayjs(), "millisecond");
+        const dataBillSave = {
+          ...formBill,
+          shippingTime: shippingTime,
+        };
+
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: totalBillToPay,
-            billDetail: formBill.billDetail
+            vnp_Ammount: totalBillToPay + moneyShip,
+            billDetail: formBill.billDetail,
           };
           PaymentClientApi.paymentVnpay(data).then(
             (res) => {
               window.location.replace(res.data.data);
-              sessionStorage.setItem("formBill", JSON.stringify(formBill));
+              sessionStorage.setItem("formBill", JSON.stringify(dataBillSave));
             },
             (err) => {
               console.log(err);
             }
           );
         } else {
-          BillClientApi.createBillOnline(formBill).then(
+          BillClientApi.createBillOnline(dataBillSave).then(
             (res) => {
-              console.log("thanh toán khi nhận hàng!");
+              stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
               const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
               const updatelist = cartLocal.filter((item) => {
                 return !formBill.billDetail.some(
@@ -209,8 +225,7 @@ function Payment() {
               toast.success("Bạn đặt hàng thành công.");
               navigate(`/home`);
             },
-            (err) => {
-            }
+            (err) => {}
           );
         }
       },
@@ -518,15 +533,17 @@ function Payment() {
               <div className="title-method-payment">PHƯƠNG THỨC THANH TOÁN</div>
               <div className="method-payment">
                 <div
-                  className={`payment-when-recevie ${keyMethodPayment === "paymentReceive" ? "click" : ""
-                    }`}
+                  className={`payment-when-recevie ${
+                    keyMethodPayment === "paymentReceive" ? "click" : ""
+                  }`}
                   onClick={paymentReceive}
                 >
                   Thanh toán khi nhận hàng
                 </div>
                 <div
-                  className={`payment-by-vnpay ${keyMethodPayment === "paymentVnpay" ? "click" : ""
-                    }`}
+                  className={`payment-by-vnpay ${
+                    keyMethodPayment === "paymentVnpay" ? "click" : ""
+                  }`}
                   onClick={paymentVnpay}
                 >
                   Thanh toán VnPay{" "}
@@ -570,7 +587,17 @@ function Payment() {
                             color: "#716b6b",
                           }}
                         >
-                          {formatMoney(item.price)}
+                          {item.valuePromotion !== null ? (
+                            <span style={{ marginLeft: 5 }}>
+                              {" "}
+                              {formatMoney(
+                                item.price -
+                                  item.price * (item.valuePromotion / 100)
+                              )}
+                            </span>
+                          ) : (
+                            formatMoney(item.price)
+                          )}
                         </p>
                       </div>
                       <div style={{ display: "flex" }}>

@@ -52,6 +52,7 @@ function UpdatePromotionManagement() {
   useEffect(() => {
     console.log(id);
     if (id !== null) {
+      console.log(id);
       PromotionApi.getOne(id).then(
         (res) => {
           console.log(res.data.data);
@@ -67,6 +68,7 @@ function UpdatePromotionManagement() {
 
           if (getDetailPromotion.product !== null) {
             setSelectedRowKeys(getDetailPromotion.product.split(","));
+            console.log(getDetailPromotion.product.split(","));
           } else {
             setSelectedRowKeys([]);
           }
@@ -560,9 +562,9 @@ function UpdatePromotionManagement() {
                         className="status"
                         name="status"
                         value={
-                          formData["status"] === "DANG_SU_DUNG"
+                          formData["status"] === "DANG_KICH_HOAT"
                             ? "Còn hạn"
-                            : "Hết hạn" || ""
+                            : (formData["status"] === "CHUA_KICH_HOAT" ? "Chưa kích hoạt": "Hết hạn") || ""
                         }
                       ></Input>
                     )}

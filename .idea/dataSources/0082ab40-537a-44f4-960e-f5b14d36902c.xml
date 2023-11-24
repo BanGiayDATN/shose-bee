@@ -1044,1602 +1044,1679 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <table id="306" parent="275" name="promotion">
+    <table id="306" parent="275" name="product_detail_give_back">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <table id="307" parent="275" name="promotion_product_detail">
+    <table id="307" parent="275" name="promotion">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <table id="308" parent="275" name="size">
+    <table id="308" parent="275" name="promotion_product_detail">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <table id="309" parent="275" name="sole">
+    <table id="309" parent="275" name="size">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <table id="310" parent="275" name="user">
+    <table id="310" parent="275" name="sole">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <table id="311" parent="275" name="voucher">
+    <table id="311" parent="275" name="user">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <table id="312" parent="275" name="voucher_detail">
+    <table id="312" parent="275" name="voucher">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <column id="313" parent="288" name="created_date">
+    <table id="313" parent="275" name="voucher_detail">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <column id="314" parent="288" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="314" parent="288" name="last_modified_date">
+    <column id="315" parent="288" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="315" parent="288" name="id">
+    <column id="316" parent="288" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="316" parent="288" name="id_user">
+    <column id="317" parent="288" name="id_user">
       <DasType>varchar(36)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="317" parent="288" name="created_by">
+    <column id="318" parent="288" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="318" parent="288" name="email">
+    <column id="319" parent="288" name="email">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="319" parent="288" name="password">
+    <column id="320" parent="288" name="password">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="320" parent="288" name="roles">
+    <column id="321" parent="288" name="roles">
       <DasType>enum(&apos;ROLE_ADMIN&apos;, &apos;ROLE_EMLOYEE&apos;, &apos;ROLE_USER&apos;)|0e</DasType>
       <Position>8</Position>
     </column>
-    <column id="321" parent="288" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="322" parent="288" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>9</Position>
     </column>
-    <column id="322" parent="288" name="updated_by">
+    <column id="323" parent="288" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>10</Position>
     </column>
-    <foreign-key id="323" parent="288" name="FKr738a8wol7on2r69xf3iuvggx">
+    <foreign-key id="324" parent="288" name="FKr738a8wol7on2r69xf3iuvggx">
       <ColNames>id_user</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>user</RefTableName>
     </foreign-key>
-    <index id="324" parent="288" name="PRIMARY">
+    <index id="325" parent="288" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="325" parent="288" name="UK_mfisqiulqmeyv1vpx65qqcbvq">
+    <index id="326" parent="288" name="UK_mfisqiulqmeyv1vpx65qqcbvq">
       <ColNames>id_user</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="326" parent="288" name="PRIMARY">
+    <key id="327" parent="288" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="327" parent="288" name="UK_mfisqiulqmeyv1vpx65qqcbvq">
+    <key id="328" parent="288" name="UK_mfisqiulqmeyv1vpx65qqcbvq">
       <UnderlyingIndexName>UK_mfisqiulqmeyv1vpx65qqcbvq</UnderlyingIndexName>
     </key>
-    <column id="328" parent="289" name="created_date">
+    <column id="329" parent="289" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="329" parent="289" name="last_modified_date">
+    <column id="330" parent="289" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="330" parent="289" name="id">
+    <column id="331" parent="289" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="331" parent="289" name="id_account">
+    <column id="332" parent="289" name="id_account">
       <DasType>varchar(36)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="332" parent="289" name="id_voucher">
+    <column id="333" parent="289" name="id_voucher">
       <DasType>varchar(36)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="333" parent="289" name="created_by">
+    <column id="334" parent="289" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="334" parent="289" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="335" parent="289" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>7</Position>
     </column>
-    <column id="335" parent="289" name="updated_by">
+    <column id="336" parent="289" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <foreign-key id="336" parent="289" name="FKil2ashr2fsbud68imclbulg8l">
+    <foreign-key id="337" parent="289" name="FKil2ashr2fsbud68imclbulg8l">
       <ColNames>id_account</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>account</RefTableName>
     </foreign-key>
-    <foreign-key id="337" parent="289" name="FKjdr01isgepf83uwbbafckunnt">
+    <foreign-key id="338" parent="289" name="FKjdr01isgepf83uwbbafckunnt">
       <ColNames>id_voucher</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>voucher</RefTableName>
     </foreign-key>
-    <index id="338" parent="289" name="PRIMARY">
+    <index id="339" parent="289" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="339" parent="289" name="FKil2ashr2fsbud68imclbulg8l">
+    <index id="340" parent="289" name="FKil2ashr2fsbud68imclbulg8l">
       <ColNames>id_account</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="340" parent="289" name="FKjdr01isgepf83uwbbafckunnt">
+    <index id="341" parent="289" name="FKjdr01isgepf83uwbbafckunnt">
       <ColNames>id_voucher</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="341" parent="289" name="PRIMARY">
+    <key id="342" parent="289" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="342" parent="290" name="province_id">
+    <column id="343" parent="290" name="province_id">
       <DasType>int(11)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="343" parent="290" name="to_district_id">
+    <column id="344" parent="290" name="to_district_id">
       <DasType>int(11)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="344" parent="290" name="created_date">
+    <column id="345" parent="290" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="345" parent="290" name="last_modified_date">
+    <column id="346" parent="290" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="346" parent="290" name="id">
+    <column id="347" parent="290" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
-    <column id="347" parent="290" name="id_user">
+    <column id="348" parent="290" name="id_user">
       <DasType>varchar(36)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="348" parent="290" name="created_by">
+    <column id="349" parent="290" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="349" parent="290" name="district">
+    <column id="350" parent="290" name="district">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="350" parent="290" name="full_name">
+    <column id="351" parent="290" name="full_name">
       <DasType>varchar(255)|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="351" parent="290" name="line">
+    <column id="352" parent="290" name="line">
       <DasType>varchar(255)|0s</DasType>
       <Position>10</Position>
     </column>
-    <column id="352" parent="290" name="phone_number">
+    <column id="353" parent="290" name="phone_number">
       <DasType>varchar(255)|0s</DasType>
       <Position>11</Position>
     </column>
-    <column id="353" parent="290" name="province">
+    <column id="354" parent="290" name="province">
       <DasType>varchar(255)|0s</DasType>
       <Position>12</Position>
     </column>
-    <column id="354" parent="290" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="355" parent="290" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>13</Position>
     </column>
-    <column id="355" parent="290" name="updated_by">
+    <column id="356" parent="290" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>14</Position>
     </column>
-    <column id="356" parent="290" name="ward">
+    <column id="357" parent="290" name="ward">
       <DasType>varchar(255)|0s</DasType>
       <Position>15</Position>
     </column>
-    <column id="357" parent="290" name="ward_code">
+    <column id="358" parent="290" name="ward_code">
       <DasType>varchar(255)|0s</DasType>
       <Position>16</Position>
     </column>
-    <foreign-key id="358" parent="290" name="FKpmtr515lcs96s5mnrhbakm097">
+    <foreign-key id="359" parent="290" name="FKpmtr515lcs96s5mnrhbakm097">
       <ColNames>id_user</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>user</RefTableName>
     </foreign-key>
-    <index id="359" parent="290" name="PRIMARY">
+    <index id="360" parent="290" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="360" parent="290" name="FKpmtr515lcs96s5mnrhbakm097">
+    <index id="361" parent="290" name="FKpmtr515lcs96s5mnrhbakm097">
       <ColNames>id_user</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="361" parent="290" name="PRIMARY">
+    <key id="362" parent="290" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="362" parent="291" name="item_discount">
+    <column id="363" parent="291" name="item_discount">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="363" parent="291" name="money_ship">
+    <column id="364" parent="291" name="money_ship">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="364" parent="291" name="total_money">
-      <DasType>decimal(38,2 digit)|0s</DasType>
+    <column id="365" parent="291" name="poin_use">
+      <DasType>int(11)|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="365" parent="291" name="completion_date">
-      <DasType>bigint(20)|0s</DasType>
+    <column id="366" parent="291" name="total_money">
+      <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="366" parent="291" name="confirmation_date">
+    <column id="367" parent="291" name="completion_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="367" parent="291" name="created_date">
+    <column id="368" parent="291" name="confirmation_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="368" parent="291" name="delivery_date">
+    <column id="369" parent="291" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="369" parent="291" name="last_modified_date">
+    <column id="370" parent="291" name="delivery_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="370" parent="291" name="receive_date">
+    <column id="371" parent="291" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="371" parent="291" name="id">
-      <DasType>varchar(36)|0s</DasType>
-      <NotNull>1</NotNull>
+    <column id="372" parent="291" name="receive_date">
+      <DasType>bigint(20)|0s</DasType>
       <Position>10</Position>
     </column>
-    <column id="372" parent="291" name="id_account">
+    <column id="373" parent="291" name="id">
       <DasType>varchar(36)|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>11</Position>
     </column>
-    <column id="373" parent="291" name="id_customer">
+    <column id="374" parent="291" name="id_account">
       <DasType>varchar(36)|0s</DasType>
       <Position>12</Position>
     </column>
-    <column id="374" parent="291" name="id_employees">
+    <column id="375" parent="291" name="id_customer">
       <DasType>varchar(36)|0s</DasType>
       <Position>13</Position>
     </column>
-    <column id="375" parent="291" name="address">
-      <DasType>varchar(255)|0s</DasType>
+    <column id="376" parent="291" name="id_employees">
+      <DasType>varchar(36)|0s</DasType>
       <Position>14</Position>
     </column>
-    <column id="376" parent="291" name="code">
+    <column id="377" parent="291" name="address">
       <DasType>varchar(255)|0s</DasType>
       <Position>15</Position>
     </column>
-    <column id="377" parent="291" name="created_by">
+    <column id="378" parent="291" name="code">
       <DasType>varchar(255)|0s</DasType>
       <Position>16</Position>
     </column>
-    <column id="378" parent="291" name="email">
+    <column id="379" parent="291" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>17</Position>
     </column>
-    <column id="379" parent="291" name="note">
+    <column id="380" parent="291" name="email">
       <DasType>varchar(255)|0s</DasType>
       <Position>18</Position>
     </column>
-    <column id="380" parent="291" name="phone_number">
+    <column id="381" parent="291" name="note">
       <DasType>varchar(255)|0s</DasType>
       <Position>19</Position>
     </column>
-    <column id="381" parent="291" name="status_bill">
-      <DasType>enum(&apos;CHO_VAN_CHUYEN&apos;, &apos;CHO_XAC_NHAN&apos;, &apos;DA_HUY&apos;, &apos;DA_THANH_TOAN&apos;, &apos;TAO_HOA_DON&apos;, &apos;THANH_CONG&apos;, &apos;TRA_HANG&apos;, &apos;VAN_CHUYEN&apos;, &apos;XAC_NHAN&apos;)|0e</DasType>
+    <column id="382" parent="291" name="phone_number">
+      <DasType>varchar(255)|0s</DasType>
       <Position>20</Position>
     </column>
-    <column id="382" parent="291" name="type">
-      <DasType>enum(&apos;OFFLINE&apos;, &apos;ONLINE&apos;)|0e</DasType>
+    <column id="383" parent="291" name="status_bill">
+      <DasType>enum(&apos;CHO_VAN_CHUYEN&apos;, &apos;CHO_XAC_NHAN&apos;, &apos;DA_HUY&apos;, &apos;DA_THANH_TOAN&apos;, &apos;TAO_HOA_DON&apos;, &apos;THANH_CONG&apos;, &apos;TRA_HANG&apos;, &apos;VAN_CHUYEN&apos;, &apos;XAC_NHAN&apos;)|0e</DasType>
       <Position>21</Position>
     </column>
-    <column id="383" parent="291" name="updated_by">
-      <DasType>varchar(255)|0s</DasType>
+    <column id="384" parent="291" name="type">
+      <DasType>enum(&apos;OFFLINE&apos;, &apos;ONLINE&apos;)|0e</DasType>
       <Position>22</Position>
     </column>
-    <column id="384" parent="291" name="user_name">
+    <column id="385" parent="291" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>23</Position>
     </column>
-    <foreign-key id="385" parent="291" name="FKtc4upfd79unhwfqo7iem118lv">
+    <column id="386" parent="291" name="user_name">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>24</Position>
+    </column>
+    <foreign-key id="387" parent="291" name="FKtc4upfd79unhwfqo7iem118lv">
       <ColNames>id_account</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>account</RefTableName>
     </foreign-key>
-    <foreign-key id="386" parent="291" name="FKfhkxwb71lvn1t7d0l234hxywa">
+    <foreign-key id="388" parent="291" name="FKfhkxwb71lvn1t7d0l234hxywa">
       <ColNames>id_customer</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>customer</RefTableName>
     </foreign-key>
-    <foreign-key id="387" parent="291" name="FKkeqk1fp13v425tc98dsxk2svt">
+    <foreign-key id="389" parent="291" name="FKkeqk1fp13v425tc98dsxk2svt">
       <ColNames>id_employees</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>account</RefTableName>
     </foreign-key>
-    <index id="388" parent="291" name="PRIMARY">
+    <index id="390" parent="291" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="389" parent="291" name="FKtc4upfd79unhwfqo7iem118lv">
+    <index id="391" parent="291" name="FKtc4upfd79unhwfqo7iem118lv">
       <ColNames>id_account</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="390" parent="291" name="FKfhkxwb71lvn1t7d0l234hxywa">
+    <index id="392" parent="291" name="FKfhkxwb71lvn1t7d0l234hxywa">
       <ColNames>id_customer</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="391" parent="291" name="FKkeqk1fp13v425tc98dsxk2svt">
+    <index id="393" parent="291" name="FKkeqk1fp13v425tc98dsxk2svt">
       <ColNames>id_employees</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="392" parent="291" name="PRIMARY">
+    <key id="394" parent="291" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="393" parent="292" name="price">
+    <column id="395" parent="292" name="price">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="394" parent="292" name="promotion">
+    <column id="396" parent="292" name="promotion">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="395" parent="292" name="quantity">
+    <column id="397" parent="292" name="quantity">
       <DasType>int(11)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="396" parent="292" name="created_date">
+    <column id="398" parent="292" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="397" parent="292" name="last_modified_date">
+    <column id="399" parent="292" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="398" parent="292" name="id">
+    <column id="400" parent="292" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
-    <column id="399" parent="292" name="id_bill">
+    <column id="401" parent="292" name="id_bill">
       <DasType>varchar(36)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="400" parent="292" name="id_product_detail">
+    <column id="402" parent="292" name="id_product_detail">
       <DasType>varchar(36)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="401" parent="292" name="created_by">
+    <column id="403" parent="292" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="402" parent="292" name="status_bill">
+    <column id="404" parent="292" name="status_bill">
       <DasType>enum(&apos;CHO_VAN_CHUYEN&apos;, &apos;CHO_XAC_NHAN&apos;, &apos;DA_HUY&apos;, &apos;DA_THANH_TOAN&apos;, &apos;TAO_HOA_DON&apos;, &apos;THANH_CONG&apos;, &apos;TRA_HANG&apos;, &apos;VAN_CHUYEN&apos;, &apos;XAC_NHAN&apos;)|0e</DasType>
       <Position>10</Position>
     </column>
-    <column id="403" parent="292" name="updated_by">
+    <column id="405" parent="292" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>11</Position>
     </column>
-    <foreign-key id="404" parent="292" name="FKiu3wwq39mr69wsbklret9mtki">
+    <foreign-key id="406" parent="292" name="FKiu3wwq39mr69wsbklret9mtki">
       <ColNames>id_bill</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>bill</RefTableName>
     </foreign-key>
-    <foreign-key id="405" parent="292" name="FKcpo5ddp6aci7g8f4jjaj6730n">
+    <foreign-key id="407" parent="292" name="FKcpo5ddp6aci7g8f4jjaj6730n">
       <ColNames>id_product_detail</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>product_detail</RefTableName>
     </foreign-key>
-    <index id="406" parent="292" name="PRIMARY">
+    <index id="408" parent="292" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="407" parent="292" name="FKiu3wwq39mr69wsbklret9mtki">
+    <index id="409" parent="292" name="FKiu3wwq39mr69wsbklret9mtki">
       <ColNames>id_bill</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="408" parent="292" name="FKcpo5ddp6aci7g8f4jjaj6730n">
+    <index id="410" parent="292" name="FKcpo5ddp6aci7g8f4jjaj6730n">
       <ColNames>id_product_detail</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="409" parent="292" name="PRIMARY">
+    <key id="411" parent="292" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="410" parent="293" name="created_date">
+    <column id="412" parent="293" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="411" parent="293" name="last_modified_date">
+    <column id="413" parent="293" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="412" parent="293" name="id">
+    <column id="414" parent="293" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="413" parent="293" name="id_bill">
+    <column id="415" parent="293" name="id_bill">
       <DasType>varchar(36)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="414" parent="293" name="id_employees">
+    <column id="416" parent="293" name="id_employees">
       <DasType>varchar(36)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="415" parent="293" name="action_description">
+    <column id="417" parent="293" name="action_description">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="416" parent="293" name="created_by">
+    <column id="418" parent="293" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="417" parent="293" name="status_bill">
+    <column id="419" parent="293" name="status_bill">
       <DasType>enum(&apos;CHO_VAN_CHUYEN&apos;, &apos;CHO_XAC_NHAN&apos;, &apos;DA_HUY&apos;, &apos;DA_THANH_TOAN&apos;, &apos;TAO_HOA_DON&apos;, &apos;THANH_CONG&apos;, &apos;TRA_HANG&apos;, &apos;VAN_CHUYEN&apos;, &apos;XAC_NHAN&apos;)|0e</DasType>
       <Position>8</Position>
     </column>
-    <column id="418" parent="293" name="updated_by">
+    <column id="420" parent="293" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>9</Position>
     </column>
-    <foreign-key id="419" parent="293" name="FKs3bxwm3kx9ats78kht029sgi6">
+    <foreign-key id="421" parent="293" name="FKs3bxwm3kx9ats78kht029sgi6">
       <ColNames>id_bill</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>bill</RefTableName>
     </foreign-key>
-    <foreign-key id="420" parent="293" name="FK7sp1p0scmgwg3v9bx4estdjot">
+    <foreign-key id="422" parent="293" name="FK7sp1p0scmgwg3v9bx4estdjot">
       <ColNames>id_employees</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>account</RefTableName>
     </foreign-key>
-    <index id="421" parent="293" name="PRIMARY">
+    <index id="423" parent="293" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="422" parent="293" name="FKs3bxwm3kx9ats78kht029sgi6">
+    <index id="424" parent="293" name="FKs3bxwm3kx9ats78kht029sgi6">
       <ColNames>id_bill</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="423" parent="293" name="FK7sp1p0scmgwg3v9bx4estdjot">
+    <index id="425" parent="293" name="FK7sp1p0scmgwg3v9bx4estdjot">
       <ColNames>id_employees</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="424" parent="293" name="PRIMARY">
+    <key id="426" parent="293" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="425" parent="294" name="created_date">
+    <column id="427" parent="294" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="426" parent="294" name="last_modified_date">
+    <column id="428" parent="294" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="427" parent="294" name="id">
+    <column id="429" parent="294" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="428" parent="294" name="created_by">
+    <column id="430" parent="294" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="429" parent="294" name="name">
+    <column id="431" parent="294" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="430" parent="294" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="432" parent="294" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>6</Position>
     </column>
-    <column id="431" parent="294" name="updated_by">
+    <column id="433" parent="294" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <index id="432" parent="294" name="PRIMARY">
+    <index id="434" parent="294" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="433" parent="294" name="PRIMARY">
+    <key id="435" parent="294" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="434" parent="295" name="created_date">
+    <column id="436" parent="295" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="435" parent="295" name="last_modified_date">
+    <column id="437" parent="295" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="436" parent="295" name="id">
+    <column id="438" parent="295" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="437" parent="295" name="id_account">
+    <column id="439" parent="295" name="id_account">
       <DasType>varchar(36)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="438" parent="295" name="created_by">
+    <column id="440" parent="295" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="439" parent="295" name="updated_by">
+    <column id="441" parent="295" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <foreign-key id="440" parent="295" name="FKldb5k6mk67oudki8jgt7ri03h">
+    <foreign-key id="442" parent="295" name="FKldb5k6mk67oudki8jgt7ri03h">
       <ColNames>id_account</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>account</RefTableName>
     </foreign-key>
-    <index id="441" parent="295" name="PRIMARY">
+    <index id="443" parent="295" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="442" parent="295" name="UK_7ci11mfeso55kc1d8ou1qhc6k">
+    <index id="444" parent="295" name="UK_7ci11mfeso55kc1d8ou1qhc6k">
       <ColNames>id_account</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="443" parent="295" name="PRIMARY">
+    <key id="445" parent="295" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="444" parent="295" name="UK_7ci11mfeso55kc1d8ou1qhc6k">
+    <key id="446" parent="295" name="UK_7ci11mfeso55kc1d8ou1qhc6k">
       <UnderlyingIndexName>UK_7ci11mfeso55kc1d8ou1qhc6k</UnderlyingIndexName>
     </key>
-    <column id="445" parent="296" name="price">
+    <column id="447" parent="296" name="price">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="446" parent="296" name="quantity">
+    <column id="448" parent="296" name="quantity">
       <DasType>int(11)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="447" parent="296" name="created_date">
+    <column id="449" parent="296" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="448" parent="296" name="last_modified_date">
+    <column id="450" parent="296" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="449" parent="296" name="id">
+    <column id="451" parent="296" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
-    <column id="450" parent="296" name="id_cart">
+    <column id="452" parent="296" name="id_cart">
       <DasType>varchar(36)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="451" parent="296" name="id_product_detail">
+    <column id="453" parent="296" name="id_product_detail">
       <DasType>varchar(36)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="452" parent="296" name="created_by">
+    <column id="454" parent="296" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="453" parent="296" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="455" parent="296" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>9</Position>
     </column>
-    <column id="454" parent="296" name="updated_by">
+    <column id="456" parent="296" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>10</Position>
     </column>
-    <foreign-key id="455" parent="296" name="FKh5pbblis7iw2kog1cponwqb9c">
+    <foreign-key id="457" parent="296" name="FKh5pbblis7iw2kog1cponwqb9c">
       <ColNames>id_cart</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>cart</RefTableName>
     </foreign-key>
-    <foreign-key id="456" parent="296" name="FKdfxy2d5s6cke2rwma1u3w68en">
+    <foreign-key id="458" parent="296" name="FKdfxy2d5s6cke2rwma1u3w68en">
       <ColNames>id_product_detail</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>product_detail</RefTableName>
     </foreign-key>
-    <index id="457" parent="296" name="PRIMARY">
+    <index id="459" parent="296" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="458" parent="296" name="FKh5pbblis7iw2kog1cponwqb9c">
+    <index id="460" parent="296" name="FKh5pbblis7iw2kog1cponwqb9c">
       <ColNames>id_cart</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="459" parent="296" name="FKdfxy2d5s6cke2rwma1u3w68en">
+    <index id="461" parent="296" name="FKdfxy2d5s6cke2rwma1u3w68en">
       <ColNames>id_product_detail</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="460" parent="296" name="PRIMARY">
+    <key id="462" parent="296" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="461" parent="297" name="created_date">
+    <column id="463" parent="297" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="462" parent="297" name="last_modified_date">
+    <column id="464" parent="297" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="463" parent="297" name="id">
+    <column id="465" parent="297" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="464" parent="297" name="created_by">
+    <column id="466" parent="297" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="465" parent="297" name="name">
+    <column id="467" parent="297" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="466" parent="297" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="468" parent="297" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>6</Position>
     </column>
-    <column id="467" parent="297" name="updated_by">
+    <column id="469" parent="297" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <index id="468" parent="297" name="PRIMARY">
+    <index id="470" parent="297" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="469" parent="297" name="PRIMARY">
+    <key id="471" parent="297" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="470" parent="298" name="created_date">
+    <column id="472" parent="298" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="471" parent="298" name="last_modified_date">
+    <column id="473" parent="298" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="472" parent="298" name="id">
+    <column id="474" parent="298" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="473" parent="298" name="code">
+    <column id="475" parent="298" name="code">
       <DasType>varchar(255)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="474" parent="298" name="created_by">
+    <column id="476" parent="298" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="475" parent="298" name="name">
+    <column id="477" parent="298" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="476" parent="298" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="478" parent="298" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>7</Position>
     </column>
-    <column id="477" parent="298" name="updated_by">
+    <column id="479" parent="298" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <index id="478" parent="298" name="PRIMARY">
+    <index id="480" parent="298" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="479" parent="298" name="PRIMARY">
+    <key id="481" parent="298" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="480" parent="299" name="created_date">
+    <column id="482" parent="299" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="481" parent="299" name="last_modified_date">
+    <column id="483" parent="299" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="482" parent="299" name="id">
+    <column id="484" parent="299" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="483" parent="299" name="created_by">
+    <column id="485" parent="299" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="484" parent="299" name="email">
+    <column id="486" parent="299" name="email">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="485" parent="299" name="full_name">
+    <column id="487" parent="299" name="full_name">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="486" parent="299" name="phone_number">
+    <column id="488" parent="299" name="phone_number">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="487" parent="299" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="489" parent="299" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>8</Position>
     </column>
-    <column id="488" parent="299" name="updated_by">
+    <column id="490" parent="299" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>9</Position>
     </column>
-    <index id="489" parent="299" name="PRIMARY">
+    <index id="491" parent="299" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="490" parent="299" name="PRIMARY">
+    <key id="492" parent="299" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="491" parent="300" name="status">
+    <column id="493" parent="300" name="status">
       <DasType>bit(1)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="492" parent="300" name="created_date">
+    <column id="494" parent="300" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="493" parent="300" name="last_modified_date">
+    <column id="495" parent="300" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="494" parent="300" name="id">
+    <column id="496" parent="300" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <column id="495" parent="300" name="id_product_detail">
+    <column id="497" parent="300" name="id_product_detail">
       <DasType>varchar(36)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="496" parent="300" name="created_by">
+    <column id="498" parent="300" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="497" parent="300" name="name">
+    <column id="499" parent="300" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="498" parent="300" name="updated_by">
+    <column id="500" parent="300" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <foreign-key id="499" parent="300" name="FKs4kpgowlj28nnxbw7r2gk3m9r">
+    <foreign-key id="501" parent="300" name="FKs4kpgowlj28nnxbw7r2gk3m9r">
       <ColNames>id_product_detail</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>product_detail</RefTableName>
     </foreign-key>
-    <index id="500" parent="300" name="PRIMARY">
+    <index id="502" parent="300" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="501" parent="300" name="FKs4kpgowlj28nnxbw7r2gk3m9r">
+    <index id="503" parent="300" name="FKs4kpgowlj28nnxbw7r2gk3m9r">
       <ColNames>id_product_detail</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="502" parent="300" name="PRIMARY">
+    <key id="504" parent="300" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="503" parent="301" name="created_date">
+    <column id="505" parent="301" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="504" parent="301" name="last_modified_date">
+    <column id="506" parent="301" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="505" parent="301" name="id">
+    <column id="507" parent="301" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="506" parent="301" name="created_by">
+    <column id="508" parent="301" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="507" parent="301" name="name">
+    <column id="509" parent="301" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="508" parent="301" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="510" parent="301" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>6</Position>
     </column>
-    <column id="509" parent="301" name="updated_by">
+    <column id="511" parent="301" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <index id="510" parent="301" name="PRIMARY">
+    <index id="512" parent="301" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="511" parent="301" name="PRIMARY">
+    <key id="513" parent="301" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="512" parent="302" name="created_date">
+    <column id="514" parent="302" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="513" parent="302" name="last_modified_date">
+    <column id="515" parent="302" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="514" parent="302" name="notify_date">
-      <DasType>bigint(20)|0s</DasType>
-      <Position>3</Position>
-    </column>
-    <column id="515" parent="302" name="id">
+    <column id="516" parent="302" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="517" parent="302" name="id_account">
+      <DasType>varchar(36)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="516" parent="302" name="id_account">
+    <column id="518" parent="302" name="id_bill">
       <DasType>varchar(36)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="517" parent="302" name="created_by">
+    <column id="519" parent="302" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="518" parent="302" name="notify_content">
+    <column id="520" parent="302" name="notify_content">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="519" parent="302" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="521" parent="302" name="receiver">
+      <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="520" parent="302" name="updated_by">
-      <DasType>varchar(255)|0s</DasType>
+    <column id="522" parent="302" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>9</Position>
     </column>
-    <column id="521" parent="302" name="url">
+    <column id="523" parent="302" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>10</Position>
     </column>
-    <foreign-key id="522" parent="302" name="FK10kjqa3c2i0d2j7gokgru42ul">
+    <column id="524" parent="302" name="url">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>11</Position>
+    </column>
+    <foreign-key id="525" parent="302" name="FK10kjqa3c2i0d2j7gokgru42ul">
       <ColNames>id_account</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>account</RefTableName>
     </foreign-key>
-    <index id="523" parent="302" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="524" parent="302" name="FK10kjqa3c2i0d2j7gokgru42ul">
-      <ColNames>id_account</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="525" parent="302" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <column id="526" parent="303" name="total_money">
-      <DasType>decimal(38,2 digit)|0s</DasType>
-      <Position>1</Position>
-    </column>
-    <column id="527" parent="303" name="created_date">
-      <DasType>bigint(20)|0s</DasType>
-      <Position>2</Position>
-    </column>
-    <column id="528" parent="303" name="last_modified_date">
-      <DasType>bigint(20)|0s</DasType>
-      <Position>3</Position>
-    </column>
-    <column id="529" parent="303" name="id">
-      <DasType>varchar(36)|0s</DasType>
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-    </column>
-    <column id="530" parent="303" name="id_bill">
-      <DasType>varchar(36)|0s</DasType>
-      <Position>5</Position>
-    </column>
-    <column id="531" parent="303" name="id_employees">
-      <DasType>varchar(36)|0s</DasType>
-      <Position>6</Position>
-    </column>
-    <column id="532" parent="303" name="created_by">
-      <DasType>varchar(255)|0s</DasType>
-      <Position>7</Position>
-    </column>
-    <column id="533" parent="303" name="description">
-      <DasType>varchar(255)|0s</DasType>
-      <Position>8</Position>
-    </column>
-    <column id="534" parent="303" name="method">
-      <DasType>enum(&apos;CHUYEN_KHOAN&apos;, &apos;THE&apos;, &apos;TIEN_MAT&apos;)|0e</DasType>
-      <Position>9</Position>
-    </column>
-    <column id="535" parent="303" name="status">
-      <DasType>enum(&apos;HOAN_TIEN&apos;, &apos;THANH_TOAN&apos;, &apos;TRA_SAU&apos;)|0e</DasType>
-      <Position>10</Position>
-    </column>
-    <column id="536" parent="303" name="updated_by">
-      <DasType>varchar(255)|0s</DasType>
-      <Position>11</Position>
-    </column>
-    <column id="537" parent="303" name="vnp_transaction_no">
-      <DasType>varchar(255)|0s</DasType>
-      <Position>12</Position>
-    </column>
-    <foreign-key id="538" parent="303" name="FK4v5neyiaqyswqphbxdk0ucfio">
+    <foreign-key id="526" parent="302" name="FKlirrb6nx9vrqw20dx7jcs15s3">
       <ColNames>id_bill</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>bill</RefTableName>
     </foreign-key>
-    <foreign-key id="539" parent="303" name="FKl6da6jd0i9onbj9brkl7uts8v">
+    <index id="527" parent="302" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <index id="528" parent="302" name="UK_b4n0t8m9l2co5cwpsia6l44i2">
+      <ColNames>id_bill</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <index id="529" parent="302" name="FK10kjqa3c2i0d2j7gokgru42ul">
+      <ColNames>id_account</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="530" parent="302" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <key id="531" parent="302" name="UK_b4n0t8m9l2co5cwpsia6l44i2">
+      <UnderlyingIndexName>UK_b4n0t8m9l2co5cwpsia6l44i2</UnderlyingIndexName>
+    </key>
+    <column id="532" parent="303" name="total_money">
+      <DasType>decimal(38,2 digit)|0s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="533" parent="303" name="create_at">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>2</Position>
+    </column>
+    <column id="534" parent="303" name="created_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>3</Position>
+    </column>
+    <column id="535" parent="303" name="last_modified_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="536" parent="303" name="transaction_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <column id="537" parent="303" name="id">
+      <DasType>varchar(36)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+    </column>
+    <column id="538" parent="303" name="id_bill">
+      <DasType>varchar(36)|0s</DasType>
+      <Position>7</Position>
+    </column>
+    <column id="539" parent="303" name="id_employees">
+      <DasType>varchar(36)|0s</DasType>
+      <Position>8</Position>
+    </column>
+    <column id="540" parent="303" name="created_by">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>9</Position>
+    </column>
+    <column id="541" parent="303" name="description">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>10</Position>
+    </column>
+    <column id="542" parent="303" name="method">
+      <DasType>enum(&apos;CHUYEN_KHOAN&apos;, &apos;THE&apos;, &apos;TIEN_MAT&apos;)|0e</DasType>
+      <Position>11</Position>
+    </column>
+    <column id="543" parent="303" name="status">
+      <DasType>enum(&apos;CHUA_THANH_TOAN&apos;, &apos;DA_THANH_TOAN&apos;, &apos;HOAN_TIEN&apos;, &apos;THANH_TOAN&apos;, &apos;TRA_SAU&apos;)|0e</DasType>
+      <Position>12</Position>
+    </column>
+    <column id="544" parent="303" name="updated_by">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>13</Position>
+    </column>
+    <column id="545" parent="303" name="vnp_transaction_no">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>14</Position>
+    </column>
+    <foreign-key id="546" parent="303" name="FK4v5neyiaqyswqphbxdk0ucfio">
+      <ColNames>id_bill</ColNames>
+      <RefColNames>id</RefColNames>
+      <RefTableName>bill</RefTableName>
+    </foreign-key>
+    <foreign-key id="547" parent="303" name="FKl6da6jd0i9onbj9brkl7uts8v">
       <ColNames>id_employees</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>account</RefTableName>
     </foreign-key>
-    <index id="540" parent="303" name="PRIMARY">
+    <index id="548" parent="303" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="541" parent="303" name="FK4v5neyiaqyswqphbxdk0ucfio">
+    <index id="549" parent="303" name="FK4v5neyiaqyswqphbxdk0ucfio">
       <ColNames>id_bill</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="542" parent="303" name="FKl6da6jd0i9onbj9brkl7uts8v">
+    <index id="550" parent="303" name="FKl6da6jd0i9onbj9brkl7uts8v">
       <ColNames>id_employees</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="543" parent="303" name="PRIMARY">
+    <key id="551" parent="303" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="544" parent="304" name="created_date">
+    <column id="552" parent="304" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="545" parent="304" name="last_modified_date">
+    <column id="553" parent="304" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="546" parent="304" name="id">
+    <column id="554" parent="304" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="547" parent="304" name="code">
+    <column id="555" parent="304" name="code">
       <DasType>varchar(255)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="548" parent="304" name="created_by">
+    <column id="556" parent="304" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="549" parent="304" name="name">
+    <column id="557" parent="304" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="550" parent="304" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="558" parent="304" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>7</Position>
     </column>
-    <column id="551" parent="304" name="updated_by">
+    <column id="559" parent="304" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <index id="552" parent="304" name="PRIMARY">
+    <index id="560" parent="304" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="553" parent="304" name="PRIMARY">
+    <key id="561" parent="304" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="554" parent="305" name="price">
+    <column id="562" parent="305" name="price">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="555" parent="305" name="quantity">
+    <column id="563" parent="305" name="quantity">
       <DasType>int(11)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="556" parent="305" name="created_date">
+    <column id="564" parent="305" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="557" parent="305" name="last_modified_date">
+    <column id="565" parent="305" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="558" parent="305" name="id">
+    <column id="566" parent="305" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
-    <column id="559" parent="305" name="id_brand">
+    <column id="567" parent="305" name="id_brand">
       <DasType>varchar(36)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="560" parent="305" name="id_category">
+    <column id="568" parent="305" name="id_category">
       <DasType>varchar(36)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="561" parent="305" name="id_color">
+    <column id="569" parent="305" name="id_color">
       <DasType>varchar(36)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="562" parent="305" name="id_material">
+    <column id="570" parent="305" name="id_material">
       <DasType>varchar(36)|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="563" parent="305" name="id_product">
+    <column id="571" parent="305" name="id_product">
       <DasType>varchar(36)|0s</DasType>
       <Position>10</Position>
     </column>
-    <column id="564" parent="305" name="id_size">
+    <column id="572" parent="305" name="id_size">
       <DasType>varchar(36)|0s</DasType>
       <Position>11</Position>
     </column>
-    <column id="565" parent="305" name="id_sole">
+    <column id="573" parent="305" name="id_sole">
       <DasType>varchar(36)|0s</DasType>
       <Position>12</Position>
     </column>
-    <column id="566" parent="305" name="created_by">
+    <column id="574" parent="305" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>13</Position>
     </column>
-    <column id="567" parent="305" name="description">
+    <column id="575" parent="305" name="description">
       <DasType>varchar(255)|0s</DasType>
       <Position>14</Position>
     </column>
-    <column id="568" parent="305" name="gender">
+    <column id="576" parent="305" name="gender">
       <DasType>enum(&apos;NAM&apos;, &apos;NAM_VA_NU&apos;, &apos;NU&apos;)|0e</DasType>
       <Position>15</Position>
     </column>
-    <column id="569" parent="305" name="maqr">
+    <column id="577" parent="305" name="maqr">
       <DasType>varchar(255)|0s</DasType>
       <Position>16</Position>
     </column>
-    <column id="570" parent="305" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="578" parent="305" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>17</Position>
     </column>
-    <column id="571" parent="305" name="updated_by">
+    <column id="579" parent="305" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>18</Position>
     </column>
-    <foreign-key id="572" parent="305" name="FKsojh20lw9m01kycyhqw07hfla">
+    <foreign-key id="580" parent="305" name="FKsojh20lw9m01kycyhqw07hfla">
       <ColNames>id_brand</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>brand</RefTableName>
     </foreign-key>
-    <foreign-key id="573" parent="305" name="FK7qtog5nlueu3wt2cyc1n4x8t9">
+    <foreign-key id="581" parent="305" name="FK7qtog5nlueu3wt2cyc1n4x8t9">
       <ColNames>id_category</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>category</RefTableName>
     </foreign-key>
-    <foreign-key id="574" parent="305" name="FKhgxo03bmh10q3vje0hofswwhc">
+    <foreign-key id="582" parent="305" name="FKhgxo03bmh10q3vje0hofswwhc">
       <ColNames>id_color</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>color</RefTableName>
     </foreign-key>
-    <foreign-key id="575" parent="305" name="FKb421xx5lew4qo2y1upk69e3ld">
+    <foreign-key id="583" parent="305" name="FKb421xx5lew4qo2y1upk69e3ld">
       <ColNames>id_material</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>material</RefTableName>
     </foreign-key>
-    <foreign-key id="576" parent="305" name="FKiyk9npasmucg0xxq9ooc31g04">
+    <foreign-key id="584" parent="305" name="FKiyk9npasmucg0xxq9ooc31g04">
       <ColNames>id_product</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>product</RefTableName>
     </foreign-key>
-    <foreign-key id="577" parent="305" name="FKklell1kj4i5npdyb7un3n55nj">
+    <foreign-key id="585" parent="305" name="FKklell1kj4i5npdyb7un3n55nj">
       <ColNames>id_size</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>size</RefTableName>
     </foreign-key>
-    <foreign-key id="578" parent="305" name="FKfj5qpl72ghseei7k0pkr7tkev">
+    <foreign-key id="586" parent="305" name="FKfj5qpl72ghseei7k0pkr7tkev">
       <ColNames>id_sole</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>sole</RefTableName>
     </foreign-key>
-    <index id="579" parent="305" name="PRIMARY">
+    <index id="587" parent="305" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="580" parent="305" name="FKsojh20lw9m01kycyhqw07hfla">
+    <index id="588" parent="305" name="FKsojh20lw9m01kycyhqw07hfla">
       <ColNames>id_brand</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="581" parent="305" name="FK7qtog5nlueu3wt2cyc1n4x8t9">
+    <index id="589" parent="305" name="FK7qtog5nlueu3wt2cyc1n4x8t9">
       <ColNames>id_category</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="582" parent="305" name="FKhgxo03bmh10q3vje0hofswwhc">
+    <index id="590" parent="305" name="FKhgxo03bmh10q3vje0hofswwhc">
       <ColNames>id_color</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="583" parent="305" name="FKb421xx5lew4qo2y1upk69e3ld">
+    <index id="591" parent="305" name="FKb421xx5lew4qo2y1upk69e3ld">
       <ColNames>id_material</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="584" parent="305" name="FKiyk9npasmucg0xxq9ooc31g04">
+    <index id="592" parent="305" name="FKiyk9npasmucg0xxq9ooc31g04">
       <ColNames>id_product</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="585" parent="305" name="FKklell1kj4i5npdyb7un3n55nj">
+    <index id="593" parent="305" name="FKklell1kj4i5npdyb7un3n55nj">
       <ColNames>id_size</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="586" parent="305" name="FKfj5qpl72ghseei7k0pkr7tkev">
+    <index id="594" parent="305" name="FKfj5qpl72ghseei7k0pkr7tkev">
       <ColNames>id_sole</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="587" parent="305" name="PRIMARY">
+    <key id="595" parent="305" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="588" parent="306" name="value">
-      <DasType>decimal(38,2 digit)|0s</DasType>
+    <column id="596" parent="306" name="quantity">
+      <DasType>int(11)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="589" parent="306" name="created_date">
+    <column id="597" parent="306" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="590" parent="306" name="end_date">
+    <column id="598" parent="306" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="591" parent="306" name="last_modified_date">
-      <DasType>bigint(20)|0s</DasType>
-      <Position>4</Position>
-    </column>
-    <column id="592" parent="306" name="start_date">
-      <DasType>bigint(20)|0s</DasType>
-      <Position>5</Position>
-    </column>
-    <column id="593" parent="306" name="id">
+    <column id="599" parent="306" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
+      <Position>4</Position>
+    </column>
+    <column id="600" parent="306" name="created_by">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <column id="601" parent="306" name="id_product_detail">
+      <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="594" parent="306" name="code">
-      <DasType>varchar(255)|0s</DasType>
+    <column id="602" parent="306" name="status_bill">
+      <DasType>enum(&apos;CHO_VAN_CHUYEN&apos;, &apos;CHO_XAC_NHAN&apos;, &apos;DA_HUY&apos;, &apos;DA_THANH_TOAN&apos;, &apos;TAO_HOA_DON&apos;, &apos;THANH_CONG&apos;, &apos;TRA_HANG&apos;, &apos;VAN_CHUYEN&apos;, &apos;XAC_NHAN&apos;)|0e</DasType>
       <Position>7</Position>
     </column>
-    <column id="595" parent="306" name="created_by">
+    <column id="603" parent="306" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="596" parent="306" name="name">
-      <DasType>varchar(255)|0s</DasType>
-      <Position>9</Position>
-    </column>
-    <column id="597" parent="306" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
-      <Position>10</Position>
-    </column>
-    <column id="598" parent="306" name="updated_by">
-      <DasType>varchar(255)|0s</DasType>
-      <Position>11</Position>
-    </column>
-    <index id="599" parent="306" name="PRIMARY">
+    <index id="604" parent="306" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="600" parent="306" name="PRIMARY">
+    <key id="605" parent="306" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="601" parent="307" name="created_date">
-      <DasType>bigint(20)|0s</DasType>
+    <column id="606" parent="307" name="value">
+      <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="602" parent="307" name="last_modified_date">
+    <column id="607" parent="307" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="603" parent="307" name="id">
+    <column id="608" parent="307" name="end_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>3</Position>
+    </column>
+    <column id="609" parent="307" name="last_modified_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="610" parent="307" name="start_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <column id="611" parent="307" name="id">
+      <DasType>varchar(36)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+    </column>
+    <column id="612" parent="307" name="code">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>7</Position>
+    </column>
+    <column id="613" parent="307" name="created_by">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>8</Position>
+    </column>
+    <column id="614" parent="307" name="name">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>9</Position>
+    </column>
+    <column id="615" parent="307" name="status">
+      <DasType>enum(&apos;CHUA_KICH_HOAT&apos;, &apos;DANG_KICH_HOAT&apos;, &apos;HET_HAN_KICH_HOAT&apos;)|0e</DasType>
+      <Position>10</Position>
+    </column>
+    <column id="616" parent="307" name="updated_by">
+      <DasType>varchar(255)|0s</DasType>
+      <Position>11</Position>
+    </column>
+    <index id="617" parent="307" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="618" parent="307" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="619" parent="308" name="created_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="620" parent="308" name="last_modified_date">
+      <DasType>bigint(20)|0s</DasType>
+      <Position>2</Position>
+    </column>
+    <column id="621" parent="308" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="604" parent="307" name="id_product_detail">
+    <column id="622" parent="308" name="id_product_detail">
       <DasType>varchar(36)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="605" parent="307" name="id_promotion">
+    <column id="623" parent="308" name="id_promotion">
       <DasType>varchar(36)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="606" parent="307" name="created_by">
+    <column id="624" parent="308" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="607" parent="307" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="625" parent="308" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>7</Position>
     </column>
-    <column id="608" parent="307" name="updated_by">
+    <column id="626" parent="308" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <foreign-key id="609" parent="307" name="FK1j1f0h5nr8tly3yve5eey26dp">
+    <foreign-key id="627" parent="308" name="FK1j1f0h5nr8tly3yve5eey26dp">
       <ColNames>id_product_detail</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>product_detail</RefTableName>
     </foreign-key>
-    <foreign-key id="610" parent="307" name="FKky3i1v16or75b7bd8c06qj1wq">
+    <foreign-key id="628" parent="308" name="FKky3i1v16or75b7bd8c06qj1wq">
       <ColNames>id_promotion</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>promotion</RefTableName>
     </foreign-key>
-    <index id="611" parent="307" name="PRIMARY">
+    <index id="629" parent="308" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="612" parent="307" name="FK1j1f0h5nr8tly3yve5eey26dp">
+    <index id="630" parent="308" name="FK1j1f0h5nr8tly3yve5eey26dp">
       <ColNames>id_product_detail</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="613" parent="307" name="FKky3i1v16or75b7bd8c06qj1wq">
+    <index id="631" parent="308" name="FKky3i1v16or75b7bd8c06qj1wq">
       <ColNames>id_promotion</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="614" parent="307" name="PRIMARY">
+    <key id="632" parent="308" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="615" parent="308" name="name">
+    <column id="633" parent="309" name="name">
       <DasType>int(11)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="616" parent="308" name="created_date">
+    <column id="634" parent="309" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="617" parent="308" name="last_modified_date">
+    <column id="635" parent="309" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="618" parent="308" name="id">
+    <column id="636" parent="309" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <column id="619" parent="308" name="created_by">
+    <column id="637" parent="309" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="620" parent="308" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="638" parent="309" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>6</Position>
     </column>
-    <column id="621" parent="308" name="updated_by">
+    <column id="639" parent="309" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <index id="622" parent="308" name="PRIMARY">
+    <index id="640" parent="309" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="623" parent="308" name="PRIMARY">
+    <key id="641" parent="309" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="624" parent="309" name="created_date">
+    <column id="642" parent="310" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="625" parent="309" name="last_modified_date">
+    <column id="643" parent="310" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="626" parent="309" name="id">
+    <column id="644" parent="310" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="627" parent="309" name="created_by">
+    <column id="645" parent="310" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="628" parent="309" name="name">
+    <column id="646" parent="310" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="629" parent="309" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="647" parent="310" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>6</Position>
     </column>
-    <column id="630" parent="309" name="updated_by">
+    <column id="648" parent="310" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <index id="631" parent="309" name="PRIMARY">
+    <index id="649" parent="310" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="632" parent="309" name="PRIMARY">
+    <key id="650" parent="310" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="633" parent="310" name="gender">
+    <column id="651" parent="311" name="gender">
       <DasType>bit(1)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="634" parent="310" name="points">
+    <column id="652" parent="311" name="points">
       <DasType>int(11)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="635" parent="310" name="created_date">
+    <column id="653" parent="311" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="636" parent="310" name="date_of_birth">
+    <column id="654" parent="311" name="date_of_birth">
       <DasType>bigint(20)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="637" parent="310" name="last_modified_date">
+    <column id="655" parent="311" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="638" parent="310" name="id">
+    <column id="656" parent="311" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
-    <column id="639" parent="310" name="avata">
+    <column id="657" parent="311" name="avata">
       <DasType>varchar(255)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="640" parent="310" name="citizen_identity">
+    <column id="658" parent="311" name="citizen_identity">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="641" parent="310" name="created_by">
+    <column id="659" parent="311" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="642" parent="310" name="email">
+    <column id="660" parent="311" name="email">
       <DasType>varchar(255)|0s</DasType>
       <Position>10</Position>
     </column>
-    <column id="643" parent="310" name="full_name">
+    <column id="661" parent="311" name="full_name">
       <DasType>varchar(255)|0s</DasType>
       <Position>11</Position>
     </column>
-    <column id="644" parent="310" name="phone_number">
+    <column id="662" parent="311" name="phone_number">
       <DasType>varchar(255)|0s</DasType>
       <Position>12</Position>
     </column>
-    <column id="645" parent="310" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="663" parent="311" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>13</Position>
     </column>
-    <column id="646" parent="310" name="updated_by">
+    <column id="664" parent="311" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>14</Position>
     </column>
-    <index id="647" parent="310" name="PRIMARY">
+    <index id="665" parent="311" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="648" parent="310" name="PRIMARY">
+    <key id="666" parent="311" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="649" parent="311" name="quantity">
+    <column id="667" parent="312" name="quantity">
       <DasType>int(11)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="650" parent="311" name="value">
+    <column id="668" parent="312" name="value">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="651" parent="311" name="created_date">
+    <column id="669" parent="312" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="652" parent="311" name="end_date">
+    <column id="670" parent="312" name="end_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="653" parent="311" name="last_modified_date">
+    <column id="671" parent="312" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="654" parent="311" name="start_date">
+    <column id="672" parent="312" name="start_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="655" parent="311" name="id">
+    <column id="673" parent="312" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>7</Position>
     </column>
-    <column id="656" parent="311" name="code">
+    <column id="674" parent="312" name="code">
       <DasType>varchar(255)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="657" parent="311" name="created_by">
+    <column id="675" parent="312" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="658" parent="311" name="name">
+    <column id="676" parent="312" name="name">
       <DasType>varchar(255)|0s</DasType>
       <Position>10</Position>
     </column>
-    <column id="659" parent="311" name="status">
-      <DasType>enum(&apos;DANG_SU_DUNG&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
+    <column id="677" parent="312" name="status">
+      <DasType>enum(&apos;CHUA_DOC&apos;, &apos;DANG_SU_DUNG&apos;, &apos;DA_DOC&apos;, &apos;HET_SAN_PHAM&apos;, &apos;KHONG_SU_DUNG&apos;)|0e</DasType>
       <Position>11</Position>
     </column>
-    <column id="660" parent="311" name="updated_by">
+    <column id="678" parent="312" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>12</Position>
     </column>
-    <column id="661" parent="311" name="url_image">
+    <column id="679" parent="312" name="url_image">
       <DasType>varchar(255)|0s</DasType>
       <Position>13</Position>
     </column>
-    <index id="662" parent="311" name="PRIMARY">
+    <index id="680" parent="312" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="663" parent="311" name="PRIMARY">
+    <key id="681" parent="312" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="664" parent="312" name="after_price">
+    <column id="682" parent="313" name="after_price">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="665" parent="312" name="befor_price">
+    <column id="683" parent="313" name="befor_price">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="666" parent="312" name="discount_price">
+    <column id="684" parent="313" name="discount_price">
       <DasType>decimal(38,2 digit)|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="667" parent="312" name="created_date">
+    <column id="685" parent="313" name="created_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="668" parent="312" name="last_modified_date">
+    <column id="686" parent="313" name="last_modified_date">
       <DasType>bigint(20)|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="669" parent="312" name="id">
+    <column id="687" parent="313" name="id">
       <DasType>varchar(36)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
-    <column id="670" parent="312" name="id_bill">
+    <column id="688" parent="313" name="id_bill">
       <DasType>varchar(36)|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="671" parent="312" name="id_voucher">
+    <column id="689" parent="313" name="id_voucher">
       <DasType>varchar(36)|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="672" parent="312" name="created_by">
+    <column id="690" parent="313" name="created_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="673" parent="312" name="updated_by">
+    <column id="691" parent="313" name="updated_by">
       <DasType>varchar(255)|0s</DasType>
       <Position>10</Position>
     </column>
-    <foreign-key id="674" parent="312" name="FKhujeo5iomes4cn11vqqf02wr5">
+    <foreign-key id="692" parent="313" name="FKhujeo5iomes4cn11vqqf02wr5">
       <ColNames>id_bill</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>bill</RefTableName>
     </foreign-key>
-    <foreign-key id="675" parent="312" name="FKfc3ukisuvi92n8rikjn9245j6">
+    <foreign-key id="693" parent="313" name="FKfc3ukisuvi92n8rikjn9245j6">
       <ColNames>id_voucher</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>voucher</RefTableName>
     </foreign-key>
-    <index id="676" parent="312" name="PRIMARY">
+    <index id="694" parent="313" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="677" parent="312" name="FKhujeo5iomes4cn11vqqf02wr5">
+    <index id="695" parent="313" name="FKhujeo5iomes4cn11vqqf02wr5">
       <ColNames>id_bill</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="678" parent="312" name="FKfc3ukisuvi92n8rikjn9245j6">
+    <index id="696" parent="313" name="FKfc3ukisuvi92n8rikjn9245j6">
       <ColNames>id_voucher</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="679" parent="312" name="PRIMARY">
+    <key id="697" parent="313" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>

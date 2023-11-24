@@ -9,11 +9,14 @@ import com.example.shose.server.dto.request.bill.ChangeEmployeeRequest;
 import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
 import com.example.shose.server.dto.request.bill.CreateBillRequest;
 import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
 import com.example.shose.server.dto.request.bill.billcustomer.CreateBillCustomerOnlineRequest;
+
 import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
 import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
+import com.example.shose.server.dto.response.bill.BillAccountResponse;
 import com.example.shose.server.dto.response.bill.BillGiveBack;
 import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
@@ -30,6 +33,8 @@ import java.util.List;
 public interface BillService {
 
     List<BillResponse> getAll(String id, BillRequest request);
+
+    List<BillAccountResponse> getAllBillAccount(StatusRequest request);
 
     List<UserBillResponse> getAllUserInBill();
 

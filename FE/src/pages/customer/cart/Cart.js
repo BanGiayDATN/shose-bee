@@ -64,7 +64,7 @@ function Cart() {
     }
     console.log(selectedItem);
     setModalVoucher(false);
-    
+
   };
   useEffect(() => {
     console.log(idAccountLocal);
@@ -83,7 +83,8 @@ function Cart() {
               nameSize: item.nameSize,
               price: item.price,
               quantity: item.quantity,
-              quantityProductDetail: data.quantity
+              quantityProductDetail: data.quantity,
+              valuePromotion: data.valuePromotion
             }
           ]);
           const quantity = res.data.data.quantity;
@@ -120,7 +121,7 @@ function Cart() {
   }, [cart]);
 
   useEffect(() => {
-    console.log(chooseItemCart.length, cart.length);
+    console.log(chooseItemCart);
     if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
       setSelectAllChecked(true);
     } else if (chooseItemCart.length !== cart.length) {
@@ -183,7 +184,7 @@ function Cart() {
       }
       setChooseItemCart(cart);
       const totalPrice = cart.reduce(
-        (total, item) => total + parseInt(item.price) * item.quantity,
+        (total, item) =>  total + (parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100))) * item.quantity,
         0
       );
       setTotalPrice(totalPrice);
@@ -441,17 +442,28 @@ function Cart() {
       quantity: item.quantity,
       nameSize: item.nameSize,
       image: item.image,
+      valuePromotion:item.valuePromotion
     };
     if (value) {
       setChooseItemCart([...chooseItemCart, itemDetail]);
-      setTotalPrice(totalPrice + parseInt(item.price) * item.quantity);
+      if(item.valuePromotion !== null){
+        setTotalPrice(totalPrice + (parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100))) * item.quantity);
+      }else{
+        setTotalPrice(totalPrice + parseInt(item.price) * item.quantity);
+      }
+     
     } else {
       setChooseItemCart(
         chooseItemCart.filter(
           (itemId) => itemId.idProductDetail !== item.idProductDetail
         )
       );
-      setTotalPrice(totalPrice - parseInt(item.price) * item.quantity);
+      if(item.valuePromotion !== null){
+        setTotalPrice(totalPrice - (parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100))) * item.quantity);
+      }else{
+        setTotalPrice(totalPrice -  parseInt(item.price) * item.quantity);
+      }
+    
     }
   };
   const setDefaultVoucher = {
@@ -518,10 +530,10 @@ function Cart() {
 
   return (
     <div className="cart">
-      <div className="img-banner">
+      {/* <div className="img-banner">
         <img className="img-shoe" src={imgShoe} alt="..." />
         <h1 className="text-welcome">Chào mừng đến với giỏ hàng bạn</h1>
-      </div>
+      </div> */}
       <div className="content-cart">
         <div className="title-cart">
           <p className="cart-text">Giỏ Hàng</p>
@@ -533,37 +545,34 @@ function Cart() {
             <div className="form-content-cart">
               <div className="info-cart">
                 <div
-                  style={{
-                    height: "30pxe",
-                    display: "flex",
-                    padding: "20px 30px",
-                    alignItems: "center",
-                    marginTop: "60px",
-                    marginBottom:30,
-                    backgroundColor:"white",
-                    border: "1px solid #ebebeb"
-                  }}
+                  className="box-title-cart"
+
                 >
-                  <div>
+
+                  <div
+                    style={{
+                      width: "30%",
+                      fontWeight: "bold",
+                      color: "gray",
+                      fontSize: "15px",
+                      display: "flex"
+                    }}
+                  >
                     <Checkbox
                       className="custom-checkbox-all"
                       onChange={handleSelectAllChange}
                       checked={selectAllChecked}
                     />
+                    <div
+                      style={{ flex: 1, justifyContent: "center", display: "flex", alignItems: "center" }}
+                    >
+                      Hình ảnh
+                    </div>
+
                   </div>
                   <div
                     style={{
-                      marginLeft: "7%",
-                      fontWeight: "bold",
-                      color: "gray",
-                      fontSize: "15px",
-                    }}
-                  >
-                    Hình ảnh
-                  </div>
-                  <div
-                    style={{
-                      marginLeft: "20%",
+                      width: "45%",
                       fontWeight: "bold",
                       color: "gray",
                       fontSize: "15px",
@@ -573,10 +582,11 @@ function Cart() {
                   </div>
                   <div
                     style={{
-                      marginLeft: "35%",
+                      width: "25%",
                       fontWeight: "bold",
                       color: "gray",
                       fontSize: "15px",
+                      textAlign: "center"
                     }}
                   >
                     Tổng cộng
@@ -592,9 +602,8 @@ function Cart() {
                     <>
                       {cart.map((item, index) => (
                         <div
-                          className={`item-cart ${
-                            index === cart.length - 1 ? "last-item" : ""
-                          }`}
+                          className={`item-cart ${index === cart.length - 1 ? "last-item" : ""
+                            }`}
                           key={index}
                         >
                           <div key={index} className="box-cart-img">
@@ -609,17 +618,18 @@ function Cart() {
                                   item.idProductDetail
                               )}
                             />
-                            <img
-                              style={{
-                                width: "150px",
-                                height: "150px",
-                                marginRight: 50,
-                                marginLeft: 50,
-                                borderRadius: "10px",
-                              }}
-                              src={item.image.split(",")[0]}
-                              alt="..."
-                            />
+                            <div style={{ flex: 1, display: 'flex', justifyContent: "center" }}>
+                              <img
+                                style={{
+                                  width: "150px",
+                                  height: "150px",
+
+                                  borderRadius: "10px",
+                                }}
+                                src={item.image.split(",")[0]}
+                                alt="..."
+                              />
+                            </div>
                           </div>
                           <div className="info-product-detail">
                             <div className="cart-name">
@@ -627,7 +637,16 @@ function Cart() {
                               {item.nameProduct} - [{item.nameSize}]
                             </div>
                             <div className="cart-price">
-                              Giá: {formatMoney(item.price)}
+                              Giá:
+
+                              {item.valuePromotion !== null ? (
+                                <>
+                                  <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
+                                    item.price * (item.valuePromotion / 100)))}</span>
+                                  <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(item.price)}</del>
+                                </>
+                              ) : (formatMoney(item.price))}
+
                             </div>
 
                             <div
@@ -688,7 +707,10 @@ function Cart() {
                                 width: "150px",
                               }}
                             >
-                              {formatMoney(item.quantity * item.price)}
+  
+                              {item.valuePromotion === null ? formatMoney(item.quantity * item.price) :formatMoney(item.quantity *  (parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100))))}
+                              
+                             
                             </div>
 
                             <div className="button-delete-cart">
@@ -710,14 +732,14 @@ function Cart() {
                 </div>
                 {cart.length !== 0 ? (
                   <div style={{ display: "flex", marginTop: 70 }}>
-                    <div className="button-delete-all-cart">XOÁ TẤT CẢ</div>
+                    {/* <div className="button-delete-all-cart">XOÁ TẤT CẢ</div> */}
 
-                    <div
+                    {/* <div
                       className="button-continue-to-buy"
                       onClick={() => nav("/home")}
                     >
                       TIẾP TỤC MUA HÀNG
-                    </div>
+                    </div> */}
                   </div>
                 ) : null}
               </div>
@@ -768,9 +790,8 @@ function Cart() {
                   )}
 
                   <div
-                    className={`value-bill-of-cart ${
-                      idAccountLocal !== null ? "acc" : ""
-                    }`}
+                    className={`value-bill-of-cart ${idAccountLocal !== null ? "acc" : ""
+                      }`}
                   >
                     <div style={{ display: "flex" }}>
                       <div
@@ -827,9 +848,8 @@ function Cart() {
             listSize.sort().map((item, index) => (
               <div
                 key={index}
-                className={`item-size-of-cart ${
-                  clickedIndex === index ? "clicked" : ""
-                }`}
+                className={`item-size-of-cart ${clickedIndex === index ? "clicked" : ""
+                  }`}
                 tabIndex="0"
                 onClick={() => getDetailProduct(index, item)}
               >
@@ -871,9 +891,8 @@ function Cart() {
               }}
             />
             <div
-              className={`button-submit-voucher-cart ${
-                !formSearch ? "" : "show"
-              }`}
+              className={`button-submit-voucher-cart ${!formSearch ? "" : "show"
+                }`}
               onClick={() => {
                 getVoucher(formSearch);
               }}

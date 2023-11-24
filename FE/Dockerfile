@@ -1,39 +1,19 @@
-# Stage 1: For build React app
-# Sử dụng node
-FROM node:16.16.0-alpine as node
-
-# Khai báo tham số
-ARG workdir=.
-LABEL description="deploy react app"
-
-# Khái báo workdir trong node.
+FROM node:16 AS build
 WORKDIR /app
-
-# Copy project vào trong workdir của node.
-COPY ${workdir}/ /app/
-
-# Cài đặt các thư viện node liên quan.
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
 RUN npm install --force
+COPY . /app
 
-# Chạy lệnh build.
 RUN npm run build
 
-# Stage 2: For serving React app
-FROM nginx:latest
+FROM nginx:1.21.4-alpine
 
-# Không cần thiết lập workdir lại, vì chúng ta đã nói ở trên.
+# Copy the built React app from the "build" stage
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy folder đã được build vào folder chạy của nginx.
-COPY --from=node /app/build/ /usr/share/nginx/html/
+# Copy the Nginx configuration
+COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Cài đặt curl cho câu lệnh check HEALTH
-RUN apt-get update && apt-get install -y curl
-
-# Kiểm tra trạng thái của container sau khi chạy
-HEALTHCHECK --interval=1m --timeout=3s \
-  CMD curl -f http://localhost || exit 1
-
-# Thay đổi cổng của nginx từ 80 thành 3000
-EXPOSE 3000
-
+# Set the entry point to start Nginx
 CMD ["nginx", "-g", "daemon off;"]

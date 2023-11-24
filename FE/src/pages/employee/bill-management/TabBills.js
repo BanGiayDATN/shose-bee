@@ -6,11 +6,16 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { BillApi } from "../../../api/employee/bill/bill.api";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
+
 
 function TabBills({ statusBill, dataFillter, addNotify }) {
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
+  const socket = new SockJS("http://localhost:8080/ws");
+  const stompClient = Stomp.over(socket);
 
   const formatCurrency = (value) => {
     const formatter = new Intl.NumberFormat("vi-VN", {
@@ -135,6 +140,18 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     }).catch((error) => {
       toast.error(error.response.data.message);
     });
+    stompClient.connect({}, () => {
+      stompClient.subscribe("/topic/admin-notifications", (response) => {
+        BillApi.fetchAll(data).then((res) => {
+          setDataBill(res.data.data);
+        });
+      });
+    });
+
+    return () => {
+      // Ngắt kết nối khi component unmount
+      stompClient.disconnect();
+    };
   }, []);
 
   useEffect(() => {
