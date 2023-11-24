@@ -30,7 +30,7 @@
     <div class="" style="display: flex; justify-content: center;font-weight: bold; font-size: 40px">SHOSE
       BEE
     </div>
-    <div class="" style="margin-top: 5px; text-align: center">
+    <div class="" style="margin-top: 16px; text-align: center">
       <p>
         Chương trình Phổ thông Cao đẳng FPT Polytechnic, Phương Canh, Từ Liêm, Hà Nội, Việt Nam
       </p>
@@ -43,7 +43,7 @@
     <div class="" style="margin-top: 10px; display: flex; justify-content: center">
       <p th:text="${'Mã hóa đơn: '+ invoice.code}"></p>
       <p style="margin-left: 30px" th:text="${ invoice.date}"></p>
-      <img style="position: absolute;top: 3px;right: 3px; width: 80px; height: 80px" alt="QR Code">
+      <img  th:src="${invoice.qr}" style="position: absolute;top: 3px;right: 3px; width: 80px; height: 80px" alt="QR Code">
     </div>
   </div>
 </div>

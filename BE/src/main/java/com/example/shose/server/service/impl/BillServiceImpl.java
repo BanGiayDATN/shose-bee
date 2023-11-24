@@ -87,6 +87,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 
@@ -203,6 +205,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill save(String id, CreateBillOfflineRequest request) {
+        long startTime = System.currentTimeMillis();
         Optional<Bill> optional = billRepository.findByCode(request.getCode());
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -337,7 +340,11 @@ public class BillServiceImpl implements BillService {
             VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
+        long endTime = System.currentTimeMillis();
+        System.out.println("Thời gian chạy1: " + (endTime - startTime) + " milliseconds");
         createFilePdfAtCounter(optional.get().getId());
+        long endTime2 = System.currentTimeMillis();
+        System.out.println("Thời gian chạy2: " + (endTime2 - startTime) + " milliseconds");
         return optional.get();
     }
 
@@ -951,22 +958,27 @@ public class BillServiceImpl implements BillService {
 
     public boolean createFilePdfAtCounter(String idBill) {
         //     begin   create file pdf
+        long startTime = System.currentTimeMillis();
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-        if(optional.get().getEmail() == null){
+        Bill bill = optional.get();
+        String email = bill.getEmail();
+        if(email == null){
             Context dataContext = exportFilePdfFormHtml.setData(invoice);
             finalHtml = springTemplateEngine.process("templateBill", dataContext);
-            exportFilePdfFormHtml.htmlToPdf(finalHtml,  optional.get().getCode());
+            exportFilePdfFormHtml.htmlToPdf(finalHtml,  bill.getCode());
+            long endTime2 = System.currentTimeMillis();
+            System.out.println("Thời gian chạy pdf: " + (endTime2 - startTime) + " milliseconds");
             return true;
         }
-        if (optional.get().getStatusBill() != StatusBill.THANH_CONG &&  !optional.get().getEmail().isEmpty()) {
+        if (bill.getStatusBill() != StatusBill.THANH_CONG &&  !email.isEmpty()) {
             invoice.setCheckShip(true);
-            sendMail(invoice, "http://localhost:3000/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
+              CompletableFuture.runAsync(() -> sendMail(invoice, "http://localhost:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml, bill.getCode());
 //     end   create file pdf
         return true;
     }
