@@ -131,7 +131,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             FROM
                 bill
             WHERE
-                completion_date >= :startOfDay AND completion_date <= :endOfDay
+                completion_date >= :startOfDay AND completion_date <= :endOfDay 
                 AND status_bill IN ('THANH_CONG', 'TRA_HANG')                       
                           """, nativeQuery = true)
     List<StatisticalDayResponse> getAllStatisticalDay(@Param("startOfDay") Long startOfDay, @Param("endOfDay") Long endOfDay);
@@ -142,10 +142,12 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 COUNT(*) AS totalStatusBill
             FROM
                 bill
+            WHERE       
+               created_date >= :#{#req.startDate} AND created_date <= :#{#req.endDate}
             GROUP BY
                 statusBill;
                             """, nativeQuery = true)
-    List<StatisticalStatusBillResponse> getAllStatisticalStatusBill();
+    List<StatisticalStatusBillResponse> getAllStatisticalStatusBill(@Param("req") FindBillDateRequest req);
 
     @Query(value = """
    SELECT
