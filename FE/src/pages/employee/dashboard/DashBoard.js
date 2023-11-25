@@ -35,7 +35,7 @@ const DashBoard = () => {
   const [endDateProduct, setEndDateProduct] = useState(null);
   const [activeButton, setActiveButton] = useState(3);
   const [typeFormat, setTypeFormat] = useState("month");
-  const [nameTable, setNameTable] = useState("Tháng");
+  const [nameTable, setNameTable] = useState("Tháng Này");
 
   const loadData = () => {
     StatisticalApi.fetchAllStatisticalMonth().then(
@@ -75,6 +75,7 @@ const DashBoard = () => {
     StatisticalApi.fetchAllStatisticalStatusBill().then(
       (res) => {
         const data = res.data.data;
+        console.log((data));
         const statusMapping = {
           TAO_HOA_DON: "Tạo hóa đơn",
           CHO_XAC_NHAN: "Chờ xác nhận",
@@ -121,9 +122,8 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -131,9 +131,8 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -217,7 +216,7 @@ const DashBoard = () => {
               dataProductMonthPrevious) *
             100;
         }
-        if (dataBillMonthPrevious != null) {
+        if (dataBillMonthPrevious != null && dataBillMonthPrevious != 0) {
           dataGrowthBillMonth =
             ((dataBillMonth - dataBillMonthPrevious) / dataBillMonthPrevious) *
             100;
@@ -418,25 +417,20 @@ const DashBoard = () => {
     return index % 2 === 0 ? "even-row" : "odd-row";
   };
 
-  const handleStartDateChange = (event) => {
-    const startDate = event.target.value + " 00:00:00";
-    const startDateLong = new Date(startDate).getTime();
-    setStartDate(startDateLong);
-    loadDataChartColumn(startDateLong, endDate);
-  };
-
-  const handleEndDateChange = (event) => {
-    const endDate = event.target.value + " 23:59:59";
-    const endDateLong = new Date(endDate).getTime();
-    setEndDate(endDateLong);
-    loadDataChartColumn(startDate, endDateLong);
-  };
-
   const handleStartDateProduct = (event) => {
     const startDate = event.target.value + " 00:00:00";
     const startDateLong = new Date(startDate).getTime();
     setStartDateProduct(startDateLong);
     loadDataProductSelling(startDateLong, endDateProduct);
+    loadDataChartColumn(startDateLong, endDateProduct);
+    loadDataStatusBill(startDateLong, endDateProduct);
+    let endDate = ""
+    if (endDateProduct == null) {
+      endDate = new Date()
+    } else {
+      endDate = new Date(endDateProduct);
+    }
+    setNameTable("Từ " + event.target.value + " Đến " + moment(endDate).format("YYYY-MM-DD"));
   };
 
   const handleEndDateProduct = (event) => {
@@ -444,6 +438,16 @@ const DashBoard = () => {
     const endDateLong = new Date(endDate).getTime();
     setEndDateProduct(endDateLong);
     loadDataProductSelling(startDateProduct, endDateLong);
+    loadDataChartColumn(startDateProduct, endDateLong);
+    loadDataStatusBill(startDateProduct, endDateLong)
+    let startDate = ""
+    if (startDateProduct == null) {
+      startDate = new Date()
+    } else {
+      startDate = new Date(startDateProduct);
+    }
+    setNameTable("Từ " + moment(startDate).format("YYYY-MM-DD") + " Đến " + event.target.value);
+
   };
 
   const loadDataProductSelling = (startDate, endDate) => {
@@ -463,6 +467,49 @@ const DashBoard = () => {
       }
     );
   };
+  const loadDataStatusBill = (startDate, endDate) => {
+    StatisticalApi.fetchAllStatisticalStatusBill(
+      startDate,
+      endDate
+    ).then(
+      (res) => {
+        const data = res.data.data;
+        const statusMapping = {
+          TAO_HOA_DON: "Tạo hóa đơn",
+          CHO_XAC_NHAN: "Chờ xác nhận",
+          CHO_VAN_CHUYEN: "Chờ vận chuyển",
+          VAN_CHUYEN: "Vận chuyển",
+          DA_THANH_TOAN: "Đã thanh toán",
+          THANH_CONG: "Thành công",
+          TRA_HANG: "Trả hàng",
+          DA_HUY: "Đã Hủy",
+          XAC_NHAN: "Xác nhận",
+        };
+
+        const statusColors = {
+          TAO_HOA_DON: "#E46651",
+          CHO_XAC_NHAN: "#00D8FF",
+          CHO_VAN_CHUYEN: "#FFCE56",
+          VAN_CHUYEN: "#9C27B0",
+          DA_THANH_TOAN: "#41B883",
+          THANH_CONG: "#4CAF50",
+          TRA_HANG: "##FF5733",
+          DA_HUY: "#DD1B16",
+          XAC_NHAN: "#DD1B00",
+        };
+
+        const newDataPie = data.map((item) => ({
+          category: statusMapping[item.statusBill] || item.statusBill,
+          value: item.totalStatusBill,
+          color: statusColors[item.statusBill] || item.statusBill,
+        }));
+        drawChartPie(newDataPie);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
 
   const loadDataChartColumn = (startDate, endDate) => {
     StatisticalApi.fetchBillByDate(startDate, endDate).then(
@@ -475,9 +522,8 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -485,9 +531,8 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -770,7 +815,7 @@ const DashBoard = () => {
     let fromTime = "";
     let toTime = "";
     if (option == 1) {
-      setNameTable("ngày");
+      setNameTable("Hôm Nay");
       setTypeFormat("date");
       startDate = moment(new Date()).format("YYYY-MM-DD") + " 00:00:00";
       endDate = moment(new Date()).format("YYYY-MM-DD") + " 23:59:59";
@@ -782,22 +827,26 @@ const DashBoard = () => {
       endDate = moment(new Date()).format("YYYY-MM-DD") + " 23:59:59";
       fromTime = new Date(startDate).getTime();
       toTime = new Date(endDate).getTime();
-      setNameTable("tuần");
+      setNameTable("Trong Tuần Này");
       setTypeFormat("week");
     } else if (option == 3) {
-      setNameTable("tháng");
+      setNameTable("Trong Tháng Này");
       setTypeFormat("month");
     } else if (option == 4) {
-      setNameTable("năm");
+      setNameTable("Trong Năm Nay");
       startDate = moment(new Date()).format("YYYY") + "-01-01" + " 00:00:00";
       endDate = moment(new Date()).format("YYYY") + "-12-31" + " 23:59:59";
       fromTime = new Date(startDate).getTime();
       toTime = new Date(endDate).getTime();
     } else {
+      startDate = moment(date).format("YYYY-MM-DD");
+      endDate = moment(new Date()).format("YYYY-MM-DD");
       setTypeFormat("date");
-      setNameTable("ngày tùy chỉnh");
+      setNameTable("Từ " + startDate + " Đến " + endDate);
     }
     loadDataProductSelling(fromTime, toTime);
+    loadDataChartColumn(fromTime, toTime);
+    loadDataStatusBill(fromTime, toTime)
   };
   return (
     <div>
@@ -850,32 +899,72 @@ const DashBoard = () => {
           </Col>
         </Row>
         <Row className="row-body">
-          <h2>Biểu đồ thống kê</h2>
+          <h2 style={{ marginLeft: 108 }}>Biểu Đồ Thống Kê Hóa Đơn Và Sản Phẩm {nameTable}</h2>
           <div className="row-body-container">
             <div class="header-date">
               <br />
-              <div className="header-date">
-                <label htmlFor="startDate" style={{ marginRight: "10px" }}>
-                  Ngày bắt đầu:
-                </label>
-                <Input
-                  id="startDate"
-                  style={{ width: "27%", height: "45px" }}
-                  type="date"
-                  onChange={handleStartDateChange}
-                />
-                <label
-                  htmlFor="endDate"
-                  style={{ marginLeft: "20px", marginRight: "10px" }}
-                >
-                  Ngày kết thúc:
-                </label>
-                <Input
-                  id="endDate"
-                  style={{ width: "27%", height: "45px" }}
-                  type="date"
-                  onChange={handleEndDateChange}
-                />
+              <div style={{ position: "relative" }}>
+                <div className="option-time">
+                  <button
+                    className={
+                      activeButton == 1 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(1)}
+                  >
+                    Ngày
+                  </button>
+                  <button
+                    className={
+                      activeButton == 2 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(2)}
+                  >
+                    Tuần
+                  </button>
+                  <button
+                    className={
+                      activeButton == 3 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(3)}
+                  >
+                    Tháng
+                  </button>
+                  <button
+                    className={
+                      activeButton == 4 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(4)}
+                  >
+                    Năm
+                  </button>
+                  <button
+                    className={
+                      activeButton == 5 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(5)}
+                  >
+                    Tùy chỉnh
+                  </button>
+
+                  {activeButton == 5 && (
+                    <>
+                      <Input
+                        className="button-time-from"
+                        type="date"
+                        //  value={new Date().toISOString().split('T')[0]}
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={handleStartDateProduct}
+                      />
+
+                      <Input
+                        className="button-time-to"
+                        type="date"
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={handleEndDateProduct}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
             <div style={{ marginLeft: "50px" }}>
@@ -886,71 +975,9 @@ const DashBoard = () => {
         <Row className="row-footer">
           <Col className="row-footer-left">
             <h2 style={{ textAlign: "center", margin: " 1%" }}>
-              Top sản Phẩm Bán Chạy Theo {nameTable}
+              Top Sản Phẩm Bán Chạy {nameTable}
             </h2>
-            <div style={{ position: "relative" }}>
-              <div className="option-time">
-                <button
-                  className={
-                    activeButton == 1 ? "button-time" : "button-time-block"
-                  }
-                  onClick={() => onChangeValueOption(1)}
-                >
-                  Ngày
-                </button>
-                <button
-                  className={
-                    activeButton == 2 ? "button-time" : "button-time-block"
-                  }
-                  onClick={() => onChangeValueOption(2)}
-                >
-                  Tuần
-                </button>
-                <button
-                  className={
-                    activeButton == 3 ? "button-time" : "button-time-block"
-                  }
-                  onClick={() => onChangeValueOption(3)}
-                >
-                  Tháng
-                </button>
-                <button
-                  className={
-                    activeButton == 4 ? "button-time" : "button-time-block"
-                  }
-                  onClick={() => onChangeValueOption(4)}
-                >
-                  Năm
-                </button>
-                <button
-                  className={
-                    activeButton == 5 ? "button-time" : "button-time-block"
-                  }
-                  onClick={() => onChangeValueOption(5)}
-                >
-                  Tùy chỉnh
-                </button>
 
-                {activeButton == 5 && (
-                  <>
-                    <Input
-                      className="button-time-from"
-                      type="date"
-                      //  value={new Date().toISOString().split('T')[0]}
-                      max={new Date().toISOString().split("T")[0]}
-                      onChange={handleStartDateProduct}
-                    />
-
-                    <Input
-                      className="button-time-to"
-                      type="date"
-                      max={new Date().toISOString().split("T")[0]}
-                      onChange={handleEndDateProduct}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
             <Table
               style={{ marginTop: "10px", height: "500px" }}
               dataSource={listSellingProduct}
@@ -961,7 +988,7 @@ const DashBoard = () => {
               rowClassName={getRowClassName}
             />
             <h2 style={{ textAlign: "center", margin: " 2%" }}>
-              Sản phẩm sắp hết hàng
+              Sản PHẨM SẮP HẾT HÀNG
             </h2>
             <Table
               style={{ marginTop: "10px" }}
@@ -977,7 +1004,7 @@ const DashBoard = () => {
             <Row className="content-1">
               <Col style={{ width: "800px" }}>
                 <h2 style={{ textAlign: "center", margin: " 3%" }}>
-                  Trạng Thái Dơn Hàng
+                  Trạng Thái Đơn Hàng {nameTable}
                 </h2>
                 <div id="chartdivPie"></div>
               </Col>

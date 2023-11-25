@@ -12,10 +12,14 @@ export class StatisticalApi {
       url: `/admin/statistical/month`,
     });
   };
-  static fetchAllStatisticalStatusBill = () => {
+  static fetchAllStatisticalStatusBill = (startDate, endDate) => {
     return request({
       method: "GET",
       url: `/admin/statistical/status-bill`,
+      params: {
+        startDate: startDate,
+        endDate: endDate,
+      },
     });
   };
   static fetchAllStatisticalBestSellingProduct = (startDate, endDate) => {
@@ -33,8 +37,6 @@ export class StatisticalApi {
       method: "GET",
       url: `/admin/statistical/bill-date`,
       params: {
-        // startDate: 1692155600977,
-        // endDate: 1792155600977,
         startDate: startDate,
         endDate: endDate,
       },

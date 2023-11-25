@@ -40,8 +40,8 @@ public class StatisticalController {
     }
 
     @GetMapping("/status-bill")
-    public ResponseObject statisticalStatusBill() {
-        return new ResponseObject(statisticalService.getAllStatisticalStatusBill());
+    public ResponseObject statisticalStatusBill(final FindBillDateRequest req) {
+        return new ResponseObject(statisticalService.getAllStatisticalStatusBill(req));
     }
     @GetMapping("/best-selling-product")
     public ResponseObject statisticalBestSellingProduct(final FindBillDateRequest req) {
