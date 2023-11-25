@@ -38,6 +38,7 @@
             <div class="" style="margin-top: 20px;display: flex; justify-content: center">
                 <p th:text="${'Mã hóa đơn: '+ invoice.code}"></p>
                 <p style="margin-left: 30px" th:text="${ invoice.date}"></p>
+                <img style="position: absolute;top: 1px;right: 1px; width: 90px; height: 90px" th:src="${invoice.qr}" alt="QR Code">
             </div>
         </div>
     </div>
@@ -114,22 +115,17 @@
 <div class="" th:if="${!invoice.typeBill}">
     <div class="" style="display: flex; justify-content: center;">
         <div class="" style="">
-            <div class="" style="display: flex; justify-content: center;font-weight: bold; font-size: 40px">SHOSE
-                BEE
+            <div class="" style="display: flex; justify-content: center;font-weight: bold; font-size: 40px">SHOSE BEE</div>
+            <div class="" style="margin-top: 16px; text-align: center">
+                <p>Chương trình Phổ thông Cao đẳng FPT Polytechnic, Phương Canh, Từ Liêm, Hà Nội, Việt Nam</p>
             </div>
             <div class="" style="margin-top: 5px; text-align: center">
-                <p>
-                    Chương trình Phổ thông Cao đẳng FPT Polytechnic, Phương Canh, Từ Liêm, Hà Nội, Việt Nam
-                </p>
-            </div>
-            <div class="" style="margin-top: 5px; text-align: center">
-                <p>
-                    SDT: 0338957590
-                </p>
+                <p>SDT: 0338957590</p>
             </div>
             <div class="" style="margin-top: 10px; display: flex; justify-content: center">
                 <p th:text="${'Mã hóa đơn: '+ invoice.code}"></p>
                 <p style="margin-left: 30px" th:text="${ invoice.date}"></p>
+                <img style="position: absolute;top: 1px;right: 1px; width: 90px; height: 90px" th:src="${invoice.qr}" alt="QR Code"> <!-- Thay thế URL_CUA_QR_CODE bằng URL thực tế của QR code -->
             </div>
         </div>
     </div>

@@ -79,9 +79,6 @@ public class Bill extends PrimaryEntity {
 
     private int poinUse;
 
-    @Column(name = "qr_code_bill ")
-    private String qrcode;
-
     @Enumerated(EnumType.STRING)
     private StatusBill statusBill;
 
