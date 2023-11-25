@@ -1273,7 +1273,7 @@ function DetailBill() {
                    Thời gian dự kiến nhận:
                  </Col>
                  <Col span={16}>
-                   <span style={{ color: "black" }}>{{moment(bill.shippingTime).format("DD-MM-YYYY")}}</span>
+                   <span style={{ color: "black" }}>{moment(bill.shippingTime).format("DD-MM-YYYY")}</span>
                  </Col>
                </Row>
              </Col>
