@@ -124,9 +124,9 @@ function PaymentAccount() {
   useEffect(() => {
     setTotalBefore(total.totalMoney);
   }, [total]);
-  // useEffect(() => {
-  //   formBillChange("afterPrice", totalAfter);
-  // }, [totalAfter]);
+  useEffect(() => {
+    formBillChange("afterPrice", totalAfter);
+  }, [totalAfter]);
 
   useEffect(() => {
     setTotalAfter(totalBefore + moneyShip - exchangeRateMoney  - voucher.value );

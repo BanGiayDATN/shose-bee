@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 
 import "./style.css"
 
@@ -20,7 +20,7 @@ export default function TabAllBill({listBill}) {
         <React.Fragment>
             <div>
                 {listBill.map((item, index) => (
-                    <div className="box-bill-account">
+                    <div key={index} className="box-bill-account">
                         <div className="header-bill-account">
                             <span style={{marginLeft: "auto"}}>{item.statusBill}</span>
                         </div>
@@ -47,9 +47,17 @@ export default function TabAllBill({listBill}) {
                                     <div className="box-total-bill-account">
                                         {item.promotion !== null ? (
                                             <>
-                                  <span style={{ marginLeft: 5,color:"#ff4400",fontSize:17}}> {formatMoney(item.price - (
+                                  <span style={{
+                                      marginLeft: 5,
+                                      color: "#ff4400",
+                                      fontSize: 17
+                                  }}> {formatMoney(item.price - (
                                       item.price * (item.promotion / 100)))}</span>
-                                                <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(item.price)}</del>
+                                                <del style={{
+                                                    color: "black",
+                                                    fontSize: 16,
+                                                    marginLeft: 5
+                                                }}>{formatMoney(item.price)}</del>
                                             </>
                                         ) : (formatMoney(item.price))}
                                     </div>
@@ -57,15 +65,24 @@ export default function TabAllBill({listBill}) {
                             )}
                         </div>
 
-                            <div  className="box-total-money-bill-account"> Thành tiền: <span style={{fontSize:20,color:"#ff4400",marginLeft:10}}>{formatMoney(item.totalMoney)}</span></div>
-                           <div className="box-repurchase">
-                               {item.statusBill === "THANH_CONG" ? (
-                               <>
-                                   <div className="repurchase">Mua lại</div>
-                                   <div className="see-purchase">Xem đơn hàng</div>
-                               </>
-                               ) :null}
-                           </div>
+                        <div className="box-total-money-bill-account"> Thành tiền: <span style={{
+                            fontSize: 20,
+                            color: "#ff4400",
+                            marginLeft: 10
+                        }}>{formatMoney(item.totalMoney)}</span></div>
+                        <div className="box-repurchase">
+                            {item.statusBill === "THANH_CONG" ||item.statusBill ===  "DA_HUY" ? (
+                                <>
+                                    <div className="repurchase">Mua lại</div>
+
+                                </>
+                            ) : null}
+                            {item.statusBill !== "DA_HUY" ? (
+                                <div className="see-purchase">Xem đơn hàng</div>
+                            ) : (
+                                <div className="see-purchase">Xem chi tiết hủy đơn</div>
+                            )}
+                        </div>
 
                     </div>
                 ))}

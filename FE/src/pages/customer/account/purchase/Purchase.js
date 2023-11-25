@@ -7,6 +7,7 @@ import {BillClientApi} from "../../../../api/customer/bill/billClient.api";
 export default function Purchase() {
 
   const [listBill, setListBill] = useState([])
+  const id = sessionStorage.getItem("idAccount");
   const [key, setKey] = useState("1")
   const keyToStatusMapping = {
     "1": "",
@@ -20,7 +21,7 @@ export default function Purchase() {
   useEffect(() => {
     console.log(key);
     const status = keyToStatusMapping[key] || "";
-    BillClientApi.getBillAccount({ status }).then((res) => {
+    BillClientApi.getBillAccount({"id":id, status }).then((res) => {
       const data = res.data.data;
       const promises = data.map((item) => {
         return BillClientApi.fetchAllBillDetailByIdBill(item.id).then((res) => ({

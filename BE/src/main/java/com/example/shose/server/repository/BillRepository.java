@@ -212,13 +212,13 @@ public interface BillRepository extends JpaRepository<Bill, String> {
               (select group_concat(bd.id)  from bill_detail bd where bd.id_bill = bi.id) as billDetail
      FROM bill bi
                JOIN account ac ON ac.id = bi.id_account
-                WHERE  bi.id_account = :id   
+                WHERE ac.id = :#{#req.id}   
                 AND ( :#{#req.status}  IS NULL
                          OR :#{#req.status} LIKE ''
                          OR bi.status_bill Like (:#{#req.status}))
                 ORDER BY bi.last_modified_date DESC
                 """, nativeQuery = true)
-    List<BillAccountResponse> getBillAccount(@Param("id") String id, StatusRequest req);
+    List<BillAccountResponse> getBillAccount(StatusRequest req);
 
     @Query(value = """
        SELECT
