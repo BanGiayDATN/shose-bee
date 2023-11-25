@@ -62,6 +62,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 
 /**
  * @author Nguyễn Vinh
@@ -548,7 +549,7 @@ public class DBGenerator implements CommandLineRunner {
 
         Bill bill1 = Bill.builder().code("HD0001")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("11/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.CHO_XAC_NHAN)
                 .employees(account2).account(account3)
@@ -556,49 +557,49 @@ public class DBGenerator implements CommandLineRunner {
 
         Bill bill2 = Bill.builder().code("HD0002")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("200000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill3 = Bill.builder().code("HD0003")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("12/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill4 = Bill.builder().code("HD0004")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("200000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("13/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.VAN_CHUYEN)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill5 = Bill.builder().code("HD0005")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("14/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.CHO_VAN_CHUYEN)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill6 = Bill.builder().code("HD0006")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("15/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_HUY)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill7 = Bill.builder().code("HD0007")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("2000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.CHO_XAC_NHAN)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill8 = Bill.builder().code("HD0008")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn A").itemDiscount(new BigDecimal("2000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("12/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("15/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("20/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account2).account(account3)
@@ -606,77 +607,77 @@ public class DBGenerator implements CommandLineRunner {
 
         Bill bill9 = Bill.builder().code("HD0009")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("16/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill10 = Bill.builder().code("HD0010")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill11 = Bill.builder().code("HD0011")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill12 = Bill.builder().code("HD0012")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("17/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill13 = Bill.builder().code("HD0013")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("18/08/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill14 = Bill.builder().code("HD0014")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("19/09/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.DA_THANH_TOAN)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill15 = Bill.builder().code("HD0015")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("02/10/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill16 = Bill.builder().code("HD0016")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("03/10/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill17 = Bill.builder().code("HD0017")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("05/10/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill18 = Bill.builder().code("HD0018")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("08/10/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
                 .build();
         Bill bill19 = Bill.builder().code("HD0019")
                 .phoneNumber("0987654321").address("Thọ An - Đan Phượng - Hà Nội").userName("Nguyễn Văn B").itemDiscount(new BigDecimal("20000"))
-                .totalMoney(new BigDecimal("1800000")).completionDate(new ConvertDateToLong().dateToLong("09/10/2023"))
+                .totalMoney(new BigDecimal("1800000")).completionDate(getCurrentTime())
                 .deliveryDate(new ConvertDateToLong().dateToLong("14/05/2023")).deliveryDate(new ConvertDateToLong().dateToLong("16/05/2023")).confirmationDate(new ConvertDateToLong().dateToLong("22/05/2023"))
                 .typeBill(TypeBill.ONLINE).note("Đã hoàn thành").moneyShip(new BigDecimal("15000")).statusBill(StatusBill.THANH_CONG)
                 .employees(account1).customer(customer1)
@@ -827,6 +828,10 @@ public class DBGenerator implements CommandLineRunner {
         Address address2 = Address.builder().user(user3).status(Status.DANG_SU_DUNG).line("số 20 ngõ 19, Hoàng Hoa Thám").province("Hưng Yên").district("Huyện Văn Lâm")
                 .ward("Xã Lạc Hồng").provinceId(268).toDistrictId(2046).wardCode("220906").fullName("Ngô Đình Diệm").phoneNumber("0987689098").build();
         addressRepository.save(address2);
+    }
+
+    private long getCurrentTime() {
+        return Calendar.getInstance().getTimeInMillis();
     }
 
     public static void main(String[] args) {

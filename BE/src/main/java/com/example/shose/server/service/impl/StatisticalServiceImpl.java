@@ -56,8 +56,20 @@ public class StatisticalServiceImpl implements StatisticalService {
         return billRepository.getAllStatisticalMonthly(getStartOfPreviousYear(), getEndOfPreviousYear());
     }
     @Override
-    public List<StatisticalStatusBillResponse> getAllStatisticalStatusBill() {
-        return billRepository.getAllStatisticalStatusBill();
+    public List<StatisticalStatusBillResponse> getAllStatisticalStatusBill(FindBillDateRequest req) {
+        if (req.getStartDate() == null && req.getEndDate() == null) {
+            req.setStartDate(getStartMonth());
+            req.setEndDate(getEndMonth());
+            return billRepository.getAllStatisticalStatusBill(req);
+        } else if (req.getStartDate() == null && req.getEndDate() != null) {
+            req.setStartDate(getStartMonth());
+            return billRepository.getAllStatisticalStatusBill(req);
+        } else if (req.getStartDate() != null && req.getEndDate() == null) {
+            req.setEndDate(getEndMonth());
+            return billRepository.getAllStatisticalStatusBill(req);
+        } else {
+            return billRepository.getAllStatisticalStatusBill(req);
+        }
     }
 
     @Override
