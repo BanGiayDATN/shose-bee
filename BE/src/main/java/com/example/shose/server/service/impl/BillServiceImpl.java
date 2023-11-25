@@ -1007,7 +1007,10 @@ public class BillServiceImpl implements BillService {
         if (optional.get().getStatusBill().equals(StatusBill.DA_HUY)) {
             throw new RestApiException("Hóa đơn " + codeBill + " đã bị hủy.");
         }
-        
+
+        if (!optional.get().getStatusBill().equals(StatusBill.THANH_CONG)) {
+            throw new RestApiException("Hóa đơn chưa được đổi trả.");
+        }
 
         if(optional.get().getStatusBill().equals(StatusBill.THANH_CONG)){
             long currentSeconds = System.currentTimeMillis();
