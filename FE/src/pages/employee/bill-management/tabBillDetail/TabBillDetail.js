@@ -197,6 +197,7 @@ function TabBillDetail({ dataBillDetail }) {
           columns={columnProductBill}
           dataSource={billDetai}
           rowKey={"id"}
+          style={{ width: "100%" }}
         />
       ) : (
         <Row style={{ width: "100%" }}>

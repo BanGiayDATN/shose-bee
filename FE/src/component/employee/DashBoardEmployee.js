@@ -19,7 +19,7 @@ import {
   Input,
 } from "antd";
 import "./style-dashboard-employee.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo_admin.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,7 +32,11 @@ import {
   faTruckFast,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
-import { GetNotification, SetNotification, UpdateNotification } from "../../../src/app/reducer/Notification.reducer";
+import {
+  GetNotification,
+  SetNotification,
+  UpdateNotification,
+} from "../../../src/app/reducer/Notification.reducer";
 
 import { deleteUserToken } from "../../helper/useCookies";
 import { toast } from "react-toastify";
@@ -51,6 +55,12 @@ const DashBoardEmployee = ({ children }) => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [listNotification, setListNotification] = useState([]);
   const [openInfor, setOpenInfo] = useState(false);
+  const location = useLocation();
+  const [selectedKey, setSelectedKey] = useState("");
+
+  useEffect(() => {
+    setSelectedKey(location.pathname);
+  }, [location]);
 
   const handleMenuHover = () => {
     setOpenInfo(true);
@@ -74,7 +84,6 @@ const DashBoardEmployee = ({ children }) => {
     }
   }, [data]);
   useEffect(() => {
-
     NotificationClientApi.getAll().then((res) => {
       dispatch(SetNotification(res.data.data));
       setListNotification(res.data.data);
@@ -153,9 +162,9 @@ const DashBoardEmployee = ({ children }) => {
             toast.success("Đổi mật khẩu thành công.");
             handleCancel();
           })
-          .catch((err) => { });
+          .catch((err) => {});
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const handleCancel = () => {
@@ -187,10 +196,10 @@ const DashBoardEmployee = ({ children }) => {
   );
   const viewNotify = (idNotify, idBill) => {
     NotificationClientApi.setStatus(idNotify).then((res) => {
-      dispatch(UpdateNotification(res.data.data))
+      dispatch(UpdateNotification(res.data.data));
     });
-   window.location.href = `/bill-management/detail-bill/${idBill}`
-  }
+    nav(`/bill-management/detail-bill/${idBill}`);
+  };
 
   return (
     <Layout className="layout-employee">
@@ -201,10 +210,10 @@ const DashBoardEmployee = ({ children }) => {
           </div>
         </Link>
         <div className="demo-logo-vertical" />
-        <Menu theme="dark" mode="inline">
+        <Menu theme="dark" mode="inline" selectedKeys={selectedKey}>
           {isAdmin && (
             <Menu.Item
-              key="1"
+              key="/dashboard"
               className="menu-item"
               icon={
                 <FontAwesomeIcon
@@ -217,7 +226,7 @@ const DashBoardEmployee = ({ children }) => {
             </Menu.Item>
           )}
           <Menu.Item
-            key="3"
+            key="/sale-counter"
             icon={
               <FontAwesomeIcon
                 icon={faDumpsterFire}
@@ -228,7 +237,7 @@ const DashBoardEmployee = ({ children }) => {
             <Link to="/sale-counter">Bán Hàng Tại Quầy</Link>
           </Menu.Item>
           <Menu.Item
-            key="4.1"
+            key="/bill-management"
             icon={
               <FontAwesomeIcon
                 icon={faMoneyBill1Wave}
@@ -239,7 +248,7 @@ const DashBoardEmployee = ({ children }) => {
             <Link to="/bill-management">Quản Lý Thu Chi</Link>
           </Menu.Item>
           <Menu.Item
-            key="9"
+            key="/give-back-management"
             icon={
               <FontAwesomeIcon icon={faTruckFast} style={{ color: "white" }} />
             }
@@ -258,19 +267,19 @@ const DashBoardEmployee = ({ children }) => {
               }
               title="Quản Lý Sản Phẩm"
             >
-              <Menu.Item key="6.0">
+              <Menu.Item key="/product-management">
                 <Link to="/product-management">Sản Phẩm</Link>
               </Menu.Item>
-              <Menu.Item key="6.1">
+              <Menu.Item key="/category-management">
                 <Link to="/category-management">Thể Loại</Link>
               </Menu.Item>
-              <Menu.Item key="6.2">
+              <Menu.Item key="/sole-management">
                 <Link to="/sole-management">Đế Giày</Link>
               </Menu.Item>
-              <Menu.Item key="6.3">
+              <Menu.Item key="/brand-management">
                 <Link to="/brand-management">Thương Hiệu</Link>
               </Menu.Item>
-              <Menu.Item key="6.4">
+              <Menu.Item key="/material-management">
                 <Link to="/material-management">Chất Liệu</Link>
               </Menu.Item>
             </SubMenu>
@@ -284,11 +293,11 @@ const DashBoardEmployee = ({ children }) => {
             title="Quản Lý Tài Khoản"
           >
             {isAdmin && (
-              <Menu.Item key="7.0">
+              <Menu.Item key="/staff-management">
                 <Link to="/staff-management">Nhân Viên</Link>
               </Menu.Item>
             )}
-            <Menu.Item key="7.1">
+            <Menu.Item key="/customer-management">
               <Link to="/customer-management">Khách Hàng</Link>
             </Menu.Item>
           </SubMenu>
@@ -301,10 +310,10 @@ const DashBoardEmployee = ({ children }) => {
               }
               title="Giảm Giá"
             >
-              <Menu.Item key="8.0">
+              <Menu.Item key="/promotion-management">
                 <Link to="/promotion-management">Đợt Giảm Giá</Link>
               </Menu.Item>
-              <Menu.Item key="8.1">
+              <Menu.Item key="/voucher-management">
                 <Link to="/voucher-management">Phiếu Giảm Giá</Link>
               </Menu.Item>
             </SubMenu>
@@ -347,25 +356,49 @@ const DashBoardEmployee = ({ children }) => {
               {openInfor ? (
                 <ul className="dropdown-list-notify">
                   {listNotification.map((item, index) => (
-                    <li key={index} className="dropdown-item-notify" onClick={() => viewNotify(item.id, item.bill.id)}>
+                    <li
+                      key={index}
+                      className="dropdown-item-notify"
+                      onClick={() => viewNotify(item.id, item.bill.id)}
+                    >
                       <div style={{ marginRight: 20 }}>
                         <BellOutlined />
                       </div>
                       <div>
-                        <div style={{ marginBottom: 10, display: "flex", alignItems: "center" }}>
-                          <div style={{ fontSize: 17, fontWeight: 600 }}>{item.bill.userName}</div>
-                          <div style={{ color: "#ff4400", marginLeft: "auto" }}>{item.notifyContent}</div>
+                        <div
+                          style={{
+                            marginBottom: 10,
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div style={{ fontSize: 17, fontWeight: 600 }}>
+                            {item.bill.userName}
+                          </div>
+                          <div style={{ color: "#ff4400", marginLeft: "auto" }}>
+                            {item.notifyContent}
+                          </div>
                         </div>
                         <div style={{ display: "flex" }}>
                           <div style={{ fontSize: 12, fontWeight: 500 }}>
-                            <span style={{ fontSize: 14, fontWeight: 500 }}>Thời gian:</span> {dayjs(item.createdDate).format('HH:mm:ss DD-MM-YYYY')}
+                            <span style={{ fontSize: 14, fontWeight: 500 }}>
+                              Thời gian:
+                            </span>{" "}
+                            {dayjs(item.createdDate).format(
+                              "HH:mm:ss DD-MM-YYYY"
+                            )}
                           </div>
-                          <div style={{ marginLeft: "20px", color: item.status === "CHUA_DOC" ? "blue" : "green" }}>
+                          <div
+                            style={{
+                              marginLeft: "20px",
+                              color:
+                                item.status === "CHUA_DOC" ? "blue" : "green",
+                            }}
+                          >
                             {item.status === "CHUA_DOC" ? "Chưa đọc" : "Đã đọc"}
                           </div>
                         </div>
                       </div>
-
                     </li>
                   ))}
                 </ul>
@@ -373,7 +406,6 @@ const DashBoardEmployee = ({ children }) => {
                 ""
               )}
             </Badge>
-
 
             <span style={{ fontWeight: "bold", marginLeft: "20px" }}>
               {user !== null && user.fullName}

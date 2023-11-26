@@ -857,9 +857,14 @@ function DetailBill() {
             marginBottom: "30px",
           }}
         >
-          <Row style={{ backgroundColor: "white", width: "100%" }}>
+          <Row
+            style={{
+              backgroundColor: "white",
+              padding: 0,
+              overflowY: "auto",
+            }}
+          >
             <TimeLine
-              style={{ with: "100%" }}
               listStatus={listStatus}
               data={billHistory}
               statusPresent={statusPresent}
@@ -1415,7 +1420,7 @@ function DetailBill() {
                 <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                   <Col span={5}></Col>
                   <Col span={19}>
-                  <hr />
+                    <hr />
                   </Col>
                   <Col span={5}></Col>
                   <Col

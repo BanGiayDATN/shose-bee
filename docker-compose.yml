@@ -15,8 +15,8 @@ services:
   springboot-app:
     image: vinhnv06/server_shose:shose_version_1
     container_name: springboot-container
-    build:
-      context: ./BE
+    # build:
+    #   context: ./BE
     # depends_on:
     #   - mysql
     ports:
@@ -29,8 +29,8 @@ services:
   # Container cho ứng dụng ReactJS
   react-app:
     image: vinhnv06/client_shose:shose_version_fe_1
-    build:
-      context: ./FE
+    # build:
+    #   context: ./FE
     container_name: react-container
     ports:
       - "3000:80"

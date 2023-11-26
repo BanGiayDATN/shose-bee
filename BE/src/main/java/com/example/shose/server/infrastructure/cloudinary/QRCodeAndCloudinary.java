@@ -24,7 +24,7 @@ public class QRCodeAndCloudinary {
     @Autowired
     private Cloudinary cloudinary;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(5); // luồng chạy
+    private ExecutorService executorService = Executors.newFixedThreadPool(20); // luồng chạy
 
     public  String generateAndUploadQRCode(String content) {
         try {
