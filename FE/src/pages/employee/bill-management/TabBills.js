@@ -9,6 +9,7 @@ import { BillApi } from "../../../api/employee/bill/bill.api";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
+import { useReactToPrint } from "react-to-print";
 
 
 function TabBills({ statusBill, dataFillter, addNotify }) {
@@ -207,6 +208,14 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       ? "THANH_CONG"
       : "HUY";
   };
+
+  const generatePDF = useReactToPrint({
+    content: () => document.getElementById("pdfContent"),
+    documentTitle: "Userdata",
+    onAfterPrint: () => {
+    },
+  });
+
   const changeStatusBill = (e) => {
     Modal.confirm({
       title: "Xác nhận",
@@ -218,6 +227,15 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
           ids: dataIdCheck,
           status: nextStatusBill(),
         };
+        if(statusBill=="XAC_NHAN"){
+           BillApi.fetchAllFilePdfByIdBill(data).then((response) => {
+            document.getElementById("pdfContent").innerHTML   = response.data.data
+            generatePDF()
+            console.log(response);
+          }).catch((error) => {
+            toast.error(error.response.data.message);
+          });
+        }
         await BillApi.changeStatusAllBillByIds(data).then((response) => {
           if (response.data.data == true) {
             addNotify({
@@ -319,6 +337,11 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       <Modal title="Chuyển hóa đơn cho nhân viên " open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null} width={1100}>
         <ModalAccountEmployee dataIdCheck={dataIdCheck} handleCancel={handleCancel} status={true}/>
       </Modal>
+      <div style={{ display: "none" }}>
+        <div
+          id="pdfContent"
+        />
+      </div>
     </div>
   );
 }

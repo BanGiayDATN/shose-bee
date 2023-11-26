@@ -33,6 +33,7 @@ import "./detail.css";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
 import ManagerBillDetail from "./tabBillDetail/ManagerBillDetail";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
+import { useReactToPrint } from "react-to-print";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -491,19 +492,7 @@ function DetailBill() {
   };
   // end modal bill
 
-  // begin detail product
-
   const [products, setProducts] = useState([]);
-
-  // begin modal product
-  const [isModalProductOpen, setIsModalProductOpen] = useState(false);
-
-  const showModalProduct = (e) => {
-    setIsModalProductOpen(true);
-  };
-  // dispatch(addProductBillWait(res.data.data));
-
-  //  end modal product
 
   //  begin modal change status
 
@@ -520,6 +509,13 @@ function DetailBill() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const generatePDF = useReactToPrint({
+    content: () => document.getElementById("pdfContent"),
+    documentTitle: "Userdata",
+    onAfterPrint: () => {
+    },
+  });
 
   const [isModalOpenChangeStatus, setIsModalOpenChangeStatus] = useState(false);
 
@@ -543,14 +539,23 @@ function DetailBill() {
               var index = listStatus.findIndex(
                 (item) => item.status == res.data.data.statusBill
               );
-
-              console.log(res.data.data.statusBill);
-              console.log(index);
               if (res.data.data.statusBill == "TRA_HANG") {
                 index = 7;
               }
               if (res.data.data.statusBill == "DA_HUY") {
                 index = 8;
+              }
+              if(res.data.data.statusBill == "CHO_VAN_CHUYEN"){
+                var data = {
+                  ids: [id],
+                  status: "CHO_VAN_CHUYEN",
+                };
+                BillApi.fetchAllFilePdfByIdBill(data).then((response) => {
+                  document.getElementById("pdfContent").innerHTML   = response.data.data
+                  generatePDF()
+                }).catch((error) => {
+                  toast.error(error.response.data.message);
+                });
               }
               dispatch(addStatusPresent(index));
             })
@@ -1894,6 +1899,11 @@ function DetailBill() {
       />
       {/* Same as */}
       <ToastContainer />
+      <div style={{ display: "none" }}>
+        <div
+          id="pdfContent"
+        />
+      </div>
     </div>
   );
 }

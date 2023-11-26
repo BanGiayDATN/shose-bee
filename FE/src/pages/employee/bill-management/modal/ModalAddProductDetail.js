@@ -22,8 +22,6 @@ import { SoleApi } from "../../../../api/employee/sole/sole.api";
 import { CategoryApi } from "../../../../api/employee/category/category.api";
 import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
-import tinycolor from "tinycolor2";
-import { useNavigate } from "react-router-dom";
 import {
   addProductBillWait,
 } from "../../../../app/reducer/Bill.reducer";
@@ -110,10 +108,6 @@ function ModalAddProductDetail({
     listSize.push(size);
   }
 
-  const getColorName = (color) => {
-    const colorObj = tinycolor(color);
-    return colorObj.toName() || colorObj.toHexString();
-  };
 
   const getList = () => {
     MaterialApi.fetchAll().then((res) => setListMaterial(res.data.data));
@@ -169,14 +163,7 @@ function ModalAddProductDetail({
   };
 
   // Xử lý logic chỉnh sửa
-  const navigate = useNavigate();
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
-  const handleViewDetail = (id) => {
-    navigate(`/detail-product-management/${id}`);
-  };
-  const handleUpdate = (id) => {
-    navigate(`/product-management/${id}`);
-  };
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
@@ -338,7 +325,6 @@ function ModalAddProductDetail({
 
   // begin xử lý modal
   //   modal detail product size
-  const [product, setProduct] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
     var data = {
@@ -357,10 +343,6 @@ function ModalAddProductDetail({
     setIsModalOpen(true);
   };
 
-  console.log(productSelected);
-  const clearSelectSize = () => {
-    setSizes([]);
-  };
   const handleOk = (e) => {
     var list = products;
     var index = list.findIndex(
@@ -391,62 +373,6 @@ function ModalAddProductDetail({
     setProducts(list);
     setQuantity(1);
     setIsModalOpen(false);
-    // if (sizes.length > 0 && quantity >= 1) {
-    //   setIsModalOpen(false);
-    //   if (typeAddProductBill === "CREATE_BILL") {
-    //     var list = products;
-    //     sizes.map((item) => {
-    //       var index = list.findIndex((x) => x.idSizeProduct === item.id);
-    //       var data = {
-    //         image: item.image,
-    //         productName: item.nameProduct,
-    //         nameSize: item.nameSize,
-    //         idProduct: item.id,
-    //         quantity: quantity,
-    //         price: item.price,
-    //         maxQuantity: item.quantity,
-    //       };
-    //       if (index == -1) {
-    //         list.push(data);
-    //       } else {
-    //         data.quantity = list[index].quantity + quantity;
-    //         list.splice(index, 1, data);
-    //       }
-    //       dispatch(addProductBillWait(data));
-    //     });
-    //     setProducts(list);
-    //   } else {
-    //     sizes.map((item) => {
-    //       var data = {
-    //         idBill: typeAddProductBill,
-    //         idProduct: item.id,
-    //         size: item.nameSize,
-    //         quantity: quantity,
-    //         price: item.price,
-    //       };
-    //       BillApi.addProductInBill(data).then((res) => {
-    //         const price = item.price;
-    //         if (item.promotion != null) {
-    //           price = (item.price * (100 - item.promotion)) / 100;
-    //         }
-    //         var product = {
-    //           id: res.data.data,
-    //           image: item.image,
-    //           productName: item.nameProduct,
-    //           nameSize: item.nameSize,
-    //           idProduct: item.id,
-    //           quantity: quantity,
-    //           price: price,
-    //         };
-    //         dispatch(addProductInBillDetail(product));
-    //       });
-    //     });
-    //   }
-    // }
-    // setQuantity(1);
-    // setState(false);
-    // setSizes([]);
-    // handleCancelProduct();
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -458,13 +384,6 @@ function ModalAddProductDetail({
   const [sizes, setSizes] = useState([]);
   // const [productSelect, setProductSelect] = useState({});
   const [quantity, setQuantity] = useState(1);
-  const ChangedSelectSize = (e, size) => {
-    setSizes((prevSelected) =>
-      prevSelected.includes(size)
-        ? prevSelected.filter((selected) => selected !== size)
-        : [...prevSelected, size]
-    );
-  };
   const changeInputNumber = (v) => {
     if (productSelected.maxQuantity > quantity) {
       setQuantity(v);
@@ -698,21 +617,11 @@ function ModalAddProductDetail({
         onOk={(e) => handleOk(e)}
         onCancel={handleCancel}
         okText="Đặt hàng"
+        cancelText="Hủy"
         closeButton={true}
         closeIcon={null}
         cancelButton={true}
       >
-        {/* <ModalDetailProduct
-          id={product.id}
-          ChangedSelectSize={ChangedSelectSize}
-          ChangeQuantity={ChangeQuantity}
-          clearSelectSize={clearSelectSize}
-          quantity={quantity}
-          setQuantity={setQuantity}
-          selectedSizes={sizes}
-          setSelectedSizes={setSizes}
-          state={state}
-        /> */}
         <Row style={{ marginTop: "15px", width: "100%" }} justify={"center"}>
           <Button onClick={handleDecrease} style={{ margin: "0 4px 0 10px" }}>
             -
