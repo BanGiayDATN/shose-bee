@@ -704,8 +704,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          setDataPayMent([...dataPayment, data]);
-          updateBillWhenSavePayMent([...dataPayment, data]);
+          setDataPayMent([data]);
+          updateBillWhenSavePayMent([data]);
           setTotalMoneyPayment("");
           // form.resetFields();
         },

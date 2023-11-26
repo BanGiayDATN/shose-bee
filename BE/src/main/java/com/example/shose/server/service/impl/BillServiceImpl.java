@@ -244,7 +244,7 @@ public class BillServiceImpl implements BillService {
 
 
         if (!request.getDeliveryDate().isEmpty()) {
-            optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+           optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
             if (request.getIdUser() != null) {
@@ -425,7 +425,7 @@ public class BillServiceImpl implements BillService {
                 }
             }
             if (!request.getDeliveryDate().isEmpty()) {
-                optional.get().setDeliveryDate(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+                optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
             }
             if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
                 billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).employees(optional.get().getEmployees()).build());

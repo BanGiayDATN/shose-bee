@@ -373,6 +373,9 @@ function ModalAddProductDetail({
     } else {
       var data = { ...productSelected };
       data.quantity = list[index].quantity + quantity;
+      if(data.maxQuantity < list[index].quantity + quantity ){
+        data.quantity = data.maxQuantity
+      }
       list.splice(index, 1, data);
     }
     toast.success("Thêm thành công", {
