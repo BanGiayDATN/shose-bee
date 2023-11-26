@@ -4,7 +4,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import logo from "./../../../assets/images/logo_client.png";
 import "./style-payment-success.css";
@@ -72,29 +72,30 @@ function PayMentSuccessful() {
   const generatePDF = useReactToPrint({
     content: () => document.getElementById("pdfContent"),
     documentTitle: "Userdata",
-    onAfterPrint: () => {
-    },
+    onAfterPrint: () => {},
   });
   const getHtmlByIdBill = (id) => {
-    BillApi.fetchHtmlIdBill(id).then((res)=> {
-      document.getElementById("pdfContent").innerHTML   = res.data.data
-      generatePDF()
-    })
-  }
+    BillApi.fetchHtmlIdBill(id).then((res) => {
+      document.getElementById("pdfContent").innerHTML = res.data.data;
+      generatePDF();
+    });
+  };
   useEffect(() => {
     const param = new URLSearchParams(window.location.search);
     fetchData();
     setStatus(getTransactionStatus());
     setAmount(getAmount());
-    PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {
-      setLoadLink(false)
-      getHtmlByIdBill(param.get('vnp_TxnRef').split("-")[0])
-    }).catch((error) => {
-      toast.error(error.response.data.message);
-    });;
+    PaymentsMethodApi.checkPaymentVnPay(param)
+      .then((res) => {
+        setLoadLink(false);
+        getHtmlByIdBill(param.get("vnp_TxnRef").split("-")[0]);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
   }, []);
-  
-  const [loadLink, setLoadLink] = useState(true)
+
+  const [loadLink, setLoadLink] = useState(true);
 
   return (
     <>
@@ -116,9 +117,18 @@ function PayMentSuccessful() {
             />
             <h1>Thanh toán thành công</h1>
             <div style={{ marginTop: "5%" }}>
-              Tổng thanh toán: {formatCurrency(amount /100)}
+              Tổng thanh toán: {formatCurrency(amount / 100)}
             </div>
-            <Button disabled={loadLink} style={{border: "none", backgroundColor: "#f5f5dc00", color: loadLink ? "#ccc": "#1677ff"}}><Link to="/sale-counter" >Tiếp tục bán hàng</Link></Button>
+            <Button
+              disabled={loadLink}
+              style={{
+                border: "none",
+                backgroundColor: "#f5f5dc00",
+                color: loadLink ? "#ccc" : "#1677ff",
+              }}
+            >
+              <Link to="/sale-counter">Tiếp tục bán hàng</Link>
+            </Button>
           </div>
         ) : (
           <div className="content-payment-success">
@@ -128,15 +138,22 @@ function PayMentSuccessful() {
             />
             <h1>Thanh toán thất bại</h1>
             <div>
-            <Button disabled={loadLink} style={{border: "none", backgroundColor: "#f5f5dc00", color:  loadLink ? "#ccc": "#1677ff"}}><Link to="/sale-counter" >Tiếp tục bán hàng</Link></Button>
+              <Button
+                disabled={loadLink}
+                style={{
+                  border: "none",
+                  backgroundColor: "#f5f5dc00",
+                  color: loadLink ? "#ccc" : "#1677ff",
+                }}
+              >
+                <Link to="/sale-counter">Tiếp tục bán hàng</Link>
+              </Button>
             </div>
           </div>
         )}
       </div>
       <div style={{ display: "none" }}>
-        <div
-          id="pdfContent"
-        />
+        <div id="pdfContent" />
       </div>
     </>
   );
