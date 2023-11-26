@@ -1091,17 +1091,6 @@ public class BillServiceImpl implements BillService {
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
     }
-
-    private BigDecimal totalBillToProductDetail(List<BillGiveBack> list) {
-        BigDecimal total = list.stream()
-                .map(data -> {
-                    BigDecimal price = data.getPrice();
-                    Integer quantity = data.getQuantity();
-                    return price.multiply(new BigDecimal(quantity));
-                })
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add); // Tính tổng
-        return total;
-    }
+    
 
 }
