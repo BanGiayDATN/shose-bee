@@ -75,7 +75,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -144,18 +143,12 @@ public class BillServiceImpl implements BillService {
     private ExportFilePdfFormHtml exportFilePdfFormHtml;
 
     @Autowired
-    private PaymentsMethodService paymentsMethodService;
-    @Autowired
     private NotificationRepository notificationRepository;
     @Autowired
     private ShoseSession shoseSession;
 
     @Autowired
     private ProductDetailGiveBackRepository productDetailGiveBackRepository;
-
-    @Autowired
-    private QRCodeAndCloudinary qrCodeAndCloudinary;
-
 
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
