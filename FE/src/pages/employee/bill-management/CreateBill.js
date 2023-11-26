@@ -40,7 +40,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
 
-function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
+function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHtmlByIdBill }) {
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
@@ -705,8 +705,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          setDataPayMent([...dataPayment, data]);
-          updateBillWhenSavePayMent([...dataPayment, data]);
+          setDataPayMent([data]);
+          updateBillWhenSavePayMent([data]);
           setTotalMoneyPayment("");
           // form.resetFields();
         },
@@ -938,6 +938,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   .then((res) => {
                     toast.success("Xuất hóa đơn thành công");
                     removePane(targetKey, invoiceNumber, items);
+                    getHtmlByIdBill(code)
                     form.resetFields();
                   })
                   .catch((error) => {
@@ -971,6 +972,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 .then((res) => {
                   removePane(targetKey, invoiceNumber, items);
                   toast.success("Đặt hàng thành công");
+                  getHtmlByIdBill(code)
                 })
                 .catch((error) => {
                   toast.error(error.response.data.message);

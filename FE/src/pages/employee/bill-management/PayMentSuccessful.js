@@ -4,12 +4,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import logo from "./../../../assets/images/logo_client.png";
 import "./style-payment-success.css";
 import { Button } from "antd";
 import { toast } from "react-toastify";
+import { BillApi } from "../../../api/employee/bill/bill.api";
+import { useReactToPrint } from "react-to-print";
 
 const getUrlVars = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -66,6 +68,19 @@ function PayMentSuccessful() {
     });
     return formatter.format(value);
   };
+
+  const generatePDF = useReactToPrint({
+    content: () => document.getElementById("pdfContent"),
+    documentTitle: "Userdata",
+    onAfterPrint: () => {
+    },
+  });
+  const getHtmlByIdBill = (id) => {
+    BillApi.fetchHtmlIdBill(id).then((res)=> {
+      document.getElementById("pdfContent").innerHTML   = res.data.data
+      generatePDF()
+    })
+  }
   useEffect(() => {
     const param = new URLSearchParams(window.location.search);
     fetchData();
@@ -73,10 +88,12 @@ function PayMentSuccessful() {
     setAmount(getAmount());
     PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {
       setLoadLink(false)
+      getHtmlByIdBill(param.get('vnp_TxnRef').split("-")[0])
     }).catch((error) => {
       toast.error(error.response.data.message);
     });;
   }, []);
+  
   const [loadLink, setLoadLink] = useState(true)
 
   return (
@@ -115,6 +132,11 @@ function PayMentSuccessful() {
             </div>
           </div>
         )}
+      </div>
+      <div style={{ display: "none" }}>
+        <div
+          id="pdfContent"
+        />
       </div>
     </>
   );

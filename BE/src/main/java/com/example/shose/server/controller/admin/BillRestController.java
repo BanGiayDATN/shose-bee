@@ -109,10 +109,14 @@ public class BillRestController {
         return  new ResponseObject(billService.updateBillWait(request));
     }
 
+    @GetMapping("/invoice-pdf/{code}")
+    public ResponseObject getFilePdf(@PathVariable("code") String code)  {
+        return new ResponseObject(billService.createFilePdfAtCounter(code));
+    }
 
-    @GetMapping("/invoice/{id}")
-    public ResponseObject getInvoice(@PathVariable("id") String id)  {
-        return new ResponseObject(billService.createFilePdf(id));
+    @PutMapping("/invoice-all-pdf")
+    public ResponseObject getAllFilePdf(@RequestBody ChangAllStatusBillByIdsRequest request)  {
+        return new ResponseObject(billService.createAllFilePdf(request));
     }
 
 

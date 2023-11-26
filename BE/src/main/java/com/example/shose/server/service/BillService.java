@@ -25,6 +25,7 @@ import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 /**
@@ -64,7 +65,9 @@ public interface BillService {
 
     Bill createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
-    boolean createFilePdf(String idBill);
+    String createFilePdfAtCounter(String idBill);
+
+    String createAllFilePdf(ChangAllStatusBillByIdsRequest request);
 
     Bill findByCode(String code, String phoneNumber);
 
