@@ -227,7 +227,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
           ids: dataIdCheck,
           status: nextStatusBill(),
         };
-        if(statusBill=="CHO_VAN_CHUYEN"){
+        if(statusBill=="XAC_NHAN"){
            BillApi.fetchAllFilePdfByIdBill(data).then((response) => {
             document.getElementById("pdfContent").innerHTML   = response.data.data
             generatePDF()

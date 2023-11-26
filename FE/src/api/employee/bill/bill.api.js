@@ -183,13 +183,6 @@ export class BillApi {
     });
   };
 
-  static exportPdf = (id) => {
-    return request({
-      method: "GET",
-      url: `/admin/bill/invoice/${id}`,
-    });
-  };
-
   static ChangeAllEmployeeInBill = (data) => {
     return request({
       method: "PUT",

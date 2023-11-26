@@ -119,11 +119,6 @@ public class BillRestController {
         return new ResponseObject(billService.createAllFilePdf(request));
     }
 
-    @GetMapping("/invoice/{id}")
-    public ResponseObject getInvoice(@PathVariable("id") String id)  {
-        return new ResponseObject(billService.createFilePdf(id));
-    }
-
 
     @PutMapping("/change-all-employee")
     public ResponseObject ChangeAllEmployeeInBill(@RequestBody ChangeAllEmployeeRequest request) {
