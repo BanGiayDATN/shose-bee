@@ -75,6 +75,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -338,7 +339,7 @@ public class BillServiceImpl implements BillService {
             VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        CompletableFuture.runAsync(() -> createFilePdfAtCounter(optional.get().getId()), Executors.newCachedThreadPool());
+        CompletableFuture.runAsync(() -> createTemplateSendMail(optional.get().getId()), Executors.newCachedThreadPool());
         return optional.get();
     }
 
@@ -537,8 +538,6 @@ public class BillServiceImpl implements BillService {
         }
         if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-        } else if (bill.get().getStatusBill() == StatusBill.CHO_VAN_CHUYEN) {
-            createFilePdf(bill.get().getId());
         } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
@@ -584,9 +583,7 @@ public class BillServiceImpl implements BillService {
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
             if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-                createFilePdf(id);
             } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
-                createFilePdf(id);
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
@@ -704,8 +701,8 @@ public class BillServiceImpl implements BillService {
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
-                .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
-                .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
+                .statusBill(StatusBill.CHO_XAC_NHAN)
+                .build();
         billHistoryRepository.save(billHistory);
         for (BillDetailOnline x : request.getBillDetail()) {
             Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
@@ -817,8 +814,8 @@ public class BillServiceImpl implements BillService {
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
-                .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
-                .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
+                .statusBill(StatusBill.CHO_XAC_NHAN)
+                .build();
         billHistoryRepository.save(billHistory);
 
         for (BillDetailOnline x : request.getBillDetail()) {
@@ -950,7 +947,7 @@ public class BillServiceImpl implements BillService {
         return true;
     }
 
-    public boolean createFilePdfAtCounter(String idBill) {
+    public boolean createTemplateSendMail(String idBill) {
         //     begin   create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
@@ -958,20 +955,42 @@ public class BillServiceImpl implements BillService {
         Bill bill = optional.get();
         String email = bill.getEmail();
         if(email == null){
-            Context dataContext = exportFilePdfFormHtml.setData(invoice);
-            finalHtml = springTemplateEngine.process("templateBill", dataContext);
-            exportFilePdfFormHtml.htmlToPdf(finalHtml,  bill.getCode());
             return true;
         }
         if (bill.getStatusBill() != StatusBill.THANH_CONG &&  !email.isEmpty()) {
             invoice.setCheckShip(true);
               CompletableFuture.runAsync(() -> sendMail(invoice, "http://localhost:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
         }
+        return true;
+    }
+    @Override
+    public String createFilePdfAtCounter(String code) {
+        //     begin   create file pdf
+        String finalHtml = null;
+        Optional<Bill> optional = billRepository.findByCode(code);
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+        Bill bill = optional.get();
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, bill.getCode());
+//        exportFilePdfFormHtml.htmlToPdf(finalHtml, bill.getCode());
 //     end   create file pdf
-        return true;
+        return finalHtml;
+    }
+
+    @Override
+    public String createAllFilePdf(ChangAllStatusBillByIdsRequest request) {
+        StringBuilder stringBuilder = new StringBuilder();
+        request.getIds().forEach(item -> {
+            Optional<Bill> optional = billRepository.findById(item);
+            InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+            if (optional.get().getStatusBill() != StatusBill.THANH_CONG) {
+                invoice.setTypeBill(true);
+                invoice.setCheckShip(true);
+            }
+            Context dataContext = exportFilePdfFormHtml.setData(invoice);
+            stringBuilder.append(springTemplateEngine.process("templateBill", dataContext));
+        });
+        return stringBuilder.toString();
     }
 
     public void sendMailOnline(String idBill) {

@@ -36,6 +36,13 @@ export class BillApi {
     });
   };
 
+  static fetchAllFilePdfByIdBill = (data) => {
+    return request({
+      method: "PUT",
+      url: `/admin/bill/invoice-all-pdf`,
+      data:data
+    });
+  };
   static fetchCountPayMentPostpaidByIdBill = (id) => {
     return request({
       method: "GET",
@@ -43,6 +50,12 @@ export class BillApi {
     });
   };
 
+  static fetchHtmlIdBill = (id) => {
+    return request({
+      method: "GET",
+      url: `/admin/bill/invoice-pdf/${id}`,
+    });
+  };
   static fetchDataUsers = () => {
     return request({
       method: "GET",
