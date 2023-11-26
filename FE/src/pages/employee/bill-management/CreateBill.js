@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import {
   Button,
   Col,
@@ -807,7 +808,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       promotion: product.promotion,
     }));
     var newVoucher = [];
-    if (voucher.idVoucher != "") {
+    if (voucher.idVoucher !== "") {
       newVoucher.push(voucher);
     }
     var totalBill = products.reduce((accumulator, currentValue) => {
@@ -819,17 +820,17 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
     var addressuser = "";
     console.log("address");
     console.log(
-      address.detail != "" &&
-        address.wards != "" &&
-        address.district != "" &&
-        address.city != ""
+      address.detail !== "" &&
+        address.wards !== "" &&
+        address.district !== "" &&
+        address.city !== ""
     );
     console.log(address);
     if (
-      address.detail != "" &&
-      address.wards != "" &&
-      address.district != "" &&
-      address.city != "" &&
+      address.detail !== "" &&
+      address.wards !== "" &&
+      address.district !== "" &&
+      address.city !== "" &&
       isOpenDelivery
     ) {
       addressuser =
@@ -913,12 +914,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
     };
     if (isOpenDelivery) {
       if (
-        address.detail != "" &&
-        address.wards != "" &&
-        address.district != "" &&
-        address.city != "" &&
-        billRequest.phoneNumber != "" &&
-        billRequest.userName != ""
+        address.detail !== "" &&
+        address.wards !== "" &&
+        address.district !== "" &&
+        address.city !== "" &&
+        billRequest.phoneNumber !== "" &&
+        billRequest.userName !== ""
       ) {
         if (totalBill > 0) {
           if (
@@ -2394,7 +2395,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                   marginRight: "10px",
                   fontSize: "15px",
                   fontWeight: "bold",
-                  marginRight: "10px",
                 }}
               >
                 {formatCurrency(
@@ -2483,7 +2483,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                   marginRight: "10px",
                   fontSize: "15px",
                   fontWeight: "bold",
-                  marginRight: "10px",
                 }}
               >
                 {formatCurrency(
@@ -2589,7 +2588,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                       marginRight: "10px",
                       fontSize: "15px",
                       fontWeight: "bold",
-                      marginRight: "10px",
                     }}
                   >
                     {formatCurrency(exchangeRateMoney)}

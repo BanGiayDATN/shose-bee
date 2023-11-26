@@ -996,10 +996,6 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException("Hóa đơn " + codeBill + " đã bị hủy.");
         }
 
-        if (!optional.get().getStatusBill().equals(StatusBill.THANH_CONG)) {
-            throw new RestApiException("Hóa đơn chưa được đổi trả.");
-        }
-
         if(optional.get().getStatusBill().equals(StatusBill.THANH_CONG)){
             long currentSeconds = System.currentTimeMillis();
             long givenBackCheck = optional.get().getCompletionDate() + 2 * 24 * 60 * 60 * 1000;

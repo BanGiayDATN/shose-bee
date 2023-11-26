@@ -54,4 +54,7 @@ public interface ProductDetailDTOResponse {
     @Value("#{target.promotion}")
     Double getPromotion();
 
+    @Value("#{target.productGiveBack}")
+    Integer getProductGiveBack();
+
 }

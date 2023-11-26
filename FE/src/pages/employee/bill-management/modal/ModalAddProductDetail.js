@@ -60,13 +60,6 @@ function ModalAddProductDetail({
     return formatter.format(value);
   };
 
-  // lấy mảng redux ra
-  // const data = useAppSelector(GetProduct);
-  // useEffect(() => {
-  //   if (data != null) {
-  //     setListProduct(data);
-  //   }
-  // }, [data]);
 
   const handleChange = (e) => {
     setSearch(e.target.value);
