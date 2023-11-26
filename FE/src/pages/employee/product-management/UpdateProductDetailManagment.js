@@ -35,6 +35,7 @@ import ModalQRScanner from "./modal/ModalQRScanner";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ModalUpdateProductDetail from "./modal/ModalUpdateProductDetail";
+import ModalPriceAndQuantity from "./modal/ModalPriceAndQuantity";
 
 const UpdateProductDetailManagment = () => {
   const { id } = useParams();
@@ -506,6 +507,31 @@ const UpdateProductDetailManagment = () => {
     ],
   };
 
+  const [openQuantityAndPrice, setQuantityAndPrice] = useState(false);
+  const handleUpdateQuantityAndPrice = (newValues) => {
+    const updatedData = listProductDetails.map((record) => {
+      if (selectedRowKeys.includes(record.id)) {
+        return {
+          ...record,
+          quantity: newValues.quantityCustom,
+          price: newValues.priceCustom,
+        };
+      }
+      return record;
+    });
+
+    setListProductDetails(updatedData);
+    setUpdatedDetails(updatedData);
+    setQuantityAndPrice(false);
+  };
+
+  const showModalQuantityAndPrice = () => {
+    setQuantityAndPrice(true);
+  };
+  const handleCancelQuantityAndPrice = () => {
+    setQuantityAndPrice(false);
+  };
+
   // detail update product detail
   const [modalUpdateVisible, setModalUpdateVisible] = useState(false);
   const [selectedDetail, setSelectedDetail] = useState(null);
@@ -759,14 +785,28 @@ const UpdateProductDetailManagment = () => {
             Danh sách sản phẩm chi tiết
           </span>
           <div style={{ marginLeft: "auto" }}>
-            <Button
-              className="btn_filter"
-              icon={<FontAwesomeIcon icon={faEdit} />}
-              style={{ height: 40 }}
-              onClick={handleUpload}
-            >
-              Update sản phẩm
-            </Button>
+            <Tooltip title=" Chỉnh số lượng và giá chung">
+              <Button
+                className="btn_filter"
+                onClick={showModalQuantityAndPrice}
+                style={{
+                  height: "40px",
+                  margin: "0px 20px",
+                }}
+              >
+                Chỉnh số lượng và giá chung
+              </Button>
+            </Tooltip>
+            <Tooltip title=" Cập nhập ">
+              <Button
+                className="btn_filter"
+                icon={<FontAwesomeIcon icon={faEdit} />}
+                style={{ height: 40 }}
+                onClick={handleUpload}
+              >
+                Update sản phẩm
+              </Button>
+            </Tooltip>
           </div>
         </div>
         <div style={{ marginTop: "25px" }}>
@@ -784,6 +824,11 @@ const UpdateProductDetailManagment = () => {
           id={selectedDetail}
           visible={modalUpdateVisible}
           onCancel={handleModalCancel}
+        />
+        <ModalPriceAndQuantity
+          open={openQuantityAndPrice}
+          onCancel={handleCancelQuantityAndPrice}
+          onUpdate={handleUpdateQuantityAndPrice}
         />
       </div>
     </>

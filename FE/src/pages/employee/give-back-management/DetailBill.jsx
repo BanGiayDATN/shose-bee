@@ -44,6 +44,7 @@ export default function DetailBillGiveBack() {
   const loadDatabill = () => {
     BillApi.BillGiveBack(bill.idBill).then((res) => {
       setDataProductBill(res.data.data);
+      console.log(res.data.data);
     });
   };
 
@@ -210,6 +211,7 @@ export default function DetailBillGiveBack() {
               type="primary"
               style={{ backgroundColor: "#20B2AA" }}
               onClick={() => handleModalQuantityGiveBack(record)}
+              disabled={bill.statusBill !== "THANH_CONG"}
             >
               <FontAwesomeIcon icon={faRotateBack} />
             </Button>
@@ -772,6 +774,7 @@ export default function DetailBillGiveBack() {
                     margin: "5px 10px 10px 0px ",
                   }}
                   onClick={() => handleAllGiveBackToBill()}
+                  disabled={bill !== null && bill.statusBill !== "THANH_CONG"}
                 >
                   <FontAwesomeIcon icon={faRotateBack} />{" "}
                   <span style={{ marginLeft: "5px" }}>Trả hàng tất cả</span>

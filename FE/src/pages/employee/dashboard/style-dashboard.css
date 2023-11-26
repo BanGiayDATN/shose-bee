@@ -22,7 +22,7 @@
   width: 99%;
   margin-left: 5px;
   height: 800px;
-  margin-top: 65px;
+  margin-top: 20px;
   background-color: rgb(255, 255, 255);
   border-radius: 15px;
   padding: 10px;
@@ -106,7 +106,6 @@
   margin-top: 30px;
   margin-left: 12px;
   float: left;
-  width: 100px;
 }
 
 .header-date {
