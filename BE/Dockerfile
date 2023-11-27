@@ -1,16 +1,32 @@
 
 
-FROM eclipse-temurin:17-jdk-alpine as build
-WORKDIR /workspace/app
+# Stage 1: Build the Spring Boot application with Gradle
+# Use an official Maven runtime as a builder image
+FROM maven:latest as builder
 
-COPY mvnw .
-COPY .mvn .mvn
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy Maven files
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw install
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+# Show the directory contents before running the build
+RUN ls -al
 
+# Run the build command with more detailed output
+mvn clean install -U
+
+# Create a runtime image
+FROM eclipse-temurin:17
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the built JAR from the builder stage
+COPY --from=builder /app/target/*.jar /app/app.jar
+
+# Set the timezone to Asia/Ho_Chi_Minh
 ENV TZ=Asia/Ho_Chi_Minh
 
 # Update the timezone information
@@ -19,10 +35,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Expose the port the app will run on
 EXPOSE 8080
 
-FROM eclipse-temurin:17-jdk-alpine
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","hello.Application"]
+# Command to run the application
+CMD ["java", "-jar", "app.jar"]
+
+
