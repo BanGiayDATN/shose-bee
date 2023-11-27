@@ -721,8 +721,8 @@ public class BillServiceImpl implements BillService {
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
-                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
+                .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
         for (BillDetailOnline x : request.getBillDetail()) {
             Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
@@ -834,8 +834,8 @@ public class BillServiceImpl implements BillService {
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
-                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
+                .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
         for (BillDetailOnline x : request.getBillDetail()) {
