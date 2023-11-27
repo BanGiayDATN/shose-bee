@@ -10,7 +10,7 @@ COPY src src
 RUN mvn clean install
 
 # Use OpenJDK 17 as the runtime image
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17
 
 WORKDIR /app
 
