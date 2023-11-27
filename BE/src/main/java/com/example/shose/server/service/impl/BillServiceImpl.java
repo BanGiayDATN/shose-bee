@@ -1010,7 +1010,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
+    public Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
         Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
         Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
         if (bill == null) {
@@ -1091,6 +1091,6 @@ public class BillServiceImpl implements BillService {
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
     }
-    
+
 
 }

@@ -23,9 +23,7 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
-import jakarta.servlet.http.HttpServletRequest;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 /**
@@ -78,5 +76,5 @@ public interface BillService {
     BillGiveBackInformation getBillGiveBackInformation(String codeBill);
     List<BillGiveBack> getBillGiveBack(String idBill);
 
-    Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
+    Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
 }
