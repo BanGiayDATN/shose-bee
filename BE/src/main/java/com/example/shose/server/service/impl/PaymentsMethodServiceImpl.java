@@ -389,6 +389,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                    }
                    bill.get().setStatusBill(StatusBill.XAC_NHAN);
                    billRepository.save(bill.get());
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.DA_THANH_TOAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
                }
                CompletableFuture.runAsync(() -> createFilePdfAtCounter(bill.get().getId()), Executors.newCachedThreadPool());
                return true;
