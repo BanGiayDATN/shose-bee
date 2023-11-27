@@ -1,32 +1,39 @@
 
 
 # Stage 1: Build the Spring Boot application with Gradle
-FROM gradle:7.4.1-jdk17 AS builder
+# Use an official Maven runtime as a builder image
+FROM maven:latest as builder
 
+# Set the working directory in the container
 WORKDIR /app
 
-COPY build.gradle .
-COPY settings.gradle .
+# Copy Maven files
+COPY pom.xml .
 COPY src src
 
 # Show the directory contents before running the build
 RUN ls -al
 
 # Run the build command with more detailed output
-RUN gradle build --no-daemon --stacktrace
+RUN mvn clean install
 
-# Đặt múi giờ Việt Nam
-ENV TZ=Asia/Ho_Chi_Minh
-
-# Làm mới thông tin về múi giờ
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
+# Create a runtime image
 FROM eclipse-temurin:17
 
-EXPOSE 8080
-
+# Set the working directory in the container
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
+# Copy the built JAR from the builder stage
+COPY --from=builder /app/target/*.jar /app/app.jar
 
+# Set the timezone to Asia/Ho_Chi_Minh
+ENV TZ=Asia/Ho_Chi_Minh
+
+# Update the timezone information
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Expose the port the app will run on
+EXPOSE 8080
+
+# Command to run the application
 CMD ["java", "-jar", "app.jar"]
