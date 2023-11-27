@@ -71,6 +71,7 @@ import com.example.shose.server.util.ConvertDateToLong;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -149,6 +150,9 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private ProductDetailGiveBackRepository productDetailGiveBackRepository;
+
+    @Value("${domain.client}")
+    private  String domainClient;
 
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
@@ -935,7 +939,7 @@ public class BillServiceImpl implements BillService {
         }
         if (bill.getStatusBill() != StatusBill.THANH_CONG && !email.isEmpty()) {
             invoice.setCheckShip(true);
-            CompletableFuture.runAsync(() -> sendMail(invoice, "http://localhost:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
+            CompletableFuture.runAsync(() -> sendMail(invoice, domainClient+"/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
         }
         return true;
     }
@@ -969,7 +973,7 @@ public class BillServiceImpl implements BillService {
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         invoice.setCheckShip(true);
         if ((optional.get().getEmail() != null)) {
-            sendMail(invoice, "http://localhost:3000/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
+            sendMail(invoice, domainClient+"/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
         }
     }
 

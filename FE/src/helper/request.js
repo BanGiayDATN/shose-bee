@@ -45,21 +45,21 @@ request.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      window.location.href = "/not-authorization";
-      deleteToken();
-      return;
-    }
-    if (error.response != null && error.response.status === 400) {
-      toast.error(error.response.data.message);
-    }
-    if (error.response && error.response.status === 404) {
-      window.location.href = "/not-found";
-      return;
-    }
+    // if (
+    //   error.response &&
+    //   (error.response.status === 401 || error.response.status === 403)
+    // ) {
+    //   window.location.href = "/not-authorization";
+    //   deleteToken();
+    //   return;
+    // }
+    // if (error.response != null && error.response.status === 400) {
+    //   toast.error(error.response.data.message);
+    // }
+    // if (error.response && error.response.status === 404) {
+    //   window.location.href = "/not-found";
+    //   return;
+    // }
     store.dispatch(SetLoadingFalse());
     throw error;
   }
@@ -71,21 +71,21 @@ requestCustomer.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      window.location.href = "/not-authorization";
-      deleteToken();
-      return;
-    }
-    if (error.response != null && error.response.status === 400) {
-      toast.error(error.response.data.message);
-    }
-    if (error.response && error.response.status === 404) {
-      window.location.href = "/not-found";
-      return;
-    }
+    // if (
+    //   error.response &&
+    //   (error.response.status === 401 || error.response.status === 403)
+    // ) {
+    //   window.location.href = "/not-authorization";
+    //   deleteToken();
+    //   return;
+    // }
+    // if (error.response != null && error.response.status === 400) {
+    //   toast.error(error.response.data.message);
+    // }
+    // if (error.response && error.response.status === 404) {
+    //   window.location.href = "/not-found";
+    //   return;
+    // }
     store.dispatch(SetLoadingFalse());
     throw error;
   }
