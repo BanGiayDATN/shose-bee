@@ -916,7 +916,7 @@ function CreateBill({
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      poin: poin,
+      poin: poin?poin : 0,
     };
     if (isOpenDelivery) {
       if (
@@ -939,8 +939,9 @@ function CreateBill({
               content: "Bạn có xác nhận đặt hàng không?",
               okText: "Đồng ý",
               cancelText: "Hủy",
-              onOk: async () => {
-                await BillApi.createBillWait(data)
+              onOk:  () => {
+
+                 BillApi.createBillWait(data)
                   .then((res) => {
                     toast.success("Xuất hóa đơn thành công");
                     removePane(targetKey, invoiceNumber, items);

@@ -69,44 +69,44 @@ const DashBoardEmployee = ({ children }) => {
   const handleMenuLeave = () => {
     setOpenInfo(false);
   };
-  // const socket = new SockJS("http://103.56.161.210:8080/ws");
-  // const stompClient = Stomp.over(socket);
+  const socket = new SockJS("http://103.56.161.210:8080/ws");
+  const stompClient = Stomp.over(socket);
 
-  // const data = useAppSelector(GetNotification);
-  // useEffect(() => {
-  //   if (data != null) {
-  //     setListNotification(data);
-  //     NotificationClientApi.getNotRead().then((res) => {
-  //       if (res.data.data.length > 0) {
-  //         setNotificationCount(res.data.data.length);
-  //       }
-  //     });
-  //   }
-  // }, [data]);
-  // useEffect(() => {
-  //   NotificationClientApi.getAll().then((res) => {
-  //     dispatch(SetNotification(res.data.data));
-  //     setListNotification(res.data.data);
-  //     console.log(res.data.data);
-  //   });
-  //   stompClient.connect({}, () => {
-  //     stompClient.subscribe("/topic/admin-notifications", (response) => {
-  //       NotificationClientApi.getNotRead().then((res) => {
-  //         setNotificationCount(res.data.data.length);
-  //       });
-  //       NotificationClientApi.getAll().then((res) => {
-  //         dispatch(SetNotification(res.data.data));
-  //         setListNotification(res.data.data);
-  //       });
-  //       toast.warning(response.body);
-  //     });
-  //   });
+  const data = useAppSelector(GetNotification);
+  useEffect(() => {
+    if (data != null) {
+      setListNotification(data);
+      NotificationClientApi.getNotRead().then((res) => {
+        if (res.data.data.length > 0) {
+          setNotificationCount(res.data.data.length);
+        }
+      });
+    }
+  }, [data]);
+  useEffect(() => {
+    NotificationClientApi.getAll().then((res) => {
+      dispatch(SetNotification(res.data.data));
+      setListNotification(res.data.data);
+      console.log(res.data.data);
+    });
+    stompClient.connect({}, () => {
+      stompClient.subscribe("/topic/admin-notifications", (response) => {
+        NotificationClientApi.getNotRead().then((res) => {
+          setNotificationCount(res.data.data.length);
+        });
+        NotificationClientApi.getAll().then((res) => {
+          dispatch(SetNotification(res.data.data));
+          setListNotification(res.data.data);
+        });
+        toast.warning(response.body);
+      });
+    });
 
-  //   return () => {
-  //     // Ngắt kết nối khi component unmount
-  //     stompClient.disconnect();
-  //   };
-  // }, []);
+    return () => {
+      // Ngắt kết nối khi component unmount
+      stompClient.disconnect();
+    };
+  }, []);
 
   const [collapsed, setCollapsed] = useState(false);
   const nav = useNavigate();

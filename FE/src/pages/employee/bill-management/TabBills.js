@@ -15,8 +15,8 @@ import { useReactToPrint } from "react-to-print";
 function TabBills({ statusBill, dataFillter, addNotify }) {
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
-  // const socket = new SockJS("http://103.56.161.210:8080/ws");
-  // const stompClient = Stomp.over(socket);
+  const socket = new SockJS("http://103.56.161.210:8080/ws");
+  const stompClient = Stomp.over(socket);
 
   const formatCurrency = (value) => {
     const formatter = new Intl.NumberFormat("vi-VN", {
@@ -141,18 +141,18 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     }).catch((error) => {
       toast.error(error.response.data.message);
     });
-    // stompClient.connect({}, () => {
-    //   stompClient.subscribe("/topic/admin-notifications", (response) => {
-    //     BillApi.fetchAll(data).then((res) => {
-    //       setDataBill(res.data.data);
-    //     });
-    //   });
-    // });
+    stompClient.connect({}, () => {
+      stompClient.subscribe("/topic/admin-notifications", (response) => {
+        BillApi.fetchAll(data).then((res) => {
+          setDataBill(res.data.data);
+        });
+      });
+    });
 
-    // return () => {
-    //   // Ngắt kết nối khi component unmount
-    //   stompClient.disconnect();
-    // };
+    return () => {
+      // Ngắt kết nối khi component unmount
+      stompClient.disconnect();
+    };
   }, []);
 
   useEffect(() => {
