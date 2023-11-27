@@ -1,35 +1,22 @@
-FROM maven:latest as builder
+FROM maven:3.8.4-openjdk-17 as builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy Maven files
 COPY pom.xml .
 COPY src src
 
-# Show the directory contents before running the build
-RUN ls -al
-
-# Run the build command with more detailed output
 RUN mvn clean install
 
-# Create a runtime image
-FROM eclipse-temurin:17
+FROM adoptopenjdk:17-jre
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the built JAR from the builder stage
 COPY --from=builder /app/target/*.jar /app/app.jar
 
-# Set the timezone to Asia/Ho_Chi_Minh
 ENV TZ=Asia/Ho_Chi_Minh
 
-# Update the timezone information
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Expose the port the app will run on
 EXPOSE 8080
 
-# Command to run the application
 CMD ["java", "-jar", "app.jar"]
