@@ -19,7 +19,7 @@ function SearchBill() {
               return acc;
             }, {});
             console.log(trimmedValues);
-            window.open("http://localhost:3000/bill/"+ trimmedValues.code+"/"+trimmedValues.phoneNumber, "_self");
+            window.open("http://103.56.161.210:3000/bill/"+ trimmedValues.code+"/"+trimmedValues.phoneNumber, "_self");
           })
          
           .catch(() => {

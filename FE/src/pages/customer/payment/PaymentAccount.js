@@ -62,7 +62,7 @@ function PaymentAccount() {
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
-  const socket = new SockJS("http://localhost:8080/ws");
+  const socket = new SockJS("http://103.56.161.210:8080/ws");
   const stompClient = Stomp.over(socket);
   const [dataPoin, setDataPoin] = useState(null);
   const [account, setAccount] = useState(null);

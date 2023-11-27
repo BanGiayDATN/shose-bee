@@ -15,7 +15,7 @@ import { useReactToPrint } from "react-to-print";
 function TabBills({ statusBill, dataFillter, addNotify }) {
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
-  const socket = new SockJS("http://localhost:8080/ws");
+  const socket = new SockJS("http://103.56.161.210:8080/ws");
   const stompClient = Stomp.over(socket);
 
   const formatCurrency = (value) => {
