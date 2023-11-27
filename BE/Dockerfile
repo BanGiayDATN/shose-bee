@@ -12,4 +12,4 @@ ARG DEPENDENCY=/app/target/dependency
 COPY --from=maven ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=maven ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=maven ${DEPENDENCY}/BOOT-INF/classes /app
-CMD java -server -Xmx1024m -Xss1024k -XX:MaxMetaspaceSize=135m -XX:CompressedClassSpaceSize=28m -XX:ReservedCodeCacheSize=13m -XX:+IdleTuningGcOnIdle -Xtune:virtualized -cp app:app/lib/* com.example.shose.sever.ServerApplication
+CMD java -server -Xmx1024m -Xss1024k -XX:MaxMetaspaceSize=135m -XX:CompressedClassSpaceSize=28m -XX:ReservedCodeCacheSize=13m -XX:+IdleTuningGcOnIdle -Xtune:virtualized -cp app:app/lib/* com.example.shose.server.ServerApplication
