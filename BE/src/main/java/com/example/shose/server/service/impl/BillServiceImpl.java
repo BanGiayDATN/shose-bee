@@ -721,8 +721,8 @@ public class BillServiceImpl implements BillService {
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
-                .statusBill(StatusBill.CHO_XAC_NHAN)
-                .build();
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
         billHistoryRepository.save(billHistory);
         for (BillDetailOnline x : request.getBillDetail()) {
             Optional<ProductDetail> optional = productDetailRepository.findById(x.getIdProductDetail());
@@ -834,8 +834,8 @@ public class BillServiceImpl implements BillService {
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
-                .statusBill(StatusBill.CHO_XAC_NHAN)
-                .build();
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
         billHistoryRepository.save(billHistory);
 
         for (BillDetailOnline x : request.getBillDetail()) {
