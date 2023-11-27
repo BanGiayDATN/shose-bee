@@ -85,6 +85,7 @@ public class SecurityConfiguration {
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH"));
         configuration.addAllowedOrigin("*");
         configuration.addAllowedOrigin("http://103.56.161.210:3000");
+        configuration.addAllowedOrigin("http://komf.id.vn:3000");
         configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
