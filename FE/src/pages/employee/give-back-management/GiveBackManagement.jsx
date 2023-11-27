@@ -1,7 +1,7 @@
 import { Button, Card, Form, Input, Row } from "antd";
 import "./style-give-back-management.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTruckArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faQrcode, faTruckArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useState } from "react";
@@ -76,6 +76,7 @@ export default function GiveBackManagement() {
                   style={{ height: "35px" }}
                   onClick={showModal}
                 >
+                  <FontAwesomeIcon icon={faQrcode} />
                   QRCode
                 </Button>
               </Form.Item>

@@ -238,7 +238,7 @@ public class BillServiceImpl implements BillService {
 
 
         if (!request.getDeliveryDate().isEmpty()) {
-           optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+            optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
             if (request.getIdUser() != null) {
@@ -278,7 +278,7 @@ public class BillServiceImpl implements BillService {
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
-            }
+        }
 
         request.getPaymentsMethodRequests().forEach(item -> {
             if (item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null) {
@@ -930,15 +930,16 @@ public class BillServiceImpl implements BillService {
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         Bill bill = optional.get();
         String email = bill.getEmail();
-        if(email == null){
+        if (email == null) {
             return true;
         }
-        if (bill.getStatusBill() != StatusBill.THANH_CONG &&  !email.isEmpty()) {
+        if (bill.getStatusBill() != StatusBill.THANH_CONG && !email.isEmpty()) {
             invoice.setCheckShip(true);
-              CompletableFuture.runAsync(() -> sendMail(invoice, "http://localhost:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
+            CompletableFuture.runAsync(() -> sendMail(invoice, "http://localhost:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
         }
         return true;
     }
+
     @Override
     public String createFilePdfAtCounter(String code) {
         Optional<Bill> optional = billRepository.findByCode(code);
@@ -993,7 +994,7 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException("Hóa đơn " + codeBill + " đã bị hủy.");
         }
 
-        if(optional.get().getStatusBill().equals(StatusBill.THANH_CONG)){
+        if (optional.get().getStatusBill().equals(StatusBill.THANH_CONG)) {
             long currentSeconds = System.currentTimeMillis();
             long givenBackCheck = optional.get().getCompletionDate() + 2 * 24 * 60 * 60 * 1000;
             if (currentSeconds > givenBackCheck) {
@@ -1018,23 +1019,22 @@ public class BillServiceImpl implements BillService {
         }
 
         // todo: update points user by totalBillGiveBack
-        BigDecimal totalBill = bill.getTotalMoney();
+        BigDecimal totalBill =  bill.getTotalMoney();
         String idAccount = updateBillGiveBack.getIdAccount();
         BigDecimal totalBillGive = updateBillGiveBack.getTotalBillGiveBack();
         int checkTotal = totalBill.compareTo(totalBillGive);
 
         Poin poin = configPoin.readJsonFile();
         int pointGiveBack = poin.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
-        if (idAccount != null ) {
+        if (idAccount != null) {
             User customer = accountRepository.findById(idAccount).get().getUser();
-            if(checkTotal == 0) {
+            if (checkTotal == 0) {
                 customer.setPoints(customer.getPoints() + bill.getPoinUse() - pointGiveBack);
-            }else {
+            } else {
                 customer.setPoints(customer.getPoints() - pointGiveBack);
             }
             userReposiory.save(customer);
         }
-
 
         // todo update stattus bill
         bill.setStatusBill(StatusBill.TRA_HANG);

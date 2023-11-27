@@ -2,6 +2,8 @@ package com.example.shose.server.dto.response.bill;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import java.math.BigDecimal;
+
 public interface BillGiveBackInformation {
 
     @Value("#{target.idBill}")
@@ -16,10 +18,8 @@ public interface BillGiveBackInformation {
     @Value("#{target.nameCustomer}")
     String getNameCustomer();
 
-
     @Value("#{target.phoneNumber}")
     String getPhoneNumber();
-
 
     @Value("#{target.statusBill}")
     String getStatusBill();
@@ -38,4 +38,13 @@ public interface BillGiveBackInformation {
 
     @Value("#{target.deliveryDate}")
     Long getDeliveryDate();
+
+    @Value("#{target.voucherValue}")
+    BigDecimal getVoucherValue();
+
+    @Value("#{target.poin}")
+    Integer getPoin();
+
+    @Value("#{target.moneyShip}")
+    BigDecimal getMoneyShip();
 }

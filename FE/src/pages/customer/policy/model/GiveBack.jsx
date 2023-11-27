@@ -33,6 +33,7 @@ export default function Giveback() {
         <p>- Sản phẩm bị lỗi do phía nhà cung cấp (sản phẩm hỏng, rách, dơ)</p>
         <p>- Mỗi hóa đơn được đổi trả duy nhất 1 lần.</p>
         <p>- Sản phẩm bị hư hại trong quá trình vận chuyển</p>
+        <p>- Sản phẩm không áp dụng đợt giảm giá.</p>
         <p>
           - Sản phẩm không đúng với thông tin đơn hàng đã đặt (sai màu, sai mẫu,
           sai size,...)
