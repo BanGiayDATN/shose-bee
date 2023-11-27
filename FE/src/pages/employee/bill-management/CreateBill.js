@@ -37,7 +37,6 @@ import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import "./style-bill.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
-import { PoinApi } from "../../../api/employee/poin/poin.api";
 
 function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHtmlByIdBill }) {
   const [products, setProducts] = useState([]);
@@ -46,7 +45,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
   const [dataPayment, setDataPayMent] = useState([]);
   const [accountuser, setAccountUser] = useState(null);
   const [valueAddressShip, setValueAddressShip] = useState(null);
-  const [dataPoin, setDataPoin] = useState(null);
   const [billRequest, setBillRequest] = useState({
     phoneNumber: "",
     address: "",
@@ -117,21 +115,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
         address.city;
     }
     var idAccount = "";
-    var poin = 0;
-    if (usePoin) {
-      poin = tinhSoDiemCanThanhToan();
-    }
-    var itemDiscount = voucher.discountPrice + exchangeRateMoney;
-    if (accountuser != null && usePoin) {
-      if ( poin > 0 && poin < accountuser?.points) {
-        console.log(accountuser?.points);
-        itemDiscount = Math.round(totalBill)
-        if (isOpenDelivery) {
-          itemDiscount =
-            Math.round(totalBill) + shipFee;
-        }
-      }
-    }
     if (accountuser != null) {
       idAccount = accountuser.idAccount;
     }
@@ -150,7 +133,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
       userName: billRequest.userName.trim(),
-      itemDiscount: itemDiscount,
+      itemDiscount: voucher.discountPrice,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
       statusPayMents: statusPayMents,
@@ -164,7 +147,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      poin: poin,
     };
     BillApi.updateBillWait(data)
       .then((res) => {
@@ -204,21 +186,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
           address.city;
       }
       var idAccount = "";
-      var poin = 0;
-      if (usePoin) {
-        poin = tinhSoDiemCanThanhToan();
-      }
-      var itemDiscount = voucher.discountPrice + exchangeRateMoney;
-      if (accountuser != null && usePoin) {
-        if (poin > 0 && poin < accountuser?.points) {
-          console.log(accountuser?.points);
-          itemDiscount = Math.round(totalBill)
-          if (isOpenDelivery) {
-            itemDiscount =
-              Math.round(totalBill) + shipFee;
-          }
-        }
-      }
       if (accountuser != null) {
         idAccount = accountuser.idAccount;
       }
@@ -237,7 +204,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
         phoneNumber: billRequest.phoneNumber.trim(),
         address: addressuser.trim(),
         userName: billRequest.userName.trim(),
-        itemDiscount: itemDiscount,
+        itemDiscount: voucher.discountPrice,
         totalMoney: Math.round(totalBill),
         note: billRequest.note.trim(),
         statusPayMents: statusPayMents,
@@ -251,7 +218,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
         deliveryDate: ngayShip,
         code: code,
         openDelivery: isOpenDelivery,
-        poin: poin,
       };
       console.log(data);
       BillApi.updateBillWait(data)
@@ -382,14 +348,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
             discountPrice: 0,
           });
         }
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
-    PoinApi.findPoin()
-      .then((res) => {
-        setDataPoin(res.data.data);
-        console.log(res.data.data);
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -562,13 +520,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       sorter: (a, b) => a.phoneNumber.localeCompare(b.phoneNumber),
     },
     {
-      title: "Điểm",
-      dataIndex: "points",
-      key: "points",
-      sorter: (a, b) => a.points.localeCompare(b.points),
-    },
-
-    {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
@@ -590,22 +541,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       ),
     },
   ];
-  const [isPoin, setPoin] = useState(false);
-  const [usePoin, setUsePoin] = useState(false);
-  const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
-  const isOpenUsePoin = (check) => {
-    setUsePoin(check);
-    if (check) {
-      setExchangeRateMoney(dataPoin.exchangeRateMoney * accountuser?.points);
-    } else {
-      setExchangeRateMoney(0);
-    }
-  };
+
   const selectedAccount = (record) => {
     setShipFee(0);
     form.resetFields();
     setAccountUser(record);
-    setPoin(record?.points > 0);
     setIsModalAccountOpen(true);
     AddressApi.fetchAllAddressByUserRoleEmployee(record.id).then((res) => {
       setListAddress(res.data.data);
@@ -779,8 +719,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.price * currentValue.quantity;
       }, 0) +
-        ship -
-        exchangeRateMoney -
+        ship  -
         voucher.discountPrice
     );
     setTotalMoneyPayment(Math.round(total));
@@ -842,26 +781,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
         address.city;
     }
     var idAccount = "";
-    var poin = 0;
-    if (usePoin) {
-      poin = tinhSoDiemCanThanhToan();
-    }
-    var itemDiscount = voucher.discountPrice + exchangeRateMoney;
-    if (accountuser != null && usePoin) {
-      if ( poin > 0 && poin < accountuser?.points) {
-        console.log(accountuser?.points);
-        itemDiscount = Math.round(totalBill) ;
-        if (isOpenDelivery) {
-          itemDiscount =
-            Math.round(totalBill)  + shipFee;
-        }
-      }
-    }
     if (accountuser != null) {
       idAccount = accountuser.idAccount;
     }
-    console.log(itemDiscount);
-
     var typeBill = "OFFLINE";
     var statusPayMents = "THANH_TOAN";
     if (traSau) {
@@ -879,7 +801,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
         products.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.price * currentValue.quantity;
         }, 0) +
-        ship - exchangeRateMoney -
+        ship-
         voucher.discountPrice;
       dataPayMentTraSau = [
         {
@@ -895,7 +817,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser.trim(),
       userName: billRequest.userName.trim(),
-      itemDiscount: itemDiscount,
+      itemDiscount: voucher.discountPrice,
       totalMoney: Math.round(totalBill),
       note: billRequest.note.trim(),
       email: billRequest.email ? billRequest.email.trim() : null,
@@ -909,7 +831,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      poin: poin,
     };
     if (isOpenDelivery) {
       if (
@@ -924,7 +845,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
           if (
             Math.round(totaPayMent) >=
             Math.round(
-              totalBill + shipFee - exchangeRateMoney - voucher.discountPrice
+              totalBill + shipFee - voucher.discountPrice
             )
           ) {
             Modal.confirm({
@@ -959,7 +880,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
       if (totalBill > 0) {
         if (
           Math.round(totaPayMent) >=
-          Math.round(totalBill - exchangeRateMoney - voucher.discountPrice)
+          Math.round(totalBill  - voucher.discountPrice)
         ) {
           Modal.confirm({
             title: "Xác nhận",
@@ -1454,25 +1375,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
     return formatter.format(value);
   };
 
-  function tinhSoDiemCanThanhToan() {
-    var tongTienGiam = voucher.discountPrice + exchangeRateMoney;
-    var tongTienThanhToan = products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
-    }, 0);
-    if (isOpenDelivery) {
-      tongTienThanhToan += shipFee;
-    }
-
-    if (tongTienGiam > tongTienThanhToan) {
-      var soDiemCanThanhToan = Math.floor(
-        (tongTienThanhToan - voucher.discountPrice) / dataPoin.exchangeRateMoney
-      );
-      return soDiemCanThanhToan;
-    } else {
-      return accountuser?.points;
-    }
-  }
-
   //   payment vnpay
 
   const submitCodeTransactionNext = (e) => {
@@ -1493,14 +1395,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
         totalBill +
           ship -
           voucher.discountPrice -
-          totaPayMent -
-          exchangeRateMoney
+          totaPayMent 
       ),
       vnp_TxnRef: billRequest.code + "-" + timeInMillis,
     };
-    if(exchangeRateMoney + voucher.discountPrice > totalBill ){
-      toast.warning(" Hóa đơn đã thanh toán bằng điểm")
-    }else if(Math.round(totaPayMent + voucher.discountPrice + exchangeRateMoney) == Math.round(totalBill+ ship)){
+     if(Math.round(totaPayMent + voucher.discountPrice) == Math.round(totalBill+ ship)){
       toast.warning(" Hóa đơn đã thanh toán đủ tiền")
     }else{
       localStorage.setItem("code", billRequest.code);
@@ -2546,61 +2445,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                 {formatCurrency(voucher.discountPrice)}
               </Col>
             </Row>
-            {isPoin ? (
-              <Row style={{ margin: "29px 0 5px 0px", width: "100%" }}>
-                <Col span={15}>
-                  <Row>
-                    <Col
-                      span={12}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        margin: "2px",
-                        fontWeight: "bold",
-                        fontSize: "15px",
-                      }}
-                    >
-                      Điểm hiện tại là{" "}
-                      <span style={{ marginLeft: "3px", marginRight: "3px" }}>
-                        {accountuser?.points}
-                      </span>
-                      :
-                    </Col>
-                    <Col
-                      span={8}
-                      className="delivery"
-                      style={{ display: "flex", alignItems: "center" }}
-                    >
-                      <Switch
-                        defaultChecked={false}
-                        onChange={(e) => {
-                          isOpenUsePoin(e);
-                        }}
-                      />
-                    </Col>
-                  </Row>
-                </Col>
-
-                {usePoin ? (
-                  <Col
-                    span={8}
-                    align={"end"}
-                    style={{
-                      marginRight: "10px",
-                      fontSize: "15px",
-                      fontWeight: "bold",
-                      marginRight: "10px",
-                    }}
-                  >
-                    {formatCurrency(exchangeRateMoney)}
-                  </Col>
-                ) : (
-                  <Col span={12}></Col>
-                )}
-              </Row>
-            ) : (
-              <Row></Row>
-            )}
             <Row justify="space-between" style={{ marginTop: "29px" }}>
               <Col span={12}>
                 <span
@@ -2633,8 +2477,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                           currentValue.price * currentValue.quantity
                         );
                       }, 0) +
-                        shipFee -
-                        exchangeRateMoney -
+                        shipFee  -
                         voucher.discountPrice
                     )
                   )}
@@ -2658,8 +2501,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                           accumulator +
                           currentValue.price * currentValue.quantity
                         );
-                      }, 0) -
-                        exchangeRateMoney -
+                      }, 0)  -
                         voucher.discountPrice
                     )
                   )}
@@ -3067,8 +2909,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                   accumulator + currentValue.price * currentValue.quantity
                 );
               }, 0) +
-                shipFee 
-                - exchangeRateMoney -
+                shipFee  -
                 voucher.discountPrice)
                 ? "Tiền thiếu"
                 : "Tiền thừa"}
@@ -3089,7 +2930,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                         );
                       }, 0) +
                         shipFee -
-                        exchangeRateMoney -
                         voucher.discountPrice
                     )
                   )
@@ -3102,7 +2942,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                           currentValue.price * currentValue.quantity
                         );
                       }, 0) -
-                        exchangeRateMoney -
                         voucher.discountPrice
                     )
                   )}
@@ -3150,7 +2989,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                       );
                     }, 0) +
                       shipFee -
-                      -exchangeRateMoney -
                       voucher.discountPrice
                 )
                   ? "Tiền thiếu"
@@ -3172,7 +3010,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                       );
                     }, 0) +
                       shipFee -
-                      exchangeRateMoney -
                       voucher.discountPrice
                 )
                   ? formatCurrency(
@@ -3184,8 +3021,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                             currentValue.price * currentValue.quantity
                           );
                         }, 0) +
-                          shipFee -
-                          exchangeRateMoney -
+                          shipFee 
+                           -
                           voucher.discountPrice -
                           dataPayment.reduce((accumulator, currentValue) => {
                             return accumulator + currentValue.totalMoney;
@@ -3204,8 +3041,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                               currentValue.price * currentValue.quantity
                             );
                           }, 0) +
-                            shipFee -
-                            exchangeRateMoney -
+                            shipFee  -
                             voucher.discountPrice)
                       )
                     )}
@@ -3221,8 +3057,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                   return (
                     accumulator + currentValue.price * currentValue.quantity
                   );
-                }, 0) -
-                  exchangeRateMoney -
+                }, 0) 
+                -
                   voucher.discountPrice
                   ? "Tiền thiếu"
                   : "Tiền thừa"}
@@ -3252,8 +3088,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                             accumulator +
                             currentValue.price * currentValue.quantity
                           );
-                        }, 0) -
-                          exchangeRateMoney -
+                        }, 0) 
+                        -
                           voucher.discountPrice -
                           dataPayment.reduce((accumulator, currentValue) => {
                             return accumulator + currentValue.totalMoney;
@@ -3272,7 +3108,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, getHt
                               currentValue.price * currentValue.quantity
                             );
                           }, 0) -
-                            exchangeRateMoney -
                             voucher.discountPrice)
                       )
                     )}

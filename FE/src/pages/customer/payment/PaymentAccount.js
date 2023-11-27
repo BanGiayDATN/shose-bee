@@ -1,11 +1,10 @@
 import {
   faCarRear,
-  faCoins,
   faLocationDot,
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Checkbox, Col, Modal, Radio, Row } from "antd";
+import { Button, Col, Modal, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
@@ -24,8 +23,6 @@ import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
-import { UserPoinApi } from "../../../api/customer/user/user.api";
 import moment from "moment/moment";
 
 dayjs.extend(utc);
@@ -64,36 +61,10 @@ function PaymentAccount() {
   const [userId, setUserId] = useState("");
   const socket = new SockJS("http://localhost:8080/ws");
   const stompClient = Stomp.over(socket);
-  const [dataPoin, setDataPoin] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
-
-  const onChange = (e) => {
-    if (e.target.checked) {
-      setExchangeRateMoney(dataPoin.exchangeRateMoney * account?.points);
-    } else {
-      setExchangeRateMoney(0);
-    }
-  };
+  
   useEffect(() => {
     getAddressDefault(idAccount);
     moneyBefore();
-    AccountPoinApi.findPoin()
-      .then((res) => {
-        setDataPoin(res.data.data);
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
-
-    UserPoinApi.findUser()
-      .then((res) => {
-        setAccount(res.data.data);
-        console.log(res.data.data);
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % comercial.length);
     }, 3000);
@@ -101,25 +72,7 @@ function PaymentAccount() {
     return () => clearInterval(interval);
   }, []);
 
-  function tinhSoDiemCanThanhToan() {
-    var tongTienGiamVoucher =
-      voucher?.discountPrice !== undefined && !isNaN(voucher?.discountPrice)
-        ? voucher.discountPrice
-        : 0;
-    var tongTienGiam = tongTienGiamVoucher + exchangeRateMoney;
-    var tongTienThanhToan =
-      formBill.billDetail.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0) + moneyShip;
-    if (tongTienGiam > tongTienThanhToan) {
-      var soDiemCanThanhToan = Math.floor(
-        (tongTienThanhToan - voucher.discountPrice) / dataPoin.exchangeRateMoney
-      );
-      return soDiemCanThanhToan;
-    } else {
-      return account?.points;
-    }
-  }
+
 
   useEffect(() => {
     console.log(formBill);
@@ -135,13 +88,9 @@ function PaymentAccount() {
   // }, [totalAfter]);
 
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney - voucher.value);
+    setTotalAfter(totalBefore + moneyShip  - voucher.value);
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
-  useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
-    console.log(exchangeRateMoney);
-  }, [exchangeRateMoney]);
   useEffect(() => {
     if (addressDefault !== null) {
       getMoneyShip(addressDefault.districtId, addressDefault.wardCode);
@@ -191,8 +140,6 @@ function PaymentAccount() {
     );
   };
   const payment = () => {
-    console.log(tinhSoDiemCanThanhToan() < account?.points);
-    console.log(account?.points);
     Modal.confirm({
       title: "Xác nhận đặt hàng",
       content: "Bạn có chắc chắn muốn đặt hàng ?",
@@ -201,16 +148,6 @@ function PaymentAccount() {
       cancelText: "Hủy",
       onOk() {
         var dataBill = formBill;
-        dataBill.itemDiscount += exchangeRateMoney;
-        var poin = 0;
-        if (exchangeRateMoney > 0) {
-          poin = tinhSoDiemCanThanhToan();
-        }
-
-        if(poin > 0 && poin < account?.points){
-          dataBill.itemDiscount = totalBefore + moneyShip
-        }
-        dataBill.poin = poin;
         dataBill.totalMoney = totalBefore;
         if (addressDefault === null) {
           toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
@@ -223,8 +160,6 @@ function PaymentAccount() {
           ...dataBill,
           shippingTime: shippingTime,
         };
-
-        console.log(dataBillSave);
 
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
@@ -511,47 +446,6 @@ function PaymentAccount() {
               <span className="money-reduce-payment-acc">
                 - {formatMoney(voucher.value)}
               </span>
-            </Row>
-            <Row style={{ marginTop: "15px" }}>
-              <Col span={12}>
-                <span style={{ fontSize: 20 }}>
-                  <FontAwesomeIcon
-                    style={{ color: "#ff4400", marginRight: 10 }}
-                    icon={faCoins}
-                  />{" "}
-                  Bee điểm:{" "}
-                  <span style={{ color: "#ff4400", marginLeft: 5 }}>
-                    {account?.points == null ? 0 : account?.points}
-                  </span>
-                </span>
-              </Col>
-              <Col span={12}>
-                <span className="money-reduce-coin-acc">
-                  <Row>
-                    <Col
-                      span={20}
-                      align={"end"}
-                      style={{
-                        color: exchangeRateMoney == 0 ? "#ccc" : "#ff4400",
-                        fontSize: "14px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      {formatMoney(exchangeRateMoney)}
-                    </Col>
-                    <Col span={4} align={"end"}>
-                      <Checkbox
-                        disabled={
-                          account?.points == null || account?.points == 0
-                            ? true
-                            : false
-                        }
-                        onChange={onChange}
-                      ></Checkbox>
-                    </Col>
-                  </Row>
-                </span>
-              </Col>
             </Row>
           </div>
           <div className="footer-payment-acc">

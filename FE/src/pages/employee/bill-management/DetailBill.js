@@ -30,7 +30,6 @@ import { AddressApi } from "../../../api/customer/address/address.api";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
 import { addBillHistory } from "../../../app/reducer/Bill.reducer";
 import "./detail.css";
-import { PoinApi } from "../../../api/employee/poin/poin.api";
 import ManagerBillDetail from "./tabBillDetail/ManagerBillDetail";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { useReactToPrint } from "react-to-print";
@@ -66,7 +65,6 @@ function DetailBill() {
   const [listWard, setListWard] = useState([]);
   const [payMentNo, setPayMentNo] = useState(false);
   const [paymentPostpaid, setPaymentPostPaid] = useState(0);
-  const [dataPoin, setDataPoin] = useState(null);
   const { Option } = Select;
   const [shipFee, setShipFee] = useState(0);
 
@@ -113,14 +111,6 @@ function DetailBill() {
       dispatch(getPaymentsMethod(res.data.data));
     });
     loadDataProvince();
-    PoinApi.findPoin()
-      .then((res) => {
-        setDataPoin(res.data.data);
-        console.log(res.data.data);
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
   }, []);
 
   //load data tỉnh
@@ -1354,26 +1344,6 @@ function DetailBill() {
                     <Col span={10} align={"end"}>
                       <span style={{ fontSize: "16px" }}>
                         {formatCurrency(bill.moneyShip)}
-                      </span>
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row></Row>
-                )}
-                {bill.poinUse > 0 ? (
-                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                    <Col span={5}></Col>
-                    <Col
-                      span={9}
-                      style={{ fontWeight: "bold", fontSize: "16px" }}
-                    >
-                      Điểm sử dụng :{bill.poinUse}
-                    </Col>
-                    <Col span={10} align={"end"}>
-                      <span style={{ fontSize: "16px" }}>
-                        {formatCurrency(
-                          bill?.poinUse * dataPoin?.exchangeRateMoney
-                        )}
                       </span>
                     </Col>
                   </Row>

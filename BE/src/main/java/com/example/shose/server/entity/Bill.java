@@ -77,8 +77,6 @@ public class Bill extends PrimaryEntity {
     @Column(name = "money_ship ")
     private BigDecimal moneyShip;
 
-    private int poinUse;
-
     @Enumerated(EnumType.STRING)
     private StatusBill statusBill;
 

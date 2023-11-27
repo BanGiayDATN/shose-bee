@@ -366,27 +366,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                if (checkBill) {
                    bill.get().setStatusBill(StatusBill.THANH_CONG);
                    bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                   if(bill.get().getAccount() != null){
-                       User user = bill.get().getAccount().getUser();
-                       Poin poin = configPoin.readJsonFile();
-                       if(bill.get().getPoinUse() > 0){
-                           int Pointotal = user.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney());
-                           user.setPoints(Pointotal);
-                       }else{
-                           user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
-                       }
-                       userReposiory.save(user);
-                   }
                    billRepository.save(bill.get());
                } else {
-                   if(bill.get().getAccount() != null){
-                       User user = bill.get().getAccount().getUser();
-                       if(bill.get().getPoinUse() > 0){
-                           int Pointotal = user.getPoints() - bill.get().getPoinUse();
-                           user.setPoints(Pointotal);
-                       }
-                       userReposiory.save(user);
-                   }
                    bill.get().setStatusBill(StatusBill.XAC_NHAN);
                    billRepository.save(bill.get());
                    billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.DA_THANH_TOAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
