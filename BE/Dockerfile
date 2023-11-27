@@ -7,6 +7,12 @@ RUN mvn package -DskipTests=true
 WORKDIR /app/target/dependency
 RUN jar -xf ../server-0.0.1-SNAPSHOT.jar
 
+# Đặt múi giờ Việt Nam
+ENV TZ=Asia/Ho_Chi_Minh
+
+# Làm mới thông tin về múi giờ
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 FROM ibm-semeru-runtimes:open-17-jre-centos7
 ARG DEPENDENCY=/app/target/dependency
 COPY --from=maven ${DEPENDENCY}/BOOT-INF/lib /app/lib
