@@ -1,7 +1,3 @@
-
-
-# Stage 1: Build the Spring Boot application with Gradle
-# Use an official Maven runtime as a builder image
 FROM maven:latest as builder
 
 # Set the working directory in the container
@@ -15,7 +11,7 @@ COPY src src
 RUN ls -al
 
 # Run the build command with more detailed output
-mvn clean install -U
+RUN mvn clean install
 
 # Create a runtime image
 FROM eclipse-temurin:17
@@ -37,5 +33,3 @@ EXPOSE 8080
 
 # Command to run the application
 CMD ["java", "-jar", "app.jar"]
-
-
