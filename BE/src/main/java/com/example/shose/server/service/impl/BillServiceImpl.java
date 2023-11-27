@@ -278,6 +278,10 @@ public class BillServiceImpl implements BillService {
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            if (!request.getPaymentsMethodRequests().stream()
+                    .anyMatch(paymentMethod -> "TRA_SAU".equals(paymentMethod.getStatus()))) {
+                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.DA_THANH_TOAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            }
             }
 
         request.getPaymentsMethodRequests().forEach(item -> {
