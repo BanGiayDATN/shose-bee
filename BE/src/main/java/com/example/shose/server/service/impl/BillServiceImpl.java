@@ -522,6 +522,8 @@ public class BillServiceImpl implements BillService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
+        boolean checkDaThanhToan =  billHistoryRepository.findAllByBill(bill.get()).stream()
+                .anyMatch(invoice -> "DA_THANH_TOAN".equals(invoice.getStatusBill()));
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
         bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
@@ -534,6 +536,16 @@ public class BillServiceImpl implements BillService {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
             bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
+            if(checkDaThanhToan){
+                bill.get().setStatusBill(StatusBill.THANH_CONG);
+                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                if (bill.get().getAccount() != null) {
+                    User user = bill.get().getAccount().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    userReposiory.save(user);
+                }
+            }
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
@@ -548,7 +560,7 @@ public class BillServiceImpl implements BillService {
         bill.get().setEmployees(account.get());
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill.get());
-        billHistory.setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        billHistory.setStatusBill(bill.get().getStatusBill());
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
@@ -572,6 +584,8 @@ public class BillServiceImpl implements BillService {
             if (!account.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
+             boolean checkDaThanhToan =  billHistoryRepository.findAllByBill(bill.get()).stream()
+                .anyMatch(invoice -> "DA_THANH_TOAN".equals(invoice.getStatusBill()));
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
             if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
@@ -579,6 +593,16 @@ public class BillServiceImpl implements BillService {
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
+                 if(checkDaThanhToan){
+                bill.get().setStatusBill(StatusBill.THANH_CONG);
+                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                if (bill.get().getAccount() != null) {
+                    User user = bill.get().getAccount().getUser();
+                    Poin poin = configPoin.readJsonFile();
+                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    userReposiory.save(user);
+                }
+            }
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
@@ -593,7 +617,7 @@ public class BillServiceImpl implements BillService {
             bill.get().setEmployees(account.get());
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill.get());
-            billHistory.setStatusBill(StatusBill.valueOf(request.getStatus()));
+           billHistory.setStatusBill(bill.get().getStatusBill());
             billHistory.setEmployees(account.get());
             billHistoryRepository.save(billHistory);
             billRepository.save(bill.get());
