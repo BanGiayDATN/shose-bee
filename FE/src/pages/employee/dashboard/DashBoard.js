@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Row, Col, Table } from "antd";
+import { Input, Row, Col, Table, Card } from "antd";
 import "../dashboard/style-dashboard.css";
 import { StatisticalApi } from "../../../api/employee/statistical/statistical.api";
 import * as am5 from "@amcharts/amcharts5";
@@ -908,6 +908,79 @@ const DashBoard = () => {
             </div>
           </Col>
         </Row>
+        <Row style={{ marginTop: "30px", marginRight: "1%" }}>
+          <Col span={24}>
+            <div class="header-date">
+              <br />
+              <div style={{ position: "relative" }}>
+                <div className="option-time">
+                  <button className="button-time" disabled>
+                    Bộ lọc
+                  </button>
+                  <button
+                    className={
+                      activeButton === 1 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(1)}
+                  >
+                    Ngày
+                  </button>
+                  <button
+                    className={
+                      activeButton === 2 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(2)}
+                  >
+                    Tuần
+                  </button>
+                  <button
+                    className={
+                      activeButton === 3 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(3)}
+                  >
+                    Tháng
+                  </button>
+                  <button
+                    className={
+                      activeButton === 4 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(4)}
+                  >
+                    Năm
+                  </button>
+                  <button
+                    className={
+                      activeButton === 5 ? "button-time" : "button-time-block"
+                    }
+                    onClick={() => onChangeValueOption(5)}
+                  >
+                    Tùy chỉnh
+                  </button>
+
+                  {activeButton === 5 && (
+                    <>
+                      <Input
+                        className="button-time-from"
+                        type="date"
+                        //  value={new Date().toISOString().split('T')[0]}
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={handleStartDateProduct}
+                      />
+
+                      <Input
+                        className="button-time-to"
+                        type="date"
+                        max={new Date().toISOString().split("T")[0]}
+                        onChange={handleEndDateProduct}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Col>
+        </Row>
         <Row className="row-body" justify={"center"}>
           <h2 style={{ marginLeft: 108 }}>
             Biểu Đồ Thống Kê Hóa Đơn Và Sản Phẩm {nameTable}
@@ -915,82 +988,6 @@ const DashBoard = () => {
           <Row justify={"center"}>
             <Col>
               <div className="row-body-container">
-                <div class="header-date">
-                  <br />
-                  <div style={{ position: "relative" }}>
-                    <div className="option-time">
-                      <button
-                        className={
-                          activeButton == 1
-                            ? "button-time"
-                            : "button-time-block"
-                        }
-                        onClick={() => onChangeValueOption(1)}
-                      >
-                        Ngày
-                      </button>
-                      <button
-                        className={
-                          activeButton == 2
-                            ? "button-time"
-                            : "button-time-block"
-                        }
-                        onClick={() => onChangeValueOption(2)}
-                      >
-                        Tuần
-                      </button>
-                      <button
-                        className={
-                          activeButton == 3
-                            ? "button-time"
-                            : "button-time-block"
-                        }
-                        onClick={() => onChangeValueOption(3)}
-                      >
-                        Tháng
-                      </button>
-                      <button
-                        className={
-                          activeButton == 4
-                            ? "button-time"
-                            : "button-time-block"
-                        }
-                        onClick={() => onChangeValueOption(4)}
-                      >
-                        Năm
-                      </button>
-                      <button
-                        className={
-                          activeButton == 5
-                            ? "button-time"
-                            : "button-time-block"
-                        }
-                        onClick={() => onChangeValueOption(5)}
-                      >
-                        Tùy chỉnh
-                      </button>
-
-                      {activeButton == 5 && (
-                        <>
-                          <Input
-                            className="button-time-from"
-                            type="date"
-                            //  value={new Date().toISOString().split('T')[0]}
-                            max={new Date().toISOString().split("T")[0]}
-                            onChange={handleStartDateProduct}
-                          />
-
-                          <Input
-                            className="button-time-to"
-                            type="date"
-                            max={new Date().toISOString().split("T")[0]}
-                            onChange={handleEndDateProduct}
-                          />
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
                 <div>
                   <div id="chartdivChart"></div>
                 </div>

@@ -24,7 +24,6 @@ import TabBills from "./TabBills";
 import "./style-bill.css";
 
 function BillManagement() {
-  var listBill = useSelector((state) => state.bill.bills.value);
 
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
@@ -32,7 +31,6 @@ function BillManagement() {
   var [quantityNotify, setQuantityNotify] = useState([]);
 
   const dispatch = useAppDispatch();
-  const { Option } = Select;
 
   useEffect(() => {
     console.log(fillter);
