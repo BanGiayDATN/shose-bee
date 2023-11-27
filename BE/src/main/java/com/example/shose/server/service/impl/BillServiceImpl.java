@@ -527,7 +527,7 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         boolean checkDaThanhToan =  billHistoryRepository.findAllByBill(bill.get()).stream()
-                .anyMatch(invoice -> "DA_THANH_TOAN".equals(invoice.getStatusBill()));
+                .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
         bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
@@ -589,7 +589,7 @@ public class BillServiceImpl implements BillService {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
              boolean checkDaThanhToan =  billHistoryRepository.findAllByBill(bill.get()).stream()
-                .anyMatch(invoice -> "DA_THANH_TOAN".equals(invoice.getStatusBill()));
+                .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
             if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
