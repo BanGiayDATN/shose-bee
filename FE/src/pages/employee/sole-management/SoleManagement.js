@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Select, Table, Modal, Popconfirm } from "antd";
+import {  Input, Button, Select, Table } from "antd";
 import "./style-sole.css";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 

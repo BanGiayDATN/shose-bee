@@ -63,7 +63,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
-import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -377,6 +378,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(bill.get()).employees(bill.get().getEmployees()).build());
                } else {
                    if(bill.get().getAccount() != null){
                        User user = bill.get().getAccount().getUser();
@@ -388,10 +390,11 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        }
                        userReposiory.save(user);
                    }
-                   bill.get().setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+                   bill.get().setStatusBill(StatusBill.XAC_NHAN);
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
                    billRepository.save(bill.get());
                }
-               createFilePdfAtCounter(bill.get().getId());
+               CompletableFuture.runAsync(() -> createFilePdfAtCounter(bill.get().getId()), Executors.newCachedThreadPool());
                return true;
            }else{
                throw new RestApiException(Message.PAYMENT_ERROR);
@@ -566,30 +569,44 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         return true;
     }
 
+    @Override
+    public PaymentsMethod findByBill(String idBill) {
+        return paymentsMethodRepository.findByBill(idBill);
+    }
+
 
     public boolean createFilePdfAtCounter(String idBill) {
         //     begin   create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
-
-        if (optional.get().getStatusBill() != StatusBill.THANH_CONG && (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())) {
+        Bill bill = optional.get();
+        String email = bill.getEmail();
+        if(email == null){
+            Context dataContext = exportFilePdfFormHtml.setData(invoice);
+            finalHtml = springTemplateEngine.process("templateBill", dataContext);
+            exportFilePdfFormHtml.htmlToPdf(finalHtml,  bill.getCode());
+            return true;
+        }
+        if (bill.getStatusBill() != StatusBill.THANH_CONG &&  !email.isEmpty()) {
             invoice.setCheckShip(true);
-            sendMail(invoice, "http://localhost:3000/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
+            CompletableFuture.runAsync(() -> sendMail(invoice, "http://localhost:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
         }
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         finalHtml = springTemplateEngine.process("templateBill", dataContext);
-        exportFilePdfFormHtml.htmlToPdf(finalHtml, optional.get().getCode());
+        exportFilePdfFormHtml.htmlToPdf(finalHtml, bill.getCode());
 //     end   create file pdf
         return true;
     }
 
     public void sendMail(InvoiceResponse invoice, String url, String email) {
-        String finalHtmlSendMail = null;
-        Context dataContextSendMail = exportFilePdfFormHtml.setDataSendMail(invoice, url);
-        finalHtmlSendMail = springTemplateEngine.process("templateBillSendMail", dataContextSendMail);
-        String subject = "Biên lai thanh toán ";
-        sendEmailService.sendBill(email, subject, finalHtmlSendMail);
+        if (email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            String finalHtmlSendMail = null;
+            Context dataContextSendMail = exportFilePdfFormHtml.setDataSendMail(invoice, url);
+            finalHtmlSendMail = springTemplateEngine.process("templateBillSendMail", dataContextSendMail);
+            String subject = "Biên lai thanh toán ";
+            sendEmailService.sendBill(email, subject, finalHtmlSendMail);
+        }
 
     }
 }

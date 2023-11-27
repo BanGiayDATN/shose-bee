@@ -1,4 +1,4 @@
-import { request, requestAdress } from "../../../helper/request";
+import { requestAdress, requestCustomer } from "../../../helper/request";
 export class AddressClientApi {
   static getAllProvince = () => {
     return requestAdress({
@@ -71,59 +71,59 @@ export class AddressClientApi {
   };
 
   static getByAccountAndStatus = (idAccount) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/address/${idAccount}`,
     });
   };
   static getListByAccount = (idAccount) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/address/list/${idAccount}`,
     });
   };
   static setDefault = (data) => {
-    return request({
+    return requestCustomer({
       method: "POST",
       url: `/client/address/setDefault`,
       data:data
     });
   };
   static updateAddressClient = (data) => {
-    return request({
+    return requestCustomer({
       method: "POST",
       url: `/client/address/update`,
       data: data
     });
   };
   static createAddressClient = (data) => {
-    return request({
+    return requestCustomer({
       method: "POST",
       url: `/client/address/create`,
       data: data
     });
   };
   static deleteAddressClient = (idAddress) => {
-    return request({
+    return requestCustomer({
       method: "DELETE",
       url: `/client/address/delete/${idAddress}`,
     });
   };
   static detailAddressClient = (idAddress) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/address/detail/${idAddress}`,
     });
   };
   //Address client
   static fetchAllAddressByUser = (idUser) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/address/address-user/${idUser}`,
     });
   };
   static create = (data) => {
-    return request({
+    return requestCustomer({
       method: "POST",
       url: `/client/address`,
       data: data,
@@ -131,21 +131,21 @@ export class AddressClientApi {
   };
 
   static getOne = (id) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/getOne/${id}`,
     });
   };
 
   static getAddressByUserIdAndStatus = (id) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/address/address-user-status/${id}`,
     });
   };
 
   static update = (id, data) => {
-    return request({
+    return requestCustomer({
       method: "PUT",
       url: `/client/address/${id}`,
       data: data,

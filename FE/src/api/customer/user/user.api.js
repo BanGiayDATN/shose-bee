@@ -1,7 +1,7 @@
-import { request } from "../../../helper/request";
+import { requestCustomer } from "../../../helper/request";
 export class UserPoinApi {
   static findUser = () => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/user`,
     });

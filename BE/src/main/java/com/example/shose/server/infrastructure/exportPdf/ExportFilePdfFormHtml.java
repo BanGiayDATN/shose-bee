@@ -7,6 +7,7 @@ import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.PaymentsMethod;
+import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
 import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -17,23 +18,28 @@ import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +53,9 @@ public class ExportFilePdfFormHtml {
 
     @Autowired
     private PaymentsMethodRepository paymentsMethodRepository;
+
+    @Autowired
+    private QRCodeAndCloudinary qrCodeAndCloudinary;
 
     @Autowired
     private ServletContext servletContext;
@@ -79,43 +88,29 @@ public class ExportFilePdfFormHtml {
 
     public String htmlToPdf(String processedHtml, String code) {
 
-//        Principal principal = request.getUserPrincipal();
-//        String downloadPath = principal.getPath();
         String downloadPath = System.getProperty("user.home") + "/Downloads";
 
-        String appRoot = servletContext.getRealPath("/");
+//        String appRoot = servletContext.getRealPath("/");
 
         // Xây dựng đường dẫn tới thư mục download của người dùng
-        String userDownloadDirectoryPath = appRoot + File.separator + "user" + File.separator + "Downloads";
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        String userDownloadDirectoryPath = appRoot + File.separator + "user" + File.separator + "Downloads";
 
-        try {
-
-            PdfWriter pdfwriter = new PdfWriter(byteArrayOutputStream);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             PdfWriter pdfwriter = new PdfWriter(byteArrayOutputStream)) {
 
             DefaultFontProvider defaultFont = new DefaultFontProvider(false, true, false);
-
             ConverterProperties converterProperties = new ConverterProperties();
-
             converterProperties.setFontProvider(defaultFont);
 
             HtmlConverter.convertToPdf(processedHtml, pdfwriter, converterProperties);
 
-            FileOutputStream fout = new FileOutputStream(downloadPath + "/"+code+".pdf");
+            byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+            Files.copy(new ByteArrayInputStream(pdfBytes), Paths.get(downloadPath, code + ".pdf"), StandardCopyOption.REPLACE_EXISTING);
 
-            byteArrayOutputStream.writeTo(fout);
-            byteArrayOutputStream.close();
-
-            byteArrayOutputStream.flush();
-            fout.close();
-
-            return null;
-
-        } catch(Exception ex) {
-
-            //exception occured
+        } catch (IOException ex) {
+            // Xử lý ngoại lệ khi có lỗi I/O
+            ex.printStackTrace();
         }
-
         return null;
     }
 
@@ -128,11 +123,16 @@ public class ExportFilePdfFormHtml {
 
 
     public InvoiceResponse getInvoiceResponse(Bill bill) {
+        CompletableFuture<String> qrFuture = CompletableFuture.supplyAsync(() -> qrCodeAndCloudinary.generateAndUploadQRCode(bill.getCode()));
+
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.getId(), "THANH_CONG"));
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill);
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
 
         NumberFormat formatter = formatCurrency();
+
+        BigDecimal totalMoney = bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
+
         InvoiceResponse invoice = InvoiceResponse.builder()
                 .phoneNumber(bill.getPhoneNumber())
                 .address(bill.getAddress())
@@ -140,16 +140,17 @@ public class ExportFilePdfFormHtml {
                 .code(bill.getCode())
                 .ship(formatter.format(bill.getMoneyShip()))
                 .itemDiscount(formatter.format(bill.getItemDiscount()))
-                .totalMoney(formatter.format(bill.getTotalMoney()))
+                .totalMoney(formatter.format(totalMoney))
                 .note(bill.getNote())
                 .checkShip(false)
                 .moneyShip(formatter.format(bill.getMoneyShip()))
                 .build();
 
-        BigDecimal totalMoney = bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
         invoice.setTotalBill(totalMoney.compareTo(BigDecimal.ZERO) > 0 ? formatter.format(totalMoney) : "0 đ");
 
-        Integer quantityProduct = Integer.valueOf(billDetailRepository.quantityProductByIdBill(bill.getId()));
+        Integer quantityProduct = Integer.valueOf(String.valueOf(billDetailResponses.stream()
+                .mapToLong(BillDetailResponse::getQuantity)
+                .sum()));
         if (quantityProduct != null) {
             invoice.setQuantity(quantityProduct);
         }
@@ -174,7 +175,7 @@ public class ExportFilePdfFormHtml {
                 })
                 .collect(Collectors.toList());
 
-        List<InvoicePaymentResponse> paymentsMethodRequests = paymentsMethods.parallelStream()
+        List<InvoicePaymentResponse> paymentsMethodRequests = paymentsMethods.stream()
                 .map(item -> InvoicePaymentResponse.builder()
                         .total(formatter.format(item.getTotalMoney()))
                         .method(getPaymentMethod(item.getMethod()))
@@ -183,11 +184,15 @@ public class ExportFilePdfFormHtml {
                         .build())
                 .collect(Collectors.toList());
 
-        BigDecimal totalPayment = paymentsMethodRepository.sumTotalMoneyByIdBill(bill.getId());
+        BigDecimal totalPayment = paymentsMethods.stream()
+                .map(PaymentsMethod::getTotalMoney)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         invoice.setTotalPayment(formatter.format(totalPayment));
-        BigDecimal change = totalPayment.subtract(totalMoney);
+        BigDecimal change = totalPayment.add(bill.getItemDiscount()).subtract(totalMoney);
         invoice.setChange(formatter.format(change));
-
+        if (totalPayment.compareTo(totalMoney) == 0) {
+            invoice.setChange(formatter.format(BigDecimal.ZERO));
+        }
         invoice.setPaymentsMethodRequests(paymentsMethodRequests);
         invoice.setItems(items);
 
@@ -198,7 +203,14 @@ public class ExportFilePdfFormHtml {
         SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         invoice.setDate(formatterDate.format(date));
 
-        return invoice;
+        try {
+            invoice.setQr(qrFuture.join());
+            return CompletableFuture.completedFuture(invoice).get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String getPaymentMethod(StatusMethod method) {

@@ -49,7 +49,7 @@ export default function ModalQuantityGiveBack({
             },
           ]}
         >
-          <InputNumber style={{ width: "100%" }} />
+          <InputNumber style={{ width: "100%" }} min={1}/>
         </Form.Item>
       </Modal>
     </Form>

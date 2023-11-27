@@ -36,11 +36,12 @@ public interface BillHistoryRepository extends JpaRepository<BillHistory, String
     int deleteAllByIdBill(@Param("id") String idBill);
 
     List<BillHistory> findAllByBill(Bill bill);
-
     @Query(value = """
-              SELECT COUNT(id) FROM bill_history
-                          WHERE id_bill = :idBill
-                          AND status_bill = 'VAN_CHUYEN'
+            SELECT *
+            FROM bill_history bh
+            WHERE id_bill = :idBill
+            ORDER BY bh.created_date ASC
             """, nativeQuery = true)
-    int checkBillVanChuyen(@Param("idBill") String idBill);
+    List<BillHistory> getBillHistoryByIdBill(@Param("idBill") String idBill);
+
 }

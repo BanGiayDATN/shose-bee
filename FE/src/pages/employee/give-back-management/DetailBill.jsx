@@ -410,7 +410,10 @@ export default function DetailBillGiveBack() {
             ? {
                 ...item,
                 quantity: value,
-                totalPrice: value * item.price,
+                totalPrice:
+                  item.promotion === null
+                    ? item.quantity * item.price
+                    : item.quantity * (item.price * (100 - item.promotion)),
               }
             : item
         )
@@ -512,7 +515,14 @@ export default function DetailBillGiveBack() {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: () => {
-          setDataProductGiveBack(dataProductBill);
+          const newDataProductGiveBack = dataProductBill.map((item) => ({
+            ...item,
+            totalPrice:
+              item.promotion === null
+                ? item.quantity * item.price
+                : item.quantity * (item.price * (100 - item.promotion)),
+          }));
+          setDataProductGiveBack(newDataProductGiveBack);
           resolve();
         },
       });
@@ -614,7 +624,8 @@ export default function DetailBillGiveBack() {
                     </Col>
                     <Col span={16}>
                       <span style={{ color: "black" }}>
-                        {moment(bill.deliveryDate).format("DD-MM-YYYY")}
+                        {bill.deliveryDate !== null &&
+                          moment(bill.deliveryDate).format("DD-MM-YYYY")}
                       </span>
                     </Col>
                   </Row>
@@ -644,7 +655,8 @@ export default function DetailBillGiveBack() {
                     </Col>
                     <Col span={16}>
                       <span style={{ color: "black" }}>
-                        {moment(bill.completionDate).format("DD-MM-YYYY")}
+                        {bill.completionDate !== null &&
+                          moment(bill.completionDate).format("DD-MM-YYYY")}
                       </span>
                     </Col>
                   </Row>
@@ -877,9 +889,7 @@ export default function DetailBillGiveBack() {
                   <Col span={12}>
                     <h3 style={{ color: "blue" }}>
                       {" "}
-                      {formatCurrency(
-                        totalMoneyBill() - totalMoneyBillGiveBack()
-                      )}
+                      {formatCurrency(totalMoneyBillGiveBack())}
                     </h3>
                   </Col>
                 </Row>

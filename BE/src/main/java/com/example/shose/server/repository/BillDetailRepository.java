@@ -34,7 +34,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             LEFT JOIN sole so ON so.id = prde.id_sole
             LEFT JOIN material ma ON ma.id = prde.id_material
             LEFT JOIN category ca ON ca.id = prde.id_category
-            WHERE bi.id LIKE :#{#request.idBill}
+            WHERE bi.id LIKE :#{#request.idBill} AND bide.quantity <> 0 
              AND ( :#{#request.status} IS NULL
                          OR :#{#request.status} LIKE ''
                          OR bide.status_bill IN (:#{#request.status}))
@@ -76,28 +76,6 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             """, nativeQuery = true)
     BillDetailResponse findBillById(String id);
 
-    @Query(value = """
-            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, bi.id AS id_bill, pr.id As id_product, bide.id, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity , prde.quantity AS max_quantity , bide.status_bill FROM bill_detail bide
-            LEFT JOIN bill bi ON bi.id = bide.id_bill
-            LEFT JOIN product_detail prde ON prde.id = bide.id_product_detail
-            LEFT JOIN product pr ON pr.id = prde.id_product
-            LEFT JOIN color co ON co.id = prde.id_color
-             LEFT JOIN size si ON si.id = prde.id_size
-            LEFT JOIN sole so ON so.id = prde.id_sole
-            LEFT JOIN material ma ON ma.id = prde.id_material
-            LEFT JOIN category ca ON ca.id = prde.id_category
-            WHERE bi.type = 1 AND bi.status_bill = 'TAO_HOA_DON'
-            AND (:#{#request.startCreateBill} <= bi.created_date)
-            AND ( :#{#request.nameUser} IS NULL
-                     OR :#{#request.nameUser} LIKE ''
-                     OR bi.user_name LIKE :#{#request.nameUser})
-            AND ( :#{#request.phoneNumber} IS NULL
-                     OR :#{#request.phoneNumber} LIKE ''
-                     OR bi.phone_number LIKE :#{#request.phoneNumber})
-            ORDER BY bi.created_date
-            """, nativeQuery = true)
-    List<BillDetailResponse> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
-
     @Modifying
     @Query(value = """
              DELETE FROM  bill_detail
@@ -105,16 +83,4 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             """, nativeQuery = true)
     int deleteAllByIdBill(@Param("id") String idBill);
 
-    @Query(value = """
-                    SELECT sum(price * quantity)  FROM bill_detail
-                    WHERE id_bill = :idBill
-                    """, nativeQuery = true)
-    BigDecimal findTotalPayMnetByIdBill(@Param("idBill") String idBill);
-
-
-    @Query(value = """
-                    SELECT sum(quantity)  FROM bill_detail
-                    WHERE id_bill = :idBill
-                    """, nativeQuery = true)
-    String quantityProductByIdBill(@Param("idBill") String idBill);
 }

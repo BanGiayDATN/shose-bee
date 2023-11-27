@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Checkbox, Col, Modal, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { isBuffer, parseInt } from "lodash";
+import { parseInt } from "lodash";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -22,11 +22,11 @@ import { AddressClientApi } from "./../../../api/customer/address/addressClient.
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
-import { AccountClientApi } from "../../../api/customer/account/accountClient.api";
 import { UserPoinApi } from "../../../api/customer/user/user.api";
+import moment from "moment/moment";
 
 dayjs.extend(utc);
 function PaymentAccount() {
@@ -62,58 +62,64 @@ function PaymentAccount() {
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
-  const socket = new SockJS('http://localhost:8080/ws');
+  const socket = new SockJS("http://localhost:8080/ws");
   const stompClient = Stomp.over(socket);
   const [dataPoin, setDataPoin] = useState(null);
   const [account, setAccount] = useState(null);
   const [exchangeRateMoney, setExchangeRateMoney] = useState(0);
 
   const onChange = (e) => {
-    if(e.target.checked ){
+    if (e.target.checked) {
       setExchangeRateMoney(dataPoin.exchangeRateMoney * account?.points);
-      }else{
-        setExchangeRateMoney(0)
-      }
+    } else {
+      setExchangeRateMoney(0);
+    }
   };
   useEffect(() => {
     getAddressDefault(idAccount);
     moneyBefore();
-    AccountPoinApi.findPoin().then((res) => {
-      setDataPoin(res.data.data);
-    })
-    .catch((error) => {
-      toast.error(error.response.data.message);
-    });
+    AccountPoinApi.findPoin()
+      .then((res) => {
+        setDataPoin(res.data.data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
 
-    UserPoinApi.findUser().then((res) => {
-      setAccount(res.data.data);
-      console.log(res.data.data);
-    })
-    .catch((error) => {
-      toast.error(error.response.data.message);
-    });
+    UserPoinApi.findUser()
+      .then((res) => {
+        setAccount(res.data.data);
+        console.log(res.data.data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % comercial.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  
   }, []);
 
-  function tinhSoDiemCanThanhToan( ) {
-    var tongTienGiamVoucher = (voucher?.discountPrice !== undefined && !isNaN(voucher?.discountPrice)) ? voucher.discountPrice : 0;
+  function tinhSoDiemCanThanhToan() {
+    var tongTienGiamVoucher =
+      voucher?.discountPrice !== undefined && !isNaN(voucher?.discountPrice)
+        ? voucher.discountPrice
+        : 0;
     var tongTienGiam = tongTienGiamVoucher + exchangeRateMoney;
-    var tongTienThanhToan =  formBill.billDetail.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
-    }, 0) + moneyShip;
-    if (tongTienGiam >= tongTienThanhToan) {
-        var soDiemCanThanhToan = Math.floor(tongTienThanhToan / dataPoin.exchangeRateMoney);
-
-        return soDiemCanThanhToan;
+    var tongTienThanhToan =
+      formBill.billDetail.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) + moneyShip;
+    if (tongTienGiam > tongTienThanhToan) {
+      var soDiemCanThanhToan = Math.floor(
+        (tongTienThanhToan - voucher.discountPrice) / dataPoin.exchangeRateMoney
+      );
+      return soDiemCanThanhToan;
     } else {
-        return account?.points; 
+      return account?.points;
     }
-}
+  }
 
   useEffect(() => {
     console.log(formBill);
@@ -129,12 +135,12 @@ function PaymentAccount() {
   }, [totalAfter]);
 
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney  - voucher.value );
+    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney - voucher.value);
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
   useEffect(() => {
     setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
-    console.log( exchangeRateMoney);
+    console.log(exchangeRateMoney);
   }, [exchangeRateMoney]);
   useEffect(() => {
     if (addressDefault !== null) {
@@ -185,7 +191,7 @@ function PaymentAccount() {
     );
   };
   const payment = () => {
-    console.log(tinhSoDiemCanThanhToan()< account?.points);
+    console.log(tinhSoDiemCanThanhToan() < account?.points);
     console.log(account?.points);
     Modal.confirm({
       title: "Xác nhận đặt hàng",
@@ -194,29 +200,36 @@ function PaymentAccount() {
       okType: "primary",
       cancelText: "Hủy",
       onOk() {
-        var dataBill = formBill
+        var dataBill = formBill;
         dataBill.itemDiscount += exchangeRateMoney;
-        var poin = 0
-        if(exchangeRateMoney > 0){
-          poin = tinhSoDiemCanThanhToan()
+        var poin = 0;
+        if (exchangeRateMoney > 0) {
+          poin = tinhSoDiemCanThanhToan();
         }
-        if(poin < account?.points){
+
+        if(poin > 0 && poin < account?.points){
           dataBill.itemDiscount = totalBefore + moneyShip
         }
-        dataBill.poin = poin
-        dataBill.totalMoney = totalBefore
+        dataBill.poin = poin;
+        dataBill.totalMoney = totalBefore;
         if (addressDefault === null) {
-          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!")
+          toast.error("Bạn chưa có địa chỉ nhận hàng, vui lòng thêm!");
           return;
         }
 
+        const dayShipObject = dayjs(dayShip, "DD-MM-YYYY");
+        const shippingTime = dayShipObject.diff(dayjs(), "millisecond");
+        const dataBillSave = {
+          ...dataBill,
+          shippingTime: shippingTime,
+        };
+
+        console.log(dataBillSave);
 
         if (formBill.paymentMethod === "paymentVnpay") {
-
           const data = {
             vnp_Ammount: totalBefore + moneyShip,
             billDetail: formBill.billDetail,
-
           };
           console.log(listproductOfBill);
           PaymentClientApi.paymentVnpay(data).then(
@@ -224,16 +237,15 @@ function PaymentAccount() {
               window.location.replace(res.data.data);
               sessionStorage.setItem("formBill", JSON.stringify(dataBill));
             },
-            (err) => {
-            }
+            (err) => {}
           );
         } else {
-          BillClientApi.createBillAccountOnline(dataBill).then(
+          BillClientApi.createBillAccountOnline(dataBillSave).then(
             (res) => {
               CartClientApi.quantityInCart(idAccount).then(
                 (res) => {
                   updateTotalQuantity(res.data.data);
-                  stompClient.send('/app/notifyAdmin', {}, 'Có đơn hàng mới');
+                  stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
                 },
                 (err) => {
                   console.log(err);
@@ -246,12 +258,9 @@ function PaymentAccount() {
               console.log(err);
             }
           );
-
         }
-
-      }
-    })
-
+      },
+    });
   };
 
   const getMoneyShip = (districtId, wardCode) => {
@@ -303,7 +312,13 @@ function PaymentAccount() {
   };
   const moneyBefore = () => {
     const money = listproductOfBill.reduce(
-      (total, item) => total + parseInt((parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100)))* item.quantity),
+      (total, item) =>
+        total +
+        parseInt(
+          (parseInt(item.price) -
+            parseInt(item.price) * (item.valuePromotion / 100)) *
+            item.quantity
+        ),
       0
     );
     const quantity = listproductOfBill.reduce(
@@ -380,7 +395,9 @@ function PaymentAccount() {
                   </span>
                   {" | "}
                   <span>{addressDefault.phoneNumber}</span>
-                  <span style={{ fontSize: 17, marginLeft: 100 }}>
+                  <span
+                    style={{ fontSize: 15, marginLeft: 30, width: "200px" }}
+                  >
                     {addressDefault.line}, {addressDefault.ward},{" "}
                     {addressDefault.district}, {addressDefault.province}
                   </span>
@@ -446,17 +463,29 @@ function PaymentAccount() {
                   <span style={{ marginLeft: "11%" }}>
                     {item.valuePromotion !== null ? (
                       <>
-                        <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
-                          item.price * (item.valuePromotion / 100)))}</span>
-                      
+                        <span style={{ marginLeft: 5 }}>
+                          {" "}
+                          {formatMoney(
+                            item.price -
+                              item.price * (item.valuePromotion / 100)
+                          )}
+                        </span>
                       </>
-                    ) : (formatMoney(item.price))}
-
+                    ) : (
+                      formatMoney(item.price)
+                    )}
                   </span>
                   <span style={{ marginLeft: "12%" }}>{item.quantity}</span>
                   <span style={{ marginLeft: "auto" }}>
                     {" "}
-                    {item.valuePromotion === null ? formatMoney(item.quantity * item.price) :formatMoney(item.quantity *  (parseInt(item.price) - (parseInt(item.price) * (item.valuePromotion/100))))}
+                    {item.valuePromotion === null
+                      ? formatMoney(item.quantity * item.price)
+                      : formatMoney(
+                          item.quantity *
+                            (parseInt(item.price) -
+                              parseInt(item.price) *
+                                (item.valuePromotion / 100))
+                        )}
                   </span>
                 </div>
               ))}
@@ -471,38 +500,58 @@ function PaymentAccount() {
             </div>
           </div>
           <div className="voucher-payment-acc">
-            <Row style={{display: "flex"}}>
-            <span style={{ fontSize: 20 }}>
-              <FontAwesomeIcon
-                style={{ color: "#ff4400", marginRight: 10 }}
-                icon={faTags}
-              />{" "}
-              Bee voucher
-            </span>
-            <span className="money-reduce-payment-acc">
-              - {formatMoney(voucher.value)}
-            </span>
+            <Row style={{ display: "flex" }}>
+              <span style={{ fontSize: 20 }}>
+                <FontAwesomeIcon
+                  style={{ color: "#ff4400", marginRight: 10 }}
+                  icon={faTags}
+                />{" "}
+                Bee voucher
+              </span>
+              <span className="money-reduce-payment-acc">
+                - {formatMoney(voucher.value)}
+              </span>
             </Row>
-            <Row style={{marginTop: "15px"}}>
-           <Col span={12}>
-           <span style={{ fontSize: 20 }}>
-              <FontAwesomeIcon
-                style={{ color: "#ff4400", marginRight: 10 }}
-                icon={faCoins}
-              />{" "}
-              Bee điểm: <span style={{color:  "#ff4400", marginLeft: 5}}>{(account?.points == null) ? 0 : account?.points}</span>
-            </span>
-           </Col>
-           <Col span={12}>
-           <span className="money-reduce-coin-acc" >
-              <Row>
-                <Col span={20}  align={"end"} style={{color: exchangeRateMoney== 0 ? '#ccc': '#ff4400', fontSize: "14px", fontWeight: "600" }}>{formatMoney(exchangeRateMoney)}</Col>
-                <Col span={4} align={"end"}>
-                <Checkbox disabled={(account?.points == null || account?.points == 0) ? true : false} onChange={onChange}></Checkbox>
-                </Col>
-              </Row>
-           </span>
-           </Col>
+            <Row style={{ marginTop: "15px" }}>
+              <Col span={12}>
+                <span style={{ fontSize: 20 }}>
+                  <FontAwesomeIcon
+                    style={{ color: "#ff4400", marginRight: 10 }}
+                    icon={faCoins}
+                  />{" "}
+                  Bee điểm:{" "}
+                  <span style={{ color: "#ff4400", marginLeft: 5 }}>
+                    {account?.points == null ? 0 : account?.points}
+                  </span>
+                </span>
+              </Col>
+              <Col span={12}>
+                <span className="money-reduce-coin-acc">
+                  <Row>
+                    <Col
+                      span={20}
+                      align={"end"}
+                      style={{
+                        color: exchangeRateMoney == 0 ? "#ccc" : "#ff4400",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {formatMoney(exchangeRateMoney)}
+                    </Col>
+                    <Col span={4} align={"end"}>
+                      <Checkbox
+                        disabled={
+                          account?.points == null || account?.points == 0
+                            ? true
+                            : false
+                        }
+                        onChange={onChange}
+                      ></Checkbox>
+                    </Col>
+                  </Row>
+                </span>
+              </Col>
             </Row>
           </div>
           <div className="footer-payment-acc">
@@ -511,15 +560,17 @@ function PaymentAccount() {
                 Phương thức thanh toán
               </div>
               <div
-                className={`payment-when-recevie-acc ${keyMethodPayment === "paymentReceive" ? "click" : ""
-                  }`}
+                className={`payment-when-recevie-acc ${
+                  keyMethodPayment === "paymentReceive" ? "click" : ""
+                }`}
                 onClick={paymentReceive}
               >
                 Thanh toán khi nhận hàng
               </div>
               <div
-                className={`payment-by-vnpay-acc ${keyMethodPayment === "paymentVnpay" ? "click" : ""
-                  }`}
+                className={`payment-by-vnpay-acc ${
+                  keyMethodPayment === "paymentVnpay" ? "click" : ""
+                }`}
                 onClick={paymentVnpay}
               >
                 Thanh toán VnPay{" "}
@@ -562,8 +613,7 @@ function PaymentAccount() {
                 </Col>
                 <Col span={12}>
                   <h3 className="text-money-total">
-                    : {formatMoney( Math.max(
-                    0,totalAfter))}{" "}
+                    : {formatMoney(Math.max(0, totalAfter))}{" "}
                   </h3>
                 </Col>
               </Row>

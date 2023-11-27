@@ -34,7 +34,7 @@ import {
 import SubMenu from "antd/es/menu/SubMenu";
 import { GetNotification, SetNotification, UpdateNotification } from "../../../src/app/reducer/Notification.reducer";
 
-import { deleteToken, deleteUserToken } from "../../helper/useCookies";
+import { deleteUserToken } from "../../helper/useCookies";
 import { toast } from "react-toastify";
 import { LoginApi } from "../../api/employee/login/Login.api";
 import { jwtDecode } from "jwt-decode";
@@ -89,7 +89,7 @@ const DashBoardEmployee = ({ children }) => {
           dispatch(SetNotification(res.data.data));
           setListNotification(res.data.data);
         });
-        toast.warning(response.body);
+        toast.success(response.body);
       });
     });
 
@@ -167,7 +167,6 @@ const DashBoardEmployee = ({ children }) => {
   } = theme.useToken();
 
   const handleLogout = () => {
-    deleteToken();
     deleteUserToken();
     nav("/login-management");
     toast.success("Đăng xuất thành công");

@@ -1,21 +1,21 @@
-import { request } from "../../../helper/request";
+import { requestCustomer } from "../../../helper/request";
 
 export class AccountClientApi {
   static changePassword = (data) => {
-    return request({
+    return requestCustomer({
       method: "POST",
       url: `/client/account/changePassword`,
       data: data,
     });
   };
   static getById = (id) => {
-    return request({
+    return requestCustomer({
       method: "GET",
       url: `/client/account/${id}`
     });
   };
   static updateInfoUser = (data) => {
-    return request({
+    return requestCustomer({
       method: "POST",
       url: `/client/account/updateInfo`,
       headers: {

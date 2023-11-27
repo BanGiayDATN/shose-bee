@@ -47,7 +47,7 @@ public class Bill extends PrimaryEntity {
     @Column(name = "item_discount")
     private BigDecimal itemDiscount;
 
-    @Column(name = "total_money ")
+    @Column(name = "total_money")
     private BigDecimal totalMoney;
 
     private String email;
@@ -57,6 +57,9 @@ public class Bill extends PrimaryEntity {
 
     @Column(name = "delivery_date")
     private Long deliveryDate;
+
+    @Column(name = "shipping_time")
+    private Long shippingTime;
 
     @Column(name = "receive_date ")
     private Long receiveDate ;

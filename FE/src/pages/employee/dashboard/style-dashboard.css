@@ -109,7 +109,7 @@
 }
 
 .header-date {
-  margin-left: 50px;
+  margin-left: 100px;
 }
 
 .row-body-container {
@@ -145,65 +145,67 @@
   height: 390px;
 }
 
-.row-footer-left .option-time {
+.header-date .option-time {
   width: 99%;
 }
 
-.row-footer-left .option-time .button-time {
+.header-date .option-time .button-time {
   margin-left: 5px;
   border-radius: 5px;
   background-color: #ff671f;
   color: #FFF;
   border: 1px solid #fedec7;
-  width: 70px;
-  height: 30px;
-  font-size: 10px;
+  width: 90px;
+  height: 38px;
+  font-size: 13px;
 }
 
-.row-footer-left .option-time .button-time-block {
+.header-date .option-time .button-time-block {
   margin-left: 5px;
   border-radius: 5px;
   background-color: #fff;
   color: rgb(135, 129, 129);
   border: 1px solid #fedec7;
-  width: 70px;
-  height: 30px;
-  font-size: 10px;
+  width: 90px;
+  height: 38px; 
+  font-size: 13px;
 }
 
-.row-footer-left .option-time .button-time-from {
+.header-date .option-time .button-time-from {
   margin-left: 5px;
   margin-top: 15px;
   border-radius: 5px;
-  width: 120px;
+  width: 150px;
   font-size: 10px;
   border: 0px solid transparent;
-  height: 29px !important;
+  height: 38px !important;
+  background-color: #f0f0f0;
 }
 
-.row-footer-left .button-time-from .p-calendar .p-inputtext {
+.header-date .button-time-from .p-calendar .p-inputtext {
   height: 30px !important;
 }
 
-.row-footer-left .button-time-to .p-calendar .p-inputtext {
+.header-date .button-time-to .p-calendar .p-inputtext {
   height: 30px !important;
 }
 
-.row-footer-left .option-time .button-time-to {
+.header-date .option-time .button-time-to {
   margin-left: 5px;
   border-radius: 5px;
-  width: 120px;
+  width: 150px;
   font-size: 10px;
   border: 0px solid transparent;
-  height: 29px !important;
+  height: 39px !important;
+  background-color: #f0f0f0;
 }
 
-.row-footer-left .option-time .input-name {
+.header-date .option-time .input-name {
   width: 20%;
   height: 30px !important;
 }
 
-.row-footer-left .option-time .celendar-picker {
+.header-date .option-time .celendar-picker {
 
   height: 30px;
   /* margin-top: 15px; */

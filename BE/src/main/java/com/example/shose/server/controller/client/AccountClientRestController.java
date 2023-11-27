@@ -36,7 +36,8 @@ public class AccountClientRestController {
     }
     @GetMapping("/{id}")
     public ResponseObject getById(@PathVariable("id")String id)  {
-        return new ResponseObject(accountService.getAccountById(shoseSession.getCustomer().getId()));
+        System.out.println(shoseSession.getCustomer());
+        return new ResponseObject(accountService.getAccountById(id));
     }
     @PostMapping(value = "/updateInfo",consumes = "multipart/form-data")
     public ResponseObject updateInfo( UpdateInfoClient req)  {

@@ -1,9 +1,5 @@
 {
   "exchangeRatePoin": 1000000,
   "exchangeRateMoney": 1000,
-  "discountBill": false,
-  "discountProduct": false,
-  "paymentRewardPoints": false,
-  "quantityBill": 0,
   "minMoney": 0
 }
