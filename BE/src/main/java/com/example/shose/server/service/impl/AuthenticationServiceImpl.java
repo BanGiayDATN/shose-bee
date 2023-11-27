@@ -60,6 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setEmail(signUpRequets.getEmail());
         user.setPhoneNumber(signUpRequets.getPhoneNumber());
         user.setStatus(Status.DANG_SU_DUNG);
+        user.setPoints(0);
         userReposiory.save(user);
 
         var check = accountRepository.getOneByEmail(signUpRequets.getEmail());

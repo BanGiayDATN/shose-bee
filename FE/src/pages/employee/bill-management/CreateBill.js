@@ -242,14 +242,14 @@ function CreateBill({
       }
       var data = {
         phoneNumber: billRequest.phoneNumber.trim(),
-        address: addressuser.trim(),
-        userName: billRequest.userName.trim(),
+        address: addressuser ? addressuser.trim() : null,
+        userName: billRequest.userName ? billRequest.userName.trim() : null,
         itemDiscount: itemDiscount,
         totalMoney: Math.round(totalBill),
-        note: billRequest.note.trim(),
+        note: billRequest.note ? billRequest.note.trim() : null,
+        email: billRequest.email ? billRequest.email.trim() : null,
         statusPayMents: statusPayMents,
         typeBill: typeBill,
-        email: billRequest.email ? billRequest.email.trim() : null,
         moneyShip: ship,
         billDetailRequests: newProduct,
         paymentsMethodRequests: dataPaymentRequest,
@@ -900,11 +900,11 @@ function CreateBill({
     }
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
-      address: addressuser.trim(),
-      userName: billRequest.userName.trim(),
+      address: addressuser ? addressuser.trim() : null,
+      userName: billRequest.userName ? billRequest.userName.trim() : null,
       itemDiscount: itemDiscount,
       totalMoney: Math.round(totalBill),
-      note: billRequest.note.trim(),
+      note: billRequest.note ? billRequest.note.trim() : null,
       email: billRequest.email ? billRequest.email.trim() : null,
       statusPayMents: statusPayMents,
       typeBill: typeBill,

@@ -1,6 +1,5 @@
 package com.example.shose.server.service.impl;
 
-
 import com.example.shose.server.dto.request.bill.BillRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
@@ -71,6 +70,7 @@ import com.example.shose.server.util.ConvertDateToLong;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -89,7 +89,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
 
 /**
  * @author thangdt
@@ -150,6 +149,9 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private ProductDetailGiveBackRepository productDetailGiveBackRepository;
 
+    @Value("${domain.client}")
+    private String domainClient;
+
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -192,7 +194,8 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id, FindNewBillCreateAtCounterRequest request) {
+    public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id,
+            FindNewBillCreateAtCounterRequest request) {
         return billRepository.findAllBillAtCounterAndStatusNewBill(id, request);
     }
 
@@ -213,7 +216,8 @@ public class BillServiceImpl implements BillService {
         optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         optional.get().setPoinUse(request.getPoin());
 
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
+        List<BillDetailResponse> billDetailResponse = billDetailRepository
+                .findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
         billDetailResponse.forEach(item -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
             if (!productDetail.isPresent()) {
@@ -236,7 +240,6 @@ public class BillServiceImpl implements BillService {
         paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
         voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
-
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
@@ -248,10 +251,12 @@ public class BillServiceImpl implements BillService {
                     User user = account.get().getUser();
                     Poin poin = configPoin.readJsonFile();
                     if (request.getPoin() > 0) {
-                        int Pointotal = user.getPoints() - request.getPoin() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                        int Pointotal = user.getPoints() - request.getPoin()
+                                + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
                         user.setPoints(Pointotal);
                     } else {
-                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                        user.setPoints(
+                                user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
                     }
                     userReposiory.save(user);
                 }
@@ -259,7 +264,8 @@ public class BillServiceImpl implements BillService {
             optional.get().setStatusBill(StatusBill.THANH_CONG);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill()).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill())
+                    .bill(optional.get()).employees(optional.get().getEmployees()).build());
         } else {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
@@ -277,7 +283,8 @@ public class BillServiceImpl implements BillService {
             optional.get().setStatusBill(StatusBill.XAC_NHAN);
             optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
+                    .employees(optional.get().getEmployees()).build());
         }
 
         request.getPaymentsMethodRequests().forEach(item -> {
@@ -307,7 +314,9 @@ public class BillServiceImpl implements BillService {
             if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
                 throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
-            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+            BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
+                    .productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice()))
+                    .quantity(billDetailRequest.getQuantity()).build();
             if (billDetailRequest.getPromotion() != null) {
                 billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
             }
@@ -323,16 +332,21 @@ public class BillServiceImpl implements BillService {
             if (!Voucher.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
-            if (Voucher.get().getQuantity() <= 0 && Voucher.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
+            if (Voucher.get().getQuantity() <= 0
+                    && Voucher.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
                 throw new RestApiException(Message.VOUCHER_NOT_USE);
             }
             Voucher.get().setQuantity(Voucher.get().getQuantity() - 1);
             voucherRepository.save(Voucher.get());
 
-            VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
+            VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get())
+                    .afterPrice(new BigDecimal(voucher.getAfterPrice()))
+                    .beforPrice(new BigDecimal(voucher.getBeforPrice()))
+                    .discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        CompletableFuture.runAsync(() -> createTemplateSendMail(optional.get().getId()), Executors.newCachedThreadPool());
+        CompletableFuture.runAsync(() -> createTemplateSendMail(optional.get().getId()),
+                Executors.newCachedThreadPool());
         return optional.get();
     }
 
@@ -342,7 +356,9 @@ public class BillServiceImpl implements BillService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.ACCOUNT_NOT_EXIT);
         }
-        Bill bill = billRepository.save(Bill.builder().account(account.get()).userName(request.getName()).address(request.getAddress()).phoneNumber(request.getPhoneNumber()).statusBill(StatusBill.TAO_HOA_DON).typeBill(TypeBill.OFFLINE).code("HD" + RandomStringUtils.randomNumeric(6)).build());
+        Bill bill = billRepository.save(Bill.builder().account(account.get()).userName(request.getName())
+                .address(request.getAddress()).phoneNumber(request.getPhoneNumber()).statusBill(StatusBill.TAO_HOA_DON)
+                .typeBill(TypeBill.OFFLINE).code("HD" + RandomStringUtils.randomNumeric(6)).build());
         billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).build());
         return bill;
     }
@@ -365,7 +381,8 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(new BigDecimal("0"))
                 .moneyShip(new BigDecimal("0")).build();
         billRepository.save(bill);
-        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill).employees(bill.getEmployees()).build());
+        billHistoryRepository.save(BillHistory.builder().statusBill(bill.getStatusBill()).bill(bill)
+                .employees(bill.getEmployees()).build());
         return bill;
     }
 
@@ -388,7 +405,8 @@ public class BillServiceImpl implements BillService {
             optional.get().setPoinUse(request.getPoin());
             billRepository.save(optional.get());
 
-            List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
+            List<BillDetailResponse> billDetailResponse = billDetailRepository
+                    .findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
             billDetailResponse.forEach(item -> {
                 Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
                 if (!productDetail.isPresent()) {
@@ -410,7 +428,6 @@ public class BillServiceImpl implements BillService {
             paymentsMethodRepository.deleteAllByIdBill(optional.get().getId());
             voucherDetailRepository.deleteAllByIdBill(optional.get().getId());
 
-
             if (request.getIdUser() != null) {
                 Optional<Account> user = accountRepository.findById(request.getIdUser());
 
@@ -422,15 +439,18 @@ public class BillServiceImpl implements BillService {
                 optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
             }
             if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
-                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).employees(optional.get().getEmployees()).build());
+                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
+                        .employees(optional.get().getEmployees()).build());
             } else {
-                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get()).employees(optional.get().getEmployees()).build());
+                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
+                        .employees(optional.get().getEmployees()).build());
             }
             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
             billRepository.save(optional.get());
 
             request.getBillDetailRequests().forEach(billDetailRequest -> {
-                Optional<ProductDetail> productDetail = productDetailRepository.findById(billDetailRequest.getIdProduct());
+                Optional<ProductDetail> productDetail = productDetailRepository
+                        .findById(billDetailRequest.getIdProduct());
                 if (!productDetail.isPresent()) {
                     throw new RestApiException(Message.NOT_EXISTS);
                 }
@@ -440,7 +460,9 @@ public class BillServiceImpl implements BillService {
                 if (productDetail.get().getStatus() != Status.DANG_SU_DUNG) {
                     throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
                 }
-                BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get()).productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice())).quantity(billDetailRequest.getQuantity()).build();
+                BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
+                        .productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice()))
+                        .quantity(billDetailRequest.getQuantity()).build();
                 if (billDetailRequest.getPromotion() != null) {
                     billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
                 }
@@ -456,13 +478,17 @@ public class BillServiceImpl implements BillService {
                 if (!Voucher.isPresent()) {
                     throw new RestApiException(Message.NOT_EXISTS);
                 }
-                if (Voucher.get().getQuantity() <= 0 && Voucher.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
+                if (Voucher.get().getQuantity() <= 0
+                        && Voucher.get().getEndDate() < Calendar.getInstance().getTimeInMillis()) {
                     throw new RestApiException(Message.VOUCHER_NOT_USE);
                 }
                 Voucher.get().setQuantity(Voucher.get().getQuantity() - 1);
                 voucherRepository.save(Voucher.get());
 
-                VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get()).afterPrice(new BigDecimal(voucher.getAfterPrice())).beforPrice(new BigDecimal(voucher.getBeforPrice())).discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
+                VoucherDetail voucherDetail = VoucherDetail.builder().voucher(Voucher.get()).bill(optional.get())
+                        .afterPrice(new BigDecimal(voucher.getAfterPrice()))
+                        .beforPrice(new BigDecimal(voucher.getBeforPrice()))
+                        .discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
                 voucherDetailRepository.save(voucherDetail);
             });
 
@@ -625,7 +651,8 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
-        List<BillDetailResponse> billDetailResponse = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.get().getId(), "THANH_CONG"));
+        List<BillDetailResponse> billDetailResponse = billDetailRepository
+                .findAllByIdBill(new BillDetailRequest(bill.get().getId(), "THANH_CONG"));
         billDetailResponse.forEach(item -> {
             Optional<ProductDetail> productDetail = productDetailRepository.findById(item.getIdProduct());
             if (!productDetail.isPresent()) {
@@ -679,7 +706,8 @@ public class BillServiceImpl implements BillService {
                 .code(codeBill)
                 .shippingTime(request.getShippingTime())
                 .phoneNumber(request.getPhoneNumber())
-                .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
+                .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-'
+                        + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
                 .itemDiscount(request.getItemDiscount())
@@ -714,10 +742,13 @@ public class BillServiceImpl implements BillService {
 
         }
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
+                .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT
+                        : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU
+                        : StatusPayMents.DA_THANH_TOAN)
+                .build();
 
         if (!request.getPaymentMethod().equals("paymentReceive")) {
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
@@ -828,10 +859,13 @@ public class BillServiceImpl implements BillService {
 
         }
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
+                .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT
+                        : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
                 .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount()))
-                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU : StatusPayMents.DA_THANH_TOAN).build();
+                .status(request.getPaymentMethod().equals("paymentReceive") ? StatusPayMents.TRA_SAU
+                        : StatusPayMents.DA_THANH_TOAN)
+                .build();
         if (!request.getPaymentMethod().equals("paymentReceive")) {
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
@@ -859,7 +893,8 @@ public class BillServiceImpl implements BillService {
 
         Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
         for (BillDetailOnline x : request.getBillDetail()) {
-            List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndProductDetail_Id(cart.getId(), x.getIdProductDetail());
+            List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndProductDetail_Id(cart.getId(),
+                    x.getIdProductDetail());
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
         CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
@@ -925,7 +960,7 @@ public class BillServiceImpl implements BillService {
     }
 
     public boolean createTemplateSendMail(String idBill) {
-        //     begin   create file pdf
+        // begin create file pdf
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         Bill bill = optional.get();
@@ -935,7 +970,9 @@ public class BillServiceImpl implements BillService {
         }
         if (bill.getStatusBill() != StatusBill.THANH_CONG && !email.isEmpty()) {
             invoice.setCheckShip(true);
-            CompletableFuture.runAsync(() -> sendMail(invoice, "http://103.56.161.210:3000/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()), Executors.newCachedThreadPool());
+            CompletableFuture.runAsync(() -> sendMail(invoice,
+                    domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()),
+                    Executors.newCachedThreadPool());
         }
         return true;
     }
@@ -969,7 +1006,9 @@ public class BillServiceImpl implements BillService {
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
         invoice.setCheckShip(true);
         if ((optional.get().getEmail() != null)) {
-            sendMail(invoice, "http://103.56.161.210:3000/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(), optional.get().getEmail());
+            sendMail(invoice,
+                    domainClient + "/bill/" + optional.get().getCode() + "/" + optional.get().getPhoneNumber(),
+                    optional.get().getEmail());
         }
     }
 
@@ -1011,7 +1050,8 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack, List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
+    public Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack,
+            List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
         Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
         Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
         if (bill == null) {
@@ -1019,7 +1059,7 @@ public class BillServiceImpl implements BillService {
         }
 
         // todo: update points user by totalBillGiveBack
-        BigDecimal totalBill =  bill.getTotalMoney();
+        BigDecimal totalBill = bill.getTotalMoney();
         String idAccount = updateBillGiveBack.getIdAccount();
         BigDecimal totalBillGive = updateBillGiveBack.getTotalBillGiveBack();
         int checkTotal = totalBill.compareTo(totalBillGive);
@@ -1078,7 +1118,8 @@ public class BillServiceImpl implements BillService {
 
         // todo: create product detail give back
         List<ProductDetailGiveBack> addProductDetailGiveBacks = productDetailGiveBackList.stream().map(data -> {
-            ProductDetailGiveBack productDetailGiveBack = productDetailGiveBackRepository.getOneByIdProductDetail(data.getIdProductDetail());
+            ProductDetailGiveBack productDetailGiveBack = productDetailGiveBackRepository
+                    .getOneByIdProductDetail(data.getIdProductDetail());
             if (productDetailGiveBack != null) {
                 productDetailGiveBack.setQuantity(productDetailGiveBack.getQuantity() + data.getQuantity());
                 return productDetailGiveBack;
@@ -1091,6 +1132,5 @@ public class BillServiceImpl implements BillService {
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
     }
-
 
 }

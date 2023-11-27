@@ -82,11 +82,13 @@ requestCustomer.interceptors.response.use(
     if (error.response != null && error.response.status === 400) {
       toast.error(error.response.data.message);
     }
+    
     // if (error.response && error.response.status === 404) {
     //   window.location.href = "/not-found";
     //   return;
     // }
     // store.dispatch(SetLoadingFalse());
+    store.dispatch(SetLoadingFalse());
     throw error;
   }
 );
