@@ -1,7 +1,7 @@
 /** @format */
 
 export const AppConfig = {
-  apiUrl: "http://localhost:8080",
+  apiUrl: "http://103.56.161.210:8080",
   routerBase: "",
 };
 
