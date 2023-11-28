@@ -916,7 +916,7 @@ function CreateBill({
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      poin: poin?poin : 0,
+      poin: poin ? poin : 0,
     };
     if (isOpenDelivery) {
       if (
@@ -939,9 +939,8 @@ function CreateBill({
               content: "Bạn có xác nhận đặt hàng không?",
               okText: "Đồng ý",
               cancelText: "Hủy",
-              onOk:  () => {
-
-                 BillApi.createBillWait(data)
+              onOk: () => {
+                BillApi.createBillWait(data)
                   .then((res) => {
                     toast.success("Xuất hóa đơn thành công");
                     removePane(targetKey, invoiceNumber, items);
@@ -1417,12 +1416,6 @@ function CreateBill({
         CustomerApi.quickCreate(formData)
           .then((res) => {
             toast.success("Thêm thành công");
-            // setAddress({
-            //   city: values.province,
-            //   district: values.district,
-            //   wards: values.ward,
-            //   detail: values.line,
-            // });
             form.setFieldsValue({
               phoneNumber: values.phoneNumber,
               name: values.fullName,
@@ -1516,7 +1509,8 @@ function CreateBill({
     } else {
       localStorage.setItem("code", billRequest.code);
       PaymentsMethodApi.paymentVnpay(data).then((res) => {
-        window.open(res.data.data, "_self");
+        // window.open(res.data.data, "_self");
+        console.log(res.data.data);
       });
     }
     setTotalMoneyPayment("");
