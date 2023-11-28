@@ -1509,7 +1509,7 @@ function CreateBill({
     } else {
       localStorage.setItem("code", billRequest.code);
       PaymentsMethodApi.paymentVnpay(data).then((res) => {
-        // window.open(res.data.data, "_self");
+        window.open(res.data.data, "_self");
         console.log(res.data.data);
       });
     }

@@ -27,6 +27,7 @@ import {
   GetProductDetail,
   SetProductDetail,
 } from "../../../app/reducer/ProductDetail.reducer";
+import { useNavigate } from "react-router-dom";
 
 function UpdatePromotionManagement() {
   const dispatch = useAppDispatch();
@@ -39,7 +40,7 @@ function UpdatePromotionManagement() {
   const [listProductDetail, setListProductDetail] = useState([]);
   const [modal, setModal] = useState(false);
   const [listPromotion, setListPromotion] = useState([]);
-  const { Option } = Select;
+  const nav = useNavigate();
 
   const datas = useAppSelector(GetProductDetail);
   useEffect(() => {
@@ -229,7 +230,7 @@ function UpdatePromotionManagement() {
           toast.success("Cập nhập thành công!", {
             autoClose: 5000,
           });
-          window.location.href = "/promotion-management";
+          nav("/promotion-management");
         });
         setFormData({});
         setListProductDetail([]);
@@ -564,7 +565,9 @@ function UpdatePromotionManagement() {
                         value={
                           formData["status"] === "DANG_KICH_HOAT"
                             ? "Còn hạn"
-                            : (formData["status"] === "CHUA_KICH_HOAT" ? "Chưa kích hoạt": "Hết hạn") || ""
+                            : (formData["status"] === "CHUA_KICH_HOAT"
+                                ? "Chưa kích hoạt"
+                                : "Hết hạn") || ""
                         }
                       ></Input>
                     )}

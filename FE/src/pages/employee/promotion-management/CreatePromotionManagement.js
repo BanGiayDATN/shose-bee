@@ -25,6 +25,7 @@ import {
   SetProductDetail,
 } from "../../../app/reducer/ProductDetail.reducer";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
+import { useNavigate } from "react-router-dom";
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
   const [formErrors, setFormErrors] = useState({});
@@ -39,6 +40,7 @@ function CreateVoucherManagement() {
   const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
   const datas = useAppSelector(GetProductDetail);
+  const nav = useNavigate();
   useEffect(() => {
     if (datas != null) {
       SetProductDetail(datas);
@@ -142,7 +144,7 @@ function CreateVoucherManagement() {
   const handleSubmit = () => {
     console.log(selectedRowKeysDetail);
     if (selectedRowKeysDetail.length === 0) {
-      toast.error("Vui lòng chọn sản phẩm để thêm")
+      toast.error("Vui lòng chọn sản phẩm để thêm");
       return;
     }
     Modal.confirm({
@@ -170,19 +172,20 @@ function CreateVoucherManagement() {
             endDate: !formData.endDate
               ? "Vui lòng chọn ngày kết thúc"
               : formData.startDate >= formData.endDate
-                ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-                : formData.endDate <= dayjs().valueOf()
-                 ? "Ngày kết thúc phải lớn hơn hiện tại" : "",
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : formData.endDate <= dayjs().valueOf()
+              ? "Ngày kết thúc phải lớn hơn hiện tại"
+              : "",
           };
           setFormErrors(errors);
           return;
         }
         PromotionApi.create(convertToLong()).then((res) => {
           dispatch(CreatePromotion(res.data.data));
-          toast.success("Thêm thành công!", {
+          toast.success("Thêm thành công.", {
             autoClose: 5000,
           });
-          window.location.href = "/promotion-management";
+          nav("/promotion-management");
         });
         setFormData({});
         setListProductDetail([]);
@@ -597,18 +600,18 @@ function CreateVoucherManagement() {
               rowSelection={rowSelection}
               dataSource={updatedList}
               pagination={{ pageSize: 5 }}
-            // onRow={(record) => ({
-            //   onClick: () => {
-            //     const newSelectedRowKeys = [...selectedRowKeys];
-            //     if (newSelectedRowKeys.includes(record.id)) {
-            //       const index = newSelectedRowKeys.indexOf(record.id);
-            //       newSelectedRowKeys.splice(index, 1);
-            //     } else {
-            //       newSelectedRowKeys.push(record.id);
-            //     }
-            //     setSelectedRowKeys(newSelectedRowKeys);
-            //   },
-            // })}
+              // onRow={(record) => ({
+              //   onClick: () => {
+              //     const newSelectedRowKeys = [...selectedRowKeys];
+              //     if (newSelectedRowKeys.includes(record.id)) {
+              //       const index = newSelectedRowKeys.indexOf(record.id);
+              //       newSelectedRowKeys.splice(index, 1);
+              //     } else {
+              //       newSelectedRowKeys.push(record.id);
+              //     }
+              //     setSelectedRowKeys(newSelectedRowKeys);
+              //   },
+              // })}
             />
           </Col>
           <Col>

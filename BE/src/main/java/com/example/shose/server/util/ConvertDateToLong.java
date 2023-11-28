@@ -10,6 +10,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -22,7 +25,7 @@ public class ConvertDateToLong {
     public Long dateToLong(String date) {
         long milliseconds = -1;
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        format.setTimeZone(TimeZone.getDefault());
+        format.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         try {
             Date d = format.parse(date);
             milliseconds = d.getTime();
@@ -32,23 +35,15 @@ public class ConvertDateToLong {
         return milliseconds;
     }
 
-
     public String longToDate(Long milliseconds) {
         Date date = new Date(milliseconds);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         return format.format(date);
     }
 
-
     public Long getLongDateNow() {
-        long now = 0;
-        try {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            now = df.parse(df.format(new Date())).getTime()  ;
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return now;
+        return LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant(ZoneOffset.UTC).toEpochMilli();
     }
 
     public static void main(String[] args) {
