@@ -217,11 +217,9 @@ function PaymentAccount() {
           return;
         }
 
-        const dayShipObject = dayjs(dayShip, "DD-MM-YYYY");
-        const shippingTime = dayShipObject.diff(dayjs(), "millisecond");
         const dataBillSave = {
           ...dataBill,
-          shippingTime: shippingTime,
+          shippingTime: dayShip,
         };
 
         console.log(dataBillSave);
@@ -280,8 +278,9 @@ function PaymentAccount() {
   const getDayShip = (districtId, wardCode) => {
     AddressClientApi.getDayShip(districtId, wardCode).then(
       (res) => {
-        const day = dayjs(res.data.data.leadtime * 1000).format("DD-MM-YYYY");
-        setDayShip(day);
+       const leadtimeInSeconds = res.data.data.leadtime;
+        const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+        setDayShip(formattedDate);
       },
       (err) => {
         console.log(err);
