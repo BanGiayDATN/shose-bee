@@ -1016,16 +1016,9 @@ public class BillServiceImpl implements BillService {
         if (!optional.isPresent()) {
             throw new RestApiException("Không tìm thấy mã  hóa đơn " + codeBill);
         }
-        if (optional.get().getStatusBill().equals(StatusBill.TRA_HANG)) {
-            throw new RestApiException("Hóa đơn " + codeBill + " đã có sản phẩm trả hàng.");
-        }
 
         if (optional.get().getStatusBill().equals(StatusBill.DA_HUY)) {
             throw new RestApiException("Hóa đơn " + codeBill + " đã bị hủy.");
-        }
-
-        if (!optional.get().getStatusBill().equals(StatusBill.THANH_CONG)) {
-            throw new RestApiException("Hóa đơn chưa được đổi trả.");
         }
 
         if(optional.get().getStatusBill().equals(StatusBill.THANH_CONG)){
@@ -1053,9 +1046,9 @@ public class BillServiceImpl implements BillService {
         }
 
         // todo: update points user by totalBillGiveBack
-        BigDecimal totalBill = totalBillToProductDetail(getBillGiveBack(bill.getId()));
+        BigDecimal totalBill = bill.getTotalMoney();
         String idAccount = updateBillGiveBack.getIdAccount();
-        BigDecimal totalBillGive = totalBillGivenBack(updateBillDetailGiveBacks);
+        BigDecimal totalBillGive = updateBillGiveBack.getTotalBillGiveBack();
         int checkTotal = totalBill.compareTo(totalBillGive);
 
         Poin poin = configPoin.readJsonFile();
@@ -1126,28 +1119,6 @@ public class BillServiceImpl implements BillService {
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
     }
-
-    private BigDecimal totalBillGivenBack(List<UpdateBillDetailGiveBack> list) {
-        BigDecimal totalBillGive = list.stream()
-                .map(UpdateBillDetailGiveBack::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add); // Tính tổng
-        return totalBillGive;
-    }
-
-    private BigDecimal totalBillToProductDetail(List<BillGiveBack> list) {
-        BigDecimal total = list.stream()
-                .map(data -> {
-                    BigDecimal price = data.getPrice();
-                    Integer promotion = data.getPromotion();
-                    Integer quantity = data.getQuantity();
-
-                    return promotion == null
-                            ? price.multiply(new BigDecimal(quantity))
-                            : new BigDecimal(quantity).multiply(new BigDecimal(100 - promotion).multiply(price));
-                })
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add); // Tính tổng
-        return total;
-    }
+    
 
 }

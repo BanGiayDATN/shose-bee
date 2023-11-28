@@ -23,9 +23,7 @@ function TabBillDetail({ dataBillDetail }) {
   };
 
   const totalMoneyProduct = (product) => {
-    return product.promotion != null
-      ? (product.price * product.quantity * (100 - product.promotion)) / 100
-      : product.price * product.quantity;
+    return product.price * product.quantity;
   };
 
   const columnProductBill = [

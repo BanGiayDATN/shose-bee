@@ -513,8 +513,7 @@ function DetailBill() {
   const generatePDF = useReactToPrint({
     content: () => document.getElementById("pdfContent"),
     documentTitle: "Userdata",
-    onAfterPrint: () => {
-    },
+    onAfterPrint: () => {},
   });
 
   const [isModalOpenChangeStatus, setIsModalOpenChangeStatus] = useState(false);
@@ -545,17 +544,20 @@ function DetailBill() {
               if (res.data.data.statusBill == "DA_HUY") {
                 index = 8;
               }
-              if(res.data.data.statusBill == "CHO_VAN_CHUYEN"){
+              if (res.data.data.statusBill == "CHO_VAN_CHUYEN") {
                 var data = {
                   ids: [id],
                   status: "CHO_VAN_CHUYEN",
                 };
-                BillApi.fetchAllFilePdfByIdBill(data).then((response) => {
-                  document.getElementById("pdfContent").innerHTML   = response.data.data
-                  generatePDF()
-                }).catch((error) => {
-                  toast.error(error.response.data.message);
-                });
+                BillApi.fetchAllFilePdfByIdBill(data)
+                  .then((response) => {
+                    document.getElementById("pdfContent").innerHTML =
+                      response.data.data;
+                    generatePDF();
+                  })
+                  .catch((error) => {
+                    toast.error(error.response.data.message);
+                  });
               }
               dispatch(addStatusPresent(index));
             })
@@ -829,9 +831,7 @@ function DetailBill() {
 
   // total product detail give back
   const totalMoneyProduct = (product) => {
-    return product.promotion != null
-      ? (product.price * product.quantity * (100 - product.promotion)) / 100
-      : product.price * product.quantity;
+    return product.price * product.quantity;
   };
 
   const totalProductDetailGiveBack = () => {
@@ -841,6 +841,16 @@ function DetailBill() {
         const money = totalMoneyProduct(data);
         total += money;
       }
+    });
+    console.log(total);
+    return total;
+  };
+
+  const totalProductDetailGiveBackAndSuccse = () => {
+    let total = 0;
+    productDetailToBillDetail.map((data) => {
+      const money = totalMoneyProduct(data);
+      total += money;
     });
     console.log(total);
     return total;
@@ -1276,6 +1286,7 @@ function DetailBill() {
                 </Col>
               </Row>
             </Col>
+
              {bill.shippingTime != null && bill.statusBill != "THANH_CONG" ? (
                <Col span={12} className="text">
                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
@@ -1328,7 +1339,7 @@ function DetailBill() {
                     span={9}
                     style={{ fontWeight: "bold", fontSize: "16px" }}
                   >
-                    Tiền hàng :
+                    Tổng tiền hàng :
                   </Col>
                   <Col span={10} align={"end"}>
                     <span
@@ -1338,7 +1349,7 @@ function DetailBill() {
                         color: "blue",
                       }}
                     >
-                      {formatCurrency(bill.totalMoney)}
+                      {formatCurrency(totalProductDetailGiveBackAndSuccse())}
                     </span>
                   </Col>
                 </Row>
@@ -1438,7 +1449,7 @@ function DetailBill() {
                       style={{
                         fontSize: "18px",
                         fontWeight: "bold",
-                        color: "red",
+                        color: "blue",
                       }}
                     >
                       {formatCurrency(
@@ -1900,9 +1911,7 @@ function DetailBill() {
       {/* Same as */}
       <ToastContainer />
       <div style={{ display: "none" }}>
-        <div
-          id="pdfContent"
-        />
+        <div id="pdfContent" />
       </div>
     </div>
   );

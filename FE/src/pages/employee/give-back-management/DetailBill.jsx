@@ -44,6 +44,7 @@ export default function DetailBillGiveBack() {
   const loadDatabill = () => {
     BillApi.BillGiveBack(bill.idBill).then((res) => {
       setDataProductBill(res.data.data);
+      console.log(res.data.data);
     });
   };
 
@@ -210,6 +211,7 @@ export default function DetailBillGiveBack() {
               type="primary"
               style={{ backgroundColor: "#20B2AA" }}
               onClick={() => handleModalQuantityGiveBack(record)}
+              disabled={bill.statusBill !== "THANH_CONG"}
             >
               <FontAwesomeIcon icon={faRotateBack} />
             </Button>
@@ -473,9 +475,7 @@ export default function DetailBillGiveBack() {
   };
 
   const totalMoneyProduct = (product) => {
-    return product.promotion != null
-      ? (product.price * product.quantity * (100 - product.promotion)) / 100
-      : product.price * product.quantity;
+    return product.price * product.quantity;
   };
 
   const totalMoneyBill = () => {
@@ -517,10 +517,6 @@ export default function DetailBillGiveBack() {
         onOk: () => {
           const newDataProductGiveBack = dataProductBill.map((item) => ({
             ...item,
-            totalPrice:
-              item.promotion === null
-                ? item.quantity * item.price
-                : item.quantity * (item.price * (100 - item.promotion)),
           }));
           setDataProductGiveBack(newDataProductGiveBack);
           resolve();
@@ -549,11 +545,11 @@ export default function DetailBillGiveBack() {
           note: values.note,
           idBill: bill.idBill,
           idAccount: bill.idAccount,
+          totalBillGiveBack: totalMoneyBillGiveBack(),
         };
         const formData = new FormData();
         formData.append("data", JSON.stringify(dataProductGiveBack));
         formData.append("updateBill", JSON.stringify(updateBill));
-        console.log(dataProductGiveBack);
         BillApi.UpdateBillGiveBack(formData)
           .then(() => {
             nav("/give-back-management");
@@ -772,6 +768,7 @@ export default function DetailBillGiveBack() {
                     margin: "5px 10px 10px 0px ",
                   }}
                   onClick={() => handleAllGiveBackToBill()}
+                  disabled={bill !== null && bill.statusBill !== "THANH_CONG"}
                 >
                   <FontAwesomeIcon icon={faRotateBack} />{" "}
                   <span style={{ marginLeft: "5px" }}>Trả hàng tất cả</span>

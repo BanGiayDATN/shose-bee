@@ -7,7 +7,6 @@ import {
   Input,
   InputNumber,
   Modal,
-  Popconfirm,
   Row,
   Select,
   Table,
@@ -26,8 +25,6 @@ import {
   SetProductDetail,
 } from "../../../app/reducer/ProductDetail.reducer";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
-import { ModalBody, ModalCloseButton } from "@chakra-ui/react";
-const { confirm } = Modal;
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
   const [formErrors, setFormErrors] = useState({});
@@ -42,7 +39,6 @@ function CreateVoucherManagement() {
   const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
   const datas = useAppSelector(GetProductDetail);
-  const [form] = Form.useForm();
   useEffect(() => {
     if (datas != null) {
       SetProductDetail(datas);
