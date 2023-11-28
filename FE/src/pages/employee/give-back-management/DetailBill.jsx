@@ -37,6 +37,7 @@ export default function DetailBillGiveBack() {
     BillApi.BillGiveBackInformation(id)
       .then((bill) => {
         setBill(bill.data.data);
+        console.log(bill.data.data);
       })
       .catch((error) => {});
   };
@@ -44,7 +45,6 @@ export default function DetailBillGiveBack() {
   const loadDatabill = () => {
     BillApi.BillGiveBack(bill.idBill).then((res) => {
       setDataProductBill(res.data.data);
-      console.log(res.data.data);
     });
   };
 
@@ -211,7 +211,9 @@ export default function DetailBillGiveBack() {
               type="primary"
               style={{ backgroundColor: "#20B2AA" }}
               onClick={() => handleModalQuantityGiveBack(record)}
-              disabled={bill.statusBill !== "THANH_CONG"}
+              disabled={
+                bill.statusBill !== "THANH_CONG" || record.promotion !== null
+              }
             >
               <FontAwesomeIcon icon={faRotateBack} />
             </Button>
@@ -412,10 +414,7 @@ export default function DetailBillGiveBack() {
             ? {
                 ...item,
                 quantity: value,
-                totalPrice:
-                  item.promotion === null
-                    ? item.quantity * item.price
-                    : item.quantity * (item.price * (100 - item.promotion)),
+                totalPrice: item.quantity * item.price,
               }
             : item
         )
@@ -511,13 +510,13 @@ export default function DetailBillGiveBack() {
     return new Promise((resolve, reject) => {
       Modal.confirm({
         title: "Xác nhận",
-        content: "Bạn có đồng ý thêm không?",
+        content: "Bạn có đồng ý hoàn trả tất cả không?",
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: () => {
-          const newDataProductGiveBack = dataProductBill.map((item) => ({
-            ...item,
-          }));
+          const newDataProductGiveBack = dataProductBill.filter(
+            (item) => item.promotion === null
+          );
           setDataProductGiveBack(newDataProductGiveBack);
           resolve();
         },
@@ -782,17 +781,6 @@ export default function DetailBillGiveBack() {
               rowKey={"id"}
             />
             <br />
-            <hr />
-            <Row justify={"end"} style={{ marginTop: "10px" }}>
-              <Col>
-                <h2>Tổng tiền :</h2>
-              </Col>
-              <Col style={{ marginLeft: "10px", marginRight: "10%" }}>
-                <h2 style={{ color: "red" }}>
-                  {formatCurrency(totalMoneyBill())}
-                </h2>
-              </Col>
-            </Row>
           </Card>
           <Row justify={"space-between"}>
             <Col span={16}>
@@ -811,7 +799,7 @@ export default function DetailBillGiveBack() {
                     <Table
                       columns={columnProductGiveBack}
                       dataSource={dataProductGiveBack}
-                      pagination={{ pageSize: 3 }}
+                      pagination={{ pageSize: 4 }}
                       rowKey={"id"}
                     />
                   </div>
@@ -857,7 +845,7 @@ export default function DetailBillGiveBack() {
                 </h1>
                 <Row style={{ marginTop: "40px" }}>
                   <Col span={12}>
-                    <h3>Tổng giá gốc hàng : </h3>
+                    <h3>Tổng giá hàng gốc : </h3>
                   </Col>
                   <Col span={12}>
                     <h3 style={{ color: "blue" }}>
@@ -877,6 +865,32 @@ export default function DetailBillGiveBack() {
                     </h3>
                   </Col>
                 </Row>
+                {bill !== null && bill.voucherValue !== null && (
+                  <Row style={{ marginTop: "30px" }}>
+                    <Col span={12}>
+                      <h3>Voucher đã sử dụng : </h3>
+                    </Col>
+                    <Col span={12}>
+                      <h3 style={{ color: "blue" }}>
+                        {" "}
+                        {formatCurrency(bill.voucherValue)}
+                      </h3>
+                    </Col>
+                  </Row>
+                )}
+                {bill !== null && bill.poin !== null && (
+                  <Row style={{ marginTop: "30px" }}>
+                    <Col span={12}>
+                      <h3>Điểm sử dụng ({bill.poin}) : </h3>
+                    </Col>
+                    <Col span={12}>
+                      <h3 style={{ color: "blue" }}>
+                        {" "}
+                        {formatCurrency(bill.poin * 1000)}
+                      </h3>
+                    </Col>
+                  </Row>
+                )}
                 <br />
                 <hr />
                 <Row style={{ marginTop: "30px" }}>
@@ -884,10 +898,33 @@ export default function DetailBillGiveBack() {
                     <h3>Tiền thừa trả khách : </h3>
                   </Col>
                   <Col span={12}>
-                    <h3 style={{ color: "blue" }}>
-                      {" "}
-                      {formatCurrency(totalMoneyBillGiveBack())}
-                    </h3>
+                    {totalMoneyBillGiveBack() !== totalMoneyBill() ? (
+                      <h3 style={{ color: "blue" }}>
+                        {formatCurrency(totalMoneyBillGiveBack())}
+                      </h3>
+                    ) : (
+                      bill !== null && (
+                        <h3 style={{ color: "blue" }}>
+                          {totalMoneyBillGiveBack() > 0
+                            ? bill.poin !== null && bill.voucherValue !== null
+                              ? formatCurrency(
+                                  totalMoneyBillGiveBack() -
+                                    bill.poin * 1000 -
+                                    bill.voucherValue
+                                )
+                              : bill.poin === null && bill.voucherValue !== null
+                              ? formatCurrency(
+                                  totalMoneyBillGiveBack() - bill.voucherValue
+                                )
+                              : bill.poin !== null && bill.voucherValue === null
+                              ? formatCurrency(
+                                  totalMoneyBillGiveBack() - bill.poin * 1000
+                                )
+                              : formatCurrency(totalMoneyBillGiveBack())
+                            : formatCurrency(totalMoneyBillGiveBack())}
+                        </h3>
+                      )
+                    )}
                   </Col>
                 </Row>
                 <Row style={{ marginTop: "30px" }}>

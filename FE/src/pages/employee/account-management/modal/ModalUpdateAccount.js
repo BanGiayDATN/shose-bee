@@ -26,7 +26,6 @@ const { Option } = Select;
 const ModalUpdateAccount = ({ visible }) => {
   const { id } = useParams();
   const [form] = Form.useForm();
-  const [formAddres] = Form.useForm();
   const [account, setAccount] = useState({});
   const dispatch = useAppDispatch();
   const navigate = useNavigate();

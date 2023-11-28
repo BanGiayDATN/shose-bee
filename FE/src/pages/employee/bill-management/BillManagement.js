@@ -2,29 +2,21 @@ import { PlusOutlined } from "@ant-design/icons";
 import {
   faFilter,
   faKaaba,
-  faListAlt
+  faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Badge,
-  Button,
-  Select,
-  Tabs
-} from "antd";
+import { Badge, Button, Select, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useAppDispatch } from "../../../app/hook";
-import {
-  getAllBill
-} from "../../../app/reducer/Bill.reducer";
+import { getAllBill } from "../../../app/reducer/Bill.reducer";
 import FormSearch from "./FormSearch";
 import TabBills from "./TabBills";
 import "./style-bill.css";
 
 function BillManagement() {
-
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);

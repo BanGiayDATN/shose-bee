@@ -234,13 +234,13 @@ function Sale() {
               onClick={(e) => add(e)}
               icon={<PlusOutlined />}
               size={"large"}
-              style={{ marginRight: "20px" }}
+              style={{ marginRight: "5%" , marginTop:"30px"}}
             >
               Tạo hóa đơn
             </Button>
           </Col>
         </Row>
-        <Row style={{ width: "100%", marginTop: "40px" }}>
+        <Row style={{ width: "100%", marginTop: "20px" }}>
           <Tabs
             hideAdd
             onChange={onChange}
