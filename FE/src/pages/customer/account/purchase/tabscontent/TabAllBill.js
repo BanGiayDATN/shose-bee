@@ -5,7 +5,6 @@ import { useNavigate } from "react-router";
 
 export default function TabAllBill({ listBill }) {
   const nav = useNavigate();
-
   useEffect(() => {
     console.log(listBill);
   }, [listBill]);
@@ -23,7 +22,30 @@ export default function TabAllBill({ listBill }) {
         {listBill.map((item, index) => (
           <div key={index} className="box-bill-account">
             <div className="header-bill-account">
-              <span style={{ marginLeft: "auto" }}>{item.statusBill}</span>
+              <span style={{ marginLeft: "auto", marginBottom: "10px" }}>
+                <span
+                  className={`trangThai ${" status_" + item.statusBill} `}
+                  style={{ borderRadius: "5px" }}
+                >
+                  {item.statusBill === "TAO_HOA_DON"
+                    ? "Tạo Hóa đơn"
+                    : item.statusBill === "CHO_XAC_NHAN"
+                    ? "Chờ xác nhận"
+                    : item.statusBill === "XAC_NHAN"
+                    ? "Xác nhận"
+                    : item.statusBill === "CHO_VAN_CHUYEN"
+                    ? "Chờ chờ vận chuyển"
+                    : item.statusBill === "VAN_CHUYEN"
+                    ? "Đang vận chuyển"
+                    : item.statusBill === "DA_THANH_TOAN"
+                    ? "Đã thanh toán"
+                    : item.statusBill === "THANH_CONG"
+                    ? "Thành công"
+                    : item.statusBill === "TRA_HANG"
+                    ? "Trả hàng"
+                    : "Đã hủy"}
+                </span>
+              </span>
             </div>
 
             <div>
@@ -46,7 +68,7 @@ export default function TabAllBill({ listBill }) {
                       <>
                         <span
                           style={{
-                            marginLeft: 5,
+                            marginLeft: 10,
                             color: "#ff4400",
                             fontSize: 17,
                           }}
@@ -55,12 +77,13 @@ export default function TabAllBill({ listBill }) {
                           {formatMoney(
                             item.price - item.price * (item.promotion / 100)
                           )}
-                        </span>
+                        </span>{" "}
+                        <br />
                         <del
                           style={{
                             color: "black",
                             fontSize: 16,
-                            marginLeft: 5,
+                            marginLeft: 12,
                           }}
                         >
                           {formatMoney(item.price)}
