@@ -27,7 +27,6 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
 import { UserPoinApi } from "../../../api/customer/user/user.api";
-import moment from "moment/moment";
 
 dayjs.extend(utc);
 function PaymentAccount() {
