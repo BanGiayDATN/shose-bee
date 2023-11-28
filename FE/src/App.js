@@ -73,6 +73,7 @@ import GiveBackManagement from "./pages/employee/give-back-management/GiveBackMa
 import NotFound from "./pages/404";
 import NotAuthorized from "./pages/403";
 import DetailBillGiveBack from "./pages/employee/give-back-management/DetailBill";
+import BillDetailAccount from "./pages/customer/account/purchase/billdetail/BillDetailAccount";
 function App() {
 
 
@@ -362,6 +363,20 @@ function App() {
                   <DashBoardCustomer>
                     <LayoutAccount>
                       <Notification />
+                    </LayoutAccount>
+                  </DashBoardCustomer>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+           <Route
+            path="/purchase/:id"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashBoardCustomer>
+                    <LayoutAccount>
+                      <BillDetailAccount/>
                     </LayoutAccount>
                   </DashBoardCustomer>
                 </CartProvider>

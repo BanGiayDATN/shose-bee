@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import "./style.css";
-import { Button } from "antd";
+import { useNavigate } from "react-router";
 
 export default function TabAllBill({ listBill }) {
+  const nav = useNavigate();
   useEffect(() => {
     console.log(listBill);
   }, [listBill]);
@@ -19,7 +20,7 @@ export default function TabAllBill({ listBill }) {
     <React.Fragment>
       <div>
         {listBill.map((item, index) => (
-          <div className="box-bill-account">
+          <div key={index} className="box-bill-account">
             <div className="header-bill-account">
               <span style={{ marginLeft: "auto" }}>{item.statusBill}</span>
             </div>
@@ -75,17 +76,38 @@ export default function TabAllBill({ listBill }) {
             <div className="box-total-money-bill-account">
               {" "}
               Thành tiền:{" "}
-              <span style={{ fontSize: 20, color: "#ff4400", marginLeft: 10 }}>
+              <span
+                style={{
+                  fontSize: 20,
+                  color: "#ff4400",
+                  marginLeft: 10,
+                }}
+              >
                 {formatMoney(item.totalMoney)}
               </span>
             </div>
             <div className="box-repurchase">
-              {item.statusBill === "THANH_CONG" ? (
+              {item.statusBill === "THANH_CONG" ||
+              item.statusBill === "DA_HUY" ? (
                 <>
-                  <Button className="repurchase">Mua lại</Button>
-                  <Button className="see-purchase">Xem đơn hàng</Button>
+                  <div className="repurchase">Mua lại</div>
                 </>
               ) : null}
+              {item.statusBill !== "DA_HUY" ? (
+                <div
+                  className="see-purchase"
+                  onClick={() => nav(`/purchase/${item.id}`)}
+                >
+                  Xem đơn hàng{" "}
+                </div>
+              ) : (
+                <div
+                  className="see-purchase"
+                  onClick={() => nav(`/purchase/${item.id}`)}
+                >
+                  Xem chi tiết hủy đơn
+                </div>
+              )}
             </div>
           </div>
         ))}

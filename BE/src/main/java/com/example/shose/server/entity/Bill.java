@@ -47,7 +47,7 @@ public class Bill extends PrimaryEntity {
     @Column(name = "item_discount")
     private BigDecimal itemDiscount;
 
-    @Column(name = "total_money ")
+    @Column(name = "total_money")
     private BigDecimal totalMoney;
 
     private String email;
