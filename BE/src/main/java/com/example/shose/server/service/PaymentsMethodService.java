@@ -8,6 +8,7 @@ import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.repository.query.Param;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -39,4 +40,5 @@ public interface PaymentsMethodService {
 
     boolean minusQuantityProductDetail(List<BillDetailOnline> listProductDetail);
     boolean refundQuantityProductDetail(List<BillDetailOnline> listProductDetail);
+    PaymentsMethod findByBill(String idBill);
 }

@@ -566,6 +566,11 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         return true;
     }
 
+    @Override
+    public PaymentsMethod findByBill(String idBill) {
+        return paymentsMethodRepository.findByBill(idBill);
+    }
+
 
     public boolean createFilePdfAtCounter(String idBill) {
         //     begin   create file pdf

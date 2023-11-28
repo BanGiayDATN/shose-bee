@@ -70,4 +70,11 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod, 
                     """, nativeQuery = true)
     BigDecimal findTotalPayMnetByIdBill(@Param("idBill") String idBill);
 
+    @Query(value = """
+                    SELECT * FROM payments_method
+                    WHERE id_bill = :idBill
+                    """, nativeQuery = true)
+
+    PaymentsMethod findByBill(@Param("idBill") String idBill);
+
 }
