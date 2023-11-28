@@ -184,11 +184,9 @@ function Payment() {
       okType: "primary",
       cancelText: "Hủy",
       onOk() {
-        const dayShipObject = dayjs(dayShip, "DD-MM-YYYY");
-        const shippingTime = dayShipObject.diff(dayjs(), "millisecond");
         const dataBillSave = {
           ...formBill,
-          shippingTime: shippingTime,
+          shippingTime: dayShip,
         };
 
         if (formBill.paymentMethod === "paymentVnpay") {
@@ -307,8 +305,9 @@ function Payment() {
   const getDayShip = (districtId, wardCode) => {
     AddressClientApi.getDayShip(districtId, wardCode).then(
       (res) => {
-        const day = dayjs(res.data.data.leadtime * 1000).format("DD-MM-YYYY");
-        setDayShip(day);
+        const leadtimeInSeconds = res.data.data.leadtime;
+        const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+        setDayShip(formattedDate);
       },
       (err) => {
         console.log(err);
