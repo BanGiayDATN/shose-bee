@@ -705,7 +705,7 @@ public class BillServiceImpl implements BillService {
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
         Bill bill = Bill.builder()
                 .code(codeBill)
-                .shippingTime(request.getShippingTime())
+                .shippingTime(new ConvertDateToLong().dateToLong(request.getShippingTime()))
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
@@ -817,7 +817,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = Bill.builder()
                 .code(codeBill)
                 .phoneNumber(request.getPhoneNumber())
-                .shippingTime(request.getShippingTime())
+                .shippingTime(new ConvertDateToLong().dateToLong(request.getShippingTime()))
                 .address(request.getAddress())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
