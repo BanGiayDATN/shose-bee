@@ -222,7 +222,7 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Navigate replace to="/home"/>} />
-          <Route path="/not-authorization" element={<NotAuthorized />} />
+          {/* <Route path="/not-authorization" element={<NotAuthorized />} /> */}
           <Route
             path="/login"
             element={

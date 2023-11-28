@@ -8,10 +8,14 @@ export default function ModalQuantityGiveBack({
   const [form] = Form.useForm();
 
   const handleOk = () => {
-    const values = form.getFieldsValue();
-    const quantity = values.quantityCustom;
-    handleSusses(quantity);
-    onCancel();
+    form
+      .validateFields()
+      .then((values) => {
+        const quantity = values.quantityCustom;
+        handleSusses(quantity);
+        onCancel();
+      })
+      .catch(() => {});
   };
 
   return (
@@ -49,7 +53,7 @@ export default function ModalQuantityGiveBack({
             },
           ]}
         >
-          <InputNumber style={{ width: "100%" }} min={1}/>
+          <InputNumber style={{ width: "100%" }} min={1} />
         </Form.Item>
       </Modal>
     </Form>

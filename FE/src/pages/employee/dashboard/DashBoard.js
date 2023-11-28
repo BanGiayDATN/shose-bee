@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Row, Col, Table } from "antd";
+import { Input, Row, Col, Table, Card } from "antd";
 import "../dashboard/style-dashboard.css";
 import { StatisticalApi } from "../../../api/employee/statistical/statistical.api";
 import * as am5 from "@amcharts/amcharts5";
@@ -75,7 +75,7 @@ const DashBoard = () => {
     StatisticalApi.fetchAllStatisticalStatusBill().then(
       (res) => {
         const data = res.data.data;
-        console.log((data));
+        console.log(data);
         const statusMapping = {
           TAO_HOA_DON: "Tạo hóa đơn",
           CHO_XAC_NHAN: "Chờ xác nhận",
@@ -122,8 +122,9 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -131,8 +132,9 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -424,13 +426,18 @@ const DashBoard = () => {
     loadDataProductSelling(startDateLong, endDateProduct);
     loadDataChartColumn(startDateLong, endDateProduct);
     loadDataStatusBill(startDateLong, endDateProduct);
-    let endDate = ""
+    let endDate = "";
     if (endDateProduct == null) {
-      endDate = new Date()
+      endDate = new Date();
     } else {
       endDate = new Date(endDateProduct);
     }
-    setNameTable("Từ " + event.target.value + " Đến " + moment(endDate).format("YYYY-MM-DD"));
+    setNameTable(
+      "Từ " +
+        event.target.value +
+        " Đến " +
+        moment(endDate).format("YYYY-MM-DD")
+    );
   };
 
   const handleEndDateProduct = (event) => {
@@ -439,15 +446,19 @@ const DashBoard = () => {
     setEndDateProduct(endDateLong);
     loadDataProductSelling(startDateProduct, endDateLong);
     loadDataChartColumn(startDateProduct, endDateLong);
-    loadDataStatusBill(startDateProduct, endDateLong)
-    let startDate = ""
+    loadDataStatusBill(startDateProduct, endDateLong);
+    let startDate = "";
     if (startDateProduct == null) {
-      startDate = new Date()
+      startDate = new Date();
     } else {
       startDate = new Date(startDateProduct);
     }
-    setNameTable("Từ " + moment(startDate).format("YYYY-MM-DD") + " Đến " + event.target.value);
-
+    setNameTable(
+      "Từ " +
+        moment(startDate).format("YYYY-MM-DD") +
+        " Đến " +
+        event.target.value
+    );
   };
 
   const loadDataProductSelling = (startDate, endDate) => {
@@ -468,10 +479,7 @@ const DashBoard = () => {
     );
   };
   const loadDataStatusBill = (startDate, endDate) => {
-    StatisticalApi.fetchAllStatisticalStatusBill(
-      startDate,
-      endDate
-    ).then(
+    StatisticalApi.fetchAllStatisticalStatusBill(startDate, endDate).then(
       (res) => {
         const data = res.data.data;
         const statusMapping = {
@@ -509,7 +517,7 @@ const DashBoard = () => {
         console.log(err);
       }
     );
-  }
+  };
 
   const loadDataChartColumn = (startDate, endDate) => {
     StatisticalApi.fetchBillByDate(startDate, endDate).then(
@@ -522,8 +530,9 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -531,8 +540,9 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -846,7 +856,7 @@ const DashBoard = () => {
     }
     loadDataProductSelling(fromTime, toTime);
     loadDataChartColumn(fromTime, toTime);
-    loadDataStatusBill(fromTime, toTime)
+    loadDataStatusBill(fromTime, toTime);
   };
   return (
     <div>
@@ -898,16 +908,18 @@ const DashBoard = () => {
             </div>
           </Col>
         </Row>
-        <Row className="row-body">
-          <h2 style={{ marginLeft: 108 }}>Biểu Đồ Thống Kê Hóa Đơn Và Sản Phẩm {nameTable}</h2>
-          <div className="row-body-container">
+        <Row style={{ marginTop: "30px", marginRight: "1%" }}>
+          <Col span={24}>
             <div class="header-date">
               <br />
               <div style={{ position: "relative" }}>
                 <div className="option-time">
+                  <button className="button-time" disabled>
+                    Bộ lọc
+                  </button>
                   <button
                     className={
-                      activeButton == 1 ? "button-time" : "button-time-block"
+                      activeButton === 1 ? "button-time" : "button-time-block"
                     }
                     onClick={() => onChangeValueOption(1)}
                   >
@@ -915,7 +927,7 @@ const DashBoard = () => {
                   </button>
                   <button
                     className={
-                      activeButton == 2 ? "button-time" : "button-time-block"
+                      activeButton === 2 ? "button-time" : "button-time-block"
                     }
                     onClick={() => onChangeValueOption(2)}
                   >
@@ -923,7 +935,7 @@ const DashBoard = () => {
                   </button>
                   <button
                     className={
-                      activeButton == 3 ? "button-time" : "button-time-block"
+                      activeButton === 3 ? "button-time" : "button-time-block"
                     }
                     onClick={() => onChangeValueOption(3)}
                   >
@@ -931,7 +943,7 @@ const DashBoard = () => {
                   </button>
                   <button
                     className={
-                      activeButton == 4 ? "button-time" : "button-time-block"
+                      activeButton === 4 ? "button-time" : "button-time-block"
                     }
                     onClick={() => onChangeValueOption(4)}
                   >
@@ -939,14 +951,14 @@ const DashBoard = () => {
                   </button>
                   <button
                     className={
-                      activeButton == 5 ? "button-time" : "button-time-block"
+                      activeButton === 5 ? "button-time" : "button-time-block"
                     }
                     onClick={() => onChangeValueOption(5)}
                   >
                     Tùy chỉnh
                   </button>
 
-                  {activeButton == 5 && (
+                  {activeButton === 5 && (
                     <>
                       <Input
                         className="button-time-from"
@@ -967,10 +979,21 @@ const DashBoard = () => {
                 </div>
               </div>
             </div>
-            <div style={{ marginLeft: "50px" }}>
-              <div id="chartdivChart"></div>
-            </div>
-          </div>
+          </Col>
+        </Row>
+        <Row className="row-body" justify={"center"}>
+          <h2 style={{ marginLeft: 108 }}>
+            Biểu Đồ Thống Kê Hóa Đơn Và Sản Phẩm {nameTable}
+          </h2>
+          <Row justify={"center"}>
+            <Col>
+              <div className="row-body-container">
+                <div>
+                  <div id="chartdivChart"></div>
+                </div>
+              </div>
+            </Col>
+          </Row>
         </Row>
         <Row className="row-footer">
           <Col className="row-footer-left">
@@ -988,7 +1011,7 @@ const DashBoard = () => {
               rowClassName={getRowClassName}
             />
             <h2 style={{ textAlign: "center", margin: " 2%" }}>
-              Sản PHẨM SẮP HẾT HÀNG
+              Sản phẩm sắp hết hàng
             </h2>
             <Table
               style={{ marginTop: "10px" }}

@@ -54,6 +54,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -157,14 +160,13 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
     @Override
     public String payWithVNPAY(CreatePayMentMethodTransferRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime expireTime = now.plusMinutes(15);
 
-        cld.add(Calendar.MINUTE, 15);
-
-        String vnp_ExpireDate = formatter.format(cld.getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String vnp_CreateDate = now.format(formatter);
+        String vnp_ExpireDate = expireTime.format(formatter);
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", VnPayConstant.vnp_Version);
@@ -378,12 +380,9 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());
-                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(bill.get()).employees(bill.get().getEmployees()).build());
                } else {
                    if(bill.get().getAccount() != null){
                        User user = bill.get().getAccount().getUser();
-                       BigDecimal totalDisCount = voucherDetailRepository.getTotolDiscountBill(bill.get().getId());
-                       Poin poin = configPoin.readJsonFile();
                        if(bill.get().getPoinUse() > 0){
                            int Pointotal = user.getPoints() - bill.get().getPoinUse();
                            user.setPoints(Pointotal);
@@ -391,8 +390,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                        userReposiory.save(user);
                    }
                    bill.get().setStatusBill(StatusBill.XAC_NHAN);
-                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
                    billRepository.save(bill.get());
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.DA_THANH_TOAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
                }
                CompletableFuture.runAsync(() -> createFilePdfAtCounter(bill.get().getId()), Executors.newCachedThreadPool());
                return true;
@@ -469,14 +468,12 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             }
 
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime expireTime = now.plusMinutes(15);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
-
-        cld.add(Calendar.MINUTE, 15);
-
-        String vnp_ExpireDate = formatter.format(cld.getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String vnp_CreateDate = now.format(formatter);
+        String vnp_ExpireDate = expireTime.format(formatter);
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", VnPayConstant.vnp_Version);

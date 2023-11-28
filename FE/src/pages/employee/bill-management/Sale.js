@@ -1,5 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Tabs } from "antd";
+import { Button, Col, Modal, Row, Tabs } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,10 +10,11 @@ import {
   addBillAtCounTer,
   addBillWait,
   getAllBillWait,
-  updateKeyBillAtCounter
+  updateKeyBillAtCounter,
 } from "../../../app/reducer/Bill.reducer";
 import CreateBill from "./CreateBill";
 import "./sale.css";
+import { useReactToPrint } from "react-to-print";
 
 function Sale() {
   const [invoiceNumber, setInvoiceNumber] = useState(0);
@@ -53,6 +54,7 @@ function Sale() {
                     invoiceNumber={1}
                     removePane={remove}
                     targetKey={newActiveKey}
+                    getHtmlByIdBill={getHtmlByIdBill}
                   />
                 ),
                 key: newActiveKey,
@@ -81,6 +83,7 @@ function Sale() {
                 style={{ width: "100%" }}
                 removePane={remove}
                 targetKey={newActiveKey}
+                getHtmlByIdBill={getHtmlByIdBill}
               />
             ),
             key: newActiveKey,
@@ -135,6 +138,7 @@ function Sale() {
                 style={{ width: "100%" }}
                 removePane={remove}
                 targetKey={newActiveKey}
+                getHtmlByIdBill={getHtmlByIdBill}
               />
             ),
             key: newActiveKey,
@@ -185,6 +189,7 @@ function Sale() {
                 style={{ width: "100%" }}
                 removePane={remove}
                 targetKey={newActiveKey}
+                getHtmlByIdBill={getHtmlByIdBill}
               />
             ),
             key: newActiveKey,
@@ -206,6 +211,18 @@ function Sale() {
     }
   };
 
+  const generatePDF = useReactToPrint({
+    content: () => document.getElementById("pdfContent"),
+    documentTitle: "Userdata",
+    onAfterPrint: () => {
+    },
+  });
+  const getHtmlByIdBill = (id) => {
+    BillApi.fetchHtmlIdBill(id).then((res)=> {
+      document.getElementById("pdfContent").innerHTML   = res.data.data
+      generatePDF()
+    })
+  }
   return (
     <div>
       <Row style={{ background: "white", width: "100%" }}>
@@ -217,13 +234,13 @@ function Sale() {
               onClick={(e) => add(e)}
               icon={<PlusOutlined />}
               size={"large"}
-              style={{ marginRight: "20px" }}
+              style={{ marginRight: "5%" , marginTop:"30px"}}
             >
               Tạo hóa đơn
             </Button>
           </Col>
         </Row>
-        <Row style={{ width: "100%", marginTop: "40px" }}>
+        <Row style={{ width: "100%", marginTop: "20px" }}>
           <Tabs
             hideAdd
             onChange={onChange}
@@ -249,6 +266,11 @@ function Sale() {
       />
       {/* Same as */}
       <ToastContainer />
+      <div style={{ display: "none" }}>
+        <div
+          id="pdfContent"
+        />
+      </div>
     </div>
   );
 }

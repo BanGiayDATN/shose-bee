@@ -114,12 +114,11 @@ public class ExportFilePdfFormHtml {
         return null;
     }
 
-    public  NumberFormat formatCurrency() {
+    public NumberFormat formatCurrency() {
         NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
         formatter.setCurrency(Currency.getInstance("VND"));
         return formatter;
     }
-
 
 
     public InvoiceResponse getInvoiceResponse(Bill bill) {
@@ -147,14 +146,9 @@ public class ExportFilePdfFormHtml {
                 .build();
 
         invoice.setTotalBill(totalMoney.compareTo(BigDecimal.ZERO) > 0 ? formatter.format(totalMoney) : "0 đ");
-
-        Integer quantityProduct = Integer.valueOf(String.valueOf(billDetailResponses.stream()
-                .mapToLong(BillDetailResponse::getQuantity)
-                .sum()));
-        if (quantityProduct != null) {
-            invoice.setQuantity(quantityProduct);
-        }
-
+        invoice.setQuantity(billDetailResponses.stream()
+                .mapToInt(BillDetailResponse::getQuantity)
+                .sum());
         List<InvoiceItemResponse> items = billDetailResponses.stream()
                 .map(billDetailRequest -> {
                     BigDecimal sum = billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()));
@@ -199,7 +193,7 @@ public class ExportFilePdfFormHtml {
         invoice.setMethod(!findAllPaymentByIdBillAndMethod.isEmpty());
         invoice.setTypeBill(false);
 
-        Date date = new Date(bill.getCreatedDate());
+        Date date = new Date(bill.getLastModifiedDate());
         SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         invoice.setDate(formatterDate.format(date));
 

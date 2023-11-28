@@ -126,13 +126,12 @@ public interface BillRepository extends JpaRepository<Bill, String> {
 
     @Query(value = """
             SELECT
-                COUNT(id) AS totalBillToday,
-                SUM(total_money) AS totalBillAmountToday
-            FROM
-                bill
+                COUNT(DISTINCT b.id) AS totalBillToday,
+                SUM(b.total_money) AS totalBillAmountToday
+            FROM bill b JOIN bill_detail bd ON b.id = bd.id_bill
             WHERE
-                completion_date >= :startOfDay AND completion_date <= :endOfDay 
-                AND status_bill IN ('THANH_CONG', 'TRA_HANG')                       
+            b.completion_date >= :startOfDay AND b.completion_date <= :endOfDay
+            AND b.status_bill IN ('THANH_CONG', 'TRA_HANG')                       
                           """, nativeQuery = true)
     List<StatisticalDayResponse> getAllStatisticalDay(@Param("startOfDay") Long startOfDay, @Param("endOfDay") Long endOfDay);
 
@@ -250,12 +249,17 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 bi.note AS note,
                 bi.completion_date AS completionDate,
                 bi.delivery_date AS deliveryDate,
-                ac.id AS idAccount 
+                ac.id AS idAccount ,
+                v.value AS voucherValue,
+                bi.poin_use AS poin, 
+                bi.money_ship AS moneyShip 
             FROM bill bi
             LEFT JOIN account ac ON ac.id = bi.id_account
             LEFT JOIN account em ON em.id = bi.id_employees
+            LEFT JOIN voucher_detail vd ON bi.id = vd.id_bill
+            LEFT JOIN voucher v ON vd.id_voucher = v.id 
             WHERE bi.code = :codeBill
-            """, nativeQuery = true)
+                        """, nativeQuery = true)
     BillGiveBackInformation getBillGiveBackInformation(@Param("codeBill") String codeBill);
 
     @Query(value = """

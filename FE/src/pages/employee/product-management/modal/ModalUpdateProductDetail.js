@@ -48,7 +48,6 @@ import { GetColor, SetColor } from "../../../../app/reducer/Color.reducer";
 
 const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
   const [form] = Form.useForm();
-  const [productDetailGiveback, setProductDetailGiveback] = useState(null);
   const [initialValues, setInitialValues] = useState({
     id: "",
     description: "",
@@ -69,13 +68,7 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
 
   // lấy đối tượng theo id
   const getOne = () => {
-    ProducDetailtApi.getQuantityProductDetailGiveBack(id).then((data) => {
-      const productGiveBack = data.data.data;
-      setProductDetailGiveback(productGiveBack);
-    });
-
     ProducDetailtApi.getOne(id).then((productData) => {
-      console.log(productData.data.data);
       setInitialValues({
         id: productData.data.data.id,
         description: productData.data.data.description,
@@ -91,11 +84,9 @@ const ModalUpdateProductDetail = ({ id, visible, onCancel }) => {
         QRCode: productData.data.data.qrcode,
         sizeId: productData.data.data.idSize,
         colorId: productData.data.data.idCode,
-        giveBack:
-          productDetailGiveback == null ? 0 : productDetailGiveback.quantity,
+        giveBack: productData.data.data.productGiveBack,
       });
     });
-    console.log(initialValues);
   };
 
   useEffect(() => {

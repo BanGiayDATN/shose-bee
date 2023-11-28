@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -141,25 +142,41 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         Material material = materialRepository.getById(request.getMaterialId());
         Sole sole = soleRepository.getById(request.getSoleId());
         Category category = categoryRepository.getById(request.getCategoryId());
-        List<ProductDetail> listDetail = listData.parallelStream().map(req -> {
-            ProductDetail add = new ProductDetail();
-            add.setProduct(product);
-            add.setGender(getGenderProductDetail(req.getGender()));
-            add.setSize(sizeRepository.getOneByName(req.getSize()));
-            add.setQuantity(req.getQuantity());
-            add.setStatus(Status.DANG_SU_DUNG);
-            add.setPrice(new BigDecimal(req.getPrice()));
-            add.setColor(colorRepository.getOneByCode(req.getColor()));
-            add.setDescription(req.getDescription());
-            add.setSole(sole);
-            add.setMaterial(material);
-            add.setCategory(category);
-            add.setBrand(brand);
-            return add;
-        }).collect(Collectors.toList());
+        List<CompletableFuture<ProductDetail>> listDetailFutures = listData.stream().map(req ->
+                CompletableFuture.supplyAsync(() -> {
+                    ProductDetail add = new ProductDetail();
+                    add.setProduct(product);
+                    add.setGender(getGenderProductDetail(req.getGender()));
+                    add.setSize(sizeRepository.getOneByName(req.getSize()));
+                    add.setQuantity(req.getQuantity());
+                    add.setStatus(Status.DANG_SU_DUNG);
+                    add.setPrice(new BigDecimal(req.getPrice()));
+                    add.setColor(colorRepository.getOneByCode(req.getColor()));
+                    add.setDescription(req.getDescription());
+                    add.setSole(sole);
+                    add.setMaterial(material);
+                    add.setCategory(category);
+                    add.setBrand(brand);
+                    return add;
+                })
+        ).collect(Collectors.toList());
+
+        List<ProductDetail> listDetail = listDetailFutures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+
         productDetailRepository.saveAll(listDetail);
 
-        listDetail.parallelStream().forEach(a -> a.setMaQR(qrCodeAndCloudinary.generateAndUploadQRCode(a.getId())));
+        List<CompletableFuture<ProductDetail>> list = listDetail.stream()
+                .map(detail ->
+                    CompletableFuture.supplyAsync(() -> {
+                        String qrCode = qrCodeAndCloudinary.generateAndUploadQRCode(detail.getId());
+                        detail.setMaQR(qrCode);
+                        return detail;
+                    })
+                )
+                .collect(Collectors.toList());
+        productDetailRepository.saveAll(list.stream().map(CompletableFuture::join).collect(Collectors.toList()));
 
         // lấy danh sách chứa tất cả màu từ listUrl
         List<String> existingColors = listUrl.stream()
@@ -169,7 +186,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         List<Image> images = listUrl.parallelStream().filter(result -> existingColors.contains(result.getColor()))
                 .flatMap(result -> {
                     List<ProductDetail> matchingDetails = listDetail.stream()
-                            .filter(detail -> detail.getColor().getCode().equals(result.getColor()))
+                            .filter(detail ->  detail.getColor().getCode().equals(result.getColor()))
                             .collect(Collectors.toList());
 
                     return matchingDetails.stream().map(matchingDetail -> {

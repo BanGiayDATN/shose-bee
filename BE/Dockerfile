@@ -10,6 +10,12 @@ COPY target/server-0.0.1-SNAPSHOT.jar ./app.jar
 # Đặt biến môi trường SPRING_PROFILES_ACTIVE (nếu cần)
 # ENV SPRING_PROFILES_ACTIVE=production
 
+# Đặt múi giờ Việt Nam
+ENV TZ=Asia/Ho_Chi_Minh
+
+# Làm mới thông tin về múi giờ
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Expose cổng mạng cho ứng dụng Spring Boot (thay đổi số cổng cần thiết)
 # khai báo rằng container sẽ lắng nghe kết nối đến cổng 8080
 EXPOSE 8080

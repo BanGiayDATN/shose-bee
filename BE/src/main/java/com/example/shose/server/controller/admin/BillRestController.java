@@ -10,7 +10,6 @@ import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterReque
 import com.example.shose.server.dto.request.bill.UpdateBillRequest;
 import com.example.shose.server.dto.request.billgiveback.UpdateBillDetailGiveBack;
 import com.example.shose.server.dto.request.billgiveback.UpdateBillGiveBack;
-import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
@@ -18,7 +17,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -109,10 +107,14 @@ public class BillRestController {
         return  new ResponseObject(billService.updateBillWait(request));
     }
 
+    @GetMapping("/invoice-pdf/{code}")
+    public ResponseObject getFilePdf(@PathVariable("code") String code)  {
+        return new ResponseObject(billService.createFilePdfAtCounter(code));
+    }
 
-    @GetMapping("/invoice/{id}")
-    public ResponseObject getInvoice(@PathVariable("id") String id)  {
-        return new ResponseObject(billService.createFilePdf(id));
+    @PutMapping("/invoice-all-pdf")
+    public ResponseObject getAllFilePdf(@RequestBody ChangAllStatusBillByIdsRequest request)  {
+        return new ResponseObject(billService.createAllFilePdf(request));
     }
 
 
@@ -150,7 +152,7 @@ public class BillRestController {
             listDataBillDetail.add(detail);
         }
         System.out.println(listDataBillDetail);
-        return new ResponseObject(billService.UpdateBillGiveBack(updateBillGiveBack, listDataBillDetail));
+        return new ResponseObject(billService.updateBillGiveBack(updateBillGiveBack, listDataBillDetail));
     }
 
 }

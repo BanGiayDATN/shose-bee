@@ -1112,6 +1112,7 @@ const CreateProductManagment = () => {
             Chi tiết sản phẩm
           </span>
         </div>
+        
         <Form.Item>
           <Row gutter={16} justify={"end"}>
             <Tooltip title=" Chỉnh số lượng và giá chung">

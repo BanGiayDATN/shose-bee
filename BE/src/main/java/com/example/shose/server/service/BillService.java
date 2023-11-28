@@ -23,7 +23,6 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -64,7 +63,9 @@ public interface BillService {
 
     Bill createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
-    boolean createFilePdf(String idBill);
+    String createFilePdfAtCounter(String idBill);
+
+    String createAllFilePdf(ChangAllStatusBillByIdsRequest request);
 
     Bill findByCode(String code, String phoneNumber);
 
@@ -75,5 +76,5 @@ public interface BillService {
     BillGiveBackInformation getBillGiveBackInformation(String codeBill);
     List<BillGiveBack> getBillGiveBack(String idBill);
 
-    Bill UpdateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
+    Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
 }

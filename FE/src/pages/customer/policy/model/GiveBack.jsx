@@ -31,17 +31,19 @@ export default function Giveback() {
         <br />
         <h3>CÁC TRƯỜNG HỢP CHẤP NHẬN TRẢ</h3>
         <p>- Sản phẩm bị lỗi do phía nhà cung cấp (sản phẩm hỏng, rách, dơ)</p>
+        <p>- Mỗi hóa đơn được đổi trả duy nhất 1 lần.</p>
         <p>- Sản phẩm bị hư hại trong quá trình vận chuyển</p>
+        <p>- Sản phẩm không áp dụng đợt giảm giá.</p>
         <p>
           - Sản phẩm không đúng với thông tin đơn hàng đã đặt (sai màu, sai mẫu,
           sai size,...)
         </p>
         <p>- Sản phẩm vẫn còn nguyên nhãn, tag, box</p>
         <p>
-          - Sản phẩm chấp nhận đổi/trả phải thỏa các điều kiện đổi/trả trong
-          vòng 02 ngày kể từ ngày nhận hàng
+          - Sản phẩm chấp nhận trả phải thỏa các điều kiện trả trong vòng 02
+          ngày kể từ ngày nhận hàng
         </p>
-        <p>- Các trường hợp đổi/trả phải liên hệ trực tiếp với Bee Sneaker</p>
+        <p>- Các trường hợp trả phải liên hệ trực tiếp với Bee Sneaker</p>
         <br />
         <h3>THỜI GIAN HOÀN TRẢ SẢN PHẨM; HOÀN TIỀN</h3>
         <h3>THỜI GIAN HOÀN TRẢ SẢN PHẨM:</h3>

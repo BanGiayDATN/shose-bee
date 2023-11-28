@@ -3,7 +3,6 @@ import { Button, Col, InputNumber, Row, Select, Table } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { AddressApi } from "../../../api/employee/address/address.api";
-import { useAppDispatch } from "../../../app/hook";
 import "./style-bill.css";
 
 
@@ -12,7 +11,6 @@ function DetailsInvoicesCounter({ detailBill }) {
   const city = [];
   const district = [];
   const ward = [];
-  const dispatch = useAppDispatch();
 
   const onChangCity = (e) => {
     AddressApi.fetchDistrict(e.target.value).then((res) => {
