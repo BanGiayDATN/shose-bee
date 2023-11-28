@@ -902,7 +902,7 @@ function DetailBill() {
                           marginLeft: "20px",
                         }}
                       >
-                        {listStatus[statusPresent + 1].name}
+                        {billHistory.some((item) => item.statusBill === "DA_THANH_TOAN") && bill.statusBill === "VAN_CHUYEN" ? "Thành công" : listStatus[statusPresent + 1].name}
                       </Button>
                     ) : (
                       <div></div>
