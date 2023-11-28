@@ -8,6 +8,12 @@ export class BillClientApi {
       data: data,
     });
   };
+  static getBillById = (idBill) => {
+    return requestCustomer({
+      method: "GET",
+      url: `/client/bill/detail/${idBill}`,
+    });
+  };
   static createBillAccountOnline = (data) => {
     return requestCustomer({
       method: "POST",

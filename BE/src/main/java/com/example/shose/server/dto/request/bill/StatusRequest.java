@@ -15,5 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatusRequest {
+    private String id;
     private String status;
 }

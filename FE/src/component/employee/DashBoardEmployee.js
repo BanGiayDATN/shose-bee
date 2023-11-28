@@ -98,7 +98,7 @@ const DashBoardEmployee = ({ children }) => {
           dispatch(SetNotification(res.data.data));
           setListNotification(res.data.data);
         });
-        toast.warning(response.body);
+        toast.success(response.body);
       });
     });
 

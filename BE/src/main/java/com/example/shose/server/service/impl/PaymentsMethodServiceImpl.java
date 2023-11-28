@@ -391,6 +391,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
                    }
                    bill.get().setStatusBill(StatusBill.XAC_NHAN);
                    billRepository.save(bill.get());
+                   billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.DA_THANH_TOAN).bill(bill.get()).employees(bill.get().getEmployees()).build());
                }
                CompletableFuture.runAsync(() -> createFilePdfAtCounter(bill.get().getId()), Executors.newCachedThreadPool());
                return true;
@@ -563,6 +564,11 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
             productDetailRepository.save(productDetail);
         }
         return true;
+    }
+
+    @Override
+    public PaymentsMethod findByBill(String idBill) {
+        return paymentsMethodRepository.findByBill(idBill);
     }
 
 

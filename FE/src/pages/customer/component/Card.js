@@ -11,11 +11,12 @@ import "./style-card.css";
 function CardItem({ item, index }) {
   const now = dayjs();
   const [modal, setModal] = useState(false);
-  const [id, setId] = useState('');
-  const [itemSize, setItemSize] = useState('');
+  const [id, setId] = useState("");
+  const [itemSize, setItemSize] = useState("");
   const [clickedIndex, setClickedIndex] = useState(-1);
   const [listSize, setListSize] = useState([]);
   const [cartAccount, setCartAccount] = useState([]);
+  const nav = useNavigate();
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
     idProductDetail: "",
@@ -61,10 +62,9 @@ function CardItem({ item, index }) {
         );
       }
     });
-  }
+  };
   // them san pham vao gio hang
   const addToCard = async () => {
-
     if (detailProduct.quantity === 0) {
       toast.error("Sản phẩm đã hết hàng", {
         autoClose: 3000,
@@ -81,32 +81,35 @@ function CardItem({ item, index }) {
         codeColor: detailProduct.codeColor,
         nameSize: detailProduct.nameSize,
         quantityProductDetail: detailProduct.quantity,
-        valuePromotion: detailProduct.valuePromotion
+        valuePromotion: detailProduct.valuePromotion,
       };
-      const detailProductCart = cartLocal.find((item) => item.idProductDetail === id)
+      const detailProductCart = cartLocal.find(
+        (item) => item.idProductDetail === id
+      );
       if (detailProductCart !== undefined) {
-        if (parseInt(quantity) + parseInt(detailProductCart.quantity) <= detailProduct.quantity) {
-
-
-          handleAddCartLocal(newCartItem)
-          window.location.href = "/cart";
+        if (
+          parseInt(quantity) + parseInt(detailProductCart.quantity) <=
+          detailProduct.quantity
+        ) {
+          handleAddCartLocal(newCartItem);
+          nav("/cart");
           toast.success("Thêm giỏ hàng thành công", {
             autoClose: 3000,
           });
         } else {
-          toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
+          toast.warning(
+            `Bạn chỉ được thêm tối đa ${
+              detailProduct.quantity - detailProductCart.quantity
+            } sản phẩm`
+          );
         }
-
       } else {
-
-
-        handleAddCartLocal(newCartItem)
-        window.location.href = "/cart";
+        handleAddCartLocal(newCartItem);
+        nav("/cart");
         toast.success("Thêm giỏ hàng thành công", {
           autoClose: 3000,
         });
       }
-
     } else {
       const newCartItem = {
         idAccount: idAccountLocal,
@@ -114,44 +117,50 @@ function CardItem({ item, index }) {
         price: detailProduct.price,
         quantity: quantity,
       };
-      const detailProductCart = cartAccount.find((item) => item.idProductDetail === id)
+      const detailProductCart = cartAccount.find(
+        (item) => item.idProductDetail === id
+      );
       console.log(detailProductCart);
       if (detailProductCart !== undefined) {
-        if (parseInt(quantity) + parseInt(detailProductCart.quantity) <= detailProduct.quantity) {
+        if (
+          parseInt(quantity) + parseInt(detailProductCart.quantity) <=
+          detailProduct.quantity
+        ) {
           await CartClientApi.addCart(newCartItem);
-          window.location.href = "/cart";
+          nav("/cart");
           toast.success("Thêm giỏ hàng thành công", {
             autoClose: 3000,
           });
         } else {
-          toast.warning(`Bạn chỉ được thêm tối đa ${detailProduct.quantity - detailProductCart.quantity} sản phẩm`)
+          toast.warning(
+            `Bạn chỉ được thêm tối đa ${
+              detailProduct.quantity - detailProductCart.quantity
+            } sản phẩm`
+          );
         }
-
       } else {
-
         await CartClientApi.addCart(newCartItem);
-        window.location.href = "/cart";
+        nav("/cart");
         toast.success("Thêm giỏ hàng thành công", {
           autoClose: 3000,
         });
       }
     }
-
   };
 
   const listCartAccount = () => {
     CartClientApi.listCart(idAccountLocal).then((response) => {
-      setCartAccount(response.data.data)
+      setCartAccount(response.data.data);
       console.log(response.data.data);
-    })
-  }
+    });
+  };
   const getDetailProduct = (idProductDetail) => {
-    setItemSize(idProductDetail)
+    setItemSize(idProductDetail);
     ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
       (res) => {
         console.log(res.data.data);
         setDetailProduct(res.data.data);
-        const nameSizeArray = res.data.data.listSize.split(',');
+        const nameSizeArray = res.data.data.listSize.split(",");
         const sizeList = [];
         for (let index = 0; index < nameSizeArray.length; index += 2) {
           const name = nameSizeArray[index];
@@ -159,27 +168,23 @@ function CardItem({ item, index }) {
           sizeList.push({ name, id });
         }
         setListSize(sizeList);
-        setModal(true)
-        setCurrentImageIndex(0)
-
+        setModal(true);
+        setCurrentImageIndex(0);
       },
       (err) => {
         console.log(err);
       }
-
     );
-
-
   };
   const changeSize = (item) => {
-    getDetailProduct(item)
-  }
+    getDetailProduct(item);
+  };
 
   const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
     getDetailProduct(idProductDetail);
-    listCartAccount()
-    setId(idProductDetail)
+    listCartAccount();
+    setId(idProductDetail);
   };
   const closeModal = () => {
     setModal(false);
@@ -233,7 +238,11 @@ function CardItem({ item, index }) {
         tabindex="0"
       >
         <div>
-          <Link className="link-card-item" to={`/detail-product/${item.idProductDetail}`} onClick={() => window.location.href = `/detail-product/${item.idProductDetail}`}>
+          <Link
+            className="link-card-item"
+            to={`/detail-product/${item.idProductDetail}`}
+            onClick={() => nav(`/detail-product/${item.idProductDetail}`)}
+          >
             <div className="box-img-product">
               <div
                 style={{
@@ -257,15 +266,22 @@ function CardItem({ item, index }) {
               </p>
             </div>
             <p className="price-product">
-            {item.valuePromotion !== null ? (
-                  <>
-                    <span style={{ marginLeft: 5 }}> {formatMoney(item.price - (
-                      item.price * (item.valuePromotion / 100)))}</span>
-                    <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(item.price)}</del>
-                  </>
-                ) : (formatMoney(item.price))}
-              
-              </p>
+              {item.valuePromotion !== null ? (
+                <>
+                  <span style={{ marginLeft: 5 }}>
+                    {" "}
+                    {formatMoney(
+                      item.price - item.price * (item.valuePromotion / 100)
+                    )}
+                  </span>
+                  <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>
+                    {formatMoney(item.price)}
+                  </del>
+                </>
+              ) : (
+                formatMoney(item.price)
+              )}
+            </p>
           </Link>
         </div>
         <div
@@ -312,11 +328,23 @@ function CardItem({ item, index }) {
                 {" "}
                 {detailProduct.valuePromotion !== null ? (
                   <>
-                    <span style={{ marginLeft: 5 }}> {formatMoney(detailProduct.price - (
-                      detailProduct.price * (detailProduct.valuePromotion / 100)))}</span>
-                    <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>{formatMoney(detailProduct.price)}</del>
+                    <span style={{ marginLeft: 5 }}>
+                      {" "}
+                      {formatMoney(
+                        detailProduct.price -
+                          detailProduct.price *
+                            (detailProduct.valuePromotion / 100)
+                      )}
+                    </span>
+                    <del
+                      style={{ color: "black", fontSize: 16, marginLeft: 5 }}
+                    >
+                      {formatMoney(detailProduct.price)}
+                    </del>
                   </>
-                ) : (formatMoney(detailProduct.price))}
+                ) : (
+                  formatMoney(detailProduct.price)
+                )}
               </div>
               <div>
                 <div>
@@ -340,18 +368,20 @@ function CardItem({ item, index }) {
               <div className="box-size-pd">
                 <div>Size:</div>
                 <div className="list-size-product-pd" tabIndex="0">
-
                   {listSize.map((item, index) => (
                     <div
                       key={index}
-                      className={itemSize === item.id ? "size-product-pd-click" : "size-product-pd"}
+                      className={
+                        itemSize === item.id
+                          ? "size-product-pd-click"
+                          : "size-product-pd"
+                      }
                       tabIndex="0"
                       onClick={() => changeSize(item.id)}
                     >
                       {item.name}
                     </div>
                   ))}
-
                 </div>
               </div>
 
