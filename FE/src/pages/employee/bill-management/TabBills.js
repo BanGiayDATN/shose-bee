@@ -238,10 +238,6 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
         }
         await BillApi.changeStatusAllBillByIds(data).then((response) => {
           if (response.data.data == true) {
-            addNotify({
-              status: nextStatusBill(),
-              quantity: dataIdCheck.length,
-            });
             toast.success(`${convertString(statusBill)} thành công`);
           }
         }).catch((error) => {

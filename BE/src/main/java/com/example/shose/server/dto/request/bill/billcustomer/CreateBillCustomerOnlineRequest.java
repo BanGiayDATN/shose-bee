@@ -23,7 +23,7 @@ public class CreateBillCustomerOnlineRequest {
     private String district;
     private Integer districtId;
 
-    private long shippingTime;
+    private String shippingTime;
 
     private String province;
     private Integer provinceId;

@@ -3,6 +3,7 @@ import { faCarRear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Col, Form, Input, Modal, Row, Select } from "antd";
 import dayjs from "dayjs";
+import moment from "moment";
 import utc from "dayjs/plugin/utc";
 import { useEffect, useState } from "react";
 import logoVnPay from "../../../../src/assets/images/logo_vnpay.png";
@@ -184,11 +185,9 @@ function Payment() {
       okType: "primary",
       cancelText: "Hủy",
       onOk() {
-        const dayShipObject = dayjs(dayShip, "DD-MM-YYYY");
-        const shippingTime = dayShipObject.diff(dayjs(), "millisecond");
         const dataBillSave = {
           ...formBill,
-          shippingTime: shippingTime,
+          shippingTime: dayShip,
         };
 
         if (formBill.paymentMethod === "paymentVnpay") {
@@ -307,8 +306,9 @@ function Payment() {
   const getDayShip = (districtId, wardCode) => {
     AddressClientApi.getDayShip(districtId, wardCode).then(
       (res) => {
-        const day = dayjs(res.data.data.leadtime * 1000).format("DD-MM-YYYY");
-        setDayShip(day);
+        const leadtimeInSeconds = res.data.data.leadtime;
+        const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+        setDayShip(formattedDate);
       },
       (err) => {
         console.log(err);

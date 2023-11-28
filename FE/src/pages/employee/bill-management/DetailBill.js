@@ -902,7 +902,7 @@ function DetailBill() {
                           marginLeft: "20px",
                         }}
                       >
-                        {listStatus[statusPresent + 1].name}
+                        {billHistory.some((item) => item.statusBill === "DA_THANH_TOAN") && bill.statusBill === "VAN_CHUYEN" ? "Thành công" : listStatus[statusPresent + 1].name}
                       </Button>
                     ) : (
                       <div></div>
@@ -1286,25 +1286,19 @@ function DetailBill() {
                 </Col>
               </Row>
             </Col>
-            {bill.shippingTime != null ? (
-              <Col span={12} className="text">
-                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                  <Col
-                    span={8}
-                    style={{ fontWeight: "bold", fontSize: "16px" }}
-                  >
-                    Thời gian dự kiến nhận:
-                  </Col>
-                  <Col span={16}>
-                    <span style={{ color: "black" }}>
-                      {moment(bill.shippingTime).format("DD-MM-YYYY")}
-                    </span>
-                  </Col>
-                </Row>
-              </Col>
-            ) : (
-              <Row></Row>
-            )}
+
+             {bill.shippingTime != null && bill.statusBill != "THANH_CONG" ? (
+               <Col span={12} className="text">
+               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                 <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                   Thời gian dự kiến nhận:
+                 </Col>
+                 <Col span={16}>
+                   <span style={{ color: "black" }}>{moment(bill.shippingTime).format("DD-MM-YYYY")}</span>
+                 </Col>
+               </Row>
+             </Col>
+            ): (<Row></Row>)}
             <Col span={12} className="text">
               <Row
                 style={{

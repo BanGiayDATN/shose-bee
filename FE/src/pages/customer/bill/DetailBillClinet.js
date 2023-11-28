@@ -626,7 +626,7 @@ function DetailBillClinet() {
                     </Col>
                   </Row>
                 </Col>
-                 {bill.shippingTime != null ? (
+                 {bill.shippingTime != null && bill.statusBill != "THANH_CONG" ? (
                <Col span={12} className="text">
                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                  <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>

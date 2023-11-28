@@ -7,6 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Checkbox, Col, Modal, Radio, Row } from "antd";
 import dayjs from "dayjs";
+import moment from "moment";
 import utc from "dayjs/plugin/utc";
 import { parseInt } from "lodash";
 import { useEffect, useState } from "react";
@@ -26,7 +27,6 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
 import { UserPoinApi } from "../../../api/customer/user/user.api";
-import moment from "moment/moment";
 
 dayjs.extend(utc);
 function PaymentAccount() {
@@ -217,11 +217,9 @@ function PaymentAccount() {
           return;
         }
 
-        const dayShipObject = dayjs(dayShip, "DD-MM-YYYY");
-        const shippingTime = dayShipObject.diff(dayjs(), "millisecond");
         const dataBillSave = {
           ...dataBill,
-          shippingTime: shippingTime,
+          shippingTime: dayShip,
         };
 
         console.log(dataBillSave);
@@ -280,8 +278,9 @@ function PaymentAccount() {
   const getDayShip = (districtId, wardCode) => {
     AddressClientApi.getDayShip(districtId, wardCode).then(
       (res) => {
-        const day = dayjs(res.data.data.leadtime * 1000).format("DD-MM-YYYY");
-        setDayShip(day);
+       const leadtimeInSeconds = res.data.data.leadtime;
+        const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+        setDayShip(formattedDate);
       },
       (err) => {
         console.log(err);
