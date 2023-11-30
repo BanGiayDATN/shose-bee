@@ -207,8 +207,8 @@ function PaymentAccount() {
           poin = tinhSoDiemCanThanhToan();
         }
 
-        if(poin > 0 && poin < account?.points){
-          dataBill.itemDiscount = totalBefore + moneyShip
+        if (poin > 0 && poin < account?.points) {
+          dataBill.itemDiscount = totalBefore + moneyShip;
         }
         dataBill.poin = poin;
         dataBill.totalMoney = totalBefore;
@@ -278,8 +278,10 @@ function PaymentAccount() {
   const getDayShip = (districtId, wardCode) => {
     AddressClientApi.getDayShip(districtId, wardCode).then(
       (res) => {
-       const leadtimeInSeconds = res.data.data.leadtime;
-        const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+        const leadtimeInSeconds = res.data.data.leadtime;
+        const formattedDate = moment
+          .unix(leadtimeInSeconds)
+          .format("DD/MM/YYYY");
         setDayShip(formattedDate);
       },
       (err) => {
@@ -434,11 +436,11 @@ function PaymentAccount() {
           </div>
           <div className="product-of-bill-acc">
             <div className="title-product-of-bill-acc">
-              <div style={{ fontSize: 17 }}>Sản phẩm</div>
-              <div style={{ marginLeft: "30%" }}>Size</div>
-              <div style={{ marginLeft: "12%" }}>Đơn giá</div>
-              <div style={{ marginLeft: "12%" }}>Số lượng</div>
-              <div style={{ marginLeft: "auto" }}>Thành tiền</div>
+              <div style={{ fontSize: 17, width: "35%" }}>Sản phẩm</div>
+              <div style={{ width: "10%" }}>Size</div>
+              <div style={{ width: "20%" }}>Đơn giá</div>
+              <div style={{ width: "20%" }}>Số lượng</div>
+              <div style={{ width: "15%" }}>Thành tiền</div>
             </div>
 
             <div className="content-product-of-bill-acc">
@@ -446,7 +448,7 @@ function PaymentAccount() {
                 <div className="item-product-bill-acc">
                   <div
                     style={{
-                      width: 433,
+                      width: "35%",
                       display: "flex",
                       alignItems: "center",
                     }}
@@ -458,8 +460,11 @@ function PaymentAccount() {
                     />
                     <span style={{ marginLeft: "5%" }}>{item.nameProduct}</span>
                   </div>
-                  <span>{item.nameSize}</span>
-                  <span style={{ marginLeft: "11%" }}>
+                  <span  style={{
+                      width: "10%"
+                    
+                    }}>{item.nameSize}</span>
+                  <span style={{  width: "20%" }}>
                     {item.valuePromotion !== null ? (
                       <>
                         <span style={{ marginLeft: 5 }}>
@@ -474,8 +479,8 @@ function PaymentAccount() {
                       formatMoney(item.price)
                     )}
                   </span>
-                  <span style={{ marginLeft: "12%" }}>{item.quantity}</span>
-                  <span style={{ marginLeft: "auto" }}>
+                  <span style={{ width: "20%",paddingLeft:"20px" }}>{item.quantity}</span>
+                  <span style={{ flex: 1 }}>
                     {" "}
                     {item.valuePromotion === null
                       ? formatMoney(item.quantity * item.price)

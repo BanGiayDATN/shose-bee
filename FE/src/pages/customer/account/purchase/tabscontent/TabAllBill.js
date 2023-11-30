@@ -34,7 +34,7 @@ export default function TabAllBill({ listBill }) {
                     : item.statusBill === "XAC_NHAN"
                     ? "Xác nhận"
                     : item.statusBill === "CHO_VAN_CHUYEN"
-                    ? "Chờ chờ vận chuyển"
+                    ? "Chờ vận chuyển"
                     : item.statusBill === "VAN_CHUYEN"
                     ? "Đang vận chuyển"
                     : item.statusBill === "DA_THANH_TOAN"
