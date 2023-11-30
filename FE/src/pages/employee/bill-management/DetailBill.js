@@ -831,7 +831,9 @@ function DetailBill() {
 
   // total product detail give back
   const totalMoneyProduct = (product) => {
-    return product.price * product.quantity;
+    return product.promotion === null
+      ? product.price * product.quantity
+      : (product.price * (100 - product.promotion) * product.quantity) / 100;
   };
 
   const totalProductDetailGiveBack = () => {
@@ -902,7 +904,11 @@ function DetailBill() {
                           marginLeft: "20px",
                         }}
                       >
-                        {billHistory.some((item) => item.statusBill === "DA_THANH_TOAN") && bill.statusBill === "VAN_CHUYEN" ? "Thành công" : listStatus[statusPresent + 1].name}
+                        {billHistory.some(
+                          (item) => item.statusBill === "DA_THANH_TOAN"
+                        ) && bill.statusBill === "VAN_CHUYEN"
+                          ? "Thành công"
+                          : listStatus[statusPresent + 1].name}
                       </Button>
                     ) : (
                       <div></div>
@@ -1287,18 +1293,25 @@ function DetailBill() {
               </Row>
             </Col>
 
-             {bill.shippingTime != null && bill.statusBill != "THANH_CONG" ? (
-               <Col span={12} className="text">
-               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                 <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
-                   Thời gian dự kiến nhận:
-                 </Col>
-                 <Col span={16}>
-                   <span style={{ color: "black" }}>{moment(bill.shippingTime).format("DD-MM-YYYY")}</span>
-                 </Col>
-               </Row>
-             </Col>
-            ): (<Row></Row>)}
+            {bill.shippingTime != null && bill.statusBill != "THANH_CONG" ? (
+              <Col span={12} className="text">
+                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                  <Col
+                    span={8}
+                    style={{ fontWeight: "bold", fontSize: "16px" }}
+                  >
+                    Thời gian dự kiến nhận:
+                  </Col>
+                  <Col span={16}>
+                    <span style={{ color: "black" }}>
+                      {moment(bill.shippingTime).format("DD-MM-YYYY")}
+                    </span>
+                  </Col>
+                </Row>
+              </Col>
+            ) : (
+              <Row></Row>
+            )}
             <Col span={12} className="text">
               <Row
                 style={{
@@ -1442,7 +1455,7 @@ function DetailBill() {
                       fontSize: "16px",
                     }}
                   >
-                    Tổng tiền:{" "}
+                    Tổng tiền thanh toán:{" "}
                   </Col>
                   <Col span={10} align={"end"}>
                     <span

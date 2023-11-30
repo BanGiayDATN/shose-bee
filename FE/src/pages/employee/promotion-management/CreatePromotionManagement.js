@@ -154,7 +154,6 @@ function CreateVoucherManagement() {
       cancelText: "Hủy",
       onOk() {
         const isFormValid =
-          formData.code &&
           formData.name &&
           formData.value &&
           formData.startDate &&
@@ -164,7 +163,6 @@ function CreateVoucherManagement() {
 
         if (!isFormValid) {
           const errors = {
-            code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
             name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
             value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
             startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
@@ -212,13 +210,6 @@ function CreateVoucherManagement() {
     setModal(true);
   };
   const fields = [
-    {
-      name: "code",
-      type: "text",
-      label: "Mã khuyễn mại",
-      text: "mã khuyễn mại",
-      class: "input-form-promotion",
-    },
     {
       name: "name",
       type: "text",

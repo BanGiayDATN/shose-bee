@@ -74,7 +74,10 @@ public class PromotionServiceImpl implements PromotionService {
         }
 
         StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());
-        Promotion promotion = Promotion.builder().code(request.getCode()).name(request.getName()).value(request.getValue()).startDate(request.getStartDate()).endDate(request.getEndDate()).status(status).build();
+        Promotion promotion = Promotion.builder().code(new RandomNumberGenerator().randomToString("KM",900000000))
+                .name(request.getName()).value(request.getValue())
+                .startDate(request.getStartDate()).endDate(request.getEndDate())
+                .status(status).build();
         promotionRepository.save(promotion);
 
         List<PromotionProductDetail> promotionProductDetails = new ArrayList<>();
@@ -106,7 +109,6 @@ public class PromotionServiceImpl implements PromotionService {
 
         StatusPromotion status = getStatusPromotion(request.getStartDate(), request.getEndDate());
         Promotion promotion = optional.get();
-        promotion.setCode(request.getCode());
         promotion.setName(request.getName());
         promotion.setValue(request.getValue());
         promotion.setStartDate(request.getStartDate());

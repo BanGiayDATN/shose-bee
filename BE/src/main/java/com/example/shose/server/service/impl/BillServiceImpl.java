@@ -78,6 +78,8 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -262,7 +264,7 @@ public class BillServiceImpl implements BillService {
                 }
             }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
-            optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            optional.get().setCompletionDate(getCurrentTimestampInVietnam());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill())
                     .bill(optional.get()).employees(optional.get().getEmployees()).build());
@@ -281,7 +283,7 @@ public class BillServiceImpl implements BillService {
                 }
             }
             optional.get().setStatusBill(StatusBill.XAC_NHAN);
-            optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            optional.get().setCompletionDate(getCurrentTimestampInVietnam());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
                     .employees(optional.get().getEmployees()).build());
@@ -570,7 +572,7 @@ public class BillServiceImpl implements BillService {
             bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
             if (checkDaThanhToan) {
                 bill.get().setStatusBill(StatusBill.THANH_CONG);
-                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                bill.get().setCompletionDate(getCurrentTimestampInVietnam());
                 if (bill.get().getAccount() != null) {
                     User user = bill.get().getAccount().getUser();
                     Poin poin = configPoin.readJsonFile();
@@ -580,7 +582,7 @@ public class BillServiceImpl implements BillService {
             }
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
-            bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            bill.get().setCompletionDate(getCurrentTimestampInVietnam());
             if (bill.get().getAccount() != null) {
                 User user = bill.get().getAccount().getUser();
                 Poin poin = configPoin.readJsonFile();
@@ -627,7 +629,7 @@ public class BillServiceImpl implements BillService {
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
                 if (checkDaThanhToan) {
                     bill.get().setStatusBill(StatusBill.THANH_CONG);
-                    bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                    bill.get().setCompletionDate(getCurrentTimestampInVietnam());
                     if (bill.get().getAccount() != null) {
                         User user = bill.get().getAccount().getUser();
                         Poin poin = configPoin.readJsonFile();
@@ -637,7 +639,7 @@ public class BillServiceImpl implements BillService {
                 }
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
-                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+                bill.get().setCompletionDate(getCurrentTimestampInVietnam());
                 if (bill.get().getAccount() != null) {
                     User user = bill.get().getAccount().getUser();
                     Poin poin = configPoin.readJsonFile();
@@ -1167,6 +1169,12 @@ public class BillServiceImpl implements BillService {
         billDetailRepository.saveAll(listUpdateBillDetailGiveBack);
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
+    }
+
+    private  Long getCurrentTimestampInVietnam() {
+        Instant instant = Instant.now();
+        ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+        return instant.atZone(zoneId).toEpochSecond() * 1000;
     }
 
 }

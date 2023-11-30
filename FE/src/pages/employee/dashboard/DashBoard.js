@@ -931,7 +931,7 @@ const DashBoard = () => {
                     }
                     onClick={() => onChangeValueOption(2)}
                   >
-                    Tuần
+                    7 Ngày
                   </button>
                   <button
                     className={
