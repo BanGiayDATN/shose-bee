@@ -183,6 +183,7 @@ function TabBillDetail({ dataBillDetail }) {
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
       setBillDetail(res.data.data);
+      console.log(res.data.data);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

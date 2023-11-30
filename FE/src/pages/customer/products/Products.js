@@ -103,7 +103,6 @@ function Products() {
     });
     ColorApi.getColorInProductDetail().then((res) => {
       setListColor(res.data.data);
-      console.log(res.data.data);
     });
     console.log(formSearch);
     ProductDetailClientApi.list(formSearch).then((res) => {

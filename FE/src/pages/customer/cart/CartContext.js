@@ -13,10 +13,8 @@ export function CartProvider({ children }) {
   }, [totalQuantity])
   useEffect(() => {
     if (idAccount !== null) {
-      console.log("ngon account");
       getQuantityInCart(idAccount)
     } else {
-      console.log("ngon");
       if (quantityInCartLocal !== null) {
         const total = quantityInCartLocal.reduce((acc, item) => acc + item.quantity, 0);
         setTotalQuantity(total)

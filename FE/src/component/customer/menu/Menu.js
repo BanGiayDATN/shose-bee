@@ -29,11 +29,18 @@ function HeaderMenu() {
       className: "title-menu",
       title: "SẢN PHẨM",
       href: "/products",
-      option: [
-        { title: "Giày nam", className: "title-option" },
-        { title: "Giày nữ", className: "title-option" },
-      ],
     },
+    {
+      className: "title-menu",
+      title: "NAM",
+      href: "/products",
+    },
+    {
+      className: "title-menu",
+      title: "NỮ",
+      href: "/products",
+    },
+
     {
       className: "title-menu",
       title: "VỀ CHÚNG TÔI",
@@ -60,7 +67,6 @@ function HeaderMenu() {
   };
   const onSearch = () => {
     setModal(true);
-
   };
 
   const offSearch = () => {
@@ -85,7 +91,9 @@ function HeaderMenu() {
                 onMouseEnter={() => handleMenuHover(field.title)}
                 onMouseLeave={handleMenuLeave}
               >
-                <Link to={field.href} className="link-menu">{field.title}</Link>
+                <Link to={field.href} className="link-menu">
+                  {field.title}
+                </Link>
                 {field.option &&
                   isOptionVisible &&
                   activeField === field.title && (
@@ -122,7 +130,7 @@ function HeaderMenu() {
                   height: "15px",
                   width: "15px",
                   display: "flex",
-                  justifyContent: "center"
+                  justifyContent: "center",
                 }}
               >
                 <ShoppingCartOutlined
