@@ -704,6 +704,7 @@ function Cart() {
                                         parseInt(item.quantity) - 1 < 1
                                           ? 1
                                           : parseInt(item.quantity) - 1
+                                          ,item.quantityProductDetail
                                       )
                                     }
                                   />
@@ -718,6 +719,7 @@ function Cart() {
                                         value.target.value < 1
                                           ? 1
                                           : value.target.value
+                                          ,item.quantityProductDetail
                                       )
                                     }
                                   />
@@ -730,6 +732,7 @@ function Cart() {
                                         parseInt(item.quantity) + 1 < 1
                                           ? 1
                                           : parseInt(item.quantity) + 1
+                                          ,item.quantityProductDetail
                                       )
                                     }
                                   />

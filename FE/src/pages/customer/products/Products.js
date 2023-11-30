@@ -11,6 +11,7 @@ import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { SizeApi } from "../../../api/employee/size/Size.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
+import  banner  from "../../../assets/images/banner-2.png";
 const categoryGender = [
   {
     name: "TẤT CẢ",
@@ -108,15 +109,14 @@ function Products() {
     ProductDetailClientApi.list(formSearch).then((res) => {
       setList(res.data.data.data);
       setTotalPagesProduct(res.data.data.totalPages);
-    
     });
   }, [formSearch]);
-useEffect(()=>{
-  if(totalPagesProduct===1){
-    changeFormSearch("page",0)
-    setCurrentPage(0)
-  }
-},[totalPagesProduct])
+  useEffect(() => {
+    if (totalPagesProduct === 1) {
+      changeFormSearch("page", 0);
+      setCurrentPage(0);
+    }
+  }, [totalPagesProduct]);
   const changeFormSearch = (name, value) => {
     setFormSearch((prev) => ({
       ...prev,
@@ -255,7 +255,7 @@ useEffect(()=>{
       changeFormSearch(
         "maxPrice",
         formPrice.maxPrice.split(",").sort((a, b) => a - b)[
-        formPrice.minPrice.split(",").length - 1
+          formPrice.minPrice.split(",").length - 1
         ]
       );
     } else {
@@ -266,19 +266,20 @@ useEffect(()=>{
 
   return (
     <React.Fragment>
-
       <Row style={{ marginTop: "100px", display: "flex" }}>
-        <Col lg={{ span: 16, offset: 4 }}
+        <Col
+          lg={{ span: 16, offset: 4 }}
           style={{ display: "flex", justifyContent: "center", padding: "auto" }}
         >
           <div className="category-of-products">
-           <div className="title-category-of-products">Bộ lọc sản phẩm</div>
+            <div className="title-category-of-products">Bộ lọc sản phẩm</div>
             <ul className="category-gender">
               {categoryGender.map((item, index) => (
                 <>
                   <li
-                    className={`sub-gender ${formSearch["gender"] === item.value ? "clicked" : ""
-                      }`}
+                    className={`sub-gender ${
+                      formSearch["gender"] === item.value ? "clicked" : ""
+                    }`}
                     onClick={() => changeFormSearch("gender", item.value)}
                   >
                     {item.name}
@@ -309,11 +310,7 @@ useEffect(()=>{
                     <Checkbox
                       checked={isChecked[item.name]?.[item.value] || false}
                       onChange={(e) =>
-                        changeFomSearch(
-                          item.name,
-                          item.value,
-                          e.target.checked
-                        )
+                        changeFomSearch(item.name, item.value, e.target.checked)
                       }
                     >
                       {item.label}
@@ -332,11 +329,7 @@ useEffect(()=>{
                     <Checkbox
                       checked={isChecked[item.name]?.[item.value] || false}
                       onChange={(e) =>
-                        changeFomSearch(
-                          item.name,
-                          item.value,
-                          e.target.checked
-                        )
+                        changeFomSearch(item.name, item.value, e.target.checked)
                       }
                     />{" "}
                     {item.label}
@@ -393,9 +386,7 @@ useEffect(()=>{
                     {item.children.map((child, childIndex) => (
                       <li key={childIndex} className="child-category">
                         <Checkbox
-                          checked={
-                            isChecked[item.name]?.[child.name] || false
-                          }
+                          checked={isChecked[item.name]?.[child.name] || false}
                           onChange={(e) =>
                             changeFomSearch(
                               item.name,
@@ -422,9 +413,7 @@ useEffect(()=>{
               >
                 Màu
               </label>
-              <div
-                style={{ display: "flex", marginTop: 10, paddingLeft: 20 }}
-              >
+              <div style={{ display: "flex", marginTop: 10, paddingLeft: 20 }}>
                 {listColor.map((item, index) => (
                   <div
                     key={index}
@@ -449,18 +438,14 @@ useEffect(()=>{
           </div>
 
           <div className="box-products">
-          <div className="title-of-products">Sản phẩm</div>
+            <img className="title-of-products" src={banner} alt="..." />
             <div className="list-product">
               {list.map((item, index) => (
                 <CardItem item={item} index={index} />
               ))}
             </div>
 
-            <div
-
-              className="box-pagination-products"
-
-            >
+            <div className="box-pagination-products">
               <Pagination
                 defaultCurrent={1}
                 current={currentPage + 1}
@@ -469,7 +454,6 @@ useEffect(()=>{
               />
             </div>
           </div>
-
         </Col>
       </Row>
     </React.Fragment>

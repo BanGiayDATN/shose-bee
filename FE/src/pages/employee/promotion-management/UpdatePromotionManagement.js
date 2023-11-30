@@ -540,7 +540,7 @@ function UpdatePromotionManagement() {
                           handleInputChange(field.name, value);
                         }}
                         min="1"
-                        max="100"
+                        max="80"
                         formatter={field.formatter}
                       />
                     )}
