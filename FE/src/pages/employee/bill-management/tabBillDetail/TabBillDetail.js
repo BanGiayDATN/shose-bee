@@ -23,7 +23,9 @@ function TabBillDetail({ dataBillDetail }) {
   };
 
   const totalMoneyProduct = (product) => {
-    return product.price * product.quantity;
+    return product.promotion === null
+      ? product.price * product.quantity
+      : (product.price * (100 - product.promotion) * product.quantity) / 100;
   };
 
   const columnProductBill = [
@@ -44,7 +46,7 @@ function TabBillDetail({ dataBillDetail }) {
           <img
             src={text}
             alt="Ảnh sản phẩm"
-            style={{ width: "120px", borderRadius: "10%", height: "120px" }}
+            style={{ width: "80px", borderRadius: "10%", height: "80px" }}
           />
           {record.promotion !== null && (
             <div
@@ -95,72 +97,58 @@ function TabBillDetail({ dataBillDetail }) {
         </div>
       ),
     },
-
     {
-      title: <div className="title-product">Thông Tin Sản Phẩm</div>,
-      dataIndex: "information",
-      key: "information",
-      align: "center",
+      title: <div style={{ textAlign: "center" }}>Thông tin sản phẩm</div>,
+      key: "productName",
+      dataIndex: "productName",
       render: (_, record) => (
-        <Row justify={"center"}>
-          <Col span={19}>
-            <Row>
-              {" "}
-              <span
-                style={{
-                  fontSize: "19",
-                  fontWeight: "500",
-                  marginTop: "10px",
-                }}
-              >
-                {record.productName}
-              </span>{" "}
-            </Row>
-            <Row>
-              {record.promotion != null ? (
-                <span style={{ fontSize: "12px", marginTop: "4px" }}>
-                  <del>
-                    {formatCurrency(
-                      record.price / (1 - record.promotion / 100)
-                    )}
-                  </del>
-                </span>
-              ) : (
-                <span></span>
-              )}
-              <span
-                style={{
-                  color: "red",
-                  fontWeight: "500",
-                  marginLeft: "5px",
-                }}
-              >
-                {record.price >= 1000
-                  ? formatCurrency(record.price)
-                  : record.price + " VND"}
-              </span>{" "}
-            </Row>
-            <Row>
-              <span style={{ fontSize: "12", marginTop: "10px" }}>
-                Size: {record.nameSize}
-              </span>{" "}
-            </Row>
-            <Row>
-              <span style={{ fontSize: "12" }}>x {record.quantity}</span>{" "}
-            </Row>
-          </Col>
-        </Row>
+        <>
+          <h3> {record.productName}</h3>
+          <h4 style={{ color: "red" }}>
+            {record.promotion === null
+              ? formatCurrency(record.price)
+              : formatCurrency((record.price * (100 - record.promotion)) / 100)}
+          </h4>
+          <h5 style={{ textDecoration: " line-through" }}>
+            {record.promotion !== null && formatCurrency(record.price)}
+          </h5>
+        </>
       ),
     },
     {
-      title: <div className="title-product">Tổng Tiền Sản Phẩm</div>,
+      title: "Màu Sắc",
+      dataIndex: "codeColor",
+      key: "codeColor",
+      width: "8px",
+      align: "center",
+      render: (color) => (
+        <span
+          style={{
+            backgroundColor: color,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            borderRadius: "6px",
+            width: "60px",
+            height: "25px",
+          }}
+        />
+      ),
+    },
+    {
+      title: "Số lượng",
+      key: "quantity",
+      align: "center",
+      dataIndex: "quantity",
+    },
+    {
+      title: "Tổng tiền",
       key: "totalPrice",
       align: "center",
       dataIndex: "totalPrice",
       render: (_, record) => (
-        <span style={{ fontWeight: "bold", color: "red", fontSize: "16px" }}>
-          {formatCurrency(totalMoneyProduct(record))}
-        </span>
+        <span>{formatCurrency(totalMoneyProduct(record))}</span>
       ),
     },
     {

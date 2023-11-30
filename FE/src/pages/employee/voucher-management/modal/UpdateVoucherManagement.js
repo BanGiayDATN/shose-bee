@@ -1,25 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "./../style-voucher.css";
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  Table,
-  Modal,
-  InputNumber,
-  Popconfirm,
-  DatePicker,
-} from "antd";
+import { Form, Input, Button, Modal, InputNumber, DatePicker } from "antd";
 import { VoucherApi } from "../../../../api/employee/voucher/Voucher.api";
 import { UpdateVoucher } from "../../../../app/reducer/Voucher.reducer";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAppDispatch, useAppSelector } from "../../../../app/hook";
+import { useAppDispatch } from "../../../../app/hook";
 dayjs.extend(utc);
-const { Option } = Select;
 function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -49,6 +38,14 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
     return convertedFormData;
   };
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
   const handleSubmit = () => {
     Modal.confirm({
       title: "Xác nhận cập nhập",
@@ -139,9 +136,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               className="input-create-voucher"
               placeholder="Tên khuyến mãi"
               value={formData["code"]}
-              onChange={(e) => {
-                inputChange("code", e.target.value);
-              }}
+              readOnly
             />
           </Form.Item>
           <Form.Item
@@ -173,6 +168,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
                 inputChange("value", value);
               }}
               min="1"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
           <Form.Item

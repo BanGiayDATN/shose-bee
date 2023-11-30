@@ -19,8 +19,7 @@ import java.util.Date;
 @Getter
 @Setter
 public abstract class BaseVoucherRequest {
-    @NotBlank(message = "Nhập mã khuyến mãi")
-    private String code;
+
     @NotBlank(message = "Nhập tên khuyến mãi")
     private String name;
     @NotNull(message = "Nhập giá trị khuyến mãi")
