@@ -610,6 +610,85 @@ function DetailBill() {
     form.resetFields();
   };
 
+  const [isModalOpenRollBackStatus, setIsModalOpenRollBackStatus] = useState(false);
+
+  const showModalRollBackStatus = () => {
+    setIsModalOpenRollBackStatus(true);
+  };
+
+  const handleOkRollBackStatus = () => {
+    if (statusBill.actionDescription == "") {
+      toast.error("Vui lòng nhập mô tả");
+    } else {
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý xác nhận quay lại không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          await BillApi.rollBackStatusBill(id, statusBill)
+            .then((res) => {
+              dispatch(getBill(res.data.data));
+              var index = listStatus.findIndex(
+                (item) => item.status == res.data.data.statusBill
+              );
+              if (res.data.data.statusBill == "TRA_HANG") {
+                index = 7;
+              }
+              if (res.data.data.statusBill == "DA_HUY") {
+                index = 8;
+              }
+              dispatch(addStatusPresent(index));
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+          await PaymentsMethodApi.findByIdBill(id).then((res) => {
+            dispatch(getPaymentsMethod(res.data.data));
+          });
+          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+            dispatch(getBillHistory(res.data.data));
+          });
+          toast.success("Xác nhận thành công");
+          setIsModalOpenRollBackStatus(false);
+        },
+        onCancel: () => {
+          setIsModalOpenRollBackStatus(false);
+        },
+      });
+      setStatusBill({
+        actionDescription: "",
+        method: "TIEN_MAT",
+        totalMoney: 0,
+        status: "THANH_TOAN",
+        statusCancel: false,
+      });
+      form.resetFields();
+
+      setIsModalOpenRollBackStatus(false);
+    }
+
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
+      statusCancel: false,
+    });
+  };
+
+  const handleCancelRollBackStatus = () => {
+    setIsModalOpenRollBackStatus(false);
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
+      statusCancel: false,
+    });
+    form.resetFields();
+  };
+
   const onChangeDescStatusBill = (fileName, value) => {
     if (fileName === "totalMoney") {
       setStatusBill({
@@ -894,7 +973,8 @@ function DetailBill() {
                     span={statusPresent < 6 ? 7 : 0}
                   >
                     {statusPresent < 6 ? (
-                      <Button
+                      <Row>
+                        <Button
                         type="primary"
                         className="btn btn-primary"
                         onClick={() => showModalChangeStatus()}
@@ -910,6 +990,19 @@ function DetailBill() {
                           ? "Thành công"
                           : listStatus[statusPresent + 1].name}
                       </Button>
+                      {statusPresent > 1 ? (<Button
+                      type="primary"
+                      className="btn btn-primary"
+                      onClick={() => showModalChangeStatus()}
+                      style={{
+                        fontSize: "medium",
+                        fontWeight: "500",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      Quay lại
+                    </Button>): (<div></div>)}
+                      </Row>
                     ) : (
                       <div></div>
                     )}
@@ -952,6 +1045,70 @@ function DetailBill() {
             </Row>
             <Modal
               title="Xác nhận Đơn hàng"
+              open={isModalOpenChangeStatus}
+              onOk={handleOkChangeStatus}
+              onCancel={handleCancelChangeStatus}
+              cancelText={"huỷ"}
+              okText={"Xác nhận"}
+            >
+              <Form
+                onFinish={onFinish}
+                ref={formRef}
+                form={form}
+                initialValues={initialValues}
+              >
+                <Row style={{ width: "100%" }}>
+                  <Col span={24} style={{ marginTop: "20px" }}>
+                    <label className="label-bill">Mô Tả</label>
+                    <Form.Item
+                      label=""
+                      name="actionDescription"
+                      // style={{ fontWeight: "bold" }}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập mô tả",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.trim() === "") {
+                              return Promise.reject(
+                                "Không được chỉ nhập khoảng trắng"
+                              );
+                            }
+                            if (
+                              !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                value
+                              )
+                            ) {
+                              return Promise.reject(
+                                "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                              );
+                            }
+
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                    >
+                      <TextArea
+                        rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
+                        placeholder="Nhập mô tả"
+                        style={{ width: "100%", position: "F" }}
+                        onChange={(e) =>
+                          onChangeDescStatusBill(
+                            "actionDescription",
+                            e.target.value.trim()
+                          )
+                        }
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Form>
+            </Modal>
+            <Modal
+              title="Quay lại trạng thái Đơn hàng"
               open={isModalOpenChangeStatus}
               onOk={handleOkChangeStatus}
               onCancel={handleCancelChangeStatus}

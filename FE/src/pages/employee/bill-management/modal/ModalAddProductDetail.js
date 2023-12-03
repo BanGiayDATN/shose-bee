@@ -23,10 +23,11 @@ import { CategoryApi } from "../../../../api/employee/category/category.api";
 import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
 import {
-  addProductBillWait,
+  addProductBillWait, addProductInBillDetail,
 } from "../../../../app/reducer/Bill.reducer";
 import { ProductApi } from "../../../../api/employee/product/product.api";
 import { useSelector } from "react-redux";
+import { BillApi } from "../../../../api/employee/bill/bill.api";
 
 function ModalAddProductDetail({
   handleCancelProduct,
@@ -341,18 +342,45 @@ function ModalAddProductDetail({
     var index = list.findIndex(
       (x) => x.idProduct === productSelected.idProduct
     );
-    if (index == -1) {
-      var data = { ...productSelected };
-      data.quantity = quantity;
-      list.push(data);
-    } else {
-      var data = { ...productSelected };
-      data.quantity = list[index].quantity + quantity;
-      if(data.maxQuantity < list[index].quantity + quantity ){
-        data.quantity = data.maxQuantity
+    if(typeAddProductBill === "CREATE_BILL"){
+      if (index == -1) {
+        var data = { ...productSelected };
+        data.quantity = quantity;
+        list.push(data);
+      } else {
+        var data = { ...productSelected };
+        data.quantity = list[index].quantity + quantity;
+        if(data.maxQuantity < list[index].quantity + quantity ){
+          data.quantity = data.maxQuantity
+        }
+        list.splice(index, 1, data);
       }
-      list.splice(index, 1, data);
+    }else{
+          var data = {
+            idBill: typeAddProductBill,
+            idProduct: productSelected.id,
+            size: productSelected.nameSize,
+            quantity: quantity,
+            price: productSelected.price,
+          };
+          BillApi.addProductInBill(data).then((res) => {
+            const price = productSelected.price;
+            if (productSelected.promotion != null) {
+              price = (productSelected.price * (100 - productSelected.promotion)) / 100;
+            }
+            var product = {
+              id: res.data.data,
+              image: productSelected.image,
+              productName: productSelected.nameProduct,
+              nameSize: productSelected.nameSize,
+              idProduct: productSelected.id,
+              quantity: quantity,
+              price: price,
+            };
+            dispatch(addProductInBillDetail(product));
+          });
     }
+    
     toast.success("Thêm thành công", {
       position: "top-right",
       autoClose: 5000,

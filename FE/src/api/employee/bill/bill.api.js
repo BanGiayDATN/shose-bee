@@ -93,6 +93,14 @@ export class BillApi {
     });
   };
 
+  static rollBackStatusBill = (id, data) => {
+    return request({
+      method: "PUT",
+      url: `/admin/bill/roll-back-bill/` + id,
+      params: data,
+    });
+  };
+
   static updateBill = (id, data) => {
     return request({
       method: "PUT",

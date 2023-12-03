@@ -603,6 +603,35 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public Bill rollBackBill(String id, String idEmployees, ChangStatusBillRequest request) {
+        Optional<Bill> bill = billRepository.findById(id);
+        Optional<Account> account = accountRepository.findById(idEmployees);
+        if (!bill.isPresent()) {
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        StatusBill statusBill[] = StatusBill.values();
+        int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
+        bill.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
+        if (nextIndex > 6) {
+            throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+        }
+
+        bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
+        bill.get().setEmployees(account.get());
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill.get());
+        billHistory.setStatusBill(bill.get().getStatusBill());
+        billHistory.setActionDescription(request.getActionDescription());
+        billHistory.setEmployees(account.get());
+        billHistoryRepository.save(billHistory);
+
+        return billRepository.save(bill.get());
+    }
+
+    @Override
     public int countPayMentPostpaidByIdBill(String id) {
         return paymentsMethodRepository.countPayMentPostpaidByIdBill(id);
     }
