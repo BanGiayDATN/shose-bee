@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Row, Table } from "antd";
+import { Button, Col, InputNumber, Row, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import "./tabBillDetail.css";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function TabBillDetail({ dataBillDetail }) {
   const getPromotionStyle = (promotion) => {
@@ -27,6 +29,55 @@ function TabBillDetail({ dataBillDetail }) {
       ? product.price * product.quantity
       : (product.price * (100 - product.promotion) * product.quantity) / 100;
   };
+  const [products, setProducts] = useState( useSelector(
+    (state) => state.bill.bill.billDetail
+  ));
+  const bill = useSelector((state) => state.bill.bill.value);
+  const handleQuantityChange = (value, record) => {
+    var max = record.quantity;
+    if (!Number.isInteger(value)) {
+    } else if (value > max) {
+    } else {
+      const data = {
+        idBill: bill.id,
+        idProduct: record.id,
+        quantity: value,
+        totalMoney: products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0),
+        price: record.price,
+        promotion: record.promotion
+      }
+      BillApi.updateProductInBill(bill.id, data)
+      .then((res) => {
+        toast.success("Sửa sản phẩm thành công");
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+    }
+  };
+
+  const handleQuantityDecrease = (record) => {
+    const data = {
+      idBill: bill.id,
+      idProduct: record.id,
+      quantity: record.quantity + 1,
+      totalMoney: products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0),
+      price: record.price,
+      promotion: record.promotion
+    }
+    BillApi.updateProductInBill(bill.id, data)
+    .then((res) => {
+      toast.success("Sửa sản phẩm thành công");
+    })
+    .catch((error) => {
+      toast.error(error.response.data.message);
+    });
+  };
+
 
   const columnProductBill = [
     {
@@ -141,6 +192,28 @@ function TabBillDetail({ dataBillDetail }) {
       key: "quantity",
       align: "center",
       dataIndex: "quantity",
+      render: (quantity, record) => {
+        true ? ( <Col
+          span={4}
+          align={"center"}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <Button
+            onClick={() => handleQuantityDecrease(record)}
+            style={{ margin: "0 0 0 4px" }}
+          >
+            -
+          </Button>
+          <InputNumber
+            min={1}
+            max={record.maxQuantity}
+            style={{ margin: "0 5px" }}
+            value={record.quantity}
+            onChange={(value) => {
+              handleQuantityChange(value, record);
+            }}
+          />
+        </Col>):(<span>{quantity}</span>)}
     },
     {
       title: "Tổng tiền",
@@ -176,6 +249,7 @@ function TabBillDetail({ dataBillDetail }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [billDetai, setBillDetail] = useState([]);
+  const statusPresent = useSelector((state) => state.bill.bill.status);
   return (
     <>
       {billDetai.length > 0 ? (
