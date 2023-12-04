@@ -989,45 +989,47 @@ function DetailBill() {
                     span={statusPresent < 6 ? 4 : 0}
                   >
                     {statusPresent < 6 ? (
-                          <Button
-                            type="primary"
-                            className="btn btn-primary"
-                            onClick={() => showModalChangeStatus()}
-                            style={{
-                              fontSize: "medium",
-                              fontWeight: "500",
-                              marginLeft: "20px",
-                            }}
-                          >
-                            {billHistory.some(
-                              (item) => item.statusBill === "DA_THANH_TOAN"
-                            ) && bill.statusBill === "VAN_CHUYEN"
-                              ? "Thành công"
-                              : listStatus[statusPresent + 1].name}
-                          </Button>
+                      <Button
+                        type="primary"
+                        className="btn btn-primary"
+                        onClick={() => showModalChangeStatus()}
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "500",
+                          marginLeft: "20px",
+                        }}
+                      >
+                        {billHistory.some(
+                          (item) => item.statusBill === "DA_THANH_TOAN"
+                        ) && bill.statusBill === "VAN_CHUYEN"
+                          ? "Thành công"
+                          : listStatus[statusPresent + 1].name}
+                      </Button>
                     ) : (
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent > 3 ? 4 : 0}> {statusPresent > 3 ? (
-                          <Button
-                            type="danger"
-                            className="btn btn-danger"
-                            onClick={() => showModalRollBackStatus()}
-                            style={{
-                              fontSize: "medium",
-                              fontWeight: "500",
-                              marginLeft: "20px",
-                              backgroundColor: "#f7ff00bd",
-                              color: "white",
-                            }}
-                          >
-                            Quay lại
-                          </Button>
-                        ) : (
-                          <div></div>
-                        )}
-                        </Col>
+                  <Col span={statusPresent > 3 ? 4 : 0}>
+                    {" "}
+                    {statusPresent > 3 ? (
+                      <Button
+                        type="danger"
+                        className="btn btn-danger"
+                        onClick={() => showModalRollBackStatus()}
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "500",
+                          marginLeft: "20px",
+                          backgroundColor: "#f7ff00bd",
+                          color: "white",
+                        }}
+                      >
+                        Quay lại
+                      </Button>
+                    ) : (
+                      <div></div>
+                    )}
+                  </Col>
                   <Col span={statusPresent < 5 ? 6 : 0}>
                     {statusPresent < 5 ? (
                       <Button
@@ -1510,37 +1512,48 @@ function DetailBill() {
         </div>
       </Row>
       <Card style={{ marginTop: "30px" }}>
-        <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>
-          {" "}
-          Thông tin sản phẩm đã mua{" "}
-        </h1>
-        {statusPresent < 3 ? (
-            <Row style={{ width: "100%" }} justify={"end"}>
-              <Button
-              type="primary"
-              style={{ margin: "10px 20px 0 0 " }}
-              onClick={(e) => showModalProduct(e)}
-            >
-              Thêm sản phẩm
-            </Button>
-            </Row>
-          ) : (
-            <Row></Row>
-          )}
+        <Row style={{ width: "100%" }}>
+          <Col span={20}>
+            <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>
+              {" "}
+              Thông tin sản phẩm đã mua{" "}
+            </h1>
+          </Col>
+          <Col span={4} align={"end"}>
+            {" "}
+            {statusPresent < 3 ? (
+              <Row style={{ width: "100%", marginRight:"15px" }} justify={"end"}>
+                <Button
+                  type="primary"
+                  style={{ margin: "10px 20px 0 0 " }}
+                  onClick={(e) => showModalProduct(e)}
+                >
+                  Thêm sản phẩm
+                </Button>
+              </Row>
+            ) : (
+              <Row></Row>
+            )}
+          </Col>
+        </Row>
         <Row>
           {console.log(statusPresent)}
-          {statusPresent < 3 ? (<Col span={24}>
-            <TabBillDetail
-              style={{ width: "100%" }}
-              dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
-            />
-          </Col>):(<Col span={24}>
-            <ManagerBillDetail
-              id={id}
-              status={bill.statusBill}
-            ></ManagerBillDetail>
-          </Col>)}
-          
+          {statusPresent < 3 ? (
+            <Col span={24}>
+              <TabBillDetail
+                style={{ width: "100%" }}
+                dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
+              />
+            </Col>
+          ) : (
+            <Col span={24}>
+              <ManagerBillDetail
+                id={id}
+                status={bill.statusBill}
+              ></ManagerBillDetail>
+            </Col>
+          )}
+
           <Col span={24}>
             <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
               <Col span={10}>
