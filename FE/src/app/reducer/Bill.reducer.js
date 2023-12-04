@@ -28,13 +28,17 @@ const billSlice = createSlice({
       billHistory: [],
       paymentsMethod: [],
       status: -1,
+      change: 0,
     },
   },
   reducers: {
     addProductBillWait: (state, action) => {
       console.log(state.billWaitProduct.value);
-      state.billWaitProduct.value.push(action.payload);
+      state.billWaitProduct.change = action.payload;
 
+    },
+    ChangeProductInBill: (state, action) => {
+      state.bill.change = action.payload
     },
     updateTotalBill: (state, action) => {
       console.log(state.billWaitProduct.value);
@@ -132,7 +136,8 @@ export const {
   getAllBillAtCounter,
   addProductInBillDetail,
   updateKeyBillAtCounter,
-  updateTotalBill
+  updateTotalBill,
+  ChangeProductInBill
 } = billSlice.actions;
 export default billSlice.reducer;
 export const GetBill = (state) => state.bill;

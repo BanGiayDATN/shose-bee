@@ -102,8 +102,8 @@ public class BillRestController {
         return  new ResponseObject(billService.CreateCodeBill(shoseSession.getEmployee().getId()));
     }
 
-    @GetMapping("/roll-back-bill/{id}")
-    public ResponseObject rollBackBill(@PathVariable("id") String id,@RequestBody ChangStatusBillRequest request) {
+    @PutMapping("/roll-back-bill/{id}")
+    public ResponseObject rollBackBill(@PathVariable("id") String id, ChangStatusBillRequest request) {
         return  new ResponseObject(billService.rollBackBill(id, shoseSession.getEmployee().getId(), request));
     }
 

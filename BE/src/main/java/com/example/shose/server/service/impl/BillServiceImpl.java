@@ -614,11 +614,17 @@ public class BillServiceImpl implements BillService {
         }
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() - 1) % statusBill.length;
-        bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+
+        boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
+                .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
         if (nextIndex < 3) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
-
+        if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
+            bill.get().setStatusBill(StatusBill.VAN_CHUYEN);
+        }else{
+            bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         bill.get().setEmployees(account.get());
         BillHistory billHistory = new BillHistory();

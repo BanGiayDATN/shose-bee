@@ -23,7 +23,11 @@ import { CategoryApi } from "../../../../api/employee/category/category.api";
 import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
 import {
-  addProductBillWait, addProductInBillDetail, getBill, updateTotalBill,
+  ChangeProductInBill,
+  addProductBillWait,
+  addProductInBillDetail,
+  getBill,
+  updateTotalBill,
 } from "../../../../app/reducer/Bill.reducer";
 import { ProductApi } from "../../../../api/employee/product/product.api";
 import { useSelector } from "react-redux";
@@ -48,7 +52,7 @@ function ModalAddProductDetail({
     price: "",
     idSizeProduct: "",
     maxQuantity: 1,
-    promotion: ""
+    promotion: "",
   });
 
   // format tiền
@@ -60,7 +64,6 @@ function ModalAddProductDetail({
     });
     return formatter.format(value);
   };
-
 
   const handleChange = (e) => {
     setSearch(e.target.value);
@@ -101,7 +104,6 @@ function ModalAddProductDetail({
   for (let size = 35; size <= 45; size++) {
     listSize.push(size);
   }
-
 
   const getList = () => {
     MaterialApi.fetchAll().then((res) => setListMaterial(res.data.data));
@@ -330,7 +332,7 @@ function ModalAddProductDetail({
       price: (record.price * (100 - record.promotion)) / 100,
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
-      promotion: record.promotion
+      promotion: record.promotion,
     };
     dispatch(addProductBillWait(data));
     setProductSelected(data);
@@ -342,7 +344,7 @@ function ModalAddProductDetail({
     var index = list.findIndex(
       (x) => x.idProduct === productSelected.idProduct
     );
-    if(typeAddProductBill === "CREATE_BILL"){
+    if (typeAddProductBill === "CREATE_BILL") {
       if (index == -1) {
         var data = { ...productSelected };
         data.quantity = quantity;
@@ -350,8 +352,8 @@ function ModalAddProductDetail({
       } else {
         var data = { ...productSelected };
         data.quantity = list[index].quantity + quantity;
-        if(data.maxQuantity < list[index].quantity + quantity ){
-          data.quantity = data.maxQuantity
+        if (data.maxQuantity < list[index].quantity + quantity) {
+          data.quantity = data.maxQuantity;
         }
         list.splice(index, 1, data);
       }
@@ -365,59 +367,74 @@ function ModalAddProductDetail({
         progress: undefined,
         theme: "light",
       });
-    }else{
+    } else {
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có đồng ý thêm sản phẩm  không?",
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          var updatedProducts = products;
-          updatedProducts.push(productSelected)
-          var totalBill = updatedProducts.reduce((accumulator, currentValue) => {
-            return accumulator + (currentValue.promotion === null
-              ? formatCurrency(currentValue.price)
-              : formatCurrency((currentValue.price * (100 - currentValue.promotion)) / 100)) * currentValue.quantity;
-          }, 0);
-          console.log(updatedProducts);
           var data = {
             idBill: typeAddProductBill,
             idProduct: productSelected.idProduct,
             quantity: quantity,
             price: productSelected.price,
-            totalMoney: totalBill,
-            promotion: productSelected.promotion
+            totalMoney: 0,
+            promotion: productSelected.promotion,
           };
-          await BillApi.addProductInBill(data).then((res) => {
-            var price = productSelected.price;
-            if (productSelected.promotion != null) {
-              price = (productSelected.price * (100 - productSelected.promotion)) / 100;
-            }
-            var product = {
-              id: res.data.data,
-              image: productSelected.image,
-              productName: productSelected.nameProduct,
-              nameSize: productSelected.nameSize,
-              idProduct: productSelected.id,
-              quantity: quantity,
-              price: price,
-              promotion: productSelected.promotion,
-              codeColor:  productSelected.codeColor
-            };
-            dispatch(addProductInBillDetail(product));
-            dispatch(updateTotalBill(totalBill));
+          var check = undefined
+          var data = []
+         await BillApi.fetchAllProductsInBillByIdBill({ idBill: bill.id, status: "THANH_CONG" }).then((res) => {
+          check = res.data.data.find(product => product.idProduct === productSelected.idProduct && product.price === productSelected.price);
+          data = res.data.data
           });
+          if(check === undefined){
+            await BillApi.addProductInBill(data).then((res) => {
+              var price = productSelected.price;
+              if (productSelected.promotion != null) {
+                price =
+                  (productSelected.price * (100 - productSelected.promotion)) /
+                  100;
+              }
+              toast.success("Thêm sản phẩm thành công");
+              var product = {
+                id: res.data.data,
+                image: productSelected.image,
+                productName: productSelected.nameProduct,
+                nameSize: productSelected.nameSize,
+                idProduct: productSelected.id,
+                quantity: quantity,
+                price: price,
+                promotion: productSelected.promotion,
+                codeColor: productSelected.codeColor,
+              };
+              dispatch(addProductInBillDetail(product));
+            });
+          }else{
+            data.quantity += check.quantity
+            await BillApi.updateProductInBill(check.id, data).then((res) => {
+              toast.success("Thêm sản phẩm thành công");
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+          }
           await BillApi.fetchDetailBill(bill.id).then((res) => {
             console.log(res.data.data);
             dispatch(getBill(res.data.data));
+            let sum = 0;
+            data.forEach((product) => {
+              sum += product.quantity || 0;
+            });
+            dispatch(ChangeProductInBill(sum + quantity));
+          }).catch((error) => {
+            toast.error(error.response.data.message);
           });
+         
         },
-        onCancel: () => {
-        },
+        onCancel: () => {},
       });
-          
     }
-    
 
     setProducts(list);
     setQuantity(1);

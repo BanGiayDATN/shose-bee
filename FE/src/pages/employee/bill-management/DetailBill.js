@@ -35,6 +35,7 @@ import ManagerBillDetail from "./tabBillDetail/ManagerBillDetail";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { useReactToPrint } from "react-to-print";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import TabBillDetail from "./tabBillDetail/TabBillDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -651,7 +652,7 @@ function DetailBill() {
           await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
             dispatch(getBillHistory(res.data.data));
           });
-          toast.success("Xác nhận thành công");
+          toast.success("Chuyển lại trạng thái thành công");
           setIsModalOpenRollBackStatus(false);
         },
         onCancel: () => {
@@ -903,12 +904,12 @@ function DetailBill() {
       console.log(res.data.data);
     });
   };
-
+  const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
   useEffect(() => {
     if (id !== null) {
       loadDataProductDetailToBillDetail();
     }
-  }, [id]);
+  }, [id, changeQuanTiTy]);
 
   // total product detail give back
   const totalMoneyProduct = (product) => {
@@ -985,12 +986,9 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    span={statusPresent < 6 ? 7 : 0}
+                    span={statusPresent < 6 ? 4 : 0}
                   >
                     {statusPresent < 6 ? (
-                      <Row>
-                        <Col span={12}>
-                          {" "}
                           <Button
                             type="primary"
                             className="btn btn-primary"
@@ -1007,8 +1005,11 @@ function DetailBill() {
                               ? "Thành công"
                               : listStatus[statusPresent + 1].name}
                           </Button>
-                        </Col>
-                        <Col span={12}> {statusPresent > 1 ? (
+                    ) : (
+                      <div></div>
+                    )}
+                  </Col>
+                  <Col span={statusPresent > 3 ? 4 : 0}> {statusPresent > 3 ? (
                           <Button
                             type="danger"
                             className="btn btn-danger"
@@ -1017,6 +1018,8 @@ function DetailBill() {
                               fontSize: "medium",
                               fontWeight: "500",
                               marginLeft: "20px",
+                              backgroundColor: "#f7ff00bd",
+                              color: "white",
                             }}
                           >
                             Quay lại
@@ -1025,11 +1028,6 @@ function DetailBill() {
                           <div></div>
                         )}
                         </Col>
-                      </Row>
-                    ) : (
-                      <div></div>
-                    )}
-                  </Col>
                   <Col span={statusPresent < 5 ? 6 : 0}>
                     {statusPresent < 5 ? (
                       <Button
@@ -1530,12 +1528,19 @@ function DetailBill() {
             <Row></Row>
           )}
         <Row>
-          <Col span={24}>
+          {console.log(statusPresent)}
+          {statusPresent < 3 ? (<Col span={24}>
+            <TabBillDetail
+              style={{ width: "100%" }}
+              dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
+            />
+          </Col>):(<Col span={24}>
             <ManagerBillDetail
               id={id}
               status={bill.statusBill}
             ></ManagerBillDetail>
-          </Col>
+          </Col>)}
+          
           <Col span={24}>
             <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
               <Col span={10}>

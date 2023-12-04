@@ -2,8 +2,6 @@ import { Button, Col, Modal, Row, Tabs } from "antd";
 import React, { useState } from "react";
 import TabBillDetail from "./TabBillDetail";
 import "./tabBillDetail.css";
-import ModalAddProductDetail from "../modal/ModalAddProductDetail";
-import { useSelector } from "react-redux";
 
 function ManagerBillDetail({ id, status }) {
   const listtab = [null, "THANH_CONG", "TRA_HANG"];
