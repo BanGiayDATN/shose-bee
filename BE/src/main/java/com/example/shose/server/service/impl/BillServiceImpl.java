@@ -24,8 +24,8 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
+import com.example.shose.server.entity.HistoryPoin;
 import com.example.shose.server.entity.Notification;
-import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
@@ -35,6 +35,7 @@ import com.example.shose.server.entity.CartDetail;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.ProductDetailGiveBack;
+import com.example.shose.server.entity.ScoringFormula;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
@@ -49,23 +50,22 @@ import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
 import com.example.shose.server.infrastructure.session.ShoseSession;
-import com.example.shose.server.infrastructure.poin.ConfigPoin;
-import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
+import com.example.shose.server.repository.HistoryPoinRepository;
 import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
+import com.example.shose.server.repository.ScoringFormulaRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.repository.VoucherDetailRepository;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
-import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -86,7 +86,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -99,9 +98,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class BillServiceImpl implements BillService {
-
-    @Autowired
-    private ConfigPoin configPoin;
 
     @Autowired
     private BillRepository billRepository;
@@ -149,10 +145,17 @@ public class BillServiceImpl implements BillService {
     private ShoseSession shoseSession;
 
     @Autowired
+    private ScoringFormulaRepository scoringFormulaRepository;
+
+    @Autowired
     private ProductDetailGiveBackRepository productDetailGiveBackRepository;
 
     @Value("${domain.client}")
     private String domainClient;
+
+
+    @Autowired
+    private HistoryPoinRepository historyPoinRepository;
 
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
@@ -197,7 +200,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id,
-            FindNewBillCreateAtCounterRequest request) {
+                                                                            FindNewBillCreateAtCounterRequest request) {
         return billRepository.findAllBillAtCounterAndStatusNewBill(id, request);
     }
 
@@ -245,22 +248,28 @@ public class BillServiceImpl implements BillService {
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
-                if (account.isPresent()) {
-                    optional.get().setAccount(account.get());
-                    User user = account.get().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    if (request.getPoin() > 0) {
-                        int Pointotal = user.getPoints() - request.getPoin()
-                                + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
-                        user.setPoints(Pointotal);
-                    } else {
-                        user.setPoints(
-                                user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                if (request.getPoin() > 0 && !scoringFormulas.isEmpty()) {
+                    ScoringFormula scoringFormula = scoringFormulas.get(0);
+                    if (account.isPresent()) {
+                        optional.get().setAccount(account.get());
+                        User user = account.get().getUser();
+                        if (request.getPoin() > 0) {
+
+                            int Pointotal = user.getPoints() - request.getPoin()
+                                    + scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                            user.setPoints(Pointotal);
+                            optional.get().setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
+                        } else {
+                            user.setPoints(
+                                    user.getPoints() + scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                        }
+                        historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).scoringFormula(scoringFormula).build());
+                        userReposiory.save(user);
                     }
-                    userReposiory.save(user);
                 }
             }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
@@ -271,15 +280,17 @@ public class BillServiceImpl implements BillService {
         } else {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
-                if (account.isPresent()) {
+                if (account.isPresent() && !scoringFormulas.isEmpty()) {
+                    ScoringFormula scoringFormula = scoringFormulas.get(0);
                     optional.get().setAccount(account.get());
                     User user = account.get().getUser();
-                    Poin poin = configPoin.readJsonFile();
                     if (request.getPoin() > 0) {
                         int Pointotal = user.getPoints() - request.getPoin();
                         user.setPoints(Pointotal);
+                        optional.get().setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
                     }
                     userReposiory.save(user);
+                    historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
             optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
@@ -556,6 +567,7 @@ public class BillServiceImpl implements BillService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
         boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
                 .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
         StatusBill statusBill[] = StatusBill.values();
@@ -573,21 +585,23 @@ public class BillServiceImpl implements BillService {
             if (checkDaThanhToan) {
                 bill.get().setStatusBill(StatusBill.THANH_CONG);
                 bill.get().setCompletionDate(getCurrentTimestampInVietnam());
-                if (bill.get().getAccount() != null) {
+                if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                     User user = bill.get().getAccount().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    ScoringFormula scoringFormula = scoringFormulas.get(0);
+                    user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                     userReposiory.save(user);
+                    historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
             bill.get().setCompletionDate(getCurrentTimestampInVietnam());
-            if (bill.get().getAccount() != null) {
+            if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                 User user = bill.get().getAccount().getUser();
-                Poin poin = configPoin.readJsonFile();
-                user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                ScoringFormula scoringFormula = scoringFormulas.get(0);
+                user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                 userReposiory.save(user);
+                historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
             }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -622,7 +636,7 @@ public class BillServiceImpl implements BillService {
         }
         if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setStatusBill(StatusBill.VAN_CHUYEN);
-        }else{
+        } else {
             bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -633,7 +647,7 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
-        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn",request.getActionDescription(),id ), Executors.newCachedThreadPool());
+        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
         return billRepository.save(bill.get());
     }
 
@@ -653,6 +667,7 @@ public class BillServiceImpl implements BillService {
             if (!account.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
+            List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
             boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
                     .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
@@ -665,21 +680,23 @@ public class BillServiceImpl implements BillService {
                 if (checkDaThanhToan) {
                     bill.get().setStatusBill(StatusBill.THANH_CONG);
                     bill.get().setCompletionDate(getCurrentTimestampInVietnam());
-                    if (bill.get().getAccount() != null) {
+                    if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                         User user = bill.get().getAccount().getUser();
-                        Poin poin = configPoin.readJsonFile();
-                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                        ScoringFormula scoringFormula = scoringFormulas.get(0);
+                        user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                         userReposiory.save(user);
+                        historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                     }
                 }
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
                 bill.get().setCompletionDate(getCurrentTimestampInVietnam());
-                if (bill.get().getAccount() != null) {
+                if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                     User user = bill.get().getAccount().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    ScoringFormula scoringFormula = scoringFormulas.get(0);
+                    user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                     userReposiory.save(user);
+                    historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -737,6 +754,7 @@ public class BillServiceImpl implements BillService {
                 User user = checkAccount.getUser();
                 user.setPoints(user.getPoints() + bill.get().getPoinUse());
                 userReposiory.save(user);
+                historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
             }
         }
 
@@ -881,11 +899,7 @@ public class BillServiceImpl implements BillService {
         }
 
         Account account = accountRepository.findById(request.getIdAccount()).get();
-        if (request.getPoin() > 0) {
-            User user = account.getUser();
-            user.setPoints(user.getPoints() - request.getPoin());
-            userReposiory.save(user);
-        }
+
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
         Bill bill = Bill.builder()
                 .code(codeBill)
@@ -903,6 +917,15 @@ public class BillServiceImpl implements BillService {
                 .account(account).build();
         if (!request.getPaymentMethod().equals("paymentReceive")) {
             bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
+        }
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
+        if (request.getPoin() > 0 && !scoringFormulas.isEmpty()) {
+            ScoringFormula scoringFormula = scoringFormulas.get(0);
+            User user = account.getUser();
+            user.setPoints(user.getPoints() - request.getPoin());
+            userReposiory.save(user);
+            bill.setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
+            historyPoinRepository.save(HistoryPoin.builder().bill(bill).user(user).scoringFormula(scoringFormula).build());
         }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
@@ -1044,7 +1067,7 @@ public class BillServiceImpl implements BillService {
         if (bill.getStatusBill() != StatusBill.THANH_CONG && !email.isEmpty()) {
             invoice.setCheckShip(true);
             CompletableFuture.runAsync(() -> sendMail(invoice,
-                    domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()),
+                            domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()),
                     Executors.newCachedThreadPool());
         }
         return true;
@@ -1124,7 +1147,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack,
-            List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
+                                   List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
         Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
         Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
         if (bill == null) {
@@ -1136,9 +1159,9 @@ public class BillServiceImpl implements BillService {
         String idAccount = updateBillGiveBack.getIdAccount();
         BigDecimal totalBillGive = updateBillGiveBack.getTotalBillGiveBack();
         int checkTotal = totalBill.compareTo(totalBillGive);
-
-        Poin poin = configPoin.readJsonFile();
-        int pointGiveBack = poin.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
+        ScoringFormula scoringFormula = scoringFormulas.get(0);
+        int pointGiveBack = scoringFormula.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
         if (idAccount != null) {
             User customer = accountRepository.findById(idAccount).get().getUser();
             if (checkTotal == 0) {
@@ -1146,6 +1169,7 @@ public class BillServiceImpl implements BillService {
             } else {
                 customer.setPoints(customer.getPoints() - pointGiveBack);
             }
+            historyPoinRepository.save(HistoryPoin.builder().bill(bill).user(customer).scoringFormula(scoringFormula).build());
             userReposiory.save(customer);
         }
 
@@ -1206,7 +1230,7 @@ public class BillServiceImpl implements BillService {
         return bill;
     }
 
-    private  Long getCurrentTimestampInVietnam() {
+    private Long getCurrentTimestampInVietnam() {
         Instant instant = Instant.now();
         ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
         return instant.atZone(zoneId).toEpochSecond() * 1000;
