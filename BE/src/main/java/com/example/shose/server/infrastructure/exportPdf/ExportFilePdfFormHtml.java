@@ -131,7 +131,6 @@ public class ExportFilePdfFormHtml {
         NumberFormat formatter = formatCurrency();
 
         BigDecimal totalMoney = bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
-
         InvoiceResponse invoice = InvoiceResponse.builder()
                 .phoneNumber(bill.getPhoneNumber())
                 .address(bill.getAddress())
@@ -151,11 +150,17 @@ public class ExportFilePdfFormHtml {
                 .sum());
         List<InvoiceItemResponse> items = billDetailResponses.stream()
                 .map(billDetailRequest -> {
-                    BigDecimal sum = billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()));
+                    BigDecimal sum = billDetailRequest.getPromotion() == null ?
+                            billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                            : new BigDecimal(billDetailRequest.getQuantity())
+                            .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                    .multiply(billDetailRequest.getPrice()).divide(new BigDecimal(100)));
                     InvoiceItemResponse invoiceItemResponse = InvoiceItemResponse.builder()
                             .sum(formatter.format(sum))
                             .name(billDetailRequest.getProductName())
-                            .priceVn(formatter.format(billDetailRequest.getPrice()))
+                            .priceVn(formatter.format(billDetailRequest.getPromotion() == null ?
+                                    billDetailRequest.getPrice()
+                                    : billDetailRequest.getPrice().multiply(BigDecimal.valueOf(100 - billDetailRequest.getPromotion())).divide(BigDecimal.valueOf(100))))
                             .quantity(billDetailRequest.getQuantity())
                             .promotion(billDetailRequest.getPromotion())
                             .build();

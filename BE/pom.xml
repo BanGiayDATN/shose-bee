@@ -176,6 +176,20 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Apache POI -->
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-poi</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <!-- JExcel -->
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-jexcel</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+
 
     </dependencies>
 
