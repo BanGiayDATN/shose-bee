@@ -155,10 +155,10 @@ export class BillApi {
     });
   };
 
-  static removeProductInBill = (id, size) => {
+  static removeProductInBill = (id, idProduct) => {
     return request({
       method: "DELETE",
-      url: `/admin/bill-detail/remove/${id}/${size}`,
+      url: `/admin/bill-detail/remove/${id}/${idProduct}`,
     });
   };
 

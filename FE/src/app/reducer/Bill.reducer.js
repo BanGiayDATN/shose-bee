@@ -36,6 +36,11 @@ const billSlice = createSlice({
       state.billWaitProduct.value.push(action.payload);
 
     },
+    updateTotalBill: (state, action) => {
+      console.log(state.billWaitProduct.value);
+      state.bill.value = Object.assign({},state.bill.value, {totalMoney: action.payload});
+
+    },
     addUserBillWait: (state, action) => {
       state.billWaitProduct.user = (action.payload);
     },
@@ -126,7 +131,8 @@ export const {
   addVoucherBillWait,
   getAllBillAtCounter,
   addProductInBillDetail,
-  updateKeyBillAtCounter
+  updateKeyBillAtCounter,
+  updateTotalBill
 } = billSlice.actions;
 export default billSlice.reducer;
 export const GetBill = (state) => state.bill;

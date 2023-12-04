@@ -34,6 +34,7 @@ import { PoinApi } from "../../../api/employee/poin/poin.api";
 import ManagerBillDetail from "./tabBillDetail/ManagerBillDetail";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { useReactToPrint } from "react-to-print";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -544,10 +545,10 @@ function DetailBill() {
               if (res.data.data.statusBill == "DA_HUY") {
                 index = 8;
               }
-              if (res.data.data.statusBill == "CHO_VAN_CHUYEN") {
+              if (res.data.data.statusBill == "XAC_NHAN") {
                 var data = {
                   ids: [id],
-                  status: "CHO_VAN_CHUYEN",
+                  status: "XAC_NHAN",
                 };
                 BillApi.fetchAllFilePdfByIdBill(data)
                   .then((response) => {
@@ -610,7 +611,8 @@ function DetailBill() {
     form.resetFields();
   };
 
-  const [isModalOpenRollBackStatus, setIsModalOpenRollBackStatus] = useState(false);
+  const [isModalOpenRollBackStatus, setIsModalOpenRollBackStatus] =
+    useState(false);
 
   const showModalRollBackStatus = () => {
     setIsModalOpenRollBackStatus(true);
@@ -937,6 +939,19 @@ function DetailBill() {
     return total;
   };
 
+  const [isModalProductOpen, setIsModalProductOpen] = useState(false);
+
+  const showModalProduct = (e) => {
+    setIsModalProductOpen(true);
+  };
+  const handleOkProduct = () => {
+    setIsModalProductOpen(false);
+  };
+  const handleCancelProduct = () => {
+    setIsModalProductOpen(false);
+  };
+  const typeAddProductBill = id;
+
   return (
     <div>
       <Row style={{ width: "100%" }}>
@@ -974,34 +989,42 @@ function DetailBill() {
                   >
                     {statusPresent < 6 ? (
                       <Row>
-                        <Button
-                        type="primary"
-                        className="btn btn-primary"
-                        onClick={() => showModalChangeStatus()}
-                        style={{
-                          fontSize: "medium",
-                          fontWeight: "500",
-                          marginLeft: "20px",
-                        }}
-                      >
-                        {billHistory.some(
-                          (item) => item.statusBill === "DA_THANH_TOAN"
-                        ) && bill.statusBill === "VAN_CHUYEN"
-                          ? "Thành công"
-                          : listStatus[statusPresent + 1].name}
-                      </Button>
-                      {statusPresent > 1 ? (<Button
-                      type="primary"
-                      className="btn btn-primary"
-                      onClick={() => showModalChangeStatus()}
-                      style={{
-                        fontSize: "medium",
-                        fontWeight: "500",
-                        marginLeft: "20px",
-                      }}
-                    >
-                      Quay lại
-                    </Button>): (<div></div>)}
+                        <Col span={12}>
+                          {" "}
+                          <Button
+                            type="primary"
+                            className="btn btn-primary"
+                            onClick={() => showModalChangeStatus()}
+                            style={{
+                              fontSize: "medium",
+                              fontWeight: "500",
+                              marginLeft: "20px",
+                            }}
+                          >
+                            {billHistory.some(
+                              (item) => item.statusBill === "DA_THANH_TOAN"
+                            ) && bill.statusBill === "VAN_CHUYEN"
+                              ? "Thành công"
+                              : listStatus[statusPresent + 1].name}
+                          </Button>
+                        </Col>
+                        <Col span={12}> {statusPresent > 1 ? (
+                          <Button
+                            type="danger"
+                            className="btn btn-danger"
+                            onClick={() => showModalRollBackStatus()}
+                            style={{
+                              fontSize: "medium",
+                              fontWeight: "500",
+                              marginLeft: "20px",
+                            }}
+                          >
+                            Quay lại
+                          </Button>
+                        ) : (
+                          <div></div>
+                        )}
+                        </Col>
                       </Row>
                     ) : (
                       <div></div>
@@ -1109,9 +1132,9 @@ function DetailBill() {
             </Modal>
             <Modal
               title="Quay lại trạng thái Đơn hàng"
-              open={isModalOpenChangeStatus}
-              onOk={handleOkChangeStatus}
-              onCancel={handleCancelChangeStatus}
+              open={isModalOpenRollBackStatus}
+              onOk={handleOkRollBackStatus}
+              onCancel={handleCancelRollBackStatus}
               cancelText={"huỷ"}
               okText={"Xác nhận"}
             >
@@ -1493,6 +1516,19 @@ function DetailBill() {
           {" "}
           Thông tin sản phẩm đã mua{" "}
         </h1>
+        {statusPresent < 3 ? (
+            <Row style={{ width: "100%" }} justify={"end"}>
+              <Button
+              type="primary"
+              style={{ margin: "10px 20px 0 0 " }}
+              onClick={(e) => showModalProduct(e)}
+            >
+              Thêm sản phẩm
+            </Button>
+            </Row>
+          ) : (
+            <Row></Row>
+          )}
         <Row>
           <Col span={24}>
             <ManagerBillDetail
@@ -2079,6 +2115,23 @@ function DetailBill() {
         theme="light"
       />
       {/* Same as */}
+      <Modal
+        title="Basic Modal"
+        open={isModalProductOpen}
+        onOk={handleOkProduct}
+        onCancel={handleCancelProduct}
+        width={1600}
+      >
+        <ModalAddProductDetail
+          handleCancelProduct={handleCancelProduct}
+          products={products}
+          setProducts={setProducts}
+          typeAddProductBill={typeAddProductBill}
+          closeIcon={null}
+          width={1600}
+          footer={null}
+        />
+      </Modal>
       <ToastContainer />
       <div style={{ display: "none" }}>
         <div id="pdfContent" />

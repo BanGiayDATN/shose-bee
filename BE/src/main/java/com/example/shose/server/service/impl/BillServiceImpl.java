@@ -613,9 +613,9 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         StatusBill statusBill[] = StatusBill.values();
-        int nextIndex = (bill.get().getStatusBill().ordinal() + 1) % statusBill.length;
-        bill.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
-        if (nextIndex > 6) {
+        int nextIndex = (bill.get().getStatusBill().ordinal() - 1) % statusBill.length;
+        bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        if (nextIndex < 3) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
 

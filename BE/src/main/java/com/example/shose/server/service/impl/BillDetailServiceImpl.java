@@ -125,7 +125,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         bill.get().setTotalMoney(bill.get().getTotalMoney().add(new BigDecimal(request.getPrice()).multiply(BigDecimal.valueOf(request.getQuantity()))));
         billRepository.save(bill.get());
         BillDetail billDetail = new BillDetail();
-        billDetail.setStatusBill(StatusBill.TAO_HOA_DON);
+        billDetail.setStatusBill(StatusBill.THANH_CONG);
         billDetail.setQuantity(request.getQuantity());
         billDetail.setPrice(new BigDecimal(request.getPrice()));
         billDetail.setProductDetail(productDetail.get());
@@ -155,9 +155,9 @@ public class BillDetailServiceImpl implements BillDetailService {
 
         bill.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         billRepository.save(bill.get());
-//        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
+        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
         billDetail.get().setQuantity(request.getQuantity());
-        billDetail.get().setStatusBill(StatusBill.TAO_HOA_DON);
+        billDetail.get().setStatusBill(StatusBill.THANH_CONG);
         billDetailRepository.save(billDetail.get());
         return billDetail.get().getId();
     }

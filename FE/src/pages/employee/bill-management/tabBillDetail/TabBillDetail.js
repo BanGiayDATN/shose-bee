@@ -1,12 +1,14 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Col, InputNumber, Row, Table } from "antd";
+import { Button, Col, InputNumber, Modal, Row, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import "./tabBillDetail.css";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { dispatch } from "../../../../app/store";
+import { getBill, updateTotalBill } from "../../../../app/reducer/Bill.reducer";
 
 function TabBillDetail({ dataBillDetail }) {
   const getPromotionStyle = (promotion) => {
@@ -29,53 +31,66 @@ function TabBillDetail({ dataBillDetail }) {
       ? product.price * product.quantity
       : (product.price * (100 - product.promotion) * product.quantity) / 100;
   };
-  const [products, setProducts] = useState( useSelector(
-    (state) => state.bill.bill.billDetail
-  ));
   const bill = useSelector((state) => state.bill.bill.value);
   const handleQuantityChange = (value, record) => {
     var max = record.quantity;
+    if (record.promotion == null) {
+      max = record.maxQuantity;
+    }
     if (!Number.isInteger(value)) {
     } else if (value > max) {
     } else {
+      const updatedProducts = billDetai.map((product) =>
+        product.id === record.idProduct ? record : product
+      );
+      console.log(updatedProducts);
       const data = {
         idBill: bill.id,
-        idProduct: record.id,
+        idProduct: record.idProduct,
         quantity: value,
-        totalMoney: products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
+        totalMoney: updatedProducts.reduce((accumulator, currentValue) => {
+          return (
+            accumulator +
+            (currentValue.promotion === null
+              ? formatCurrency(currentValue.price)
+              : formatCurrency(
+                  (currentValue.price * (100 - currentValue.promotion)) / 100
+                )) *
+              currentValue.quantity
+          );
         }, 0),
         price: record.price,
-        promotion: record.promotion
-      }
-      BillApi.updateProductInBill(bill.id, data)
-      .then((res) => {
-        toast.success("Sửa sản phẩm thành công");
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
+        promotion: record.promotion,
+      };
+      console.log(data)
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý sửa thành "+data.quantity+" không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+         await BillApi.updateProductInBill(record.id, data)
+          .then((res) => {
+            toast.success("Sửa sản phẩm thành công");
+            dispatch(updateTotalBill(data.totalMoney));
+           
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+          });
+          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
+            setBillDetail(res.data.data);
+          });
+          await BillApi.fetchDetailBill(bill.id).then((res) => {
+            console.log(res.data.data);
+            dispatch(getBill(res.data.data));
+          });
+        },
+        onCancel: () => {
+        },
       });
+      
     }
-  };
-
-  const handleQuantityDecrease = (record) => {
-    const data = {
-      idBill: bill.id,
-      idProduct: record.id,
-      quantity: record.quantity + 1,
-      totalMoney: products.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue.price * currentValue.quantity;
-      }, 0),
-      price: record.price,
-      promotion: record.promotion
-    }
-    BillApi.updateProductInBill(bill.id, data)
-    .then((res) => {
-      toast.success("Sửa sản phẩm thành công");
-    })
-    .catch((error) => {
-      toast.error(error.response.data.message);
-    });
   };
 
 
@@ -193,27 +208,30 @@ function TabBillDetail({ dataBillDetail }) {
       align: "center",
       dataIndex: "quantity",
       render: (quantity, record) => {
-        true ? ( <Col
-          span={4}
-          align={"center"}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <Button
-            onClick={() => handleQuantityDecrease(record)}
-            style={{ margin: "0 0 0 4px" }}
-          >
-            -
-          </Button>
-          <InputNumber
-            min={1}
-            max={record.maxQuantity}
-            style={{ margin: "0 5px" }}
-            value={record.quantity}
-            onChange={(value) => {
-              handleQuantityChange(value, record);
-            }}
-          />
-        </Col>):(<span>{quantity}</span>)}
+        return statusPresent < 3 ? (
+          <Col span={4} align={"center"} style={{ alignItems: "center" }}>
+            <Row>
+              <Col span={24}>
+                <InputNumber
+                  min={1}
+                  max={
+                    record.promotion == null
+                      ? record.maxQuantity
+                      : record.quantity
+                  }
+                  style={{ margin: "0 5px" }}
+                  value={record.quantity}
+                  onChange={(value) => {
+                    handleQuantityChange(value, record);
+                  }}
+                />
+              </Col>
+            </Row>
+          </Col>
+        ) : (
+          <span>{quantity}</span>
+        );
+      },
     },
     {
       title: "Tổng tiền",
@@ -239,12 +257,71 @@ function TabBillDetail({ dataBillDetail }) {
         );
       },
     },
+    {
+      title: <div className="title-product">Xóa</div>,
+      key: "delete",
+      align: "center",
+      render: (_, record) => {
+        if (statusPresent < 3) {
+          return (
+            <Button type="danger" onClick={() => handleDelete(record)}>
+              Xóa
+            </Button>
+          );
+        }
+        return null;
+      },
+    },
   ];
-
+  const handleDelete = (record) => {
+    console.log(record);
+    Modal.confirm({
+      title: "Xác nhận",
+      content: "Bạn có đồng ý xóa sản phẩm không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async () => {
+        const updatedProducts = billDetai.filter(
+          (product) => product.id !== record.idProduct
+        );
+        await BillApi.removeProductInBill(record.id, record.idProduct)
+          .then((res) => {
+            toast.success("Xóa sản phẩm thành công");
+            dispatch(
+              updateTotalBill(
+                updatedProducts.reduce((accumulator, currentValue) => {
+                  return (
+                    accumulator +
+                    (currentValue.promotion === null
+                      ? formatCurrency(currentValue.price)
+                      : formatCurrency(
+                          (currentValue.price *
+                            (100 - currentValue.promotion)) /
+                            100
+                        )) *
+                      currentValue.quantity
+                  );
+                }, 0)
+              )
+            );
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+          });
+          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
+            setBillDetail(res.data.data);
+          });
+          await BillApi.fetchDetailBill(bill.id).then((res) => {
+            console.log(res.data.data);
+            dispatch(getBill(res.data.data));
+          });
+      },
+    });
+  };
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
       setBillDetail(res.data.data);
-      console.log(res.data.data);
+
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
