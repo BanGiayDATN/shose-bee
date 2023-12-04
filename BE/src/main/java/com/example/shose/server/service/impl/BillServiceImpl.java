@@ -633,7 +633,7 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
-
+        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn",request.getActionDescription(),id ), Executors.newCachedThreadPool());
         return billRepository.save(bill.get());
     }
 
