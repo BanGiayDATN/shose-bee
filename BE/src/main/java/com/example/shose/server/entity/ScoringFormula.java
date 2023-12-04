@@ -2,11 +2,7 @@ package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
 import com.example.shose.server.infrastructure.constant.Status;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,11 +23,21 @@ import java.math.BigDecimal;
 public class ScoringFormula extends PrimaryEntity {
 
     @Column(name = "exchange_rate_poin")
-    private Integer exchangeRatePoin;
+    private BigDecimal exchangeRatePoin;
 
     @Column(name = "exchange_rate_money")
     private BigDecimal exchangeRateMoney;
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Transient
+    public int ConvertMoneyToPoints(BigDecimal totalMoney){
+        return totalMoney.divide(exchangeRatePoin, 0, BigDecimal.ROUND_DOWN).intValue();
+
+    }
+    @Transient
+    public BigDecimal  ConvertPoinToMoney(int poin){
+        return BigDecimal.valueOf(poin).multiply(exchangeRateMoney);
+    }
 }

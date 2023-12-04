@@ -1020,7 +1020,7 @@ function DetailBill() {
                           fontSize: "medium",
                           fontWeight: "500",
                           marginLeft: "20px",
-                          backgroundColor: "#f7ff00bd",
+                          backgroundColor: "red",
                           color: "white",
                         }}
                       >
@@ -1173,6 +1173,15 @@ function DetailBill() {
                               );
                             }
 
+                            return Promise.resolve();
+                          },
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.length < 50) {
+                              return Promise.reject("Ít nhất 50 ký tự");
+                            }
+                    
                             return Promise.resolve();
                           },
                         },
