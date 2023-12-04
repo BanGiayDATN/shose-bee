@@ -320,7 +320,7 @@ function ModalAddProductDetail({
   ];
 
   // begin xử lý modal
-  //   modal detail product size
+  const statusPresent = useSelector((state) => state.bill.bill.status);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
     var data = {
@@ -383,10 +383,8 @@ function ModalAddProductDetail({
             promotion: productSelected.promotion,
           };
           var check = undefined
-          var data = []
          await BillApi.fetchAllProductsInBillByIdBill({ idBill: bill.id, status: "THANH_CONG" }).then((res) => {
           check = res.data.data.find(product => product.idProduct === productSelected.idProduct && product.price === productSelected.price);
-          data = res.data.data
           });
           if(check === undefined){
             await BillApi.addProductInBill(data).then((res) => {
@@ -409,24 +407,20 @@ function ModalAddProductDetail({
                 codeColor: productSelected.codeColor,
               };
               dispatch(addProductInBillDetail(product));
+            dispatch(ChangeProductInBill(statusPresent + quantity));
             });
           }else{
-            data.quantity += check.quantity
+            data.quantity = data.quantity + check.quantity
             await BillApi.updateProductInBill(check.id, data).then((res) => {
               toast.success("Thêm sản phẩm thành công");
+              dispatch(ChangeProductInBill(statusPresent + quantity));
             })
             .catch((error) => {
               toast.error(error.response.data.message);
             });
           }
           await BillApi.fetchDetailBill(bill.id).then((res) => {
-            console.log(res.data.data);
             dispatch(getBill(res.data.data));
-            let sum = 0;
-            data.forEach((product) => {
-              sum += product.quantity || 0;
-            });
-            dispatch(ChangeProductInBill(sum + quantity));
           }).catch((error) => {
             toast.error(error.response.data.message);
           });
