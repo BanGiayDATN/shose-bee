@@ -245,7 +245,7 @@ const DashBoardEmployee = ({ children }) => {
               />
             }
           >
-            <Link to="/bill-management">Quản Lý Thu Chi</Link>
+            <Link to="/bill-management">Quản Lý Hóa Đơn</Link>
           </Menu.Item>
           <Menu.Item
             key="/give-back-management"

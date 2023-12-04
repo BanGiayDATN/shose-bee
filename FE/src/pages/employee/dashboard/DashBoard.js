@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Row, Col, Table, Card } from "antd";
+import { Input, Row, Col, Table, Card, Tooltip, Button } from "antd";
 import "../dashboard/style-dashboard.css";
 import { StatisticalApi } from "../../../api/employee/statistical/statistical.api";
 import * as am5 from "@amcharts/amcharts5";
@@ -13,6 +13,8 @@ import {
   faArrowUpRightDots,
   faArrowDownWideShort,
 } from "@fortawesome/free-solid-svg-icons";
+import { DownloadOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
 const DashBoard = () => {
   const [totalBillMonth, setTotalBillMonth] = useState(0);
@@ -359,14 +361,6 @@ const DashBoard = () => {
       // width: 60
       width: 190,
     },
-    // {
-    //   title: "Doanh số",
-    //   dataIndex: "sales",
-    //   key: "sales",
-    //   sorter: (a, b) => a.seles - b.seles,
-    //   render: (text) => formatCurrency(text),
-    //   align: "center",
-    // },
   ];
 
   const columnsStock = [
@@ -837,7 +831,7 @@ const DashBoard = () => {
       endDate = moment(new Date()).format("YYYY-MM-DD") + " 23:59:59";
       fromTime = new Date(startDate).getTime();
       toTime = new Date(endDate).getTime();
-      setNameTable("Trong Tuần Này");
+      setNameTable("Trong 7 Ngày ");
       setTypeFormat("week");
     } else if (option == 3) {
       setNameTable("Trong Tháng Này");
@@ -858,6 +852,26 @@ const DashBoard = () => {
     loadDataChartColumn(fromTime, toTime);
     loadDataStatusBill(fromTime, toTime);
   };
+
+  const handleImportFile = () => {
+    StatisticalApi.downloadExcel_xlsx()
+      .then((res) => {
+        toast.success("Tải về thành công");
+        const blob = new Blob([res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "Thong_ke.xlsx"; // Tên file tải về
+        link.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((err) => {
+        toast.error("Lỗi", err);
+      });
+  };
+
   return (
     <div>
       <div
@@ -914,6 +928,15 @@ const DashBoard = () => {
               <br />
               <div style={{ position: "relative" }}>
                 <div className="option-time">
+                  <Tooltip title="Download Excel Mẫu">
+                    <Button
+                      onClick={handleImportFile}
+                      style={{ height: "38px" }}
+                    >
+                      <DownloadOutlined className="mr-1" />
+                      Excel
+                    </Button>
+                  </Tooltip>
                   <button className="button-time" disabled>
                     Bộ lọc
                   </button>
@@ -1036,7 +1059,7 @@ const DashBoard = () => {
             <Row className="content-2">
               <Col style={{ width: "800px" }}>
                 <h2
-                  style={{ textAlign: "center", margin: " 3%", color: "white" }}
+                  style={{ textAlign: "center", margin: " 3%", color: "black" }}
                 >
                   Tốc Độ Tăng Trưởng Cửa Hàng
                 </h2>

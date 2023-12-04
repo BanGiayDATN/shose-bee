@@ -5,19 +5,25 @@ import com.example.shose.server.dto.response.statistical.StatisticalBillDateResp
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalProductDateResponse;
+import com.example.shose.server.infrastructure.excel.ExportExcelStatistical;
 import com.example.shose.server.service.StatisticalService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author Hào Ngô
@@ -28,6 +34,9 @@ import java.util.Map;
 public class StatisticalController {
     @Autowired
     private StatisticalService statisticalService;
+
+    @Autowired
+    private ExportExcelStatistical excelService;
 
     @GetMapping("/day")
     public ResponseObject statisticalDay() {
@@ -81,5 +90,16 @@ public class StatisticalController {
     @GetMapping("/stock")
     public ResponseObject statisticalStock() {
         return new ResponseObject(statisticalService.getAllStatisticalProductStock());
+    }
+
+    @GetMapping("/download/xlsx")
+    public ResponseEntity<byte[]> getFile() throws IOException {
+        String filename = "file_import_registration" + new Random().nextInt(100) + ".xlsx";
+        ByteArrayOutputStream file = excelService.downloadExcel("api_data.xlsx");
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(file.toByteArray());
     }
 }
