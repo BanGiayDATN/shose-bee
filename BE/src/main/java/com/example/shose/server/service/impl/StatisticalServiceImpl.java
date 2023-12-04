@@ -133,7 +133,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     public Long getStartOfToday() {
         // Tạo đối tượng Calendar và đặt ngày là hôm nay
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh")); // Để tránh ảnh hưởng của múi giờ
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
         calendarStart.setTime(currentDate);
         calendarStart.set(Calendar.HOUR_OF_DAY, 0);
         calendarStart.set(Calendar.MINUTE, 0);
@@ -147,7 +147,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     public Long getEndOfToday() {
         // Tạo đối tượng Calendar và đặt ngày là hôm nay
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh")); // Để tránh ảnh hưởng của múi giờ
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
         calendarEnd.setTime(currentDate);
         calendarEnd.set(Calendar.HOUR_OF_DAY, 23);
         calendarEnd.set(Calendar.MINUTE, 59);
@@ -161,7 +161,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     public Long getStartMonth() {
         // Tạo đối tượng Calendar và đặt ngày trong tháng thành 1
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh")); // Để tránh ảnh hưởng của múi giờ
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
         calendarStart.setTime(currentDate);
         calendarStart.set(Calendar.DAY_OF_MONTH, 1);
         calendarStart.set(Calendar.HOUR_OF_DAY, 0);
@@ -176,7 +176,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     public Long getEndMonth() {
         // Tạo đối tượng Calendar và đặt ngày trong tháng thành ngày cuối cùng
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh")); // Để tránh ảnh hưởng của múi giờ
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
         calendarEnd.setTime(currentDate);
         calendarEnd.set(Calendar.DAY_OF_MONTH, calendarEnd.getActualMaximum(Calendar.DAY_OF_MONTH));
         calendarEnd.set(Calendar.HOUR_OF_DAY, 23);
@@ -190,7 +190,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
     public Long getStartOfYear() {
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarStart.setTime(currentDate);
         calendarStart.set(Calendar.MONTH, Calendar.JANUARY);
         calendarStart.set(Calendar.DAY_OF_MONTH, 1);
@@ -204,7 +204,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
     public Long getEndOfYear() {
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarEnd.setTime(currentDate);
         calendarEnd.set(Calendar.MONTH, Calendar.DECEMBER);
         calendarEnd.set(Calendar.DAY_OF_MONTH, 31);
@@ -218,7 +218,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
     public Long getStartOfYesterday() {
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarStart.setTime(currentDate);
         calendarStart.add(Calendar.DAY_OF_MONTH, -1);
         calendarStart.set(Calendar.HOUR_OF_DAY, 0);
@@ -231,7 +231,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
     public Long getEndOfYesterday() {
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarEnd.setTime(currentDate);
         calendarEnd.add(Calendar.DAY_OF_MONTH, -1);
         calendarEnd.set(Calendar.HOUR_OF_DAY, 23);
@@ -243,7 +243,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     }
     public Long getStartPreviousMonth() {
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarStart.setTime(currentDate);
         calendarStart.add(Calendar.MONTH, -1);
         calendarStart.set(Calendar.DAY_OF_MONTH, 1);
@@ -256,7 +256,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     }
     public Long getEndPreviousMonth() {
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarEnd.setTime(currentDate);
         calendarEnd.add(Calendar.MONTH, -1);
         calendarEnd.set(Calendar.DAY_OF_MONTH, calendarEnd.getActualMaximum(Calendar.DAY_OF_MONTH));
@@ -270,7 +270,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
     public Long getStartOfPreviousYear() {
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarStart.setTime(currentDate);
         calendarStart.add(Calendar.YEAR, -1);
         calendarStart.set(Calendar.MONTH, Calendar.JANUARY);
@@ -285,7 +285,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
     public Long getEndOfPreviousYear() {
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarEnd.setTime(currentDate);
         calendarEnd.add(Calendar.YEAR, -1);
         calendarEnd.set(Calendar.MONTH, Calendar.DECEMBER);

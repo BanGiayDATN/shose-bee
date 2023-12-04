@@ -98,7 +98,11 @@ function TabBillDetail({ dataBillDetail }) {
       ),
     },
     {
-      title: <div style={{ textAlign: "center" }}>Thông tin sản phẩm</div>,
+      title: (
+        <div style={{ textAlign: "center", fontSize: "18px" }}>
+          Thông tin sản phẩm
+        </div>
+      ),
       key: "productName",
       dataIndex: "productName",
       render: (_, record) => (
@@ -116,7 +120,9 @@ function TabBillDetail({ dataBillDetail }) {
       ),
     },
     {
-      title: "Màu Sắc",
+      title: (
+        <div style={{ textAlign: "center", fontSize: "18px" }}>Màu sắc</div>
+      ),
       dataIndex: "codeColor",
       key: "codeColor",
       width: "8px",
@@ -137,13 +143,17 @@ function TabBillDetail({ dataBillDetail }) {
       ),
     },
     {
-      title: "Số lượng",
+      title: (
+        <div style={{ textAlign: "center", fontSize: "18px" }}>Số lượng</div>
+      ),
       key: "quantity",
       align: "center",
       dataIndex: "quantity",
     },
     {
-      title: "Tổng tiền",
+      title: (
+        <div style={{ textAlign: "center", fontSize: "18px" }}>Tổng tiền</div>
+      ),
       key: "totalPrice",
       align: "center",
       dataIndex: "totalPrice",
@@ -152,7 +162,9 @@ function TabBillDetail({ dataBillDetail }) {
       ),
     },
     {
-      title: <div className="title-product">Trạng Thái</div>,
+      title: (
+        <div style={{ textAlign: "center", fontSize: "18px" }}>Trạng Thái</div>
+      ),
       key: "status",
       align: "center",
       dataIndex: "status",
