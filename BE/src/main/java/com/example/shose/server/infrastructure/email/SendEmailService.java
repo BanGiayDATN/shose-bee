@@ -101,8 +101,8 @@ public class SendEmailService {
                 + ".form-group { text-align: center; }"
                 + "label { display: block; font-weight: bold; margin-bottom: 5px; }"
                 + "input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }"
-                + "button { background-color: #0056b3; color: #fff; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }"
-                + "button:hover { background-color: #003d80; }"
+                + "button { background-color: #e4641a; color: #fff; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }"
+                + "button:hover { background-color: #c95617; }"  // Adjusted hover color
                 + "</style>"
                 + "</head>"
                 + "<body>"
@@ -118,16 +118,10 @@ public class SendEmailService {
                 + "<div class='form-group'>"
                 + "<label for='password'>Lý do :&nbsp;" + response.getNote() + "</label>"
                 + "</div>"
-                + " <div class=\"\" style=\"text-align: center; width: 100%\">Xem thông tin chi tiết đơn hàng </div></br>\n" +
-                "    <div class=\"\" style=\"text-align: center; width: 100%\">\n" +
-                "      <button style=\"    background-color: #e4641a;\n" +
-                "    border: none;\n" +
-                "    border-radius: 6px;\n" +
-                "    padding: 5px 22px;\"> <a th:href=\""+response.getUrl()+"\" style=\"text-decoration: none;\n" +
-                "    color: white;\n" +
-                "    font-size: 16px;\n" +
-                "    font-weight: 700;\">Tại đây</a></button>\n" +
-                "    </div>"
+                + "<div class=\"\" style=\"text-align: center; width: 100%\">Xem thông tin chi tiết đơn hàng </div></br>\n" +
+                "<div class=\"\" style=\"text-align: center; width: 100%\">\n" +
+                "<button><a th:href=\"" + response.getUrl() + "\" style=\"text-decoration: none; color: white; font-size: 16px; font-weight: 700;\">Tại đây</a></button>\n" +
+                "</div>"
                 + "</form>"
                 + "</div>"
                 + "</body>"
