@@ -79,6 +79,9 @@ public class Bill extends PrimaryEntity {
 
     private int poinUse;
 
+    @Column(name = "value_poin")
+    private BigDecimal valuePoin;
+
     @Enumerated(EnumType.STRING)
     private StatusBill statusBill;
 
