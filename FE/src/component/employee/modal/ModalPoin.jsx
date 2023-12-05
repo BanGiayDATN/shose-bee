@@ -1,4 +1,6 @@
 import { Button, Col, Form, Input, Modal, Row } from "antd";
+import { ScoringFormu } from "../../../api/employee/scoring-formu/ScoringFormu.api";
+import { toast } from "react-toastify";
 
 export default function ModalPoin({ visible, onCancel }) {
   const [form] = Form.useForm();
@@ -30,7 +32,10 @@ export default function ModalPoin({ visible, onCancel }) {
           exchangeRatePoin: values.exchangeRatePoin.replace(/\D/g, ""),
           exchangeRateMoney: values.exchangeRateMoney.replace(/\D/g, ""),
         };
-        console.log(rawExchangeRate);
+        ScoringFormu.addOrUpdate(rawExchangeRate).then((values) => {
+          toast.success("Thêm thành công");
+          onCancel();
+        });
         form.resetFields();
       })
       .catch(() => {});
