@@ -66,8 +66,6 @@ import Notification from "./pages/customer/account/notification/Notification";
 import RepoVoucher from "./pages/customer/account/voucher/Voucher";
 import Policy from "./pages/customer/policy/Policy";
 import SignUp from "./pages/customer/signup/SignUp";
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
 
 import GiveBackManagement from "./pages/employee/give-back-management/GiveBackManagement";
 import NotFound from "./pages/404";
@@ -75,9 +73,6 @@ import NotAuthorized from "./pages/403";
 import DetailBillGiveBack from "./pages/employee/give-back-management/DetailBill";
 import BillDetailAccount from "./pages/customer/account/purchase/billdetail/BillDetailAccount";
 function App() {
-
-
-
   const pathname = window.location.pathname;
   useEffect(() => {
     console.log(pathname);
@@ -221,7 +216,7 @@ function App() {
       <BrowserRouter basename={AppConfig.routerBase}>
         <Routes>
           <Route path="*" element={<NotFound />} />
-          <Route path="/" element={<Navigate replace to="/home"/>} />
+          <Route path="/" element={<Navigate replace to="/home" />} />
           {/* <Route path="/not-authorization" element={<NotAuthorized />} /> */}
           <Route
             path="/login"
@@ -369,14 +364,14 @@ function App() {
               </GuestGuard>
             }
           />
-           <Route
+          <Route
             path="/purchase/:id"
             element={
               <GuestGuard>
                 <CartProvider>
                   <DashBoardCustomer>
                     <LayoutAccount>
-                      <BillDetailAccount/>
+                      <BillDetailAccount />
                     </LayoutAccount>
                   </DashBoardCustomer>
                 </CartProvider>
@@ -735,7 +730,6 @@ function App() {
           />
         </Routes>
       </BrowserRouter>
-      <ToastContainer />
     </div>
   );
 }

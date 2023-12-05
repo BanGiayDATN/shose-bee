@@ -24,7 +24,7 @@ import TimeLine from "./TimeLine";
 
 import TextArea from "antd/es/input/TextArea";
 import { useParams } from "react-router";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AddressApi } from "../../../api/customer/address/address.api";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
@@ -2137,18 +2137,6 @@ function DetailBill() {
         />
       </Modal>
       {/* end thay đổi nhân viên  */}
-      <ToastContainer
-        position="top-right"
-        autoClose={500}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       {/* Same as */}
       <Modal
         title="Danh sách sản phẩm"
@@ -2167,7 +2155,6 @@ function DetailBill() {
           footer={null}
         />
       </Modal>
-      <ToastContainer />
       <div style={{ display: "none" }}>
         <div id="pdfContent" />
       </div>
