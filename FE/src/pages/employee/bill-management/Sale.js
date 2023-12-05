@@ -2,7 +2,6 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button, Col, Modal, Row, Tabs } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useAppDispatch } from "../../../app/hook";
@@ -15,6 +14,7 @@ import {
 import CreateBill from "./CreateBill";
 import "./sale.css";
 import { useReactToPrint } from "react-to-print";
+import { toast } from "react-toastify";
 
 function Sale() {
   const [invoiceNumber, setInvoiceNumber] = useState(0);
@@ -214,15 +214,14 @@ function Sale() {
   const generatePDF = useReactToPrint({
     content: () => document.getElementById("pdfContent"),
     documentTitle: "Userdata",
-    onAfterPrint: () => {
-    },
+    onAfterPrint: () => {},
   });
   const getHtmlByIdBill = (id) => {
-    BillApi.fetchHtmlIdBill(id).then((res)=> {
-      document.getElementById("pdfContent").innerHTML   = res.data.data
-      generatePDF()
-    })
-  }
+    BillApi.fetchHtmlIdBill(id).then((res) => {
+      document.getElementById("pdfContent").innerHTML = res.data.data;
+      generatePDF();
+    });
+  };
   return (
     <div>
       <Row style={{ background: "white", width: "100%" }}>
@@ -234,7 +233,7 @@ function Sale() {
               onClick={(e) => add(e)}
               icon={<PlusOutlined />}
               size={"large"}
-              style={{ marginRight: "5%" , marginTop:"30px"}}
+              style={{ marginRight: "5%", marginTop: "30px" }}
             >
               Tạo hóa đơn
             </Button>
@@ -252,24 +251,8 @@ function Sale() {
           />
         </Row>
       </Row>
-      <ToastContainer
-        position="top-right"
-        autoClose={100}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      {/* Same as */}
-      <ToastContainer />
       <div style={{ display: "none" }}>
-        <div
-          id="pdfContent"
-        />
+        <div id="pdfContent" />
       </div>
     </div>
   );

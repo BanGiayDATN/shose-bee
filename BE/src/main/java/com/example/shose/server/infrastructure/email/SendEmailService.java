@@ -3,16 +3,24 @@ package com.example.shose.server.infrastructure.email;
 
 import com.example.shose.server.dto.response.bill.RollBackBillResponse;
 import com.example.shose.server.entity.Bill;
+import com.example.shose.server.infrastructure.excel.ExportExcelStatistical;
 import com.example.shose.server.repository.BillRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 
@@ -27,6 +35,9 @@ public class SendEmailService {
 
     @Value("${spring.mail.username}")
     private String sender;
+
+    @Autowired
+    private ExportExcelStatistical exportExcelStatisticall;
 
     @Async
     public void sendEmailPasword(String to, String subject, String password) {
@@ -136,4 +147,37 @@ public class SendEmailService {
             e.printStackTrace();
         }
     }
+
+    private void sendEmailWithAttachment(String to, String subject, String body, byte[] attachment, String attachmentName) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(body);
+
+        helper.addAttachment(attachmentName, new ByteArrayDataSource(attachment, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+
+        javaMailSender.send(message);
+    }
+    @Scheduled(cron = "0 0 20 * * ?")
+    public void sendAutomaticEmailToYourself() {
+        String to = "vinhnvph23845@fpt.edu.vn";
+        String subject = "Báo cáo hàng ngày";
+        String body = "Báo cáo hàng ngày";
+
+        try {
+            ByteArrayOutputStream excelData = exportExcelStatisticall.downloadExcel("api_data.xlsx");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            String currentDate = dateFormat.format(new Date());
+
+            // Tên file với thêm ngày
+            String fileNameWithDate = "BaoCaoThongKeDoanhThuHoaDonSanPham_" + currentDate + ".xlsx";
+            sendEmailWithAttachment(to, subject, body, excelData.toByteArray(), fileNameWithDate);
+        } catch (IOException | MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
