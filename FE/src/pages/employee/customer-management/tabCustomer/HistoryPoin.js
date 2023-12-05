@@ -87,7 +87,7 @@ function HistoryPoin({ id, customer }) {
           Lịch sử điểm
         </h1>
       </Row>
-      <Row style={{ margin: "10px 0", width: "100%" }} justify={"end"}>
+      <Row style={{ margin: "10px 0", width: "100%", fontSize: "31px", fontWeight: "600" }} justify={"end"}>
         <Row style={{ width: "100%" }}>
           <Col span={12}>
             <Row>
@@ -97,7 +97,7 @@ function HistoryPoin({ id, customer }) {
           </Col>
           <Col span={12}>
             <Row justify={"end"}>
-              <Col span={6}>Tổng điểm đã sử dụng</Col>
+              <Col span={8}>Tổng điểm đã sử dụng</Col>
               <Col span={4}>
                 {historyPoin
                   .filter((item) => item.status === "DIEM_SU_DUNG")
@@ -117,7 +117,7 @@ function HistoryPoin({ id, customer }) {
           </Col>
           <Col span={12}>
             <Row justify={"end"}>
-              <Col span={7}>Tổng Tiền sử dụng từ điểm</Col>
+              <Col span={8}>Tổng Tiền sử dụng từ điểm</Col>
               <Col span={4}>
                 {historyPoin
                   .filter((item) => item.status === "DIEM_SU_DUNG")
