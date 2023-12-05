@@ -5,6 +5,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
+  SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
@@ -49,6 +50,7 @@ import { NotificationClientApi } from "../../api/customer/notification/notificat
 import dayjs from "dayjs";
 import { dispatch } from "../../app/store";
 import { useAppSelector } from "../../app/hook";
+import ModalPoin from "./modal/ModalPoin";
 const { Header, Sider, Content } = Layout;
 
 const DashBoardEmployee = ({ children }) => {
@@ -181,12 +183,25 @@ const DashBoardEmployee = ({ children }) => {
     toast.success("Đăng xuất thành công");
   };
 
+  const [isModalOpenPoin, setIsModalOpenPoin] = useState(false);
+
+  const showModalPoin = () => {
+    setIsModalOpenPoin(true);
+  };
+
+  const handleCancelPoin = () => {
+    setIsModalOpenPoin(false);
+  };
+
   const menu = (
     <Menu>
       <Menu.Item icon={<UserOutlined />} key="1">
         Thông tin người dùng
       </Menu.Item>
-      <Menu.Item icon={<SettingOutlined />} key="2" onClick={showModal}>
+      <Menu.Item icon={<SettingOutlined />} key="4" onClick={showModalPoin}>
+        Thiết lập tính điểm
+      </Menu.Item>
+      <Menu.Item icon={<SyncOutlined />} key="2" onClick={showModal}>
         Đổi mật khẩu
       </Menu.Item>
       <Menu.Item icon={<LogoutOutlined />} key="3" onClick={handleLogout}>
@@ -500,6 +515,7 @@ const DashBoardEmployee = ({ children }) => {
           </Form.Item>
         </Form>
       </Modal>
+      <ModalPoin visible={isModalOpenPoin} onCancel={handleCancelPoin} />
     </Layout>
   );
 };
