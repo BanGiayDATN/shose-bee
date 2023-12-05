@@ -8,6 +8,8 @@ import com.example.shose.server.service.ScoringFormulaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class ScoringFormulaServiceImpl implements ScoringFormulaService {
 
@@ -18,8 +20,8 @@ public class ScoringFormulaServiceImpl implements ScoringFormulaService {
     public String add(ScoringFormulaRequest request) {
         ScoringFormula scoringFormula = new ScoringFormula();
         scoringFormula.setStatus(Status.DANG_SU_DUNG);
-        scoringFormula.setExchangeRatePoin(request.getExchangeRatePoint());
-        scoringFormula.setExchangeRateMoney(request.getExchangeRateMoney());
+        scoringFormula.setExchangeRatePoin(new BigDecimal(1000));
+        scoringFormula.setExchangeRateMoney(new BigDecimal(100));
         scoringFormulaRepository.save(scoringFormula);
         return "Thêm thành công";
     }
