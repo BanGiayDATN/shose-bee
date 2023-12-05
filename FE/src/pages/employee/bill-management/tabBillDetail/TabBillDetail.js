@@ -1,15 +1,27 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { faBookmark, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Col, InputNumber, Modal, Row, Table } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  InputNumber,
+  Modal,
+  Row,
+  Table,
+  Tooltip,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import "./tabBillDetail.css";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { dispatch } from "../../../../app/store";
-import { ChangeProductInBill, getBill, updateTotalBill } from "../../../../app/reducer/Bill.reducer";
-import { BsTrash } from "react-icons/bs";
+import {
+  ChangeProductInBill,
+  getBill,
+  updateTotalBill,
+} from "../../../../app/reducer/Bill.reducer";
 import { debounce } from "lodash";
 
 function TabBillDetail({ dataBillDetail }) {
@@ -34,13 +46,15 @@ function TabBillDetail({ dataBillDetail }) {
       : (product.price * (100 - product.promotion) * product.quantity) / 100;
   };
   const bill = useSelector((state) => state.bill.bill.value);
-  const handleQuantityChange =debounce( (value, record) => {
+
+  const handleQuantityChange = (value, record) => {
     var max = record.quantity;
+    var quantityCustom = parseInt(value);
     if (record.promotion == null) {
       max = record.maxQuantity;
     }
-    if (!Number.isInteger(value)) {
-    } else if (value > max) {
+    if (!Number.isInteger(quantityCustom)) {
+    } else if (quantityCustom > max) {
     } else {
       const updatedProducts = billDetai.map((product) =>
         product.id === record.idProduct ? record : product
@@ -48,7 +62,7 @@ function TabBillDetail({ dataBillDetail }) {
       const data = {
         idBill: bill.id,
         idProduct: record.idProduct,
-        quantity: value,
+        quantity: quantityCustom,
         totalMoney: updatedProducts.reduce((accumulator, currentValue) => {
           return (
             accumulator +
@@ -63,41 +77,38 @@ function TabBillDetail({ dataBillDetail }) {
         price: record.price,
         promotion: record.promotion,
       };
-      console.log(data)
       Modal.confirm({
         title: "Xác nhận",
-        content: "Bạn có đồng ý sửa thành "+data.quantity+" không?",
+        content: "Bạn có đồng ý sửa thành " + data.quantity + " không?",
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-         await BillApi.updateProductInBill(record.id, data)
-          .then((res) => {
-            toast.success("Sửa sản phẩm thành công");
-            dispatch(updateTotalBill(data.totalMoney));
-            let sum = 0;
-            billDetai.forEach((product) => {
-              sum += product.quantity || 0;
+          await BillApi.updateProductInBill(record.id, data)
+            .then((res) => {
+              toast.success("Sửa sản phẩm thành công");
+              dispatch(updateTotalBill(data.totalMoney));
+              let sum = 0;
+              billDetai.forEach((product) => {
+                sum += product.quantity || 0;
+              });
+              dispatch(ChangeProductInBill(sum + quantityCustom));
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
             });
-            dispatch(ChangeProductInBill(sum + value));
-          })
-          .catch((error) => {
-            toast.error(error.response.data.message);
-          });
-          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
-            setBillDetail(res.data.data);
-          });
+          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
+            (res) => {
+              setBillDetail(res.data.data);
+            }
+          );
           await BillApi.fetchDetailBill(bill.id).then((res) => {
-            console.log(res.data.data);
             dispatch(getBill(res.data.data));
           });
         },
-        onCancel: () => {
-        },
+        onCancel: () => {},
       });
-      
     }
-  }, 300);
-
+  };
 
   const columnProductBill = [
     {
@@ -187,6 +198,7 @@ function TabBillDetail({ dataBillDetail }) {
           <h5 style={{ textDecoration: " line-through" }}>
             {record.promotion !== null && formatCurrency(record.price)}
           </h5>
+          <h4>Kích cỡ : {record.nameSize}</h4>
         </>
       ),
     },
@@ -363,6 +375,7 @@ function TabBillDetail({ dataBillDetail }) {
           <h5 style={{ textDecoration: " line-through" }}>
             {record.promotion !== null && formatCurrency(record.price)}
           </h5>
+          <h4>Kích cỡ : {record.nameSize}</h4>
         </>
       ),
     },
@@ -409,9 +422,9 @@ function TabBillDetail({ dataBillDetail }) {
                       : record.quantity
                   }
                   style={{ margin: "0 5px" }}
-                  value={record.quantity}
-                  onChange={(value) => {
-                    handleQuantityChange(value, record);
+                  defaultValue={record.quantity}
+                  onPressEnter={(e) => {
+                    handleQuantityChange(e.target.value, record);
                   }}
                 />
               </Col>
@@ -449,23 +462,30 @@ function TabBillDetail({ dataBillDetail }) {
           </button>
         );
       },
-    }, {
-      title: <div className="title-product">Xóa</div>,
+    },
+    {
+      title: <div className="title-product">Hành Động</div>,
       key: "delete",
       align: "center",
       render: (_, record) => {
-          return (
-            <Button type="danger" onClick={() => handleDelete(record)}>
-               <BsTrash />
+        return (
+          <Tooltip title="Xóa sản phẩm">
+            <Button
+              type="danger"
+              style={{ color: "red" }}
+              onClick={() => handleDelete(record)}
+            >
+              <FontAwesomeIcon icon={faTrashCan} size="lg" />
             </Button>
-          );
+          </Tooltip>
+        );
       },
-    }
+    },
   ];
   const handleDelete = (record) => {
     Modal.confirm({
       title: "Xác nhận",
-      content: "Bạn có đồng ý xóa sản phẩm không?",
+      content: "Bạn có đồng ý xóa sản phẩm " + record.productName + " không?",
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: async () => {
@@ -501,11 +521,12 @@ function TabBillDetail({ dataBillDetail }) {
           .catch((error) => {
             toast.error(error.response.data.message);
           });
-          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
-          });
-          await BillApi.fetchDetailBill(bill.id).then((res) => {
-            dispatch(getBill(res.data.data));
-          });
+        await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
+          (res) => {}
+        );
+        await BillApi.fetchDetailBill(bill.id).then((res) => {
+          dispatch(getBill(res.data.data));
+        });
       },
     });
   };
@@ -524,13 +545,17 @@ function TabBillDetail({ dataBillDetail }) {
   }, [changeQuanTiTy]);
   const [billDetai, setBillDetail] = useState([]);
   const statusPresent = useSelector((state) => state.bill.bill.status);
-  
+
   return (
     <>
       {billDetai.length > 0 ? (
         <Table
           className="table-bill-detail"
-          columns={bill.statusBill == "CHO_XAC_NHAN" ||bill.statusBill == "XAC_NHAN" ?  columneEditProductBill : columnProductBill}
+          columns={
+            bill.statusBill == "CHO_XAC_NHAN" || bill.statusBill == "XAC_NHAN"
+              ? columneEditProductBill
+              : columnProductBill
+          }
           dataSource={billDetai}
           rowKey={"id"}
           style={{ width: "100%" }}
