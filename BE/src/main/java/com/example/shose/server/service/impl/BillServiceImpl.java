@@ -46,6 +46,7 @@ import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
 import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.infrastructure.constant.TypeBill;
+import com.example.shose.server.infrastructure.constant.TypePoin;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
@@ -263,11 +264,12 @@ public class BillServiceImpl implements BillService {
                                     + scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
                             user.setPoints(Pointotal);
                             optional.get().setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
+                            historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).value(request.getPoin()).typePoin(TypePoin.DIEM_SU_DUNG).scoringFormula(scoringFormula).build());
                         } else {
                             user.setPoints(
                                     user.getPoints() + scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
                         }
-                        historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).scoringFormula(scoringFormula).build());
+                        historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).value(scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()))).typePoin(TypePoin.DIEM_THUONG).scoringFormula(scoringFormula).build());
                         userReposiory.save(user);
                     }
                 }
@@ -288,9 +290,9 @@ public class BillServiceImpl implements BillService {
                         int Pointotal = user.getPoints() - request.getPoin();
                         user.setPoints(Pointotal);
                         optional.get().setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
+                        historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).typePoin(TypePoin.DIEM_SU_DUNG).value(request.getPoin()).user(user).scoringFormula(scoringFormula).build());
                     }
                     userReposiory.save(user);
-                    historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
             optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
@@ -590,7 +592,7 @@ public class BillServiceImpl implements BillService {
                     ScoringFormula scoringFormula = scoringFormulas.get(0);
                     user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                     userReposiory.save(user);
-                    historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
+                    historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
@@ -601,7 +603,7 @@ public class BillServiceImpl implements BillService {
                 ScoringFormula scoringFormula = scoringFormulas.get(0);
                 user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                 userReposiory.save(user);
-                historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
+                historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
             }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -685,7 +687,7 @@ public class BillServiceImpl implements BillService {
                         ScoringFormula scoringFormula = scoringFormulas.get(0);
                         user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                         userReposiory.save(user);
-                        historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
+                        historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                     }
                 }
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
@@ -696,7 +698,7 @@ public class BillServiceImpl implements BillService {
                     ScoringFormula scoringFormula = scoringFormulas.get(0);
                     user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                     userReposiory.save(user);
-                    historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
+                    historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -749,12 +751,14 @@ public class BillServiceImpl implements BillService {
             productDetailRepository.save(productDetail.get());
         });
         Account checkAccount = bill.get().getAccount();
-        if (checkAccount != null) {
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
+        if (checkAccount != null && !scoringFormulas.isEmpty()) {
             if (bill.get().getPoinUse() > 0) {
                 User user = checkAccount.getUser();
+                ScoringFormula scoringFormula = scoringFormulas.get(0);
                 user.setPoints(user.getPoints() + bill.get().getPoinUse());
                 userReposiory.save(user);
-                historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
+                historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).typePoin(TypePoin.DIEM_HOAN).value(bill.get().getPoinUse()).user(user).scoringFormula(scoringFormula).build());
             }
         }
 
@@ -925,7 +929,7 @@ public class BillServiceImpl implements BillService {
             user.setPoints(user.getPoints() - request.getPoin());
             userReposiory.save(user);
             bill.setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
-            historyPoinRepository.save(HistoryPoin.builder().bill(bill).user(user).scoringFormula(scoringFormula).build());
+            historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_SU_DUNG).value(request.getPoin()).bill(bill).user(user).scoringFormula(scoringFormula).build());
         }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
@@ -1169,7 +1173,10 @@ public class BillServiceImpl implements BillService {
             } else {
                 customer.setPoints(customer.getPoints() - pointGiveBack);
             }
-            historyPoinRepository.save(HistoryPoin.builder().bill(bill).user(customer).scoringFormula(scoringFormula).build());
+            if(Math.max(0, bill.getPoinUse() - pointGiveBack) > 0){
+                historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_HOAN).value(bill.getPoinUse() - pointGiveBack).bill(bill).user(customer).scoringFormula(scoringFormula).build());
+
+            }
             userReposiory.save(customer);
         }
 
