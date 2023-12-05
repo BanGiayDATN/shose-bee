@@ -253,13 +253,11 @@ public class BillServiceImpl implements BillService {
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
-                if (request.getPoin() > 0 && !scoringFormulas.isEmpty()) {
-                    ScoringFormula scoringFormula = scoringFormulas.get(0);
-                    if (account.isPresent()) {
+                    if (account.isPresent() && !scoringFormulas.isEmpty()) {
+                        ScoringFormula scoringFormula = scoringFormulas.get(0);
                         optional.get().setAccount(account.get());
                         User user = account.get().getUser();
                         if (request.getPoin() > 0) {
-
                             int Pointotal = user.getPoints() - request.getPoin()
                                     + scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
                             user.setPoints(Pointotal);
@@ -272,7 +270,6 @@ public class BillServiceImpl implements BillService {
                         historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).value(scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()))).typePoin(TypePoin.DIEM_THUONG).scoringFormula(scoringFormula).build());
                         userReposiory.save(user);
                     }
-                }
             }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
             optional.get().setCompletionDate(getCurrentTimestampInVietnam());

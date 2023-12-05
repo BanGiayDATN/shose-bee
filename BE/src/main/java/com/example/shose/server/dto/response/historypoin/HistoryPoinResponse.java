@@ -16,7 +16,7 @@ public interface HistoryPoinResponse {
     Long getCreateDate();
 
     @Value("#{target.value}")
-    int getVlue();
+    int getValue();
 
     @Value("#{target.type_poin}")
     String getTyePoin();
@@ -28,5 +28,5 @@ public interface HistoryPoinResponse {
     BigDecimal getExchangeRatePoin();
 
     @Value("#{target.total_money}")
-    String getTotalMoney();
+    BigDecimal getTotalMoney();
 }

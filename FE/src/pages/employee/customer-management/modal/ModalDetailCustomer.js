@@ -10,6 +10,7 @@ import {
   Upload,
   message,
   Radio,
+  Tabs,
 } from "antd";
 import moment from "moment";
 import { useAppDispatch } from "../../../../app/hook";
@@ -23,6 +24,8 @@ import { faKaaba } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PlusOutlined } from "@ant-design/icons";
 import { AddressApi } from "../../../../api/customer/address/address.api";
+import DetailCustomer from "../tabCustomer/DetailCustomer";
+import HistoryPoin from "../tabCustomer/HistoryPoin";
 const { Option } = Select;
 
 const ModalDetailCustomer = ({ visible }) => {
@@ -93,6 +96,7 @@ const ModalDetailCustomer = ({ visible }) => {
         AddressApi.getAddressByUserIdAndStatus(id).then((resAddress) => {
           const addressData = resAddress.data.data;
           setCustomer(res.data.data);
+          console.log(res.data.data);
           const formValues = {
             ...res.data.data,
             dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
@@ -291,7 +295,7 @@ const ModalDetailCustomer = ({ visible }) => {
 
         <Col className="filter" span={17} style={{ marginLeft: "20px" }}>
           {/* <div className="filter"> */}
-          <h1
+          {/* <h1
             style={{
               display: "flex",
               alignItems: "center",
@@ -391,12 +395,12 @@ const ModalDetailCustomer = ({ visible }) => {
                   />
                   <p>Scanned Data: {qrData}</p>
                 </div> */}
-              </Col>
+          {/* </Col>
             </Row>
-          </Form>
+          </Form> */}
           {/* </div> */}
 
-          <div
+          {/* <div
             style={{
               display: "flex",
               justifyContent: "flex-end",
@@ -412,7 +416,29 @@ const ModalDetailCustomer = ({ visible }) => {
             >
               Quay lại
             </Button>
-          </div>
+          </div>  */}
+          <Tabs
+            type="card"
+            style={{ width: "100%", minHeight: "600px" }}
+            items={[
+              {
+                label: `Thông tin khách hàng`,
+                key: "1",
+                children: (
+                  <DetailCustomer
+                    form={form}
+                    customer={customer}
+                    handleCancel={handleCancel}
+                  />
+                ),
+              },
+              {
+                label: `Lịch sử điểm`,
+                key: "2",
+                children: <HistoryPoin id={id} customer={customer}/>,
+              },
+            ]}
+          />
         </Col>
       </Row>
     </div>
