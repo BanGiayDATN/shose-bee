@@ -12,6 +12,8 @@ import {
   faCalendarDay,
   faArrowUpRightDots,
   faArrowDownWideShort,
+  faDownload,
+  faFileExcel,
 } from "@fortawesome/free-solid-svg-icons";
 import { DownloadOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -124,9 +126,8 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -134,9 +135,8 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -277,44 +277,46 @@ const DashBoard = () => {
         }
       }
     });
+    let element = document.getElementById("chartdivPie")
+    if (element != null) {
+      let root = am5.Root.new("chartdivPie");
+      root.setThemes([am5themes_Animated.new(root)]);
 
-    let root = am5.Root.new("chartdivPie");
-    root.setThemes([am5themes_Animated.new(root)]);
+      root._logo.dispose();
 
-    root._logo.dispose();
+      // Create chart
+      var chart = root.container.children.push(
+        am5percent.PieChart.new(root, {
+          layout: root.verticalLayout,
+        })
+      );
 
-    // Create chart
-    var chart = root.container.children.push(
-      am5percent.PieChart.new(root, {
-        layout: root.verticalLayout,
-      })
-    );
+      // Create series
+      var series = chart.series.push(
+        am5percent.PieSeries.new(root, {
+          valueField: "value",
+          categoryField: "category",
+        })
+      );
 
-    // Create series
-    var series = chart.series.push(
-      am5percent.PieSeries.new(root, {
-        valueField: "value",
-        categoryField: "category",
-      })
-    );
+      // Gán dữ liệu đã được cập nhật cho series
+      series.data.setAll(data);
 
-    // Gán dữ liệu đã được cập nhật cho series
-    series.data.setAll(data);
+      // Create legend
+      var legend = chart.children.push(
+        am5.Legend.new(root, {
+          centerX: am5.percent(50),
+          x: am5.percent(50),
+          marginTop: 15,
+          marginBottom: 15,
+        })
+      );
 
-    // Create legend
-    var legend = chart.children.push(
-      am5.Legend.new(root, {
-        centerX: am5.percent(50),
-        x: am5.percent(50),
-        marginTop: 15,
-        marginBottom: 15,
-      })
-    );
+      legend.data.setAll(series.dataItems);
 
-    legend.data.setAll(series.dataItems);
-
-    // Play initial series animation
-    series.appear(1000, 100);
+      // Play initial series animation
+      series.appear(1000, 100);
+    }
   };
 
   const columns = [
@@ -428,9 +430,9 @@ const DashBoard = () => {
     }
     setNameTable(
       "Từ " +
-        event.target.value +
-        " Đến " +
-        moment(endDate).format("YYYY-MM-DD")
+      event.target.value +
+      " Đến " +
+      moment(endDate).format("YYYY-MM-DD")
     );
   };
 
@@ -449,9 +451,9 @@ const DashBoard = () => {
     }
     setNameTable(
       "Từ " +
-        moment(startDate).format("YYYY-MM-DD") +
-        " Đến " +
-        event.target.value
+      moment(startDate).format("YYYY-MM-DD") +
+      " Đến " +
+      event.target.value
     );
   };
 
@@ -524,9 +526,8 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -534,9 +535,8 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${
-            date.getMonth() + 1
-          }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+            }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -587,228 +587,232 @@ const DashBoard = () => {
         }
       }
     });
-    am5.ready(function () {
-      let root = am5.Root.new("chartdivChart");
-      // Create root element
-      // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+    let element = document.getElementById("chartdivChart")
+    if (element != null) {
+      am5.ready(function () {
 
-      // Set themes
-      // https://www.amcharts.com/docs/v5/concepts/themes/
-      root.setThemes([am5themes_Animated.new(root)]);
+        let root = am5.Root.new("chartdivChart");
+        // Create root element
+        // https://www.amcharts.com/docs/v5/getting-started/#Root_element
 
-      // Create chart
-      // https://www.amcharts.com/docs/v5/charts/xy-chart/
-      let chart = root.container.children.push(
-        am5xy.XYChart.new(root, {
-          panX: false,
-          panY: false,
-          wheelX: "panX",
-          wheelY: "zoomX",
-          layout: root.verticalLayout,
-        })
-      );
+        // Set themes
+        // https://www.amcharts.com/docs/v5/concepts/themes/
+        root.setThemes([am5themes_Animated.new(root)]);
 
-      root._logo.dispose();
+        // Create chart
+        // https://www.amcharts.com/docs/v5/charts/xy-chart/
+        let chart = root.container.children.push(
+          am5xy.XYChart.new(root, {
+            panX: false,
+            panY: false,
+            wheelX: "panX",
+            wheelY: "zoomX",
+            layout: root.verticalLayout,
+          })
+        );
 
-      // Add scrollbar
-      // https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/
-      chart.set(
-        "scrollbarX",
-        am5.Scrollbar.new(root, {
-          orientation: "horizontal",
-        })
-      );
-      let scrollbarX = chart.get("scrollbarX");
+        root._logo.dispose();
 
-      scrollbarX.thumb.setAll({
-        fill: am5.color(0x550000),
-        fillOpacity: 0.1,
-      });
+        // Add scrollbar
+        // https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/
+        chart.set(
+          "scrollbarX",
+          am5.Scrollbar.new(root, {
+            orientation: "horizontal",
+          })
+        );
+        let scrollbarX = chart.get("scrollbarX");
 
-      scrollbarX.startGrip.setAll({
-        visible: true,
-      });
+        scrollbarX.thumb.setAll({
+          fill: am5.color(0x550000),
+          fillOpacity: 0.1,
+        });
 
-      scrollbarX.endGrip.setAll({
-        visible: true,
-      });
+        scrollbarX.startGrip.setAll({
+          visible: true,
+        });
 
-      // Create axes
-      // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+        scrollbarX.endGrip.setAll({
+          visible: true,
+        });
 
-      let xRenderer = am5xy.AxisRendererX.new(root, {
-        minGridDistance: 10,
-        cellStartLocation: 0.2,
-        cellEndLocation: 0.8,
-      });
+        // Create axes
+        // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
 
-      xRenderer.labels.template.setAll({
-        rotation: -70,
-        paddingTop: -20,
-        paddingRight: 10,
-        fontSize: 10,
-      });
+        let xRenderer = am5xy.AxisRendererX.new(root, {
+          minGridDistance: 10,
+          cellStartLocation: 0.2,
+          cellEndLocation: 0.8,
+        });
 
-      let xAxis = chart.xAxes.push(
-        am5xy.CategoryAxis.new(root, {
-          categoryField: "billDate",
-          maxDeviation: 0,
-          renderer: xRenderer,
-          tooltip: am5.Tooltip.new(root, {}),
-        })
-      );
-      let xAxis2 = chart.xAxes.push(
-        am5xy.CategoryAxis.new(root, {
-          categoryField: "billDate",
-          maxDeviation: 0,
-          renderer: xRenderer,
-          tooltip: am5.Tooltip.new(root, {}),
-        })
-      );
-      var nameComp = "Hóa đơn";
-      var nameNow = "Sản phẩm";
+        xRenderer.labels.template.setAll({
+          rotation: -70,
+          paddingTop: -20,
+          paddingRight: 10,
+          fontSize: 10,
+        });
 
-      xAxis.data.setAll(dataBill);
-      xAxis2.data.setAll(dataProduct);
+        let xAxis = chart.xAxes.push(
+          am5xy.CategoryAxis.new(root, {
+            categoryField: "billDate",
+            maxDeviation: 0,
+            renderer: xRenderer,
+            tooltip: am5.Tooltip.new(root, {}),
+          })
+        );
+        let xAxis2 = chart.xAxes.push(
+          am5xy.CategoryAxis.new(root, {
+            categoryField: "billDate",
+            maxDeviation: 0,
+            renderer: xRenderer,
+            tooltip: am5.Tooltip.new(root, {}),
+          })
+        );
+        var nameComp = "Hóa đơn";
+        var nameNow = "Sản phẩm";
 
-      let yRenderer = am5xy.AxisRendererY.new(root, {
-        strokeOpacity: 0.1,
-      });
+        xAxis.data.setAll(dataBill);
+        xAxis2.data.setAll(dataProduct);
 
-      let yAxis = chart.yAxes.push(
-        am5xy.ValueAxis.new(root, {
-          maxDeviation: 1,
-          min: 0,
-          renderer: yRenderer,
-        })
-      );
-      yAxis.children.moveValue(
-        am5.Label.new(root, {
-          text: `Số lượng`,
-          rotation: -90,
-          y: am5.p50,
-          centerX: am5.p50,
-        }),
-        0
-      );
-      var series1 = chart.series.push(
-        am5xy.ColumnSeries.new(root, {
-          name: nameComp,
-          xAxis: xAxis,
-          yAxis: yAxis,
-          valueYField: "totalBillDate",
-          categoryXField: "billDate",
-          tooltip: am5.Tooltip.new(root, {
-            pointerOrientation: "horizontal",
-            labelText: "Hóa đơn: {valueY}",
+        let yRenderer = am5xy.AxisRendererY.new(root, {
+          strokeOpacity: 0.1,
+        });
+
+        let yAxis = chart.yAxes.push(
+          am5xy.ValueAxis.new(root, {
+            maxDeviation: 1,
+            min: 0,
+            renderer: yRenderer,
+          })
+        );
+        yAxis.children.moveValue(
+          am5.Label.new(root, {
+            text: `Số lượng`,
+            rotation: -90,
+            y: am5.p50,
+            centerX: am5.p50,
           }),
-          fill: am5.color(colorsSES11),
-        })
-      );
+          0
+        );
+        var series1 = chart.series.push(
+          am5xy.ColumnSeries.new(root, {
+            name: nameComp,
+            xAxis: xAxis,
+            yAxis: yAxis,
+            valueYField: "totalBillDate",
+            categoryXField: "billDate",
+            tooltip: am5.Tooltip.new(root, {
+              pointerOrientation: "horizontal",
+              labelText: "Hóa đơn: {valueY}",
+            }),
+            fill: am5.color(colorsSES11),
+          })
+        );
 
-      yRenderer.grid.template.set("strokeOpacity", 0.05);
-      yRenderer.labels.template.set("fill", series1.get("fill"));
-      yRenderer.setAll({
-        stroke: series1.get("fill"),
-        strokeOpacity: 1,
-        opacity: 1,
+        yRenderer.grid.template.set("strokeOpacity", 0.05);
+        yRenderer.labels.template.set("fill", series1.get("fill"));
+        yRenderer.setAll({
+          stroke: series1.get("fill"),
+          strokeOpacity: 1,
+          opacity: 1,
+        });
+
+        series1.columns.template.setAll({
+          width: am5.percent(40),
+          tooltipY: am5.percent(30),
+          templateField: "columnSettings",
+          dx: -25,
+        });
+
+        series1.columns.template.set(
+          "fillGradient",
+          am5.LinearGradient.new(root, {
+            stops: [
+              {
+                color: am5.color(0x297373),
+                offset: 0.7,
+              },
+              {
+                color: am5.color(0x946b49),
+              },
+            ],
+            rotation: 90,
+          })
+        );
+
+        series1.data.setAll(dataBill);
+
+        // Add series
+        // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+
+        var series2 = chart.series.push(
+          am5xy.ColumnSeries.new(root, {
+            name: nameNow,
+            xAxis: xAxis2,
+            yAxis: yAxis,
+            valueYField: "totalProductDate",
+            categoryXField: "billDate",
+            clustered: false,
+            tooltip: am5.Tooltip.new(root, {
+              labelText: "Sản phẩm: {valueY}",
+            }),
+            fill: am5.color(colorsSES21),
+          })
+        );
+
+        series2.columns.template.setAll({
+          width: am5.percent(35),
+          templateField: "columnSettings",
+          dx: 0,
+        });
+
+        series2.columns.template.set(
+          "fillGradient",
+          am5.LinearGradient.new(root, {
+            stops: [
+              {
+                color: am5.color(0xff621f),
+              },
+              {
+                color: am5.color(0x946b49),
+              },
+            ],
+            rotation: 90,
+          })
+        );
+
+        series2.data.setAll(dataProduct);
+
+        // Add cursor
+        // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+        let cursor = chart.set(
+          "cursor",
+          am5xy.XYCursor.new(root, {
+            behavior: "zoomX",
+          })
+        );
+        cursor.lineY.set("visible", false);
+
+        // Add legend
+        // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+        let legend = chart.children.push(
+          am5.Legend.new(root, {
+            centerX: am5.p50,
+            x: am5.p50,
+          })
+        );
+        legend.data.setAll(chart.series.values);
+
+        // Make stuff animate on load
+        // https://www.amcharts.com/docs/v5/concepts/animations/
+        chart.appear(1000, 100);
+        series1.appear();
+
+        // xAxis.events.once("datavalidated", function (ev) {
+        //   ev.target.zoomToIndexes(dataBill.length - 20, dataProduct.length);
+        // });
       });
-
-      series1.columns.template.setAll({
-        width: am5.percent(40),
-        tooltipY: am5.percent(30),
-        templateField: "columnSettings",
-        dx: -25,
-      });
-
-      series1.columns.template.set(
-        "fillGradient",
-        am5.LinearGradient.new(root, {
-          stops: [
-            {
-              color: am5.color(0x297373),
-              offset: 0.7,
-            },
-            {
-              color: am5.color(0x946b49),
-            },
-          ],
-          rotation: 90,
-        })
-      );
-
-      series1.data.setAll(dataBill);
-
-      // Add series
-      // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-
-      var series2 = chart.series.push(
-        am5xy.ColumnSeries.new(root, {
-          name: nameNow,
-          xAxis: xAxis2,
-          yAxis: yAxis,
-          valueYField: "totalProductDate",
-          categoryXField: "billDate",
-          clustered: false,
-          tooltip: am5.Tooltip.new(root, {
-            labelText: "Sản phẩm: {valueY}",
-          }),
-          fill: am5.color(colorsSES21),
-        })
-      );
-
-      series2.columns.template.setAll({
-        width: am5.percent(35),
-        templateField: "columnSettings",
-        dx: 0,
-      });
-
-      series2.columns.template.set(
-        "fillGradient",
-        am5.LinearGradient.new(root, {
-          stops: [
-            {
-              color: am5.color(0xff621f),
-            },
-            {
-              color: am5.color(0x946b49),
-            },
-          ],
-          rotation: 90,
-        })
-      );
-
-      series2.data.setAll(dataProduct);
-
-      // Add cursor
-      // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
-      let cursor = chart.set(
-        "cursor",
-        am5xy.XYCursor.new(root, {
-          behavior: "zoomX",
-        })
-      );
-      cursor.lineY.set("visible", false);
-
-      // Add legend
-      // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
-      let legend = chart.children.push(
-        am5.Legend.new(root, {
-          centerX: am5.p50,
-          x: am5.p50,
-        })
-      );
-      legend.data.setAll(chart.series.values);
-
-      // Make stuff animate on load
-      // https://www.amcharts.com/docs/v5/concepts/animations/
-      chart.appear(1000, 100);
-      series1.appear();
-
-      // xAxis.events.once("datavalidated", function (ev) {
-      //   ev.target.zoomToIndexes(dataBill.length - 20, dataProduct.length);
-      // });
-    });
+    }
   };
 
   const onChangeValueOption = async (option) => {
@@ -862,8 +866,10 @@ const DashBoard = () => {
         });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
+        let createDate = moment(new Date()).format("YYYY-MM-DD_HH:mm:ss");
+        console.log("createDate", createDate);
         link.href = url;
-        link.download = "Thong_ke.xlsx"; // Tên file tải về
+        link.download = "ThongKeDoanhThuHoaDonSanPham_" + createDate + ".xlsx"; // Tên file tải về
         link.click();
         window.URL.revokeObjectURL(url);
       })
@@ -931,10 +937,11 @@ const DashBoard = () => {
                   <Tooltip title="Download Excel Mẫu">
                     <Button
                       onClick={handleImportFile}
-                      style={{ height: "38px" }}
+                      style={{ height: "38px", backgroundColor: "ButtonShadow" }}
                     >
-                      <DownloadOutlined className="mr-1" />
-                      Excel
+                      <span> <FontAwesomeIcon icon={faDownload} style={{ marginRight: "5px" }} /></span>
+                      <span> <FontAwesomeIcon icon={faFileExcel} style={{ backgroundColor: "white", marginRight: "3px" }} /></span>
+                      <span> xlsx</span>
                     </Button>
                   </Tooltip>
                   <button className="button-time" disabled>

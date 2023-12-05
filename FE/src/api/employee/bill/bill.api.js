@@ -93,6 +93,14 @@ export class BillApi {
     });
   };
 
+  static rollBackStatusBill = (id, data) => {
+    return request({
+      method: "PUT",
+      url: `/admin/bill/roll-back-bill/` + id,
+      params: data,
+    });
+  };
+
   static updateBill = (id, data) => {
     return request({
       method: "PUT",
@@ -147,10 +155,10 @@ export class BillApi {
     });
   };
 
-  static removeProductInBill = (id, size) => {
+  static removeProductInBill = (id, idProduct) => {
     return request({
       method: "DELETE",
-      url: `/admin/bill-detail/remove/${id}/${size}`,
+      url: `/admin/bill-detail/remove/${id}/${idProduct}`,
     });
   };
 
