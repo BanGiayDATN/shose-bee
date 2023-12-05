@@ -133,8 +133,8 @@ function HistoryPoin({ id, customer }) {
           style={{ width: "100%" }}
           dataSource={historyPoin}
           columns={columnHistoryPoin}
+          pagination={{ pageSize: 10 }}
           rowKey="id"
-          pagination={false}
           className="history-poin-table"
         />
       </Row>
