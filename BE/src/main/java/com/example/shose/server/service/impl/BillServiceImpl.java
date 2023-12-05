@@ -282,10 +282,10 @@ public class BillServiceImpl implements BillService {
                     userReposiory.save(user);
                 }
             }
-            optional.get().setStatusBill(StatusBill.XAC_NHAN);
+            optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
             optional.get().setCompletionDate(getCurrentTimestampInVietnam());
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(optional.get())
                     .employees(optional.get().getEmployees()).build());
 
             if (!request.getPaymentsMethodRequests().stream()
@@ -599,6 +599,41 @@ public class BillServiceImpl implements BillService {
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
 
+        return billRepository.save(bill.get());
+    }
+
+    @Override
+    public Bill rollBackBill(String id, String idEmployees, ChangStatusBillRequest request) {
+        Optional<Bill> bill = billRepository.findById(id);
+        Optional<Account> account = accountRepository.findById(idEmployees);
+        if (!bill.isPresent()) {
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        StatusBill statusBill[] = StatusBill.values();
+        int nextIndex = (bill.get().getStatusBill().ordinal() - 1) % statusBill.length;
+
+        boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
+                .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
+        if (nextIndex < 3) {
+            throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+        }
+        if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
+            bill.get().setStatusBill(StatusBill.VAN_CHUYEN);
+        }else{
+            bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        }
+        bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
+        bill.get().setEmployees(account.get());
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill.get());
+        billHistory.setStatusBill(bill.get().getStatusBill());
+        billHistory.setActionDescription(request.getActionDescription());
+        billHistory.setEmployees(account.get());
+        billHistoryRepository.save(billHistory);
+        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn",request.getActionDescription(),id ), Executors.newCachedThreadPool());
         return billRepository.save(bill.get());
     }
 

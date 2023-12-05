@@ -34,6 +34,8 @@ import { PoinApi } from "../../../api/employee/poin/poin.api";
 import ManagerBillDetail from "./tabBillDetail/ManagerBillDetail";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { useReactToPrint } from "react-to-print";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
+import TabBillDetail from "./tabBillDetail/TabBillDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -544,10 +546,10 @@ function DetailBill() {
               if (res.data.data.statusBill == "DA_HUY") {
                 index = 8;
               }
-              if (res.data.data.statusBill == "CHO_VAN_CHUYEN") {
+              if (res.data.data.statusBill == "XAC_NHAN") {
                 var data = {
                   ids: [id],
-                  status: "CHO_VAN_CHUYEN",
+                  status: "XAC_NHAN",
                 };
                 BillApi.fetchAllFilePdfByIdBill(data)
                   .then((response) => {
@@ -600,6 +602,86 @@ function DetailBill() {
 
   const handleCancelChangeStatus = () => {
     setIsModalOpenChangeStatus(false);
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
+      statusCancel: false,
+    });
+    form.resetFields();
+  };
+
+  const [isModalOpenRollBackStatus, setIsModalOpenRollBackStatus] =
+    useState(false);
+
+  const showModalRollBackStatus = () => {
+    setIsModalOpenRollBackStatus(true);
+  };
+
+  const handleOkRollBackStatus = () => {
+    if (statusBill.actionDescription == "") {
+      toast.error("Vui lòng nhập mô tả");
+    } else {
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý xác nhận quay lại không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          await BillApi.rollBackStatusBill(id, statusBill)
+            .then((res) => {
+              dispatch(getBill(res.data.data));
+              var index = listStatus.findIndex(
+                (item) => item.status == res.data.data.statusBill
+              );
+              if (res.data.data.statusBill == "TRA_HANG") {
+                index = 7;
+              }
+              if (res.data.data.statusBill == "DA_HUY") {
+                index = 8;
+              }
+              dispatch(addStatusPresent(index));
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+          await PaymentsMethodApi.findByIdBill(id).then((res) => {
+            dispatch(getPaymentsMethod(res.data.data));
+          });
+          await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
+            dispatch(getBillHistory(res.data.data));
+          });
+          toast.success("Chuyển lại trạng thái thành công");
+          setIsModalOpenRollBackStatus(false);
+        },
+        onCancel: () => {
+          setIsModalOpenRollBackStatus(false);
+        },
+      });
+      setStatusBill({
+        actionDescription: "",
+        method: "TIEN_MAT",
+        totalMoney: 0,
+        status: "THANH_TOAN",
+        statusCancel: false,
+      });
+      form.resetFields();
+
+      setIsModalOpenRollBackStatus(false);
+    }
+
+    setStatusBill({
+      actionDescription: "",
+      method: "TIEN_MAT",
+      totalMoney: 0,
+      status: "THANH_TOAN",
+      statusCancel: false,
+    });
+  };
+
+  const handleCancelRollBackStatus = () => {
+    setIsModalOpenRollBackStatus(false);
     setStatusBill({
       actionDescription: "",
       method: "TIEN_MAT",
@@ -822,12 +904,12 @@ function DetailBill() {
       console.log(res.data.data);
     });
   };
-
+  const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
   useEffect(() => {
     if (id !== null) {
       loadDataProductDetailToBillDetail();
     }
-  }, [id]);
+  }, [id, changeQuanTiTy]);
 
   // total product detail give back
   const totalMoneyProduct = (product) => {
@@ -857,6 +939,19 @@ function DetailBill() {
     console.log(total);
     return total;
   };
+
+  const [isModalProductOpen, setIsModalProductOpen] = useState(false);
+
+  const showModalProduct = (e) => {
+    setIsModalProductOpen(true);
+  };
+  const handleOkProduct = () => {
+    setIsModalProductOpen(false);
+  };
+  const handleCancelProduct = () => {
+    setIsModalProductOpen(false);
+  };
+  const typeAddProductBill = id;
 
   return (
     <div>
@@ -891,7 +986,7 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    span={statusPresent < 6 ? 7 : 0}
+                    span={statusPresent < 6 ? 4 : 0}
                   >
                     {statusPresent < 6 ? (
                       <Button
@@ -909,6 +1004,27 @@ function DetailBill() {
                         ) && bill.statusBill === "VAN_CHUYEN"
                           ? "Thành công"
                           : listStatus[statusPresent + 1].name}
+                      </Button>
+                    ) : (
+                      <div></div>
+                    )}
+                  </Col>
+                  <Col span={statusPresent > 3 ? 4 : 0}>
+                    {" "}
+                    {statusPresent > 3 ? (
+                      <Button
+                        type="danger"
+                        className="btn btn-danger"
+                        onClick={() => showModalRollBackStatus()}
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "500",
+                          marginLeft: "20px",
+                          backgroundColor: "red",
+                          color: "white",
+                        }}
+                      >
+                        Quay lại
                       </Button>
                     ) : (
                       <div></div>
@@ -993,6 +1109,79 @@ function DetailBill() {
                               );
                             }
 
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                    >
+                      <TextArea
+                        rows={bill.statusBill === "VAN_CHUYEN" ? 3 : 4}
+                        placeholder="Nhập mô tả"
+                        style={{ width: "100%", position: "F" }}
+                        onChange={(e) =>
+                          onChangeDescStatusBill(
+                            "actionDescription",
+                            e.target.value.trim()
+                          )
+                        }
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Form>
+            </Modal>
+            <Modal
+              title="Quay lại trạng thái Đơn hàng"
+              open={isModalOpenRollBackStatus}
+              onOk={handleOkRollBackStatus}
+              onCancel={handleCancelRollBackStatus}
+              cancelText={"huỷ"}
+              okText={"Xác nhận"}
+            >
+              <Form
+                onFinish={onFinish}
+                ref={formRef}
+                form={form}
+                initialValues={initialValues}
+              >
+                <Row style={{ width: "100%" }}>
+                  <Col span={24} style={{ marginTop: "20px" }}>
+                    <label className="label-bill">Mô Tả</label>
+                    <Form.Item
+                      label=""
+                      name="actionDescription"
+                      // style={{ fontWeight: "bold" }}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập mô tả",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.trim() === "") {
+                              return Promise.reject(
+                                "Không được chỉ nhập khoảng trắng"
+                              );
+                            }
+                            if (
+                              !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(
+                                value
+                              )
+                            ) {
+                              return Promise.reject(
+                                "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                              );
+                            }
+
+                            return Promise.resolve();
+                          },
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.length < 50) {
+                              return Promise.reject("Ít nhất 50 ký tự");
+                            }
+                    
                             return Promise.resolve();
                           },
                         },
@@ -1332,17 +1521,48 @@ function DetailBill() {
         </div>
       </Row>
       <Card style={{ marginTop: "30px" }}>
-        <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>
-          {" "}
-          Thông tin sản phẩm đã mua{" "}
-        </h1>
-        <Row>
-          <Col span={24}>
-            <ManagerBillDetail
-              id={id}
-              status={bill.statusBill}
-            ></ManagerBillDetail>
+        <Row style={{ width: "100%" }}>
+          <Col span={20}>
+            <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>
+              {" "}
+              Thông tin sản phẩm đã mua{" "}
+            </h1>
           </Col>
+          <Col span={4} align={"end"}>
+            {" "}
+            {statusPresent < 3 ? (
+              <Row style={{ width: "100%", marginRight:"15px" }} justify={"end"}>
+                <Button
+                  type="primary"
+                  style={{ margin: "10px 20px 0 0 " }}
+                  onClick={(e) => showModalProduct(e)}
+                >
+                  Thêm sản phẩm
+                </Button>
+              </Row>
+            ) : (
+              <Row></Row>
+            )}
+          </Col>
+        </Row>
+        <Row>
+          {console.log(statusPresent)}
+          {statusPresent < 3 ? (
+            <Col span={24}>
+              <TabBillDetail
+                style={{ width: "100%" }}
+                dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
+              />
+            </Col>
+          ) : (
+            <Col span={24}>
+              <ManagerBillDetail
+                id={id}
+                status={bill.statusBill}
+              ></ManagerBillDetail>
+            </Col>
+          )}
+
           <Col span={24}>
             <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
               <Col span={10}>
@@ -1922,6 +2142,23 @@ function DetailBill() {
         theme="light"
       />
       {/* Same as */}
+      <Modal
+        title="Basic Modal"
+        open={isModalProductOpen}
+        onOk={handleOkProduct}
+        onCancel={handleCancelProduct}
+        width={1600}
+      >
+        <ModalAddProductDetail
+          handleCancelProduct={handleCancelProduct}
+          products={products}
+          setProducts={setProducts}
+          typeAddProductBill={typeAddProductBill}
+          closeIcon={null}
+          width={1600}
+          footer={null}
+        />
+      </Modal>
       <ToastContainer />
       <div style={{ display: "none" }}>
         <div id="pdfContent" />

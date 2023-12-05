@@ -23,10 +23,15 @@ import { CategoryApi } from "../../../../api/employee/category/category.api";
 import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
 import {
+  ChangeProductInBill,
   addProductBillWait,
+  addProductInBillDetail,
+  getBill,
+  updateTotalBill,
 } from "../../../../app/reducer/Bill.reducer";
 import { ProductApi } from "../../../../api/employee/product/product.api";
 import { useSelector } from "react-redux";
+import { BillApi } from "../../../../api/employee/bill/bill.api";
 
 function ModalAddProductDetail({
   handleCancelProduct,
@@ -47,7 +52,7 @@ function ModalAddProductDetail({
     price: "",
     idSizeProduct: "",
     maxQuantity: 1,
-    promotion: ""
+    promotion: "",
   });
 
   // format tiền
@@ -59,7 +64,6 @@ function ModalAddProductDetail({
     });
     return formatter.format(value);
   };
-
 
   const handleChange = (e) => {
     setSearch(e.target.value);
@@ -100,7 +104,6 @@ function ModalAddProductDetail({
   for (let size = 35; size <= 45; size++) {
     listSize.push(size);
   }
-
 
   const getList = () => {
     MaterialApi.fetchAll().then((res) => setListMaterial(res.data.data));
@@ -317,7 +320,7 @@ function ModalAddProductDetail({
   ];
 
   // begin xử lý modal
-  //   modal detail product size
+  const statusPresent = useSelector((state) => state.bill.bill.status);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
     var data = {
@@ -329,40 +332,104 @@ function ModalAddProductDetail({
       price: (record.price * (100 - record.promotion)) / 100,
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
-      promotion: record.promotion
+      promotion: record.promotion,
     };
     dispatch(addProductBillWait(data));
     setProductSelected(data);
     setIsModalOpen(true);
   };
-
+  const bill = useSelector((state) => state.bill.bill.value);
   const handleOk = (e) => {
     var list = products;
     var index = list.findIndex(
       (x) => x.idProduct === productSelected.idProduct
     );
-    if (index == -1) {
-      var data = { ...productSelected };
-      data.quantity = quantity;
-      list.push(data);
-    } else {
-      var data = { ...productSelected };
-      data.quantity = list[index].quantity + quantity;
-      if(data.maxQuantity < list[index].quantity + quantity ){
-        data.quantity = data.maxQuantity
+    if (typeAddProductBill === "CREATE_BILL") {
+      if (index == -1) {
+        var data = { ...productSelected };
+        data.quantity = quantity;
+        list.push(data);
+      } else {
+        var data = { ...productSelected };
+        data.quantity = list[index].quantity + quantity;
+        if (data.maxQuantity < list[index].quantity + quantity) {
+          data.quantity = data.maxQuantity;
+        }
+        list.splice(index, 1, data);
       }
-      list.splice(index, 1, data);
+      toast.success("Thêm thành công", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      Modal.confirm({
+        title: "Xác nhận",
+        content: "Bạn có đồng ý thêm sản phẩm  không?",
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          var data = {
+            idBill: typeAddProductBill,
+            idProduct: productSelected.idProduct,
+            quantity: quantity,
+            price: productSelected.price,
+            totalMoney: 0,
+            promotion: productSelected.promotion,
+          };
+          var check = undefined
+         await BillApi.fetchAllProductsInBillByIdBill({ idBill: bill.id, status: "THANH_CONG" }).then((res) => {
+          check = res.data.data.find(product => product.idProduct === productSelected.idProduct && product.price === productSelected.price);
+          });
+          if(check === undefined){
+            await BillApi.addProductInBill(data).then((res) => {
+              var price = productSelected.price;
+              if (productSelected.promotion != null) {
+                price =
+                  (productSelected.price * (100 - productSelected.promotion)) /
+                  100;
+              }
+              toast.success("Thêm sản phẩm thành công");
+              var product = {
+                id: res.data.data,
+                image: productSelected.image,
+                productName: productSelected.nameProduct,
+                nameSize: productSelected.nameSize,
+                idProduct: productSelected.id,
+                quantity: quantity,
+                price: price,
+                promotion: productSelected.promotion,
+                codeColor: productSelected.codeColor,
+              };
+              dispatch(addProductInBillDetail(product));
+            dispatch(ChangeProductInBill(statusPresent + quantity));
+            });
+          }else{
+            data.quantity = data.quantity + check.quantity
+            await BillApi.updateProductInBill(check.id, data).then((res) => {
+              toast.success("Thêm sản phẩm thành công");
+              dispatch(ChangeProductInBill(statusPresent + quantity));
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+          }
+          await BillApi.fetchDetailBill(bill.id).then((res) => {
+            dispatch(getBill(res.data.data));
+          }).catch((error) => {
+            toast.error(error.response.data.message);
+          });
+         
+        },
+        onCancel: () => {},
+      });
     }
-    toast.success("Thêm thành công", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+
     setProducts(list);
     setQuantity(1);
     setIsModalOpen(false);
