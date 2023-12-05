@@ -36,6 +36,8 @@ import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { useReactToPrint } from "react-to-print";
 import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import TabBillDetail from "./tabBillDetail/TabBillDetail";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -986,7 +988,7 @@ function DetailBill() {
                 <Row>
                   <Col
                     style={{ width: "100%" }}
-                    span={statusPresent < 6 ? 4 : 0}
+                    span={statusPresent < 6 ? 6 : 0}
                   >
                     {statusPresent < 6 ? (
                       <Button
@@ -1009,7 +1011,7 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent > 3 ? 4 : 0}>
+                  <Col span={statusPresent > 3 ? 5 : 0}>
                     {" "}
                     {statusPresent > 3 ? (
                       <Button
@@ -1020,7 +1022,7 @@ function DetailBill() {
                           fontSize: "medium",
                           fontWeight: "500",
                           marginLeft: "20px",
-                          backgroundColor: "red",
+                          backgroundColor: "#FF9900",
                           color: "white",
                         }}
                       >
@@ -1181,7 +1183,7 @@ function DetailBill() {
                             if (value && value.length < 50) {
                               return Promise.reject("Ít nhất 50 ký tự");
                             }
-                    
+
                             return Promise.resolve();
                           },
                         },
@@ -1531,12 +1533,19 @@ function DetailBill() {
           <Col span={4} align={"end"}>
             {" "}
             {statusPresent < 3 ? (
-              <Row style={{ width: "100%", marginRight:"15px" }} justify={"end"}>
+              <Row
+                style={{ width: "100%", marginRight: "15px" }}
+                justify={"end"}
+              >
                 <Button
                   type="primary"
-                  style={{ margin: "10px 20px 0 0 " }}
+                  style={{ margin: "10px 20px  ", height: "40px" }}
                   onClick={(e) => showModalProduct(e)}
                 >
+                  <FontAwesomeIcon
+                    icon={faPlus}
+                    style={{ marginLeft: "3px" }}
+                  />{" "}
                   Thêm sản phẩm
                 </Button>
               </Row>
@@ -1546,7 +1555,6 @@ function DetailBill() {
           </Col>
         </Row>
         <Row>
-          {console.log(statusPresent)}
           {statusPresent < 3 ? (
             <Col span={24}>
               <TabBillDetail
@@ -2143,11 +2151,11 @@ function DetailBill() {
       />
       {/* Same as */}
       <Modal
-        title="Basic Modal"
+        title="Danh sách sản phẩm"
         open={isModalProductOpen}
         onOk={handleOkProduct}
         onCancel={handleCancelProduct}
-        width={1600}
+        width={1200}
       >
         <ModalAddProductDetail
           handleCancelProduct={handleCancelProduct}

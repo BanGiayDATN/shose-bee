@@ -382,11 +382,25 @@ function ModalAddProductDetail({
             totalMoney: 0,
             promotion: productSelected.promotion,
           };
-          var check = undefined
-         await BillApi.fetchAllProductsInBillByIdBill({ idBill: bill.id, status: "THANH_CONG" }).then((res) => {
-          check = res.data.data.find(product => product.idProduct === productSelected.idProduct && product.price === productSelected.price);
+          var check = undefined;
+          await BillApi.fetchAllProductsInBillByIdBill({
+            idBill: bill.id,
+            status: "THANH_CONG",
+          }).then((res) => {
+            check = res.data.data.find(
+              (product) =>
+                product.idProduct === productSelected.idProduct &&
+                (product.promotion == null
+                  ? product.price
+                  : (product.price * (100 - product.promotion)) / 100) ===
+                  (productSelected.promotion
+                    ? productSelected.price
+                    : (productSelected.price *
+                        (100 - productSelected.promotion)) /
+                      100)
+            );
           });
-          if(check === undefined){
+          if (check === undefined) {
             await BillApi.addProductInBill(data).then((res) => {
               var price = productSelected.price;
               if (productSelected.promotion != null) {
@@ -407,24 +421,26 @@ function ModalAddProductDetail({
                 codeColor: productSelected.codeColor,
               };
               dispatch(addProductInBillDetail(product));
-            dispatch(ChangeProductInBill(statusPresent + quantity));
-            });
-          }else{
-            data.quantity = data.quantity + check.quantity
-            await BillApi.updateProductInBill(check.id, data).then((res) => {
-              toast.success("Thêm sản phẩm thành công");
               dispatch(ChangeProductInBill(statusPresent + quantity));
+            });
+          } else {
+            data.quantity = data.quantity + check.quantity;
+            await BillApi.updateProductInBill(check.id, data)
+              .then((res) => {
+                toast.success("Thêm sản phẩm thành công");
+                dispatch(ChangeProductInBill(statusPresent + quantity));
+              })
+              .catch((error) => {
+                toast.error(error.response.data.message);
+              });
+          }
+          await BillApi.fetchDetailBill(bill.id)
+            .then((res) => {
+              dispatch(getBill(res.data.data));
             })
             .catch((error) => {
               toast.error(error.response.data.message);
             });
-          }
-          await BillApi.fetchDetailBill(bill.id).then((res) => {
-            dispatch(getBill(res.data.data));
-          }).catch((error) => {
-            toast.error(error.response.data.message);
-          });
-         
         },
         onCancel: () => {},
       });
