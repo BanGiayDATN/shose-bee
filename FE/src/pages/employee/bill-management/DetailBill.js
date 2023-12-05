@@ -1011,9 +1011,9 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent > 3 ? 5 : 0}>
+                  <Col span={statusPresent  > 3 && bill.shippingTime != null ? 5 : 0}>
                     {" "}
-                    {statusPresent > 3 ? (
+                    {statusPresent > 3  && bill.shippingTime != null ? (
                       <Button
                         type="danger"
                         className="btn btn-danger"

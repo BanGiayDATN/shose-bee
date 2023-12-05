@@ -9,27 +9,29 @@ import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
+import com.example.shose.server.entity.HistoryPoin;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.ScoringFormula;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
 import com.example.shose.server.infrastructure.constant.StatusPayMents;
+import com.example.shose.server.infrastructure.constant.TypePoin;
 import com.example.shose.server.infrastructure.constant.VnPayConstant;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
-import com.example.shose.server.infrastructure.poin.ConfigPoin;
-import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
+import com.example.shose.server.repository.HistoryPoinRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
+import com.example.shose.server.repository.ScoringFormulaRepository;
 import com.example.shose.server.repository.UserReposiory;
-import com.example.shose.server.repository.VoucherDetailRepository;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.FormUtils;
 import com.example.shose.server.util.payMent.Config;
@@ -96,7 +98,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     private BillRepository billRepository;
 
     @Autowired
-    private VoucherDetailRepository voucherDetailRepository;
+    private HistoryPoinRepository historyPoinRepository;
 
     @Autowired
     private ExportFilePdfFormHtml exportFilePdfFormHtml;
@@ -105,7 +107,8 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
     private SendEmailService sendEmailService;
 
     @Autowired
-    private ConfigPoin configPoin;
+    private ScoringFormulaRepository scoringFormulaRepository;
+
 
     @Autowired
     private UserReposiory userReposiory;
@@ -365,27 +368,33 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
 
                List<BillHistory> findAllByBill = billHistoryRepository.findAllByBill(bill.get());
                boolean checkBill = findAllByBill.stream().anyMatch(billHistory -> billHistory.getStatusBill() == StatusBill.THANH_CONG);
+               List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
                if (checkBill) {
                    bill.get().setStatusBill(StatusBill.THANH_CONG);
                    bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                   if(bill.get().getAccount() != null){
+                   if(bill.get().getAccount() != null && !scoringFormulas.isEmpty()){
                        User user = bill.get().getAccount().getUser();
-                       Poin poin = configPoin.readJsonFile();
+                       ScoringFormula scoringFormula = scoringFormulas.get(0);
                        if(bill.get().getPoinUse() > 0){
-                           int Pointotal = user.getPoints() - bill.get().getPoinUse() +  poin.ConvertMoneyToPoints(bill.get().getTotalMoney());
+                           int Pointotal = user.getPoints() - bill.get().getPoinUse() +  scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney());
                            user.setPoints(Pointotal);
+                           bill.get().setValuePoin(scoringFormula.ConvertPoinToMoney(bill.get().getPoinUse()));
+                           historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).value(bill.get().getPoinUse()).typePoin(TypePoin.DIEM_SU_DUNG).scoringFormula(scoringFormula).build());
                        }else{
-                           user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                           user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                        }
+                       historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).user(user).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).typePoin(TypePoin.DIEM_THUONG).scoringFormula(scoringFormula).build());
                        userReposiory.save(user);
                    }
                    billRepository.save(bill.get());
                } else {
-                   if(bill.get().getAccount() != null){
+                   if(bill.get().getAccount() != null && !scoringFormulas.isEmpty()){
                        User user = bill.get().getAccount().getUser();
                        if(bill.get().getPoinUse() > 0){
+                           ScoringFormula scoringFormula = scoringFormulas.get(0);
                            int Pointotal = user.getPoints() - bill.get().getPoinUse();
                            user.setPoints(Pointotal);
+                           historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).typePoin(TypePoin.DIEM_SU_DUNG).value(bill.get().getPoinUse()).user(user).scoringFormula(scoringFormula).build());
                        }
                        userReposiory.save(user);
                    }

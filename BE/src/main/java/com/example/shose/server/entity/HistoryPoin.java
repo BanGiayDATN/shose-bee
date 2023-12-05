@@ -1,7 +1,10 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
+import com.example.shose.server.infrastructure.constant.TypePoin;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -34,4 +37,10 @@ public class HistoryPoin extends PrimaryEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user",referencedColumnName = "id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    private TypePoin typePoin;
+
+    private int value;
+
 }
