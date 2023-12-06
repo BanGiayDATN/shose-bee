@@ -136,7 +136,7 @@ function DetailBillClinet() {
             : statusBill === "CHO_XAC_NHAN"
             ? " Chờ xác nhận"
             : statusBill === "XAC_NHAN"
-            ? " Xác nhận"
+            ? "Đã xác nhận"
             : statusBill === "CHO_VAN_CHUYEN"
             ? "Chờ vận chuyển"
             : statusBill === "VAN_CHUYEN"
@@ -147,7 +147,8 @@ function DetailBillClinet() {
             ? "Trả hàng"
             : statusBill === "THANH_CONG"
             ? "Thành công"
-            : "Đã hủy"}
+            : statusBill === "DA_HUY"
+            ?"Đã hủy" : ""}
         </span>
       ),
     },
@@ -529,6 +530,8 @@ function DetailBillClinet() {
                           ? "Tạo Hóa đơn"
                           : bill.statusBill == "CHO_XAC_NHAN"
                           ? "Chờ xác nhận"
+                          : bill.statusBill == "XAC_NHAN"
+                          ? "Đã xác nhận"
                           : bill.statusBill === "VAN_CHUYEN"
                           ? "Đang vận chuyển"
                           : bill.statusBill === "DA_THANH_TOAN"

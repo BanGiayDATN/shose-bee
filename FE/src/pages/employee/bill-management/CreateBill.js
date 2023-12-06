@@ -1135,6 +1135,36 @@ function CreateBill({
     setIsModalVoucherOpen(false);
   };
 
+  useEffect(() => {
+    // Tính tổng giá tiền dựa trên số lượng sản phẩm và giá của từng sản phẩm
+    const newTotalPrice = products.reduce(
+      (accumulator, product) => accumulator + product.price * product.quantity,
+      0
+    );
+
+    var price = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    var record = listVoucher.reduce((maxVoucher, currentVoucher) =>
+    currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) ? currentVoucher : maxVoucher
+  , null);
+
+//   const maxAmountVoucher = vouchers.reduce((maxVoucher, currentVoucher) =>
+//   currentVoucher.amount > (maxVoucher ? maxVoucher.amount : 0) &&
+//   newTotalPrice >= currentVoucher.condition
+//     ? currentVoucher
+//     : maxVoucher
+// , null);
+    setVoucher({
+      idVoucher: record.id,
+      beforPrice: price,
+      afterPrice: price - record.value,
+      discountPrice: record.value,
+    });
+    setCodeVoucher(record.code + " - " + record.name);
+    setIsModalVoucherOpen(false);
+  }, [products]);
+  
   const [voucher, setVoucher] = useState({
     idVoucher: "",
     beforPrice: 0,

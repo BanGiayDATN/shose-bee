@@ -37,7 +37,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
     <div className="container" style={{ width: "100%", margin: "10px",  }}>
       <Timeline minEvents={statusPresent != 7 ? 5: 1}  placeholder  >
        {
-        data.map((item) => (
+        data.filter((history) => history.statusBill !== null).map((item) => (
           <TimelineEvent
           color={ item.statusBill != "DA_HUY" ? "#0099FF" : "#FF0000"}
           icon={showIcon(item.statusBill )}
@@ -48,7 +48,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
               : item.statusBill === "CHO_XAC_NHAN"
               ? "Chờ xác nhận"
               : item.statusBill === "XAC_NHAN"
-              ?  "Xác nhận"
+              ?  "Đã Xác nhận"
               : item.statusBill === "CHO_VAN_CHUYEN"
               ? "Chờ vận chuyển"
               : item.statusBill === "VAN_CHUYEN"

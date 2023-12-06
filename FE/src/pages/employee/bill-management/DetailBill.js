@@ -555,8 +555,7 @@ function DetailBill() {
                 };
                 BillApi.fetchAllFilePdfByIdBill(data)
                   .then((response) => {
-                    document.getElementById("pdfContent").innerHTML =
-                      response.data.data;
+                    document.getElementById("pdfContent").innerHTML =response.data.data;
                     generatePDF();
                   })
                   .catch((error) => {
@@ -739,7 +738,7 @@ function DetailBill() {
             : statusBill === "CHO_XAC_NHAN"
             ? " Chờ xác nhận"
             : statusBill === "XAC_NHAN"
-            ? " Xác nhận"
+            ? "Đã xác nhận"
             : statusBill === "CHO_VAN_CHUYEN"
             ? "Chờ vận chuyển"
             : statusBill === "VAN_CHUYEN"
@@ -750,7 +749,8 @@ function DetailBill() {
             ? "Trả hàng"
             : statusBill === "THANH_CONG"
             ? "Thành công"
-            : "Đã hủy"}
+            : statusBill === "DA_HUY"
+            ?"Đã hủy" : ""}
         </span>
       ),
     },
@@ -1011,9 +1011,9 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent  > 3 && bill.shippingTime != null ? 5 : 0}>
+                  <Col span={statusPresent  > 3 && bill.shippingTime != null && bill.statusBill !== "TRA_HANG" ? 5 : 0}>
                     {" "}
-                    {statusPresent > 3  && bill.shippingTime != null ? (
+                    {statusPresent > 3  && bill.shippingTime != null && bill.statusBill !== "TRA_HANG" ? (
                       <Button
                         type="danger"
                         className="btn btn-danger"
@@ -1399,7 +1399,7 @@ function DetailBill() {
                       : bill.statusBill == "CHO_XAC_NHAN"
                       ? "Chờ xác nhận"
                       : bill.statusBill == "XAC_NHAN"
-                      ? "Xác nhận"
+                      ? "Đã xác nhận"
                       : bill.statusBill == "CHO_VAN_CHUYEN"
                       ? "Chờ chờ vận chuyển"
                       : bill.statusBill === "VAN_CHUYEN"

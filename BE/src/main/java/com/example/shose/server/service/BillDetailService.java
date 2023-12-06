@@ -22,7 +22,7 @@ public interface BillDetailService {
 
     String create(CreateBillDetailRequest request);
 
-    String update(String id, CreateBillDetailRequest request);
+    String update(String id, String idEmployees, CreateBillDetailRequest request);
 
-    boolean delete(String id, String productDetail);
+    boolean delete(String id, String productDetail, String note, String idEmployees);
 }

@@ -23,6 +23,7 @@ import {
   updateTotalBill,
 } from "../../../../app/reducer/Bill.reducer";
 import { debounce } from "lodash";
+import TextArea from "antd/es/input/TextArea";
 
 function TabBillDetail({ dataBillDetail }) {
   const getPromotionStyle = (promotion) => {
@@ -79,10 +80,17 @@ function TabBillDetail({ dataBillDetail }) {
       };
       Modal.confirm({
         title: "Xác nhận",
-        content: "Bạn có đồng ý sửa thành " + data.quantity + " không?",
+        content: (
+          <div>
+            <p>{"Bạn có đồng ý sửa thành " + data.quantity + " không?"}</p>
+            <TextArea rows={4}  placeholder="Nhập ghi chú..."  onChange={(e) => setNote(e.target.value)} />
+          </div>
+        ),
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
+          if (note.trim() != "" && note.length > 10) {
+            data.note = note
           await BillApi.updateProductInBill(record.id, data)
             .then((res) => {
               toast.success("Sửa sản phẩm thành công");
@@ -104,8 +112,12 @@ function TabBillDetail({ dataBillDetail }) {
           await BillApi.fetchDetailBill(bill.id).then((res) => {
             dispatch(getBill(res.data.data));
           });
+          setNote("")
+        }else{
+          toast.warning("vui lòng nhập mô tả")
+        }
         },
-        onCancel: () => {},
+        onCancel: () => {setNote("")},
       });
     }
   };
@@ -418,7 +430,7 @@ function TabBillDetail({ dataBillDetail }) {
                   min={1}
                   max={
                     record.promotion == null
-                      ? record.maxQuantity
+                      ? record.maxQuantity + record.quantity
                       : record.quantity
                   }
                   style={{ margin: "0 5px" }}
@@ -482,52 +494,67 @@ function TabBillDetail({ dataBillDetail }) {
       },
     },
   ];
+  const [note, setNote] = useState("")
   const handleDelete = (record) => {
     Modal.confirm({
       title: "Xác nhận",
-      content: "Bạn có đồng ý xóa sản phẩm " + record.productName + " không?",
+      content: (
+        <div>
+          <p>{"Bạn có đồng ý xóa sản phẩm " + record.productName + " không?"}</p>
+          <TextArea rows={4}  placeholder="Nhập ghi chú..."  onChange={(e) => console.log(e.target.value)}/>
+        </div>
+      ),
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: async () => {
-        const updatedProducts = billDetai.filter(
-          (product) => product.id !== record.idProduct
-        );
-        await BillApi.removeProductInBill(record.id, record.idProduct)
-          .then((res) => {
-            toast.success("Xóa sản phẩm thành công");
-            dispatch(
-              updateTotalBill(
-                updatedProducts.reduce((accumulator, currentValue) => {
-                  return (
-                    accumulator +
-                    (currentValue.promotion === null
-                      ? formatCurrency(currentValue.price)
-                      : formatCurrency(
-                          (currentValue.price *
-                            (100 - currentValue.promotion)) /
-                            100
-                        )) *
-                      currentValue.quantity
-                  );
-                }, 0)
-              )
-            );
-            let sum = 0;
-            billDetai.forEach((product) => {
-              sum += product.quantity || 0;
+        if(note && note.length > 10){
+          const updatedProducts = billDetai.filter(
+            (product) => product.id !== record.idProduct
+          );
+          await BillApi.removeProductInBill(record.id, record.idProduct, note)
+            .then((res) => {
+              toast.success("Xóa sản phẩm thành công");
+              dispatch(
+                updateTotalBill(
+                  updatedProducts.reduce((accumulator, currentValue) => {
+                    return (
+                      accumulator +
+                      (currentValue.promotion === null
+                        ? formatCurrency(currentValue.price)
+                        : formatCurrency(
+                            (currentValue.price *
+                              (100 - currentValue.promotion)) /
+                              100
+                          )) *
+                        currentValue.quantity
+                    );
+                  }, 0)
+                )
+              );
+              let sum = 0;
+              billDetai.forEach((product) => {
+                sum += product.quantity || 0;
+              });
+              dispatch(ChangeProductInBill(sum - record.quantity));
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
             });
-            dispatch(ChangeProductInBill(sum - record.quantity));
-          })
-          .catch((error) => {
-            toast.error(error.response.data.message);
+          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
+            (res) => {}
+          );
+          await BillApi.fetchDetailBill(bill.id).then((res) => {
+            dispatch(getBill(res.data.data));
           });
-        await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
-          (res) => {}
-        );
-        await BillApi.fetchDetailBill(bill.id).then((res) => {
-          dispatch(getBill(res.data.data));
-        });
+          setNote("")
+        }else{
+          toast.warning("vui lòng nhập mô tả")
+        }
+        
       },
+      onCancel: () =>{
+        setNote("")
+      }
     });
   };
   useEffect(() => {
@@ -584,6 +611,7 @@ function TabBillDetail({ dataBillDetail }) {
           </Row>
         </Row>
       )}
+
     </>
   );
 }
