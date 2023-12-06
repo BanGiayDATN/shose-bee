@@ -147,7 +147,8 @@ function DetailBillClinet() {
             ? "Trả hàng"
             : statusBill === "THANH_CONG"
             ? "Thành công"
-            : "Đã hủy"}
+            : statusBill === "DA_HUY"
+            ?"Đã hủy" : ""}
         </span>
       ),
     },
