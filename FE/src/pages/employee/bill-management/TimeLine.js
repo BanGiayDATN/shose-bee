@@ -51,7 +51,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
                 : item.statusBill === "CHO_XAC_NHAN"
                 ? "Chờ xác nhận"
                 : item.statusBill === "XAC_NHAN"
-                ? "Đã Xác nhận"
+                ? "Đã xác nhận"
                 : item.statusBill === "CHO_VAN_CHUYEN"
                 ? "Chờ vận chuyển"
                 : item.statusBill === "VAN_CHUYEN"
