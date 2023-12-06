@@ -81,7 +81,7 @@ const DashBoard = () => {
         const data = res.data.data;
         console.log(data);
         const statusMapping = {
-          TAO_HOA_DON: "Tạo hóa đơn",
+          TAO_HOA_DON: "Hóa đơn chờ",
           CHO_XAC_NHAN: "Chờ xác nhận",
           CHO_VAN_CHUYEN: "Chờ vận chuyển",
           VAN_CHUYEN: "Vận chuyển",
@@ -479,7 +479,7 @@ const DashBoard = () => {
       (res) => {
         const data = res.data.data;
         const statusMapping = {
-          TAO_HOA_DON: "Tạo hóa đơn",
+          TAO_HOA_DON: "Hóa đơn chờ",
           CHO_XAC_NHAN: "Chờ xác nhận",
           CHO_VAN_CHUYEN: "Chờ vận chuyển",
           VAN_CHUYEN: "Vận chuyển",

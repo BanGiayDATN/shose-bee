@@ -77,4 +77,5 @@ public interface BillService {
     List<BillGiveBack> getBillGiveBack(String idBill);
 
     Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
+    List<BillResponse> getBillCanceled();
 }

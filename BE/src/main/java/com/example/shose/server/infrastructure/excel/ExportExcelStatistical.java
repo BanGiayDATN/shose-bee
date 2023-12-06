@@ -1,8 +1,11 @@
 package com.example.shose.server.infrastructure.excel;
 
+import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
 import com.example.shose.server.entity.Address;
+import com.example.shose.server.repository.BillRepository;
+import com.example.shose.server.service.BillService;
 import com.example.shose.server.service.StatisticalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +31,9 @@ public class ExportExcelStatistical {
     @Autowired
     private StatisticalService statisticalService;
 
+    @Autowired
+    private BillService billService;
+
     public ByteArrayOutputStream downloadExcel(String templateName) throws IOException {
         InputStream in = null;
         ByteArrayOutputStream out = null;
@@ -37,10 +43,12 @@ public class ExportExcelStatistical {
 
             List<StatisticalDayResponse> statisticalDayList = statisticalService.getAllStatisticalDay();
             List<StatisticalMonthlyResponse> statisticalMonthList = statisticalService.getAllStatisticalMonth();
+            List<BillResponse> listBillCanceled = billService.getBillCanceled();
+
             Map<String, Object> map = new HashMap<>();
             map.put("apiData", statisticalDayList);
             map.put("apiData2", statisticalMonthList);
-
+            map.put("apiData3", listBillCanceled);
 
             XLXUtils.exportExcel(in, out, map);
 
