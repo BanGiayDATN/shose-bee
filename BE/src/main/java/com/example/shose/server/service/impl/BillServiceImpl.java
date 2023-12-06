@@ -1233,8 +1233,13 @@ public class BillServiceImpl implements BillService {
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
     }
+    @Override
+    public List<BillResponse> getBillCanceled() {
+        return billRepository.getBillCanceled();
+    }
 
     private Long getCurrentTimestampInVietnam() {
+
         Instant instant = Instant.now();
         ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
         return instant.atZone(zoneId).toEpochSecond() * 1000;
