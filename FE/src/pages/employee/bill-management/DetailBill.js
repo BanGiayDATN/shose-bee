@@ -555,8 +555,7 @@ function DetailBill() {
                 };
                 BillApi.fetchAllFilePdfByIdBill(data)
                   .then((response) => {
-                    document.getElementById("pdfContent").innerHTML =
-                      response.data.data;
+                    document.getElementById("pdfContent").innerHTML =response.data.data;
                     generatePDF();
                   })
                   .catch((error) => {
@@ -2167,7 +2166,6 @@ function DetailBill() {
           footer={null}
         />
       </Modal>
-      <ToastContainer />
       <div style={{ display: "none" }}>
         <div id="pdfContent" />
       </div>
