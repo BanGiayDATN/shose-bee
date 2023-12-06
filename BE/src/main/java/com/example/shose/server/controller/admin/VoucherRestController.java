@@ -58,12 +58,12 @@ public class VoucherRestController {
         return new ResponseObject(voucherService.add(request));
     }
     @PostMapping("/expired/{id}")
-    public ResponseObject voucherExpired(@PathVariable("id") String id) {
+    public ResponseObject voucherExpired(@PathVariable("id") String id) throws RestApiException {
 
         return new ResponseObject(voucherService.updateStatus(id));
     }
     @PutMapping("/{id}")
-    public ResponseObject update(@PathVariable("id") String id,@Valid @RequestBody  UpdateVoucherRequest request , BindingResult bindingResult) throws Exception  {
+    public ResponseObject update(@PathVariable("id") String id,@Valid @RequestBody  UpdateVoucherRequest request , BindingResult bindingResult) throws CustomListValidationException {
         request.setId(id);
         if(bindingResult.hasErrors()){
             throw new CustomListValidationException(404,bindingResult.getAllErrors());

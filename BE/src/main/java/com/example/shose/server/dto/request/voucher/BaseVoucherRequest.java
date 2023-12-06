@@ -30,5 +30,5 @@ public abstract class BaseVoucherRequest {
     private Long startDate;
     @NotNull(message = "Nhập ngày kết thúc khuyến mãi")
     private Long endDate;
-//    private Status status;
+    private Integer minimumBill;
 }

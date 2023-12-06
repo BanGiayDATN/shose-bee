@@ -8,6 +8,7 @@ import com.example.shose.server.dto.request.voucher.FindVoucherRequest;
 import com.example.shose.server.dto.request.voucher.UpdateVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
 import com.example.shose.server.entity.Voucher;
+import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 
 import java.util.List;
 
@@ -16,9 +17,9 @@ public interface VoucherService {
     List<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest);
     List<Voucher> findAll();
     List<Voucher> findByStatus();
-    Voucher add(CreateVoucherRequest request);
-    Voucher update(UpdateVoucherRequest request);
-    Voucher updateStatus(String id);
+    Voucher add(CreateVoucherRequest request) throws RestApiException;
+    Voucher update(UpdateVoucherRequest request) throws RestApiException;
+    Voucher updateStatus(String id) throws RestApiException;
 
     Boolean delete(String id);
     Voucher getById(String id);
@@ -26,5 +27,5 @@ public interface VoucherService {
     List<Voucher> startVoucher();
     Voucher getByCode(String code);
 
-    List<Voucher> getVoucherByIdAccount(String idAccount);
+    List<Voucher> getVoucherByIdAccount();
 }

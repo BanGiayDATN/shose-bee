@@ -25,6 +25,7 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
             vo.code as code,
             vo.name as name,
             vo.value as value,
+            vo.minimum_bill as minimumBill,
             vo.quantity as quantity,
             vo.start_date as startDate,
             vo.end_date as endDate,
@@ -90,9 +91,7 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
     @Query("SELECT vo FROM Voucher vo WHERE vo.startDate = :currentDate")
     List<Voucher> findStartVouchers(@Param("currentDate") Long currentDate);
     @Query("select vc from Voucher vc" +
-            " JOIN AccountVoucher avc on vc.id = avc.voucher.id" +
-            " JOIN Account  ac on ac.id = avc.account.id" +
-            " WHERE ac.id = :idAccount")
-    List<Voucher> getVoucherByIdAccount(@Param("idAccount") String idAccount);
+            " WHERE vc.quantity >= 1")
+    List<Voucher> getAllHaveQuantity();
     List<Voucher> findAllByStatus(Status status);
 }

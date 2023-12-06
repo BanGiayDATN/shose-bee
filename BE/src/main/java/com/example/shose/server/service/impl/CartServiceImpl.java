@@ -5,9 +5,11 @@ package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.response.cart.AddToCart;
 import com.example.shose.server.dto.response.cart.ListCart;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Cart;
 import com.example.shose.server.entity.CartDetail;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -84,6 +87,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<ListCart> getListCart(String idAccount) {
+        Optional<Account> optional = accountRepository.findById(idAccount);
+        if(optional.isEmpty()){
+            throw new RestApiException("Tài khoản không tồn tại");
+        }
         return cartRepository.getListCart(idAccount);
     }
 
