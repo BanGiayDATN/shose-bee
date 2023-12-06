@@ -238,7 +238,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     private StatusPromotion getStatusPromotion(long startDate, long endDate) {
         long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
-        return (startDate > currentSeconds) ? StatusPromotion.CHUA_KICH_HOAT : (currentSeconds >= endDate ) ? StatusPromotion.HET_HAN_KICH_HOAT : StatusPromotion.DANG_KICH_HOAT;
+        return (startDate > currentSeconds) ? StatusPromotion.CHUA_KICH_HOAT : (currentSeconds >= endDate  ? StatusPromotion.HET_HAN_KICH_HOAT : StatusPromotion.DANG_KICH_HOAT);
     }
 
     private boolean updateProductDetailsStatus(String idPromotion, StatusPromotion status) {

@@ -51,7 +51,8 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
           formData.quantity &&
           formData.startDate &&
           formData.endDate &&
-          formData.startDate < formData.endDate;
+          formData.startDate < formData.endDate &&
+          formData.endDate > dayjs().valueOf();
 
         if (!isFormValid) {
           const errors = {
@@ -61,10 +62,12 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
             startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
             quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
             endDate: !formData.endDate
-              ? "Vui lòng chọn ngày kết thúc"
-              : formData.startDate >= formData.endDate
-              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-              : "",
+            ? "Vui lòng chọn ngày kết thúc"
+            : formData.startDate >= formData.endDate
+            ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+            : formData.endDate <= dayjs().valueOf()
+            ? "Ngày kết thúc phải lớn hơn hiện tại"
+            : "",
           };
           setFormErrors(errors);
           return;
@@ -94,7 +97,13 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
     setFormData([]);
     setFormErrors([]);
   };
-
+  const formatMoney = (price) => {
+    return (
+      parseInt(price)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
+    );
+  };
   return (
     <div>
       <Modal
@@ -149,6 +158,22 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
                 inputChange("value", value);
               }}
               min="1"
+            />
+          </Form.Item>
+          <Form.Item
+            label="Đơn tối thiểu"
+        
+          >
+            <InputNumber
+              name="minimumBill"
+              placeholder="Đơn tối thiểu"
+              className="input-create-voucher"
+              value={formData["minimumBill"]}
+              onChange={(value) => {
+                inputChange("minimumBill", value);
+              }}
+              min="10000"
+              formatter = {(value)=> {formatMoney(value)}}
             />
           </Form.Item>
           <Form.Item

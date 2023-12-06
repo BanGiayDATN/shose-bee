@@ -93,18 +93,6 @@ function LayoutAccount({ children }) {
             name: "Đơn mua",
             page: "/purchase",
             icon: <FontAwesomeIcon icon={faStore} style={{ color: "#ff4400" }} />,
-        },
-        {
-            id: 3,
-            name: "Thông báo",
-            page: "/notification",
-            icon: <FontAwesomeIcon icon={faBell} style={{ color: "#ff4400" }} />,
-        },
-        {
-            id: 4,
-            name: "Kho voucher",
-            page: "/repository-voucher",
-            icon: <FontAwesomeIcon icon={faTags} style={{ color: "#ff4400" }} />,
         }
     ]
     return (<React.Fragment>

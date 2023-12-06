@@ -1,6 +1,6 @@
 import imgShoe from "./../../../assets/images/third_slider_img03.png";
 import logoHidden from "./../../../assets/images/logo_client.png";
-import imgShoe1 from "./../../../assets/images/trending_banner02.jpg";
+import imgShoe1 from "./../../../assets/images/logo_client.png";
 import "./style-cart.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -99,8 +99,8 @@ function Cart() {
   }, []);
 
   useEffect(() => {
-    console.log(listSize);
-  }, [listSize]);
+    console.log(totalBill);
+  }, [totalBill]);
   useEffect(() => {
     console.log(listVoucher);
   }, [listVoucher]);
@@ -216,7 +216,7 @@ function Cart() {
       }
     );
   };
-  const openListVoucher = (idAcccount) => {
+  const openListVoucher = () => {
     if (chooseItemCart.length === 0) {
       setVoucher(setDefaultVoucher);
       toast.warning("Vui lòng chọn sản phẩm trước khi nhập khuyến mại!", {
@@ -703,8 +703,8 @@ function Cart() {
                                         item,
                                         parseInt(item.quantity) - 1 < 1
                                           ? 1
-                                          : parseInt(item.quantity) - 1
-                                          ,item.quantityProductDetail
+                                          : parseInt(item.quantity) - 1,
+                                        item.quantityProductDetail
                                       )
                                     }
                                   />
@@ -718,8 +718,8 @@ function Cart() {
                                         item,
                                         value.target.value < 1
                                           ? 1
-                                          : value.target.value
-                                          ,item.quantityProductDetail
+                                          : value.target.value,
+                                        item.quantityProductDetail
                                       )
                                     }
                                   />
@@ -731,8 +731,8 @@ function Cart() {
                                         item,
                                         parseInt(item.quantity) + 1 < 1
                                           ? 1
-                                          : parseInt(item.quantity) + 1
-                                          ,item.quantityProductDetail
+                                          : parseInt(item.quantity) + 1,
+                                        item.quantityProductDetail
                                       )
                                     }
                                   />
@@ -808,47 +808,24 @@ function Cart() {
               <div className="bill-of-cart" style={{ borderRadius: "20px" }}>
                 <div className="content-bill-of-cart">
                   <div className="text-bill-in-cart"> ĐƠN HÀNG</div>
-                  {idAccountLocal === null ? (
-                    <div className="voucher-of-cart">
-                      <h3>THÊM MÃ KHUYẾN MÃI</h3>
-                      <div style={{ display: "flex", marginTop: "15px" }}>
-                        <Input
-                          // readOnly
-                          type="text"
-                          style={{ borderRadius: "5px" }}
-                          onChange={(e) => {
-                            handleInputChange(e.target.value);
-                          }}
-                        />
-                        <div
-                          className="button-add-voucher-cart"
-                          onClick={() => {
-                            getVoucher(formSearch);
-                          }}
-                        >
-                          ÁP DỤNG
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="voucher-of-cart-acc">
-                      <span>
-                        <FontAwesomeIcon icon={faTags} /> Voucher
-                      </span>{" "}
-                      <span
-                        style={{
-                          marginLeft: "auto",
-                          color: "blue",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => openListVoucher(idAccountLocal)}
-                      >
-                        {voucher.value !== 0
-                          ? "Chọn lại mã giảm giá"
-                          : " Chọn mã giảm giá"}
-                      </span>
-                    </div>
-                  )}
+
+                  <div className="voucher-of-cart-acc">
+                    <span>
+                      <FontAwesomeIcon icon={faTags} /> Voucher
+                    </span>{" "}
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        color: "blue",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => openListVoucher(idAccountLocal)}
+                    >
+                      {voucher.value !== 0
+                        ? "Chọn lại mã giảm giá"
+                        : " Chọn mã giảm giá"}
+                    </span>
+                  </div>
 
                   <div
                     className={`value-bill-of-cart ${
@@ -972,13 +949,27 @@ function Cart() {
           <p>Chọn 1 voucher</p>
           <div className="voucher-list">
             {listVoucher.map((item, index) => (
-              <div className="item-voucher">
+              <div
+                className={`item-voucher ${
+                  totalBill < item.minimumBill ||
+                  dayjs(item.endDate).format("DD-MM-YYYY") <=
+                    dayjs().format("DD-MM-YYYY")
+                    ? "hidden"
+                    : ""
+                }`}
+              >
                 <div style={{ marginRight: "5%" }}>
                   <img className="img-voucher-cart" src={imgShoe1} alt="..." />
                 </div>
                 <div>
                   <p>{item.name}</p>
                   <p>Giảm: {formatMoney(item.value)}</p>
+                  {item.minimumBill !== null ? (
+                    <p style={{ color: "#ff4400" }}>
+                      Đơn tối thiểu: {formatMoney(item.minimumBill)}
+                    </p>
+                  ) : null}
+
                   <p style={{ fontSize: "11px", marginTop: "5%" }}>
                     HSD: {dayjs(item.endDate).format("DD-MM-YYYY")}{" "}
                   </p>
@@ -989,7 +980,14 @@ function Cart() {
                     value={selectedItem.idVoucher}
                     onChange={() => handleRadioChange(item)}
                   >
-                    <Radio value={item.id}></Radio>
+                    <Radio
+                      value={item.id}
+                      disabled={
+                        totalBill < item.minimumBill ||
+                        dayjs(item.endDate).format("DD-MM-YYYY") <=
+                          dayjs().format("DD-MM-YYYY")
+                      }
+                    ></Radio>
                   </Radio.Group>
                 </div>
               </div>

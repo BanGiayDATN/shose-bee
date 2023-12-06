@@ -808,6 +808,15 @@ public class BillServiceImpl implements BillService {
         }
 
         CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
+        if(request.getIdVoucher() != null){
+            Optional<Voucher> optional = voucherRepository.findById(request.getIdVoucher());
+            if(optional.isEmpty()){
+                throw new RestApiException("Mã giảm giá không tồn tại");
+            }
+            Voucher voucher = optional.get();
+            voucher.setQuantity(voucher.getQuantity()-1);
+            voucherRepository.save(voucher);
+        }
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -934,6 +943,15 @@ public class BillServiceImpl implements BillService {
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
         CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
+        if(request.getIdVoucher() != null){
+            Optional<Voucher> optional = voucherRepository.findById(request.getIdVoucher());
+            if(optional.isEmpty()){
+                throw new RestApiException("Mã giảm giá không tồn tại");
+            }
+            Voucher voucher = optional.get();
+            voucher.setQuantity(voucher.getQuantity()-1);
+            voucherRepository.save(voucher);
+        }
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")

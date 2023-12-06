@@ -9,6 +9,7 @@ import com.example.shose.server.dto.request.voucher.UpdateVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusPromotion;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.VoucherService;
@@ -36,7 +37,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<Voucher> findAll() {
-        return voucherRepository.findAll();
+        return voucherRepository.getAllHaveQuantity();
     }
 
     @Override
@@ -45,11 +46,15 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Voucher add(CreateVoucherRequest request) {
-        long currentSeconds = (System.currentTimeMillis() / 1000)*1000;
-        Status status = (request.getStartDate() <= currentSeconds && currentSeconds <= request.getEndDate())
-                ? Status.DANG_SU_DUNG
-                : Status.KHONG_SU_DUNG;
+    public Voucher add(CreateVoucherRequest request) throws RestApiException {
+        if(request.getEndDate() <= request.getStartDate()){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+        }
+        long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
+        if(request.getEndDate() <=currentSeconds){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn hiện tại");
+        }
+        Status status = (request.getStartDate() > currentSeconds) ? Status.CHUA_KICH_HOAT : (currentSeconds >= request.getEndDate()  ? Status.KHONG_SU_DUNG : Status.DANG_SU_DUNG);
            Voucher voucher = Voucher.builder()
                    .code(request.getCode())
                    .name(request.getName())
@@ -57,17 +62,18 @@ public class VoucherServiceImpl implements VoucherService {
                    .quantity(request.getQuantity())
                    .startDate(request.getStartDate())
                    .endDate(request.getEndDate())
-                   .status(status).build();
+                   .status(status)
+                   .minimumBill(request.getMinimumBill())
+                   .build();
            return voucherRepository.save(voucher);
     }
 
     @Override
-    public Voucher update(UpdateVoucherRequest request) {
+    public Voucher update(UpdateVoucherRequest request) throws RestApiException {
         Optional<Voucher> optional = voucherRepository.findById(request.getId());
         if (!optional.isPresent()) {
             throw new RestApiException("Khuyến mãi không tồn tại");
         }
-
         Voucher voucher = optional.get();
         voucher.setCode(request.getCode());
         voucher.setName(request.getName());
@@ -75,17 +81,18 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setQuantity(request.getQuantity());
         voucher.setStartDate(request.getStartDate());
         voucher.setEndDate(request.getEndDate());
-        if(request.getStartDate()<= ( System.currentTimeMillis() / 1000)*1000 && ( System.currentTimeMillis() / 1000)*1000 <=request.getEndDate()){
-            voucher.setStatus(Status.DANG_SU_DUNG);
-        }else{
-            voucher.setStatus(Status.KHONG_SU_DUNG);
+        voucher.setMinimumBill(request.getMinimumBill());
+        if(request.getEndDate() <= request.getStartDate()){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }
-
+        long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
+        Status status = (request.getStartDate() > currentSeconds) ? Status.CHUA_KICH_HOAT : (currentSeconds >= request.getEndDate()  ? Status.KHONG_SU_DUNG : Status.DANG_SU_DUNG);
+        voucher.setStatus(status);
         return voucherRepository.save(voucher);
     }
 
     @Override
-    public Voucher updateStatus(String id) {
+    public Voucher updateStatus(String id) throws RestApiException {
         Optional<Voucher> optional = voucherRepository.findById(id);
         if (!optional.isPresent()) {
             throw new RestApiException("Khuyến mãi không tồn tại");
@@ -140,8 +147,8 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public List<Voucher> getVoucherByIdAccount(String idAccount) {
-        return voucherRepository.getVoucherByIdAccount(idAccount);
+    public List<Voucher> getVoucherByIdAccount() {
+        return voucherRepository.findAll();
     }
 
     public static void main(String[] args) {

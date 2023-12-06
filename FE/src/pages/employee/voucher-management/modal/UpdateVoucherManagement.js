@@ -73,10 +73,10 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
             startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
             quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
             endDate: !formData.endDate
-              ? "Vui lòng chọn ngày kết thúc"
-              : formData.startDate >= formData.endDate
-              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-              : "",
+            ? "Vui lòng chọn ngày kết thúc"
+            : formData.startDate >= formData.endDate
+            ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+            : "",
           };
           setFormErrors(errors);
           return;
@@ -89,8 +89,12 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               autoClose: 5000,
             });
             closeModal();
-          },
-          (err) => console.log(err)
+          },(err) => {
+            toast.success(err.data.response.message, {
+              autoClose: 5000,
+            });
+            console.log(err);
+          }
         );
       },
     });
@@ -108,7 +112,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
           startDate: dayjs(voucherData.startDate),
           endDate: dayjs(voucherData.endDate),
           status: voucherData.status,
-          createdDate: dayjs(voucherData.createdDate),
+          createdDate: dayjs(voucherData.createdDate), 
+          minimumBill: voucherData.minimumBill
         });
       },
       (err) => console.log(err)
@@ -176,6 +181,21 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
             />
           </Form.Item>
           <Form.Item
+            label="Đơn tối thiểu"
+        
+          >
+            <InputNumber
+              name="minimumBill"
+              placeholder="Đơn tối thiểu"
+              className="input-create-voucher"
+              value={formData["minimumBill"]}
+              onChange={(value) => {
+                inputChange("minimumBill", value);
+              }}
+              min="10000"
+            />
+          </Form.Item>
+          <Form.Item
             label="Số lượng"
             validateStatus={formErrors["quantity"] ? "error" : ""}
             help={formErrors["quantity"] || ""}
@@ -230,8 +250,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               name="status"
               value={
                 formData["status"] === "DANG_SU_DUNG"
-                  ? "Còn hạn"
-                  : "Hết hạn" || ""
+                  ? "Đang kích hoạt"
+                  : formData["status"] === "CHUA_KICH_HOAT" ?" Chưa kích hoạt":"Không kích hoạt"
               }
             ></Input>
           </Form.Item>
