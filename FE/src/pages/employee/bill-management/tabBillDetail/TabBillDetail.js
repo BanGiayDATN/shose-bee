@@ -90,6 +90,7 @@ function TabBillDetail({ dataBillDetail }) {
         cancelText: "Hủy",
         onOk: async () => {
           if (note && note.length > 10) {
+            data.note = note
           await BillApi.updateProductInBill(record.id, data)
             .then((res) => {
               toast.success("Sửa sản phẩm thành công");
@@ -510,7 +511,7 @@ function TabBillDetail({ dataBillDetail }) {
           const updatedProducts = billDetai.filter(
             (product) => product.id !== record.idProduct
           );
-          await BillApi.removeProductInBill(record.id, record.idProduct)
+          await BillApi.removeProductInBill(record.id, record.idProduct, note)
             .then((res) => {
               toast.success("Xóa sản phẩm thành công");
               dispatch(

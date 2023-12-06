@@ -3,6 +3,7 @@ package com.example.shose.server.controller.admin;
 import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.BillDetailService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,6 +29,9 @@ public class BillDetailRestController {
 
     @Autowired
     private BillDetailService billDetailService;
+
+    @Autowired
+    private ShoseSession shoseSession;
 
     @GetMapping("")
     public ResponseObject findAllByIdBill(BillDetailRequest request){
@@ -45,7 +50,7 @@ public class BillDetailRestController {
 
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id")String id, @RequestBody CreateBillDetailRequest request){
-        return  new ResponseObject(billDetailService.update(id, request));
+        return  new ResponseObject(billDetailService.update(id,shoseSession.getEmployee().getId(), request));
     }
 
     @PostMapping("/add-product")
@@ -54,7 +59,7 @@ public class BillDetailRestController {
     }
 
     @DeleteMapping("/remove/{id}/{productDetail}")
-    public ResponseObject removeProductInBill(@PathVariable("id") String id, @PathVariable("productDetail") String productDetail){
-        return  new ResponseObject(billDetailService.delete(id, productDetail));
+    public ResponseObject removeProductInBill(@PathVariable("id") String id, @PathVariable("productDetail") String productDetail, @RequestParam("note") String note){
+        return  new ResponseObject(billDetailService.delete(id, productDetail,note, shoseSession.getEmployee().getId()));
     }
 }

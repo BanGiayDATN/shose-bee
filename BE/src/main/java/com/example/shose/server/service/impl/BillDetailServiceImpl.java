@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
@@ -12,6 +13,7 @@ import com.example.shose.server.entity.Size;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
+import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
@@ -50,6 +52,9 @@ public class BillDetailServiceImpl implements BillDetailService {
     private SizeRepository sizeRepository;
 
     private FormUtils formUtils = new FormUtils();
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Override
     public List<BillDetailResponse> findAllByIdBill(BillDetailRequest request) {
@@ -147,7 +152,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         return billDetail.getId();
     }
     @Override
-    public String update(String id, CreateBillDetailRequest request) {
+    public String update(String id, String idEmployees, CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
         Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
         Optional<BillDetail> billDetail = billDetailRepository.findById(id);
@@ -182,12 +187,17 @@ public class BillDetailServiceImpl implements BillDetailService {
                         })
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
         );
+        if(!request.getNote().isEmpty()){
+            Optional<Account> account = accountRepository.findById(idEmployees);
+            billHistoryRepository.save(BillHistory.builder().bill(bill.get()).actionDescription(request.getNote())
+                    .employees(account.get()).build());
+        }
         billRepository.save(bill.get());
         return billDetail.get().getId();
     }
 
     @Override
-    public boolean delete(String id, String productDetail) {
+    public boolean delete(String id, String productDetail, String note, String idEmployees) {
         Optional<BillDetail> billDetail = billDetailRepository.findById(id);
         if (!billDetail.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -216,6 +226,11 @@ public class BillDetailServiceImpl implements BillDetailService {
                         })
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
         );
+        if(!note.isEmpty()){
+            Optional<Account> account = accountRepository.findById(idEmployees);
+            billHistoryRepository.save(BillHistory.builder().bill(bill).actionDescription(note)
+                    .employees(account.get()).build());
+        }
         billRepository.save(bill);
         return true;
     }
