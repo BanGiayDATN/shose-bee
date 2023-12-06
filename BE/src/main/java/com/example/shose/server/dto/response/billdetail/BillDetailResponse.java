@@ -66,4 +66,7 @@ public interface BillDetailResponse {
 
     @Value("#{target.status_bill}")
     String getStatus();
+
+    @Value("#{target.codeColor}")
+    String getCodeColor();
 }

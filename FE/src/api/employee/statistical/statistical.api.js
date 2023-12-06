@@ -54,4 +54,12 @@ export class StatisticalApi {
       url: `/admin/statistical/stock`,
     });
   };
+
+  static downloadExcel_xlsx = () => {
+    return request({
+      method: "GET",
+      url: `/admin/statistical/download/xlsx`,
+      responseType: "arraybuffer",
+    });
+  };
 }

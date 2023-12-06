@@ -14,6 +14,7 @@ import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.VoucherService;
 import com.example.shose.server.util.ConvertDateToLong;
+import com.example.shose.server.util.RandomNumberGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
         Status status = (request.getStartDate() > currentSeconds) ? Status.CHUA_KICH_HOAT : (currentSeconds >= request.getEndDate()  ? Status.KHONG_SU_DUNG : Status.DANG_SU_DUNG);
            Voucher voucher = Voucher.builder()
-                   .code(request.getCode())
+                   .code(new RandomNumberGenerator().randomToString("VC",999999999))
                    .name(request.getName())
                    .value(request.getValue())
                    .quantity(request.getQuantity())
@@ -75,7 +76,6 @@ public class VoucherServiceImpl implements VoucherService {
             throw new RestApiException("Khuyến mãi không tồn tại");
         }
         Voucher voucher = optional.get();
-        voucher.setCode(request.getCode());
         voucher.setName(request.getName());
         voucher.setValue(request.getValue());
         voucher.setQuantity(request.getQuantity());

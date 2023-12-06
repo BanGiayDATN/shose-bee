@@ -74,12 +74,6 @@ function PayMentSuccessful() {
     documentTitle: "Userdata",
     onAfterPrint: () => {},
   });
-  const getHtmlByIdBill = (id) => {
-    BillApi.fetchHtmlIdBill(id).then((res) => {
-      document.getElementById("pdfContent").innerHTML = res.data.data;
-      generatePDF();
-    });
-  };
   useEffect(() => {
     const param = new URLSearchParams(window.location.search);
     fetchData();
@@ -88,7 +82,10 @@ function PayMentSuccessful() {
     PaymentsMethodApi.checkPaymentVnPay(param)
       .then((res) => {
         setLoadLink(false);
-        getHtmlByIdBill(param.get("vnp_TxnRef").split("-")[0]);
+        BillApi.fetchHtmlIdBill(param.get("vnp_TxnRef").split("-")[0]).then((res) => {
+          document.getElementById("pdfContent").innerHTML = res.data.data;
+          generatePDF();
+        });
       })
       .catch((error) => {
         toast.error(error.response.data.message);

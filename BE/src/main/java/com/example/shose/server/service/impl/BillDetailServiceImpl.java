@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.billdetail.BillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.CreateBillDetailRequest;
 import com.example.shose.server.dto.request.billdetail.RefundProductRequest;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
@@ -12,6 +13,7 @@ import com.example.shose.server.entity.Size;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
+import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
@@ -50,6 +52,9 @@ public class BillDetailServiceImpl implements BillDetailService {
     private SizeRepository sizeRepository;
 
     private FormUtils formUtils = new FormUtils();
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Override
     public List<BillDetailResponse> findAllByIdBill(BillDetailRequest request) {
@@ -122,19 +127,32 @@ public class BillDetailServiceImpl implements BillDetailService {
         productDetail.get().setQuantity( productDetail.get().getQuantity() - request.getQuantity());
         productDetailRepository.save(productDetail.get());
 
-        bill.get().setTotalMoney(bill.get().getTotalMoney().add(new BigDecimal(request.getPrice()).multiply(BigDecimal.valueOf(request.getQuantity()))));
-        billRepository.save(bill.get());
+
         BillDetail billDetail = new BillDetail();
-        billDetail.setStatusBill(StatusBill.TAO_HOA_DON);
+        billDetail.setStatusBill(StatusBill.THANH_CONG);
         billDetail.setQuantity(request.getQuantity());
         billDetail.setPrice(new BigDecimal(request.getPrice()));
         billDetail.setProductDetail(productDetail.get());
         billDetail.setBill(bill.get());
         billDetailRepository.save(billDetail);
+        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(request.getIdBill(), "THANH_CONG"));
+        bill.get().setTotalMoney(
+                billDetailResponses.stream()
+                        .map(billDetailRequest -> {
+                            return (billDetailRequest.getPromotion() == null)
+                                    ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                                    : new BigDecimal(billDetailRequest.getQuantity())
+                                    .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                            .multiply(billDetailRequest.getPrice())
+                                            .divide(new BigDecimal(100)));
+                        })
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
+        billRepository.save(bill.get());
         return billDetail.getId();
     }
     @Override
-    public String update(String id, CreateBillDetailRequest request) {
+    public String update(String id, String idEmployees, CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
         Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
         Optional<BillDetail> billDetail = billDetailRepository.findById(id);
@@ -152,18 +170,34 @@ public class BillDetailServiceImpl implements BillDetailService {
         productDetail.get().setQuantity( (productDetail.get().getQuantity() + billDetail.get().getQuantity() ) - request.getQuantity());
         productDetailRepository.save(productDetail.get());
 
-
-        bill.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
-        billRepository.save(bill.get());
-//        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
+        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
         billDetail.get().setQuantity(request.getQuantity());
-        billDetail.get().setStatusBill(StatusBill.TAO_HOA_DON);
+        billDetail.get().setStatusBill(StatusBill.THANH_CONG);
         billDetailRepository.save(billDetail.get());
+        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(request.getIdBill(), "THANH_CONG"));
+        bill.get().setTotalMoney(
+                billDetailResponses.stream()
+                        .map(billDetailRequest -> {
+                            return (billDetailRequest.getPromotion() == null)
+                                    ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                                    : new BigDecimal(billDetailRequest.getQuantity())
+                                    .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                            .multiply(billDetailRequest.getPrice())
+                                            .divide(new BigDecimal(100)));
+                        })
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
+        if(!request.getNote().isEmpty()){
+            Optional<Account> account = accountRepository.findById(idEmployees);
+            billHistoryRepository.save(BillHistory.builder().bill(bill.get()).actionDescription(request.getNote())
+                    .employees(account.get()).build());
+        }
+        billRepository.save(bill.get());
         return billDetail.get().getId();
     }
 
     @Override
-    public boolean delete(String id, String productDetail) {
+    public boolean delete(String id, String productDetail, String note, String idEmployees) {
         Optional<BillDetail> billDetail = billDetailRepository.findById(id);
         if (!billDetail.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
@@ -179,6 +213,25 @@ public class BillDetailServiceImpl implements BillDetailService {
         optional.get().setQuantity(billDetail.get().getQuantity() + optional.get().getQuantity());
         productDetailRepository.save(optional.get());
         billDetailRepository.deleteById(id);
+        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(billDetail.get().getBill().getId(), "THANH_CONG"));
+        bill.setTotalMoney(
+                billDetailResponses.stream()
+                        .map(billDetailRequest -> {
+                            return (billDetailRequest.getPromotion() == null)
+                                    ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                                    : new BigDecimal(billDetailRequest.getQuantity())
+                                    .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                            .multiply(billDetailRequest.getPrice())
+                                            .divide(new BigDecimal(100)));
+                        })
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
+        if(!note.isEmpty()){
+            Optional<Account> account = accountRepository.findById(idEmployees);
+            billHistoryRepository.save(BillHistory.builder().bill(bill).actionDescription(note)
+                    .employees(account.get()).build());
+        }
+        billRepository.save(bill);
         return true;
     }
 

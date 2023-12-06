@@ -792,15 +792,21 @@ function Cart() {
                   )}
                 </div>
                 {cart.length !== 0 ? (
-                  <div style={{ display: "flex", marginTop: 70 }}>
-                    {/* <div className="button-delete-all-cart">XOÁ TẤT CẢ</div> */}
+                  <div style={{ display: "flex", marginTop: 20 }}>
+                    <div
+                      className="button-delete-all-cart"
+                      style={{ borderRadius: "7px" }}
+                    >
+                      XOÁ TẤT CẢ
+                    </div>
 
-                    {/* <div
+                    <div
                       className="button-continue-to-buy"
+                      style={{ borderRadius: "7px" }}
                       onClick={() => nav("/home")}
                     >
                       TIẾP TỤC MUA HÀNG
-                    </div> */}
+                    </div>
                   </div>
                 ) : null}
               </div>
@@ -998,11 +1004,16 @@ function Cart() {
           <div
             className="button-cancel-voucher-cart"
             onClick={closeModalVoucher}
+            style={{ borderRadius: "7px" }}
           >
-            Trở lại
+            Hủy
           </div>
-          <div className="button-ok-voucher-cart" onClick={submitVoucher}>
-            Ok
+          <div
+            className="button-ok-voucher-cart"
+            style={{ borderRadius: "7px" }}
+            onClick={submitVoucher}
+          >
+            Chọn
           </div>
         </div>
       </Modal>

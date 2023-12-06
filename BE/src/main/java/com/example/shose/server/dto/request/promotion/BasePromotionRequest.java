@@ -17,8 +17,6 @@ import java.math.BigDecimal;
 @Setter
 @ToString
 public abstract class BasePromotionRequest {
-    @NotBlank(message = "Nhập mã khuyến mại")
-    private String code;
     @NotBlank(message = "Nhập tên khuyến mại")
     private String name;
     @NotNull(message = "Nhập giá trị khuyến mại")

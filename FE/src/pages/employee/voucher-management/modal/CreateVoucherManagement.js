@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./../style-voucher.css";
-import {
-  Form,
-  Input,
-  Button,
-  Modal,
-  InputNumber,
-  Popconfirm,
-  DatePicker,
-} from "antd";
+import { Form, Input, Button, Modal, InputNumber, DatePicker } from "antd";
 import { VoucherApi } from "../../../../api/employee/voucher/Voucher.api";
 import { CreateVoucher } from "../../../../app/reducer/Voucher.reducer";
 import dayjs from "dayjs";
@@ -37,6 +29,15 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
     return convertedFormData;
   };
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+
   const handleSubmit = () => {
     Modal.confirm({
       title: "Xác nhận thêm",
@@ -45,7 +46,6 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
       cancelText: "Hủy",
       onOk() {
         const isFormValid =
-          formData.code &&
           formData.name &&
           formData.value &&
           formData.quantity &&
@@ -56,7 +56,6 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
 
         if (!isFormValid) {
           const errors = {
-            code: !formData.code ? "Vui lòng nhập mã khuyễn mãi" : "",
             name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
             value: !formData.value ? "Vui lòng nhập giá giảm" : "",
             startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
@@ -79,6 +78,7 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
             toast.success("Thêm thành công!", {
               autoClose: 5000,
             });
+
             closeModal();
           })
           .catch((error) => {
@@ -115,21 +115,6 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
       >
         <Form layout="vertical">
           <Form.Item
-            label="Mã khuyến mãi"
-            validateStatus={formErrors["code"] ? "error" : ""}
-            help={formErrors["code"] || ""}
-          >
-            <Input
-              name="code"
-              className="input-create-voucher"
-              placeholder="Tên khuyến mãi"
-              value={formData["code"]}
-              onChange={(e) => {
-                inputChange("code", e.target.value);
-              }}
-            />
-          </Form.Item>
-          <Form.Item
             label="Tên khuyến mãi"
             validateStatus={formErrors["name"] ? "error" : ""}
             help={formErrors["name"] || ""}
@@ -158,6 +143,8 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
                 inputChange("value", value);
               }}
               min="1"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
           <Form.Item

@@ -246,6 +246,7 @@ function UpdatePromotionManagement() {
       type: "text",
       label: "Mã khuyễn mại",
       text: "mã khuyễn mại",
+      readOnly: true,
       class: "input-form-promotion",
     },
     {
