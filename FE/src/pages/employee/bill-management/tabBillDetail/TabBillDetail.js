@@ -83,13 +83,13 @@ function TabBillDetail({ dataBillDetail }) {
         content: (
           <div>
             <p>{"Bạn có đồng ý sửa thành " + data.quantity + " không?"}</p>
-            <TextArea rows={4} value={note} placeholder="Nhập ghi chú..." required onChange={(e) => setNote(e.target.value)}/>
+            <TextArea rows={4}  placeholder="Nhập ghi chú..."  onChange={(e) => setNote(e.target.value)} />
           </div>
         ),
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          if (note && note.length > 10) {
+          if (note.trim() != "" && note.length > 10) {
             data.note = note
           await BillApi.updateProductInBill(record.id, data)
             .then((res) => {
@@ -430,7 +430,7 @@ function TabBillDetail({ dataBillDetail }) {
                   min={1}
                   max={
                     record.promotion == null
-                      ? record.maxQuantity
+                      ? record.maxQuantity + record.quantity
                       : record.quantity
                   }
                   style={{ margin: "0 5px" }}
@@ -501,7 +501,7 @@ function TabBillDetail({ dataBillDetail }) {
       content: (
         <div>
           <p>{"Bạn có đồng ý xóa sản phẩm " + record.productName + " không?"}</p>
-          <TextArea rows={4} value={note} placeholder="Nhập ghi chú..." required onChange={(e) => setNote(e.target.value)}/>
+          <TextArea rows={4}  placeholder="Nhập ghi chú..."  onChange={(e) => console.log(e.target.value)}/>
         </div>
       ),
       okText: "Đồng ý",

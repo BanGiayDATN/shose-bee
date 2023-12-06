@@ -37,7 +37,7 @@ function TimeLine({ listStatus, data, statusPresent }) {
   return (
     <div className="container" style={{ width: "100%", margin: "10px" }}>
       <Timeline minEvents={statusPresent != 7 ? 5 : 1} placeholder>
-        {data.filter((history) => history.statusBill === null).map((item) => (
+        {data.filter((history) => history.statusBill !== null).map((item) => (
           <TimelineEvent
             color={
               item.statusBill !== "DA_HUY" && item.statusBill !== "TRA_HANG"
