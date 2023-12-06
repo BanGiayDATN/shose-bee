@@ -3,9 +3,11 @@ package com.example.shose.server.infrastructure.excel;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
+
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.service.BillService;
+import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.service.StatisticalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ExportExcelStatistical {
@@ -69,4 +69,5 @@ public class ExportExcelStatistical {
         }
         return out;
     }
+
 }

@@ -1,13 +1,11 @@
 package com.example.shose.server.service;
 
-import com.example.shose.server.infrastructure.poin.Poin;
+import com.example.shose.server.entity.ScoringFormula;
 
 /**
  * @author thangdt
  */
 public interface PoinService {
 
-    Poin updatePoin(Poin poin);
-
-    Poin getDetailPoin();
+    ScoringFormula getDetailPoin();
 }

@@ -244,7 +244,11 @@ function PaymentAccount() {
               CartClientApi.quantityInCart(idAccount).then(
                 (res) => {
                   updateTotalQuantity(res.data.data);
-                  stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
+                  stompClient.send(
+                    "/action/notifyAdmin",
+                    {},
+                    "Có đơn hàng mới"
+                  );
                 },
                 (err) => {
                   console.log(err);
@@ -461,11 +465,14 @@ function PaymentAccount() {
                     />
                     <span style={{ marginLeft: "5%" }}>{item.nameProduct}</span>
                   </div>
-                  <span  style={{
-                      width: "10%"
-                    
-                    }}>{item.nameSize}</span>
-                  <span style={{  width: "20%" }}>
+                  <span
+                    style={{
+                      width: "10%",
+                    }}
+                  >
+                    {item.nameSize}
+                  </span>
+                  <span style={{ width: "20%" }}>
                     {item.valuePromotion !== null ? (
                       <>
                         <span style={{ marginLeft: 5 }}>
@@ -480,7 +487,9 @@ function PaymentAccount() {
                       formatMoney(item.price)
                     )}
                   </span>
-                  <span style={{ width: "20%",paddingLeft:"20px" }}>{item.quantity}</span>
+                  <span style={{ width: "20%", paddingLeft: "20px" }}>
+                    {item.quantity}
+                  </span>
                   <span style={{ flex: 1 }}>
                     {" "}
                     {item.valuePromotion === null

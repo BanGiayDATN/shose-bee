@@ -14,8 +14,14 @@ import {
   faArrowDownWideShort,
   faDownload,
   faFileExcel,
+  faCircle,
+  faCircleDown,
+  faDownLong,
 } from "@fortawesome/free-solid-svg-icons";
-import { DownloadOutlined } from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  VerticalAlignBottomOutlined,
+} from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 const DashBoard = () => {
@@ -126,8 +132,9 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -135,8 +142,9 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -277,7 +285,7 @@ const DashBoard = () => {
         }
       }
     });
-    let element = document.getElementById("chartdivPie")
+    let element = document.getElementById("chartdivPie");
     if (element != null) {
       let root = am5.Root.new("chartdivPie");
       root.setThemes([am5themes_Animated.new(root)]);
@@ -430,9 +438,9 @@ const DashBoard = () => {
     }
     setNameTable(
       "Từ " +
-      event.target.value +
-      " Đến " +
-      moment(endDate).format("YYYY-MM-DD")
+        event.target.value +
+        " Đến " +
+        moment(endDate).format("YYYY-MM-DD")
     );
   };
 
@@ -451,9 +459,9 @@ const DashBoard = () => {
     }
     setNameTable(
       "Từ " +
-      moment(startDate).format("YYYY-MM-DD") +
-      " Đến " +
-      event.target.value
+        moment(startDate).format("YYYY-MM-DD") +
+        " Đến " +
+        event.target.value
     );
   };
 
@@ -526,8 +534,9 @@ const DashBoard = () => {
         const groupProduct = new Map();
         dataBill.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateBillList.push({
             totalBillDate: item.totalBillDate,
             billDate: formattedDate,
@@ -535,8 +544,9 @@ const DashBoard = () => {
         });
         dataProduct.forEach((item) => {
           const date = new Date(Number(item.billDate));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-            }/${date.getFullYear()}`;
+          const formattedDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
           dateProductList.push({
             totalProductDate: item.totalProductDate,
             billDate: formattedDate,
@@ -587,10 +597,9 @@ const DashBoard = () => {
         }
       }
     });
-    let element = document.getElementById("chartdivChart")
+    let element = document.getElementById("chartdivChart");
     if (element != null) {
       am5.ready(function () {
-
         let root = am5.Root.new("chartdivChart");
         // Create root element
         // https://www.amcharts.com/docs/v5/getting-started/#Root_element
@@ -869,7 +878,7 @@ const DashBoard = () => {
         let createDate = moment(new Date()).format("YYYY-MM-DD_HH:mm:ss");
         console.log("createDate", createDate);
         link.href = url;
-        link.download = "ThongKeDoanhThuHoaDonSanPham_" + createDate + ".xlsx"; // Tên file tải về
+        link.download = "BaoCaoThongKeDoanhThuHoaDonSanPham_" + createDate + ".xlsx"; // Tên file tải về
         link.click();
         window.URL.revokeObjectURL(url);
       })
@@ -934,14 +943,29 @@ const DashBoard = () => {
               <br />
               <div style={{ position: "relative" }}>
                 <div className="option-time">
-                  <Tooltip title="Download Excel Mẫu">
+                  <Tooltip title="Download Excel Thống kê">
                     <Button
                       onClick={handleImportFile}
-                      style={{ height: "38px", backgroundColor: "ButtonShadow" }}
+                      style={{
+                        height: "38px",
+                        backgroundColor: "ButtonShadow",
+                      }}
                     >
-                      <span> <FontAwesomeIcon icon={faDownload} style={{ marginRight: "5px" }} /></span>
-                      <span> <FontAwesomeIcon icon={faFileExcel} style={{ backgroundColor: "white", marginRight: "3px" }} /></span>
-                      <span> xlsx</span>
+                      <span>
+                        {" "}
+                        <VerticalAlignBottomOutlined />
+                      </span>
+                      <span style={{ marginLeft: "10px" }}>
+                        {" "}
+                        <FontAwesomeIcon
+                          icon={faFileExcel}
+                          style={{
+                            backgroundColor: "white",
+                            marginRight: "3px",
+                          }}
+                        />
+                      </span>
+                      <span> Excel</span>
                     </Button>
                   </Tooltip>
                   <button className="button-time" disabled>

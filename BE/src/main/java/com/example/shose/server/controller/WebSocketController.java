@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin("*")
 public class WebSocketController {
     @MessageMapping("/notifyAdmin")
-    @SendTo("/topic/admin-notifications")
+    @SendTo("/app/admin-notifications")
     public String notifyAdmin(String message) {
         return message;
     }

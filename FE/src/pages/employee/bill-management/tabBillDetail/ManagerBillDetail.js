@@ -1,5 +1,5 @@
-import { Row, Tabs } from "antd";
-import React from "react";
+import { Button, Col, Modal, Row, Tabs } from "antd";
+import React, { useState } from "react";
 import TabBillDetail from "./TabBillDetail";
 import "./tabBillDetail.css";
 
@@ -12,13 +12,14 @@ function ManagerBillDetail({ id, status }) {
       ? "Sản phẩm mua thành công"
       : "Sản phẩm trả hàng";
   };
+
   return (
     <Row style={{ width: "100%" }}>
       {status !== "TRA_HANG" ? (
-        <TabBillDetail
-          style={{ width: "100%" }}
-          dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
-        />
+            <TabBillDetail
+              style={{ width: "100%" }}
+              dataBillDetail={{ idBill: id, status: "THANH_CONG" }}
+            />
       ) : (
         <Tabs
           type="card"
@@ -37,6 +38,7 @@ function ManagerBillDetail({ id, status }) {
           })}
         />
       )}
+     
     </Row>
   );
 }
