@@ -11,7 +11,7 @@ import {
   Table,
   Tooltip,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import "./tabBillDetail.css";
 import { useSelector } from "react-redux";
@@ -40,14 +40,13 @@ function TabBillDetail({ dataBillDetail }) {
     });
     return formatter.format(value);
   };
-
+  
   const totalMoneyProduct = (product) => {
     return product.promotion === null
       ? product.price * product.quantity
       : (product.price * (100 - product.promotion) * product.quantity) / 100;
   };
   const bill = useSelector((state) => state.bill.bill.value);
-
   const handleQuantityChange = (value, record) => {
     var max = record.quantity;
     var quantityCustom = parseInt(value);
@@ -83,13 +82,14 @@ function TabBillDetail({ dataBillDetail }) {
         content: (
           <div>
             <p>{"Bạn có đồng ý sửa thành " + data.quantity + " không?"}</p>
-            <TextArea rows={4}  placeholder="Nhập ghi chú..."  onChange={(e) => setNote(e.target.value)} />
+            <TextArea id="myTextArea" rows={4} placeholder="Nhập ghi chú..." />
           </div>
         ),
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          if (note.trim() != "" && note.trim().length > 10) {
+          var note = document.getElementById('myTextArea').value;
+          if (note.trim() !== "" && note.trim().length > 10) {
             data.note = note
           await BillApi.updateProductInBill(record.id, data)
             .then((res) => {
@@ -112,12 +112,11 @@ function TabBillDetail({ dataBillDetail }) {
           await BillApi.fetchDetailBill(bill.id).then((res) => {
             dispatch(getBill(res.data.data));
           });
-          setNote("")
         }else{
-          toast.warning("vui lòng nhập mô tả")
+          toast.warning("Vui lòng nhập mô tả và tối thiểu 10 ký tự")
         }
         },
-        onCancel: () => {setNote("")},
+        onCancel: () => {},
       });
     }
   };
@@ -434,7 +433,7 @@ function TabBillDetail({ dataBillDetail }) {
                       : record.quantity
                   }
                   style={{ margin: "0 5px" }}
-                  defaultValue={record.quantity}
+                  value={record.quantity}
                   onPressEnter={(e) => {
                     handleQuantityChange(e.target.value, record);
                   }}
@@ -494,68 +493,72 @@ function TabBillDetail({ dataBillDetail }) {
       },
     },
   ];
-  const [note, setNote] = useState("")
+  
   const handleDelete = (record) => {
-    Modal.confirm({
-      title: "Xác nhận",
-      content: (
-        <div>
-          <p>{"Bạn có đồng ý xóa sản phẩm " + record.productName + " không?"}</p>
-          <TextArea rows={4}  placeholder="Nhập ghi chú..."  onChange={(e) => setNote(e.target.value)}/>
-        </div>
-      ),
-      okText: "Đồng ý",
-      cancelText: "Hủy",
-      onOk: async () => {
-        if(note.trim() != "" && note.trim().length > 10){
-          const updatedProducts = billDetai.filter(
-            (product) => product.id !== record.idProduct
-          );
-          await BillApi.removeProductInBill(record.id, record.idProduct, note)
-            .then((res) => {
-              toast.success("Xóa sản phẩm thành công");
-              dispatch(
-                updateTotalBill(
-                  updatedProducts.reduce((accumulator, currentValue) => {
-                    return (
-                      accumulator +
-                      (currentValue.promotion === null
-                        ? formatCurrency(currentValue.price)
-                        : formatCurrency(
-                            (currentValue.price *
-                              (100 - currentValue.promotion)) /
-                              100
-                          )) *
-                        currentValue.quantity
-                    );
-                  }, 0)
-                )
-              );
-              let sum = 0;
-              billDetai.forEach((product) => {
-                sum += product.quantity || 0;
+    if(billDetai.length == 1){
+      toast.warning("Phải có tối thiểu 1 sản phẩm trong giỏ hàng ")
+    }else{
+      Modal.confirm({
+        title: "Xác nhận",
+        content: (
+          <div>
+            <p>{"Bạn có đồng ý xóa sản phẩm " + record.productName + " không?"}</p>
+            <TextArea rows={4}  placeholder="Nhập ghi chú..."  id="myTextAreaDeteleProduct"/>
+          </div>
+        ),
+        okText: "Đồng ý",
+        cancelText: "Hủy",
+        onOk: async () => {
+          var note = document.getElementById('myTextAreaDeteleProduct').value;
+          if(note.trim() != "" && note.trim().length > 10){
+            const updatedProducts = billDetai.filter(
+              (product) => product.id !== record.idProduct
+            );
+            await BillApi.removeProductInBill(record.id, record.idProduct, note)
+              .then((res) => {
+                toast.success("Xóa sản phẩm thành công");
+                dispatch(
+                  updateTotalBill(
+                    updatedProducts.reduce((accumulator, currentValue) => {
+                      return (
+                        accumulator +
+                        (currentValue.promotion === null
+                          ? formatCurrency(currentValue.price)
+                          : formatCurrency(
+                              (currentValue.price *
+                                (100 - currentValue.promotion)) /
+                                100
+                            )) *
+                          currentValue.quantity
+                      );
+                    }, 0)
+                  )
+                );
+                let sum = 0;
+                billDetai.forEach((product) => {
+                  sum += product.quantity || 0;
+                });
+                dispatch(ChangeProductInBill(sum - record.quantity));
+              })
+              .catch((error) => {
+                toast.error(error.response.data.message);
               });
-              dispatch(ChangeProductInBill(sum - record.quantity));
-            })
-            .catch((error) => {
-              toast.error(error.response.data.message);
+            await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
+              (res) => {}
+            );
+            await BillApi.fetchDetailBill(bill.id).then((res) => {
+              dispatch(getBill(res.data.data));
             });
-          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
-            (res) => {}
-          );
-          await BillApi.fetchDetailBill(bill.id).then((res) => {
-            dispatch(getBill(res.data.data));
-          });
-          setNote("")
-        }else{
-          toast.warning("vui lòng nhập mô tả")
+          }else{
+            toast.warning("Vui lòng nhập mô tả và tối thiểu 10 ký tự ")
+          }
+          
+        },
+        onCancel: () =>{
         }
-        
-      },
-      onCancel: () =>{
-        setNote("")
-      }
-    });
+      });
+    }
+    
   };
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {

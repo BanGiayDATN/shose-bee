@@ -1145,6 +1145,7 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
     var price = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
+    console.log(dataVoucher);
     setListVoucher(
       dataVoucher.filter((voucher) => newTotalPrice >= voucher.minimumBill)
     );
