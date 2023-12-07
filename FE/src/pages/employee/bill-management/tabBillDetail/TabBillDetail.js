@@ -89,7 +89,7 @@ function TabBillDetail({ dataBillDetail }) {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          if (note.trim() != "" && note.trim() .length > 10) {
+          if (note.trim() != "" && note.trim().length > 10) {
             data.note = note
           await BillApi.updateProductInBill(record.id, data)
             .then((res) => {
@@ -507,7 +507,7 @@ function TabBillDetail({ dataBillDetail }) {
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: async () => {
-        if(note.trim() != "" && note.trim() .length > 10){
+        if(note.trim() != "" && note.trim().length > 10){
           const updatedProducts = billDetai.filter(
             (product) => product.id !== record.idProduct
           );
