@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
 import moment from "moment";
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline'
-import { FaBug, FaFileSignature, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
+import {  FaFileSignature} from "react-icons/fa";
 import { BiSolidTruck} from "react-icons/bi";
 import { MdPayment} from "react-icons/md";
 import { AiFillCarryOut, AiFillFile} from "react-icons/ai";
