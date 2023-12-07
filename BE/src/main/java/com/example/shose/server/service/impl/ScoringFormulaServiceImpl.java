@@ -20,7 +20,7 @@ public class ScoringFormulaServiceImpl implements ScoringFormulaService {
     public String add(ScoringFormulaRequest request) {
         ScoringFormula scoringFormula = new ScoringFormula();
         scoringFormula.setStatus(Status.DANG_SU_DUNG);
-        scoringFormula.setExchangeRatePoin(request.getExchangeRatePoint());
+        scoringFormula.setExchangeRatePoin(request.getExchangeRatePoin());
         scoringFormula.setExchangeRateMoney(request.getExchangeRateMoney());
         scoringFormulaRepository.save(scoringFormula);
         return "Thêm thành công";
