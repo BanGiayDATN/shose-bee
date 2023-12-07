@@ -1145,17 +1145,13 @@ function CreateBill({
     var price = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    var record = listVoucher.reduce((maxVoucher, currentVoucher) =>
-    currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) ? currentVoucher : maxVoucher
-  , null);
-
-
-//   const maxAmountVoucher = vouchers.reduce((maxVoucher, currentVoucher) =>
-//   currentVoucher.amount > (maxVoucher ? maxVoucher.amount : 0) &&
-//   newTotalPrice >= currentVoucher.condition
-//     ? currentVoucher
-//     : maxVoucher
-// , null);
+    setListVoucher(dataVoucher.filter(voucher => newTotalPrice >= voucher.minimumBill))
+    const record = dataVoucher.reduce((maxVoucher, currentVoucher) =>
+  currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) &&
+  newTotalPrice >= currentVoucher.minimumBill
+    ? currentVoucher
+    : maxVoucher
+, null);
     if(record != null){
     setVoucher({
       idVoucher: record.id,
