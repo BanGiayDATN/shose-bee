@@ -1145,25 +1145,29 @@ function CreateBill({
     var price = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    setListVoucher(dataVoucher.filter(voucher => newTotalPrice >= voucher.minimumBill))
-    const record = dataVoucher.reduce((maxVoucher, currentVoucher) =>
-  currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) &&
-  newTotalPrice >= currentVoucher.minimumBill
-    ? currentVoucher
-    : maxVoucher
-, null);
-    if(record != null){
-    setVoucher({
-      idVoucher: record.id,
-      beforPrice: price,
-      afterPrice: price - record.value,
-      discountPrice: record.value,
-    });
-    setCodeVoucher(record.code + " - " + record.name);
-    setIsModalVoucherOpen(false);
+    setListVoucher(
+      dataVoucher.filter((voucher) => newTotalPrice >= voucher.minimumBill)
+    );
+    const record = dataVoucher.reduce(
+      (maxVoucher, currentVoucher) =>
+        currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) &&
+        newTotalPrice >= currentVoucher.minimumBill
+          ? currentVoucher
+          : maxVoucher,
+      null
+    );
+    if (record != null) {
+      setVoucher({
+        idVoucher: record.id,
+        beforPrice: price,
+        afterPrice: price - record.value,
+        discountPrice: record.value,
+      });
+      setCodeVoucher(record.code + " - " + record.name);
+      setIsModalVoucherOpen(false);
     }
   }, [products]);
-  
+
   const [voucher, setVoucher] = useState({
     idVoucher: "",
     beforPrice: 0,
@@ -2446,10 +2450,20 @@ function CreateBill({
               </Col>
             </Row>
             <Row style={{ margin: "10px 0 " }}>
-              <Col span={16}>
+              <Col
+                span={5}
+                style={{
+                  margin: "2px",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                }}
+              >
+                Mã giảm giá:{" "}
+              </Col>
+              <Col span={13}>
                 <Input
                   style={{ width: "100%", backgroundColor: "white" }}
-                  value={codeVoucher}
+                  value={products.length !== 0 ? codeVoucher : ""}
                   readOnly
                 />
               </Col>
@@ -2460,12 +2474,17 @@ function CreateBill({
                 </Button>
               </Col>
             </Row>
-            {}
             {isOpenDelivery ? (
-              <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-                <Col span={5} style={{ display: "flex", alignItems: "center" }}>
-                  {" "}
-                  Trả sau:{" "}
+              <Row style={{ margin: "20px 0 5px 0px", width: "100%" }}>
+                <Col
+                  span={5}
+                  style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "15px",
+                  }}
+                >
+                  Trả Sau:{" "}
                 </Col>
                 <Col
                   span={12}
@@ -2481,7 +2500,7 @@ function CreateBill({
             ) : (
               <Row></Row>
             )}
-            <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
+            <Row style={{ margin: "20px 0 5px 0px", width: "100%" }}>
               <Col
                 span={5}
                 style={{
@@ -2490,7 +2509,7 @@ function CreateBill({
                   fontSize: "15px",
                 }}
               >
-                Giao hàng:{" "}
+                Giao Hàng:{" "}
               </Col>
               <Col
                 span={12}
