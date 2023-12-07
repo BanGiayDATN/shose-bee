@@ -1134,7 +1134,7 @@ function CreateBill({
     setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
-
+const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
   useEffect(() => {
     // Tính tổng giá tiền dựa trên số lượng sản phẩm và giá của từng sản phẩm
     const newTotalPrice = products.reduce(
@@ -1166,7 +1166,9 @@ function CreateBill({
       setCodeVoucher(record.code + " - " + record.name);
       setIsModalVoucherOpen(false);
     }
-  }, [products]);
+
+  }, [products, changeQuanTiTy]);
+  
 
   const [voucher, setVoucher] = useState({
     idVoucher: "",

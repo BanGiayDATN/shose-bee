@@ -320,7 +320,7 @@ function ModalAddProductDetail({
   ];
 
   // begin xử lý modal
-  const statusPresent = useSelector((state) => state.bill.bill.status);
+  const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (e, record) => {
     var data = {
@@ -357,6 +357,7 @@ function ModalAddProductDetail({
         }
         list.splice(index, 1, data);
       }
+       dispatch(ChangeProductInBill(changeQuanTiTy + quantity));
       toast.success("Thêm thành công", {
         position: "top-right",
         autoClose: 5000,
@@ -421,14 +422,14 @@ function ModalAddProductDetail({
                 codeColor: productSelected.codeColor,
               };
               dispatch(addProductInBillDetail(product));
-              dispatch(ChangeProductInBill(statusPresent + quantity));
+              dispatch(ChangeProductInBill(changeQuanTiTy + quantity));
             });
           } else {
             data.quantity = data.quantity + check.quantity;
             await BillApi.updateProductInBill(check.id, data)
               .then((res) => {
                 toast.success("Thêm sản phẩm thành công");
-                dispatch(ChangeProductInBill(statusPresent + quantity));
+                dispatch(ChangeProductInBill(changeQuanTiTy + quantity));
               })
               .catch((error) => {
                 toast.error(error.response.data.message);
