@@ -133,13 +133,13 @@ const PromotionManagement = () => {
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Mã khuyến mại",
+      title: "Mã ",
       dataIndex: "code",
       key: "code",
       sorter: (a, b) => a.code.localeCompare(b.code),
     },
     {
-      title: "Tên khuyến mại",
+      title: "Tên đợt giảm giá",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
@@ -214,18 +214,19 @@ const PromotionManagement = () => {
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          {record.status === "DANG_KICH_HOAT" || record.status === "CHUA_KICH_HOAT" ?(
+          {record.status === "DANG_KICH_HOAT" ||
+          record.status === "CHUA_KICH_HOAT" ? (
             <Link to="/update-promotion-management">
-            <Button
-              type="primary"
-              title="Chỉnh sửa thể loại"
-              style={{ backgroundColor: "green", borderColor: "green" }}
-              onClick={() => openUpdate(record.id)}
-            >
-              <FontAwesomeIcon icon={faEdit} />
-            </Button>
-          </Link>
-          ):null}
+              <Button
+                type="primary"
+                title="Chỉnh sửa thể loại"
+                style={{ backgroundColor: "green", borderColor: "green" }}
+                onClick={() => openUpdate(record.id)}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+            </Link>
+          ) : null}
         </div>
       ),
     },

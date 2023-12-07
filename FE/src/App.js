@@ -66,9 +66,6 @@ import Notification from "./pages/customer/account/notification/Notification";
 import RepoVoucher from "./pages/customer/account/voucher/Voucher";
 import Policy from "./pages/customer/policy/Policy";
 import SignUp from "./pages/customer/signup/SignUp";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
-
 import GiveBackManagement from "./pages/employee/give-back-management/GiveBackManagement";
 import NotFound from "./pages/404";
 import NotAuthorized from "./pages/403";
@@ -219,7 +216,7 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Navigate replace to="/home" />} />
-          {/* <Route path="/not-authorization" element={<NotAuthorized />} /> */}
+          <Route path="/not-authorization" element={<NotAuthorized />} />
           <Route
             path="/login"
             element={
@@ -366,14 +363,14 @@ function App() {
               </GuestGuard>
             }
           />
-           <Route
+          <Route
             path="/purchase/:id"
             element={
               <GuestGuard>
                 <CartProvider>
                   <DashBoardCustomer>
                     <LayoutAccount>
-                      <BillDetailAccount/>
+                      <BillDetailAccount />
                     </LayoutAccount>
                   </DashBoardCustomer>
                 </CartProvider>
@@ -732,7 +729,6 @@ function App() {
           />
         </Routes>
       </BrowserRouter>
-      <ToastContainer />
     </div>
   );
 }

@@ -309,7 +309,6 @@ function CreateBill({
   useEffect(() => {
     loadData();
     loadDataProvince();
-    // dispatch(addUserBillWait(null));
     setAccountUser(null);
     setBillRequest({ ...billRequest, code: code });
     // });
@@ -810,9 +809,13 @@ function CreateBill({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
-      price: product.price,
+      price:
+        product.promotion === null
+          ? product.price
+          : (product.price / (100 - product.promotion)) * 100,
       promotion: product.promotion,
     }));
+    console.log(newProduct);
     var newVoucher = [];
     if (voucher.idVoucher !== "") {
       newVoucher.push(voucher);
@@ -831,7 +834,6 @@ function CreateBill({
         address.district !== "" &&
         address.city !== ""
     );
-    console.log(address);
     if (
       address.detail !== "" &&
       address.wards !== "" &&
@@ -866,7 +868,6 @@ function CreateBill({
     if (accountuser != null) {
       idAccount = accountuser.idAccount;
     }
-    console.log(itemDiscount);
 
     var typeBill = "OFFLINE";
     var statusPayMents = "THANH_TOAN";
@@ -939,7 +940,7 @@ function CreateBill({
               content: "Bạn có xác nhận đặt hàng không?",
               okText: "Đồng ý",
               cancelText: "Hủy",
-              onOk: () => {
+              onOk: async () => {
                 BillApi.createBillWait(data)
                   .then((res) => {
                     toast.success("Xuất hóa đơn thành công");
@@ -974,7 +975,7 @@ function CreateBill({
             okText: "Đồng ý",
             cancelText: "Hủy",
             onOk: async () => {
-              await BillApi.createBillWait(data)
+              BillApi.createBillWait(data)
                 .then((res) => {
                   removePane(targetKey, invoiceNumber, items);
                   toast.success("Đặt hàng thành công");
@@ -1134,6 +1135,39 @@ function CreateBill({
     setIsModalVoucherOpen(false);
   };
 
+  useEffect(() => {
+    // Tính tổng giá tiền dựa trên số lượng sản phẩm và giá của từng sản phẩm
+    const newTotalPrice = products.reduce(
+      (accumulator, product) => accumulator + product.price * product.quantity,
+      0
+    );
+
+    var price = products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+    setListVoucher(
+      dataVoucher.filter((voucher) => newTotalPrice >= voucher.minimumBill)
+    );
+    const record = dataVoucher.reduce(
+      (maxVoucher, currentVoucher) =>
+        currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) &&
+        newTotalPrice >= currentVoucher.minimumBill
+          ? currentVoucher
+          : maxVoucher,
+      null
+    );
+    if (record != null) {
+      setVoucher({
+        idVoucher: record.id,
+        beforPrice: price,
+        afterPrice: price - record.value,
+        discountPrice: record.value,
+      });
+      setCodeVoucher(record.code + " - " + record.name);
+      setIsModalVoucherOpen(false);
+    }
+  }, [products]);
+
   const [voucher, setVoucher] = useState({
     idVoucher: "",
     beforPrice: 0,
@@ -1239,7 +1273,6 @@ function CreateBill({
     } else if (!existingProduct) {
       ProducDetailtApi.getOne(data)
         .then((res) => {
-          console.log(res.data.data);
           const newProduct = {
             image: res.data.data.image,
             productName: res.data.data.nameProduct,
@@ -1252,6 +1285,7 @@ function CreateBill({
             maxQuantity: res.data.data.quantity,
             promotion: res.data.data.promotion,
           };
+
           setProducts((prevProducts) => [...prevProducts, newProduct]);
           toast.success("Thêm sản phẩm thành công ");
         })

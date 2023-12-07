@@ -1,25 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "./../style-voucher.css";
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  Table,
-  Modal,
-  InputNumber,
-  Popconfirm,
-  DatePicker,
-} from "antd";
+import { Form, Input, Button, Modal, InputNumber, DatePicker } from "antd";
 import { VoucherApi } from "../../../../api/employee/voucher/Voucher.api";
 import { UpdateVoucher } from "../../../../app/reducer/Voucher.reducer";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAppDispatch, useAppSelector } from "../../../../app/hook";
+import { useAppDispatch } from "../../../../app/hook";
 dayjs.extend(utc);
-const { Option } = Select;
 function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -49,6 +38,14 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
     return convertedFormData;
   };
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
   const handleSubmit = () => {
     Modal.confirm({
       title: "Xác nhận cập nhập",
@@ -73,10 +70,10 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
             startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
             quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
             endDate: !formData.endDate
-              ? "Vui lòng chọn ngày kết thúc"
-              : formData.startDate >= formData.endDate
-              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-              : "",
+            ? "Vui lòng chọn ngày kết thúc"
+            : formData.startDate >= formData.endDate
+            ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+            : "",
           };
           setFormErrors(errors);
           return;
@@ -89,8 +86,12 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               autoClose: 5000,
             });
             closeModal();
-          },
-          (err) => console.log(err)
+          },(err) => {
+            toast.success(err.data.response.message, {
+              autoClose: 5000,
+            });
+            console.log(err);
+          }
         );
       },
     });
@@ -108,7 +109,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
           startDate: dayjs(voucherData.startDate),
           endDate: dayjs(voucherData.endDate),
           status: voucherData.status,
-          createdDate: dayjs(voucherData.createdDate),
+          createdDate: dayjs(voucherData.createdDate), 
+          minimumBill: voucherData.minimumBill
         });
       },
       (err) => console.log(err)
@@ -139,9 +141,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               className="input-create-voucher"
               placeholder="Tên khuyến mãi"
               value={formData["code"]}
-              onChange={(e) => {
-                inputChange("code", e.target.value);
-              }}
+              readOnly
             />
           </Form.Item>
           <Form.Item
@@ -173,6 +173,23 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
                 inputChange("value", value);
               }}
               min="1"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Đơn tối thiểu"
+        
+          >
+            <InputNumber
+              name="minimumBill"
+              placeholder="Đơn tối thiểu"
+              className="input-create-voucher"
+              value={formData["minimumBill"]}
+              onChange={(value) => {
+                inputChange("minimumBill", value);
+              }}
+              min="10000"
             />
           </Form.Item>
           <Form.Item
@@ -230,8 +247,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               name="status"
               value={
                 formData["status"] === "DANG_SU_DUNG"
-                  ? "Còn hạn"
-                  : "Hết hạn" || ""
+                  ? "Đang kích hoạt"
+                  : formData["status"] === "CHUA_KICH_HOAT" ?" Chưa kích hoạt":"Không kích hoạt"
               }
             ></Input>
           </Form.Item>

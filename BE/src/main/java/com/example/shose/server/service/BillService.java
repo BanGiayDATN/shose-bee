@@ -53,6 +53,8 @@ public interface BillService {
 
     Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request);
 
+    Bill rollBackBill(String id, String idEmployees, ChangStatusBillRequest request);
+
     int countPayMentPostpaidByIdBill(String id);
 
     boolean changeStatusAllBillByIds(ChangAllStatusBillByIdsRequest request, String idEmployees);
@@ -77,4 +79,5 @@ public interface BillService {
     List<BillGiveBack> getBillGiveBack(String idBill);
 
     Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
+    List<BillResponse> getBillCanceled();
 }

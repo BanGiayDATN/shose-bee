@@ -24,8 +24,8 @@ import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
+import com.example.shose.server.entity.HistoryPoin;
 import com.example.shose.server.entity.Notification;
-import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
@@ -35,6 +35,7 @@ import com.example.shose.server.entity.CartDetail;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.ProductDetail;
 import com.example.shose.server.entity.ProductDetailGiveBack;
+import com.example.shose.server.entity.ScoringFormula;
 import com.example.shose.server.entity.User;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.entity.VoucherDetail;
@@ -45,27 +46,27 @@ import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
 import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.infrastructure.constant.TypeBill;
+import com.example.shose.server.infrastructure.constant.TypePoin;
 import com.example.shose.server.infrastructure.email.SendEmailService;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.infrastructure.exportPdf.ExportFilePdfFormHtml;
 import com.example.shose.server.infrastructure.session.ShoseSession;
-import com.example.shose.server.infrastructure.poin.ConfigPoin;
-import com.example.shose.server.infrastructure.poin.Poin;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
 import com.example.shose.server.repository.BillHistoryRepository;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.repository.CartDetailRepository;
 import com.example.shose.server.repository.CartRepository;
+import com.example.shose.server.repository.HistoryPoinRepository;
 import com.example.shose.server.repository.NotificationRepository;
 import com.example.shose.server.repository.PaymentsMethodRepository;
 import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
+import com.example.shose.server.repository.ScoringFormulaRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.repository.VoucherDetailRepository;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.BillService;
-import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ConvertDateToLong;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -78,13 +79,14 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -97,9 +99,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class BillServiceImpl implements BillService {
-
-    @Autowired
-    private ConfigPoin configPoin;
 
     @Autowired
     private BillRepository billRepository;
@@ -147,10 +146,17 @@ public class BillServiceImpl implements BillService {
     private ShoseSession shoseSession;
 
     @Autowired
+    private ScoringFormulaRepository scoringFormulaRepository;
+
+    @Autowired
     private ProductDetailGiveBackRepository productDetailGiveBackRepository;
 
     @Value("${domain.client}")
     private String domainClient;
+
+
+    @Autowired
+    private HistoryPoinRepository historyPoinRepository;
 
     @Override
     public List<BillResponse> getAll(String id, BillRequest request) {
@@ -195,7 +201,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(String id,
-            FindNewBillCreateAtCounterRequest request) {
+                                                                            FindNewBillCreateAtCounterRequest request) {
         return billRepository.findAllBillAtCounterAndStatusNewBill(id, request);
     }
 
@@ -243,47 +249,53 @@ public class BillServiceImpl implements BillService {
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
         }
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
-                if (account.isPresent()) {
-                    optional.get().setAccount(account.get());
-                    User user = account.get().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    if (request.getPoin() > 0) {
-                        int Pointotal = user.getPoints() - request.getPoin()
-                                + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
-                        user.setPoints(Pointotal);
-                    } else {
-                        user.setPoints(
-                                user.getPoints() + poin.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                    if (account.isPresent() && !scoringFormulas.isEmpty()) {
+                        ScoringFormula scoringFormula = scoringFormulas.get(0);
+                        optional.get().setAccount(account.get());
+                        User user = account.get().getUser();
+                        if (request.getPoin() > 0) {
+                            int Pointotal = user.getPoints() - request.getPoin()
+                                    + scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()));
+                            user.setPoints(Pointotal);
+                            optional.get().setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
+                            historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).value(request.getPoin()).typePoin(TypePoin.DIEM_SU_DUNG).scoringFormula(scoringFormula).build());
+                        } else {
+                            user.setPoints(
+                                    user.getPoints() + scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney())));
+                        }
+                        historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).user(user).value(scoringFormula.ConvertMoneyToPoints(new BigDecimal(request.getTotalMoney()))).typePoin(TypePoin.DIEM_THUONG).scoringFormula(scoringFormula).build());
+                        userReposiory.save(user);
                     }
-                    userReposiory.save(user);
-                }
             }
             optional.get().setStatusBill(StatusBill.THANH_CONG);
-            optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            optional.get().setCompletionDate(getCurrentTimestampInVietnam());
             billRepository.save(optional.get());
             billHistoryRepository.save(BillHistory.builder().statusBill(optional.get().getStatusBill())
                     .bill(optional.get()).employees(optional.get().getEmployees()).build());
         } else {
             if (request.getIdUser() != null) {
                 Optional<Account> account = accountRepository.findById(request.getIdUser());
-                if (account.isPresent()) {
+                if (account.isPresent() && !scoringFormulas.isEmpty()) {
+                    ScoringFormula scoringFormula = scoringFormulas.get(0);
                     optional.get().setAccount(account.get());
                     User user = account.get().getUser();
-                    Poin poin = configPoin.readJsonFile();
                     if (request.getPoin() > 0) {
                         int Pointotal = user.getPoints() - request.getPoin();
                         user.setPoints(Pointotal);
+                        optional.get().setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
+                        historyPoinRepository.save(HistoryPoin.builder().bill(optional.get()).typePoin(TypePoin.DIEM_SU_DUNG).value(request.getPoin()).user(user).scoringFormula(scoringFormula).build());
                     }
                     userReposiory.save(user);
                 }
             }
-            optional.get().setStatusBill(StatusBill.XAC_NHAN);
-            optional.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
+            optional.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
+            optional.get().setCompletionDate(getCurrentTimestampInVietnam());
             billRepository.save(optional.get());
-            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
+            billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(optional.get())
                     .employees(optional.get().getEmployees()).build());
 
             if (!request.getPaymentsMethodRequests().stream()
@@ -554,6 +566,7 @@ public class BillServiceImpl implements BillService {
         if (!account.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
         boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
                 .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
         StatusBill statusBill[] = StatusBill.values();
@@ -570,22 +583,24 @@ public class BillServiceImpl implements BillService {
             bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
             if (checkDaThanhToan) {
                 bill.get().setStatusBill(StatusBill.THANH_CONG);
-                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                if (bill.get().getAccount() != null) {
+                bill.get().setCompletionDate(getCurrentTimestampInVietnam());
+                if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                     User user = bill.get().getAccount().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    ScoringFormula scoringFormula = scoringFormulas.get(0);
+                    user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                     userReposiory.save(user);
+                    historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
         } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             paymentsMethodRepository.updateAllByIdBill(id);
-            bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-            if (bill.get().getAccount() != null) {
+            bill.get().setCompletionDate(getCurrentTimestampInVietnam());
+            if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                 User user = bill.get().getAccount().getUser();
-                Poin poin = configPoin.readJsonFile();
-                user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                ScoringFormula scoringFormula = scoringFormulas.get(0);
+                user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                 userReposiory.save(user);
+                historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
             }
         }
         bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -597,6 +612,41 @@ public class BillServiceImpl implements BillService {
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
 
+        return billRepository.save(bill.get());
+    }
+
+    @Override
+    public Bill rollBackBill(String id, String idEmployees, ChangStatusBillRequest request) {
+        Optional<Bill> bill = billRepository.findById(id);
+        Optional<Account> account = accountRepository.findById(idEmployees);
+        if (!bill.isPresent()) {
+            throw new RestApiException(Message.BILL_NOT_EXIT);
+        }
+        if (!account.isPresent()) {
+            throw new RestApiException(Message.NOT_EXISTS);
+        }
+        StatusBill statusBill[] = StatusBill.values();
+        int nextIndex = (bill.get().getStatusBill().ordinal() - 1) % statusBill.length;
+
+        boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
+                .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
+        if (nextIndex < 3) {
+            throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+        }
+        if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
+            bill.get().setStatusBill(StatusBill.VAN_CHUYEN);
+        } else {
+            bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
+        }
+        bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
+        bill.get().setEmployees(account.get());
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill.get());
+        billHistory.setStatusBill(bill.get().getStatusBill());
+        billHistory.setActionDescription(request.getActionDescription());
+        billHistory.setEmployees(account.get());
+        billHistoryRepository.save(billHistory);
+        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
         return billRepository.save(bill.get());
     }
 
@@ -616,6 +666,7 @@ public class BillServiceImpl implements BillService {
             if (!account.isPresent()) {
                 throw new RestApiException(Message.NOT_EXISTS);
             }
+            List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
             boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
                     .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
@@ -627,22 +678,24 @@ public class BillServiceImpl implements BillService {
                 bill.get().setReceiveDate(Calendar.getInstance().getTimeInMillis());
                 if (checkDaThanhToan) {
                     bill.get().setStatusBill(StatusBill.THANH_CONG);
-                    bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                    if (bill.get().getAccount() != null) {
+                    bill.get().setCompletionDate(getCurrentTimestampInVietnam());
+                    if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                         User user = bill.get().getAccount().getUser();
-                        Poin poin = configPoin.readJsonFile();
-                        user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                        ScoringFormula scoringFormula = scoringFormulas.get(0);
+                        user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                         userReposiory.save(user);
+                        historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                     }
                 }
             } else if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
                 paymentsMethodRepository.updateAllByIdBill(id);
-                bill.get().setCompletionDate(Calendar.getInstance().getTimeInMillis());
-                if (bill.get().getAccount() != null) {
+                bill.get().setCompletionDate(getCurrentTimestampInVietnam());
+                if (bill.get().getAccount() != null && !scoringFormulas.isEmpty()) {
                     User user = bill.get().getAccount().getUser();
-                    Poin poin = configPoin.readJsonFile();
-                    user.setPoints(user.getPoints() + poin.ConvertMoneyToPoints(bill.get().getTotalMoney()));
+                    ScoringFormula scoringFormula = scoringFormulas.get(0);
+                    user.setPoints(user.getPoints() + scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney()));
                     userReposiory.save(user);
+                    historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_THUONG).value(scoringFormula.ConvertMoneyToPoints(bill.get().getTotalMoney())).bill(bill.get()).user(user).scoringFormula(scoringFormula).build());
                 }
             }
             bill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
@@ -695,11 +748,14 @@ public class BillServiceImpl implements BillService {
             productDetailRepository.save(productDetail.get());
         });
         Account checkAccount = bill.get().getAccount();
-        if (checkAccount != null) {
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
+        if (checkAccount != null && !scoringFormulas.isEmpty()) {
             if (bill.get().getPoinUse() > 0) {
                 User user = checkAccount.getUser();
+                ScoringFormula scoringFormula = scoringFormulas.get(0);
                 user.setPoints(user.getPoints() + bill.get().getPoinUse());
                 userReposiory.save(user);
+                historyPoinRepository.save(HistoryPoin.builder().bill(bill.get()).typePoin(TypePoin.DIEM_HOAN).value(bill.get().getPoinUse()).user(user).scoringFormula(scoringFormula).build());
             }
         }
 
@@ -805,9 +861,13 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(request.getItemDiscount())
                     .build();
             voucherDetailRepository.save(voucherDetail);
+
+            voucher.setQuantity(voucher.getQuantity()-1);
+            voucherRepository.save(voucher);
         }
 
         CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
+
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -844,11 +904,7 @@ public class BillServiceImpl implements BillService {
         }
 
         Account account = accountRepository.findById(request.getIdAccount()).get();
-        if (request.getPoin() > 0) {
-            User user = account.getUser();
-            user.setPoints(user.getPoints() - request.getPoin());
-            userReposiory.save(user);
-        }
+
         String codeBill = "HD" + RandomStringUtils.randomNumeric(6);
         Bill bill = Bill.builder()
                 .code(codeBill)
@@ -866,6 +922,15 @@ public class BillServiceImpl implements BillService {
                 .account(account).build();
         if (!request.getPaymentMethod().equals("paymentReceive")) {
             bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
+        }
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
+        if (request.getPoin() > 0 && !scoringFormulas.isEmpty()) {
+            ScoringFormula scoringFormula = scoringFormulas.get(0);
+            User user = account.getUser();
+            user.setPoints(user.getPoints() - request.getPoin());
+            userReposiory.save(user);
+            bill.setValuePoin(scoringFormula.ConvertPoinToMoney(request.getPoin()));
+            historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_SU_DUNG).value(request.getPoin()).bill(bill).user(user).scoringFormula(scoringFormula).build());
         }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
@@ -925,6 +990,8 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(request.getItemDiscount())
                     .build();
             voucherDetailRepository.save(voucherDetail);
+            voucher.setQuantity(voucher.getQuantity()-1);
+            voucherRepository.save(voucher);
         }
 
         Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
@@ -934,6 +1001,7 @@ public class BillServiceImpl implements BillService {
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
         CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
+
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -1007,7 +1075,7 @@ public class BillServiceImpl implements BillService {
         if (bill.getStatusBill() != StatusBill.THANH_CONG && !email.isEmpty()) {
             invoice.setCheckShip(true);
             CompletableFuture.runAsync(() -> sendMail(invoice,
-                    domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()),
+                            domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()),
                     Executors.newCachedThreadPool());
         }
         return true;
@@ -1087,7 +1155,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack,
-            List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
+                                   List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks) {
         Account account = accountRepository.findById(shoseSession.getEmployee().getId()).get();
         Bill bill = billRepository.findById(updateBillGiveBack.getIdBill()).get();
         if (bill == null) {
@@ -1099,15 +1167,19 @@ public class BillServiceImpl implements BillService {
         String idAccount = updateBillGiveBack.getIdAccount();
         BigDecimal totalBillGive = updateBillGiveBack.getTotalBillGiveBack();
         int checkTotal = totalBill.compareTo(totalBillGive);
-
-        Poin poin = configPoin.readJsonFile();
-        int pointGiveBack = poin.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
+        List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
+        ScoringFormula scoringFormula = scoringFormulas.get(0);
+        int pointGiveBack = scoringFormula.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
         if (idAccount != null) {
             User customer = accountRepository.findById(idAccount).get().getUser();
             if (checkTotal == 0) {
                 customer.setPoints(customer.getPoints() + bill.getPoinUse() - pointGiveBack);
             } else {
                 customer.setPoints(customer.getPoints() - pointGiveBack);
+            }
+            if(Math.max(0, bill.getPoinUse() - pointGiveBack) > 0){
+                historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_HOAN).value(bill.getPoinUse() - pointGiveBack).bill(bill).user(customer).scoringFormula(scoringFormula).build());
+
             }
             userReposiory.save(customer);
         }
@@ -1167,6 +1239,17 @@ public class BillServiceImpl implements BillService {
         billDetailRepository.saveAll(listUpdateBillDetailGiveBack);
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
+    }
+    @Override
+    public List<BillResponse> getBillCanceled() {
+        return billRepository.getBillCanceled();
+    }
+
+    private Long getCurrentTimestampInVietnam() {
+
+        Instant instant = Instant.now();
+        ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+        return instant.atZone(zoneId).toEpochSecond() * 1000;
     }
 
 }

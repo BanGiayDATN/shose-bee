@@ -35,6 +35,7 @@ function CardItem({ item, index }) {
 
   useEffect(() => {
     localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
+    console.log(cartLocal);
   }, [cartLocal]);
   useEffect(() => {
     console.log(item);
@@ -52,9 +53,12 @@ function CardItem({ item, index }) {
       const exists = prev.find(
         (item) => item.idProductDetail === newCartItem.idProductDetail
       );
-      if (!exists) {
+      console.log(exists);
+      if (exists=== undefined) {
+        console.log(exists);
         return [...prev, newCartItem];
       } else {
+        console.log(exists);
         return prev.map((item) =>
           item.idProductDetail === newCartItem.idProductDetail
             ? { ...item, quantity: item.quantity + newCartItem.quantity }
@@ -91,7 +95,7 @@ function CardItem({ item, index }) {
           parseInt(quantity) + parseInt(detailProductCart.quantity) <=
           detailProduct.quantity
         ) {
-          handleAddCartLocal(newCartItem);
+          await handleAddCartLocal(newCartItem);
           nav("/cart");
           toast.success("Thêm giỏ hàng thành công", {
             autoClose: 3000,
@@ -104,7 +108,7 @@ function CardItem({ item, index }) {
           );
         }
       } else {
-        handleAddCartLocal(newCartItem);
+        await handleAddCartLocal(newCartItem);
         nav("/cart");
         toast.success("Thêm giỏ hàng thành công", {
           autoClose: 3000,
@@ -147,13 +151,6 @@ function CardItem({ item, index }) {
       }
     }
   };
-
-  const listCartAccount = () => {
-    CartClientApi.listCart(idAccountLocal).then((response) => {
-      setCartAccount(response.data.data);
-      console.log(response.data.data);
-    });
-  };
   const getDetailProduct = (idProductDetail) => {
     setItemSize(idProductDetail);
     ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
@@ -183,7 +180,6 @@ function CardItem({ item, index }) {
   const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
     getDetailProduct(idProductDetail);
-    listCartAccount();
     setId(idProductDetail);
   };
   const closeModal = () => {

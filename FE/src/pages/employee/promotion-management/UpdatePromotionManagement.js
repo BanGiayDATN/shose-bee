@@ -246,6 +246,7 @@ function UpdatePromotionManagement() {
       type: "text",
       label: "Mã khuyễn mại",
       text: "mã khuyễn mại",
+      readOnly: true,
       class: "input-form-promotion",
     },
     {
@@ -540,7 +541,7 @@ function UpdatePromotionManagement() {
                           handleInputChange(field.name, value);
                         }}
                         min="1"
-                        max="100"
+                        max="80"
                         formatter={field.formatter}
                       />
                     )}

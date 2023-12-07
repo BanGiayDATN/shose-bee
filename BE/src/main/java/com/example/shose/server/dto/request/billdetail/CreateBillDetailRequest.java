@@ -28,4 +28,6 @@ public class CreateBillDetailRequest {
     private String price;
 
     private Integer promotion;
+
+    private String note;
 }

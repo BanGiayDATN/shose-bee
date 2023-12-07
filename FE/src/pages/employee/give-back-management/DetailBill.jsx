@@ -83,7 +83,7 @@ export default function DetailBillGiveBack() {
           <img
             src={text}
             alt="Ảnh sản phẩm"
-            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
+            style={{ width: "70px", borderRadius: "10%", height: "70px" }}
           />
           {record.promotion !== null && (
             <div
@@ -135,10 +135,22 @@ export default function DetailBillGiveBack() {
       ),
     },
     {
-      title: "Tên sản phẩm",
+      title: <div style={{ textAlign: "center" }}>Thông tin sản phẩm</div>,
       key: "nameProduct",
-      align: "center",
       dataIndex: "nameProduct",
+      render: (_, record) => (
+        <>
+          <h3> {record.nameProduct}</h3>
+          <h4 style={{ color: "red" }}>
+            {record.promotion === null
+              ? formatCurrency(record.price)
+              : formatCurrency((record.price * (100 - record.promotion)) / 100)}
+          </h4>
+          <h5 style={{ textDecoration: " line-through" }}>
+            {record.promotion !== null && formatCurrency(record.price)}
+          </h5>
+        </>
+      ),
     },
     {
       title: "Màu Sắc",
@@ -166,13 +178,6 @@ export default function DetailBillGiveBack() {
       key: "quantity",
       align: "center",
       dataIndex: "quantity",
-    },
-    {
-      title: "Giá tiền",
-      key: "price",
-      align: "center",
-      dataIndex: "price",
-      render: (_, record) => <span>{formatCurrency(record.price)}</span>,
     },
     {
       title: "Tổng tiền",
@@ -384,7 +389,6 @@ export default function DetailBillGiveBack() {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const handleModalQuantityGiveBack = (record) => {
-    console.log(record);
     showModal();
     setSelectedProduct(record);
   };
@@ -474,7 +478,9 @@ export default function DetailBillGiveBack() {
   };
 
   const totalMoneyProduct = (product) => {
-    return product.price * product.quantity;
+    return product.promotion === null
+      ? product.price * product.quantity
+      : (product.price * (100 - product.promotion) * product.quantity) / 100;
   };
 
   const totalMoneyBill = () => {

@@ -24,6 +24,7 @@ import java.util.TimeZone;
 public class StatisticalServiceImpl implements StatisticalService {
     private long currentTimeMillis = System.currentTimeMillis();
     private Date currentDate = new Date(currentTimeMillis);
+
     @Autowired
     private BillRepository billRepository;
     @Override
