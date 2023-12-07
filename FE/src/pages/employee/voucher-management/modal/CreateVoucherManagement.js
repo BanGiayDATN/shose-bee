@@ -61,12 +61,12 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
             startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
             quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
             endDate: !formData.endDate
-            ? "Vui lòng chọn ngày kết thúc"
-            : formData.startDate >= formData.endDate
-            ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-            : formData.endDate <= dayjs().valueOf()
-            ? "Ngày kết thúc phải lớn hơn hiện tại"
-            : "",
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : formData.endDate <= dayjs().valueOf()
+              ? "Ngày kết thúc phải lớn hơn hiện tại"
+              : "",
           };
           setFormErrors(errors);
           return;
@@ -147,10 +147,7 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
               parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
-          <Form.Item
-            label="Đơn tối thiểu"
-        
-          >
+          <Form.Item label="Đơn tối thiểu">
             <InputNumber
               name="minimumBill"
               placeholder="Đơn tối thiểu"
@@ -160,7 +157,8 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
                 inputChange("minimumBill", value);
               }}
               min="10000"
-              formatter = {(value)=> {formatMoney(value)}}
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
           <Form.Item

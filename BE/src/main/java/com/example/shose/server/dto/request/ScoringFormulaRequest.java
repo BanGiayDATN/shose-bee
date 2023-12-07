@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @ToString
 public class ScoringFormulaRequest {
 
-    private BigDecimal exchangeRatePoint;
+    private BigDecimal exchangeRatePoin;
 
     private BigDecimal exchangeRateMoney;
 

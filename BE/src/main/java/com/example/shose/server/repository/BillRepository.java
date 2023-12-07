@@ -113,10 +113,16 @@ public interface BillRepository extends JpaRepository<Bill, String> {
 
     @Query(value = """
             SELECT
-            COUNT(DISTINCT b.id) AS totalBill,
-            SUM(b.total_money) AS totalBillAmount,
-            SUM(bd.quantity) AS totalProduct
-            FROM bill b JOIN bill_detail bd ON b.id = bd.id_bill
+              COUNT(DISTINCT b.id) AS totalBill,
+              SUM(b.total_money) AS totalBillAmount,
+              COALESCE(SUM(bd.quantity), 0) AS totalProduct
+            FROM
+              bill b
+            LEFT JOIN (
+              SELECT id_bill, SUM(quantity) AS quantity
+              FROM bill_detail
+              GROUP BY id_bill
+            ) bd ON b.id = bd.id_bill
             WHERE
             b.completion_date >= :startOfMonth AND b.completion_date <= :endOfMonth
             AND b.status_bill IN ('THANH_CONG', 'TRA_HANG')
@@ -128,7 +134,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             SELECT
                 COUNT(DISTINCT b.id) AS totalBillToday,
                 SUM(b.total_money) AS totalBillAmountToday
-            FROM bill b JOIN bill_detail bd ON b.id = bd.id_bill
+            FROM bill b 
             WHERE
             b.completion_date >= :startOfDay AND b.completion_date <= :endOfDay
             AND b.status_bill IN ('THANH_CONG', 'TRA_HANG')                       
