@@ -264,204 +264,204 @@ public class DBGenerator implements CommandLineRunner {
         sizeRepository.save(size7);
         sizeRepository.save(size8);
 
-        ProductDetail productDetail1 = ProductDetail.builder().size(size).color(color).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail2 = ProductDetail.builder().size(size2).color(color2).quantity(15)
-                .sole(sole2).category(category2).material(material2).brand(brand2).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail3 = ProductDetail.builder().size(size5).color(color1).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail4 = ProductDetail.builder().size(size3).color(color5).quantity(15)
-                .sole(sole4).category(category3).material(material3).brand(brand).product(product1)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail5 = ProductDetail.builder().size(size7).color(color7).quantity(15)
-                .sole(sole3).category(category4).material(material2).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail6 = ProductDetail.builder().size(size2).color(color4).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail7 = ProductDetail.builder().size(size6).color(color6).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail8 = ProductDetail.builder().size(size8).color(color6).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail9 = ProductDetail.builder().size(size2).color(color).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail10 = ProductDetail.builder().size(size8).color(color7).quantity(20)
-                .sole(sole1).category(category).material(material).brand(brand).product(product2)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail11 = ProductDetail.builder().size(size).color(color1).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product2)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail12 = ProductDetail.builder().size(size).color(color7).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product3)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail13 = ProductDetail.builder().size(size).color(color).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail14 = ProductDetail.builder().size(size2).color(color2).quantity(15)
-                .sole(sole2).category(category2).material(material2).brand(brand2).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail15 = ProductDetail.builder().size(size5).color(color1).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail16 = ProductDetail.builder().size(size3).color(color5).quantity(15)
-                .sole(sole4).category(category3).material(material3).brand(brand).product(product1)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail17 = ProductDetail.builder().size(size7).color(color7).quantity(15)
-                .sole(sole3).category(category4).material(material2).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail18 = ProductDetail.builder().size(size2).color(color4).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail19 = ProductDetail.builder().size(size6).color(color6).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail20 = ProductDetail.builder().size(size8).color(color6).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail21 = ProductDetail.builder().size(size2).color(color).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product1)
-                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail22 = ProductDetail.builder().size(size8).color(color7).quantity(20)
-                .sole(sole1).category(category).material(material).brand(brand).product(product2)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail23 = ProductDetail.builder().size(size).color(color1).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product2)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        ProductDetail productDetail24 = ProductDetail.builder().size(size).color(color7).quantity(15)
-                .sole(sole1).category(category).material(material).brand(brand).product(product3)
-                .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
-                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
-                .build();
-        productDetailRepository.save(productDetail1);
-        productDetailRepository.save(productDetail2);
-        productDetailRepository.save(productDetail3);
-        productDetailRepository.save(productDetail4);
-        productDetailRepository.save(productDetail5);
-        productDetailRepository.save(productDetail6);
-        productDetailRepository.save(productDetail7);
-        productDetailRepository.save(productDetail8);
-        productDetailRepository.save(productDetail9);
-        productDetailRepository.save(productDetail10);
-        productDetailRepository.save(productDetail11);
-        productDetailRepository.save(productDetail12);
-        productDetailRepository.save(productDetail13);
-        productDetailRepository.save(productDetail14);
-        productDetailRepository.save(productDetail15);
-        productDetailRepository.save(productDetail16);
-        productDetailRepository.save(productDetail17);
-        productDetailRepository.save(productDetail18);
-        productDetailRepository.save(productDetail19);
-        productDetailRepository.save(productDetail20);
-        productDetailRepository.save(productDetail21);
-        productDetailRepository.save(productDetail22);
-        productDetailRepository.save(productDetail23);
-        productDetailRepository.save(productDetail24);
-
-
-        //image
-        Image image1 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/01cdd6c3-7656-4c32-b334-614ac2893868.webp").productDetail(productDetail1).status(true).build();
-        Image image2 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/e7ade807-8dcb-4c50-a400-52504db8996f.webp").productDetail(productDetail2).status(true).build();
-        Image image3 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/a9ea4981-e03a-45b5-9e6d-df758cd48b8f.webp").productDetail(productDetail3).status(true).build();
-        Image image4 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/a9ea4981-e03a-45b5-9e6d-df758cd48b8f.webp").productDetail(productDetail4).status(true).build();
-        Image image5 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/e88eb7ec-99fc-48c5-9f13-a1f2a1c4f868.webp").productDetail(productDetail5).status(true).build();
-        Image image6 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/bab1d21e-3d4f-4dcf-8a23-07f1a6f04724.webp").productDetail(productDetail6).status(true).build();
-        Image image7 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/cfa57778-1b06-4dfb-9876-ea9a0325b512.webp").productDetail(productDetail7).status(true).build();
-        Image image8 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/cfa57778-1b06-4dfb-9876-ea9a0325b512.webp").productDetail(productDetail8).status(true).build();
-        Image image9 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/9d1c7d14-4f97-425a-9d04-f99c08a5624c.webp").productDetail(productDetail9).status(true).build();
-        Image image10 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/bab1d21e-3d4f-4dcf-8a23-07f1a6f04724.webp").productDetail(productDetail10).status(true).build();
-        Image image11 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f73d7a1d-d6a1-46ba-8d5a-819d2d95f690.webp").productDetail(productDetail11).status(true).build();
-        Image image12 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/d6a456c2-5aed-42b6-8feb-677e3569f30e.webp").productDetail(productDetail12).status(true).build();
-        Image image13 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/01cdd6c3-7656-4c32-b334-614ac2893868.webp").productDetail(productDetail13).status(true).build();
-        Image image14 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/8366f623-7309-44c9-bdc0-9bdf7b5ef04e.webp").productDetail(productDetail14).status(true).build();
-        Image image15 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f0804a19-1012-47e4-92ab-29b6e9d0431c.webp").productDetail(productDetail15).status(true).build();
-        Image image16 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f73d7a1d-d6a1-46ba-8d5a-819d2d95f690.webp").productDetail(productDetail16).status(true).build();
-        Image image17 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/e7ade807-8dcb-4c50-a400-52504db8996f.webp").productDetail(productDetail17).status(true).build();
-        Image image18 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/e7ade807-8dcb-4c50-a400-52504db8996f.webp").productDetail(productDetail18).status(true).build();
-        Image image19 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/e88eb7ec-99fc-48c5-9f13-a1f2a1c4f868.webp").productDetail(productDetail19).status(true).build();
-        Image image20 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/8366f623-7309-44c9-bdc0-9bdf7b5ef04e.webp").productDetail(productDetail20).status(true).build();
-        Image image21 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f0804a19-1012-47e4-92ab-29b6e9d0431c.webp").productDetail(productDetail21).status(true).build();
-        Image image22 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/9d1c7d14-4f97-425a-9d04-f99c08a5624c.webp").productDetail(productDetail22).status(true).build();
-        Image image23 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/01cdd6c3-7656-4c32-b334-614ac2893868.webp").productDetail(productDetail23).status(true).build();
-        Image image24 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/d6a456c2-5aed-42b6-8feb-677e3569f30e.webp").productDetail(productDetail24).status(true).build();
-        imageRepository.save(image1);
-        imageRepository.save(image2);
-        imageRepository.save(image3);
-        imageRepository.save(image4);
-        imageRepository.save(image5);
-        imageRepository.save(image6);
-        imageRepository.save(image7);
-        imageRepository.save(image8);
-        imageRepository.save(image9);
-        imageRepository.save(image10);
-        imageRepository.save(image11);
-        imageRepository.save(image12);
-        imageRepository.save(image13);
-        imageRepository.save(image14);
-        imageRepository.save(image15);
-        imageRepository.save(image16);
-        imageRepository.save(image17);
-        imageRepository.save(image18);
-        imageRepository.save(image19);
-        imageRepository.save(image20);
-        imageRepository.save(image21);
-        imageRepository.save(image22);
-        imageRepository.save(image23);
-        imageRepository.save(image24);
+//        ProductDetail productDetail1 = ProductDetail.builder().size(size).color(color).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail2 = ProductDetail.builder().size(size2).color(color2).quantity(15)
+//                .sole(sole2).category(category2).material(material2).brand(brand2).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail3 = ProductDetail.builder().size(size5).color(color1).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail4 = ProductDetail.builder().size(size3).color(color5).quantity(15)
+//                .sole(sole4).category(category3).material(material3).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail5 = ProductDetail.builder().size(size7).color(color7).quantity(15)
+//                .sole(sole3).category(category4).material(material2).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail6 = ProductDetail.builder().size(size2).color(color4).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail7 = ProductDetail.builder().size(size6).color(color6).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail8 = ProductDetail.builder().size(size8).color(color6).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail9 = ProductDetail.builder().size(size2).color(color).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail10 = ProductDetail.builder().size(size8).color(color7).quantity(20)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product2)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail11 = ProductDetail.builder().size(size).color(color1).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product2)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail12 = ProductDetail.builder().size(size).color(color7).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product3)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail13 = ProductDetail.builder().size(size).color(color).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("1900001")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail14 = ProductDetail.builder().size(size2).color(color2).quantity(15)
+//                .sole(sole2).category(category2).material(material2).brand(brand2).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900002")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail15 = ProductDetail.builder().size(size5).color(color1).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900003")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail16 = ProductDetail.builder().size(size3).color(color5).quantity(15)
+//                .sole(sole4).category(category3).material(material3).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("1900004")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail17 = ProductDetail.builder().size(size7).color(color7).quantity(15)
+//                .sole(sole3).category(category4).material(material2).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900005")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail18 = ProductDetail.builder().size(size2).color(color4).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900006")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail19 = ProductDetail.builder().size(size6).color(color6).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900007")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail20 = ProductDetail.builder().size(size8).color(color6).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM).price(new BigDecimal("1900008")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail21 = ProductDetail.builder().size(size2).color(color).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product1)
+//                .gender(GenderProductDetail.NAM_VA_NU).price(new BigDecimal("1900009")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail22 = ProductDetail.builder().size(size8).color(color7).quantity(20)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product2)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail23 = ProductDetail.builder().size(size).color(color1).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product2)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("2000000")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        ProductDetail productDetail24 = ProductDetail.builder().size(size).color(color7).quantity(15)
+//                .sole(sole1).category(category).material(material).brand(brand).product(product3)
+//                .gender(GenderProductDetail.NU).price(new BigDecimal("4000000")).status(Status.DANG_SU_DUNG)
+//                .description("Thiết kế tối giản thanh lịch cùng form dáng ôm trọn chân lấy màu trắng là chủ đạo, tự tin phối mội loại thời trang, cho dù quân dày hay ngắn đề có thể phù hợp không cần đắng đo")
+//                .build();
+//        productDetailRepository.save(productDetail1);
+//        productDetailRepository.save(productDetail2);
+//        productDetailRepository.save(productDetail3);
+//        productDetailRepository.save(productDetail4);
+//        productDetailRepository.save(productDetail5);
+//        productDetailRepository.save(productDetail6);
+//        productDetailRepository.save(productDetail7);
+//        productDetailRepository.save(productDetail8);
+//        productDetailRepository.save(productDetail9);
+//        productDetailRepository.save(productDetail10);
+//        productDetailRepository.save(productDetail11);
+//        productDetailRepository.save(productDetail12);
+//        productDetailRepository.save(productDetail13);
+//        productDetailRepository.save(productDetail14);
+//        productDetailRepository.save(productDetail15);
+//        productDetailRepository.save(productDetail16);
+//        productDetailRepository.save(productDetail17);
+//        productDetailRepository.save(productDetail18);
+//        productDetailRepository.save(productDetail19);
+//        productDetailRepository.save(productDetail20);
+//        productDetailRepository.save(productDetail21);
+//        productDetailRepository.save(productDetail22);
+//        productDetailRepository.save(productDetail23);
+//        productDetailRepository.save(productDetail24);
+//
+//
+//        //image
+//        Image image1 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/01cdd6c3-7656-4c32-b334-614ac2893868.webp").productDetail(productDetail1).status(true).build();
+//        Image image2 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/e7ade807-8dcb-4c50-a400-52504db8996f.webp").productDetail(productDetail2).status(true).build();
+//        Image image3 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/a9ea4981-e03a-45b5-9e6d-df758cd48b8f.webp").productDetail(productDetail3).status(true).build();
+//        Image image4 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/a9ea4981-e03a-45b5-9e6d-df758cd48b8f.webp").productDetail(productDetail4).status(true).build();
+//        Image image5 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/e88eb7ec-99fc-48c5-9f13-a1f2a1c4f868.webp").productDetail(productDetail5).status(true).build();
+//        Image image6 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/bab1d21e-3d4f-4dcf-8a23-07f1a6f04724.webp").productDetail(productDetail6).status(true).build();
+//        Image image7 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/cfa57778-1b06-4dfb-9876-ea9a0325b512.webp").productDetail(productDetail7).status(true).build();
+//        Image image8 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/cfa57778-1b06-4dfb-9876-ea9a0325b512.webp").productDetail(productDetail8).status(true).build();
+//        Image image9 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/9d1c7d14-4f97-425a-9d04-f99c08a5624c.webp").productDetail(productDetail9).status(true).build();
+//        Image image10 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/bab1d21e-3d4f-4dcf-8a23-07f1a6f04724.webp").productDetail(productDetail10).status(true).build();
+//        Image image11 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f73d7a1d-d6a1-46ba-8d5a-819d2d95f690.webp").productDetail(productDetail11).status(true).build();
+//        Image image12 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/d6a456c2-5aed-42b6-8feb-677e3569f30e.webp").productDetail(productDetail12).status(true).build();
+//        Image image13 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/01cdd6c3-7656-4c32-b334-614ac2893868.webp").productDetail(productDetail13).status(true).build();
+//        Image image14 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/8366f623-7309-44c9-bdc0-9bdf7b5ef04e.webp").productDetail(productDetail14).status(true).build();
+//        Image image15 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f0804a19-1012-47e4-92ab-29b6e9d0431c.webp").productDetail(productDetail15).status(true).build();
+//        Image image16 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f73d7a1d-d6a1-46ba-8d5a-819d2d95f690.webp").productDetail(productDetail16).status(true).build();
+//        Image image17 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/e7ade807-8dcb-4c50-a400-52504db8996f.webp").productDetail(productDetail17).status(true).build();
+//        Image image18 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/e7ade807-8dcb-4c50-a400-52504db8996f.webp").productDetail(productDetail18).status(true).build();
+//        Image image19 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/e88eb7ec-99fc-48c5-9f13-a1f2a1c4f868.webp").productDetail(productDetail19).status(true).build();
+//        Image image20 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190438/8366f623-7309-44c9-bdc0-9bdf7b5ef04e.webp").productDetail(productDetail20).status(true).build();
+//        Image image21 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/f0804a19-1012-47e4-92ab-29b6e9d0431c.webp").productDetail(productDetail21).status(true).build();
+//        Image image22 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190439/9d1c7d14-4f97-425a-9d04-f99c08a5624c.webp").productDetail(productDetail22).status(true).build();
+//        Image image23 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/01cdd6c3-7656-4c32-b334-614ac2893868.webp").productDetail(productDetail23).status(true).build();
+//        Image image24 = Image.builder().name("http://res.cloudinary.com/dyq10bthd/image/upload/v1699190440/d6a456c2-5aed-42b6-8feb-677e3569f30e.webp").productDetail(productDetail24).status(true).build();
+//        imageRepository.save(image1);
+//        imageRepository.save(image2);
+//        imageRepository.save(image3);
+//        imageRepository.save(image4);
+//        imageRepository.save(image5);
+//        imageRepository.save(image6);
+//        imageRepository.save(image7);
+//        imageRepository.save(image8);
+//        imageRepository.save(image9);
+//        imageRepository.save(image10);
+//        imageRepository.save(image11);
+//        imageRepository.save(image12);
+//        imageRepository.save(image13);
+//        imageRepository.save(image14);
+//        imageRepository.save(image15);
+//        imageRepository.save(image16);
+//        imageRepository.save(image17);
+//        imageRepository.save(image18);
+//        imageRepository.save(image19);
+//        imageRepository.save(image20);
+//        imageRepository.save(image21);
+//        imageRepository.save(image22);
+//        imageRepository.save(image23);
+//        imageRepository.save(image24);
 
         User user1 = User.builder()
-                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaIP8Lvis7vhRKgCFKfPoWTxrNE4HnQ18gdg&usqp=CAU")
+                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
                 .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/2000")).email("vinhnvph23845@fpt.edu.vn")
                 .gender(true).phoneNumber("0378530273").status(Status.DANG_SU_DUNG)
                 .points(12)
@@ -478,71 +478,71 @@ public class DBGenerator implements CommandLineRunner {
                 .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
                 .points(12)
                 .build();
-        User hao = User.builder()
-                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666367/cWpkaDhwaW90bTJoeTRtMnd2d20=/grid_landscape")
-                .fullName("Ngô Vũ Ngọc Hào").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("haonvnph23574@fpt.edu.vn")
-                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-                .points(12)
-                .build();
-        User diem = User.builder()
-                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698665394/bWJob2E4eGVqY2tvODU2a3owZW4=/grid_landscape")
-                .fullName("Đinh Khắc Diệm").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("diemdkph23701@fpt.edu.vn")
-                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-                .points(12)
-                .build();
-        User oanh = User.builder()
-                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
-                .fullName("Nguyễn Thi Phương Oanh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("oanhntpph26142@fpt.edu.vn")
-                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-                .points(12)
-                .build();
-        User tuThang = User.builder()
-                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666418/cmFqOGRqc2xvMWdlcHBscTdzMnA=/grid_landscape")
-                .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdtph27626@fpt.edu.vn")
-                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-                .points(12)
-                .build();
-        User vinh = User.builder()
-                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
-                .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("vinhnvph23845@fpt.edu.vn")
-                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-                .points(12)
-                .build();
-        User T_Nguyen = User.builder()
-                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
-                .fullName("Vũ Văn Nguyên").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/1998")).email("nguyenvv6@fe.edu.vn")
-                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-                .points(12)
-                .build();
+//        User hao = User.builder()
+//                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666367/cWpkaDhwaW90bTJoeTRtMnd2d20=/grid_landscape")
+//                .fullName("Ngô Vũ Ngọc Hào").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("haonvnph23574@fpt.edu.vn")
+//                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+//                .points(12)
+//                .build();
+//        User diem = User.builder()
+//                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698665394/bWJob2E4eGVqY2tvODU2a3owZW4=/grid_landscape")
+//                .fullName("Đinh Khắc Diệm").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("diemdkph23701@fpt.edu.vn")
+//                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+//                .points(12)
+//                .build();
+//        User oanh = User.builder()
+//                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
+//                .fullName("Nguyễn Thi Phương Oanh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("oanhntpph26142@fpt.edu.vn")
+//                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+//                .points(12)
+//                .build();
+//        User tuThang = User.builder()
+//                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666418/cmFqOGRqc2xvMWdlcHBscTdzMnA=/grid_landscape")
+//                .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdtph27626@fpt.edu.vn")
+//                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+//                .points(12)
+//                .build();
+//        User vinh = User.builder()
+//                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
+//                .fullName("Nguyễn Văn Vinh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("vinhnvph23845@fpt.edu.vn")
+//                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+//                .points(12)
+//                .build();
+//        User T_Nguyen = User.builder()
+//                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666496/ZGJuampvdnF6OTdhOGhhbTd1ZmY=/grid_landscape")
+//                .fullName("Vũ Văn Nguyên").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/1998")).email("nguyenvv6@fe.edu.vn")
+//                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+//                .points(12)
+//                .build();
 
         userReposiory.save(user1);
         userReposiory.save(user2);
         userReposiory.save(user3);
-        userReposiory.save(hao);
-        userReposiory.save(vinh);
-        userReposiory.save(oanh);
-        userReposiory.save(diem);
-        userReposiory.save(tuThang);
-        userReposiory.save(T_Nguyen);
+//        userReposiory.save(hao);
+//        userReposiory.save(vinh);
+//        userReposiory.save(oanh);
+//        userReposiory.save(diem);
+//        userReposiory.save(tuThang);
+//        userReposiory.save(T_Nguyen);
 
         Account account1 = Account.builder().user(user1).email(user1.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
         Account account2 = Account.builder().user(user3).email(user2.getEmail()).password("123").roles(Roles.ROLE_EMLOYEE).build();
         Account account3 = Account.builder().user(user2).email(user3.getEmail()).password("123").roles(Roles.ROLE_USER).build();
-        Account accountHao = Account.builder().user(hao).email(hao.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountVinh = Account.builder().user(vinh).email(vinh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountTu = Account.builder().user(tuThang).email(tuThang.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountDiem = Account.builder().user(diem).email(diem.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountOanh = Account.builder().user(oanh).email(oanh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-        Account accountT_Nguyen = Account.builder().user(T_Nguyen).email(T_Nguyen.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+//        Account accountHao = Account.builder().user(hao).email(hao.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+//        Account accountVinh = Account.builder().user(vinh).email(vinh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+//        Account accountTu = Account.builder().user(tuThang).email(tuThang.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+//        Account accountDiem = Account.builder().user(diem).email(diem.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+//        Account accountOanh = Account.builder().user(oanh).email(oanh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+//        Account accountT_Nguyen = Account.builder().user(T_Nguyen).email(T_Nguyen.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
         accountRepository.save(account1);
         accountRepository.save(account2);
         accountRepository.save(account3);
-        accountRepository.save(accountHao);
-        accountRepository.save(accountVinh);
-        accountRepository.save(accountOanh);
-        accountRepository.save(accountDiem);
-        accountRepository.save(accountTu);
-        accountRepository.save(accountT_Nguyen);
+//        accountRepository.save(accountHao);
+//        accountRepository.save(accountVinh);
+//        accountRepository.save(accountOanh);
+//        accountRepository.save(accountDiem);
+//        accountRepository.save(accountTu);
+//        accountRepository.save(accountT_Nguyen);
 
         Customer customer1 = Customer.builder().fullName("Hà Phương Na").phoneNumber("0951753852").email("phuongna@gmail.com").status(Status.DANG_SU_DUNG).build();
         customerRepository.save(customer1);
@@ -782,45 +782,45 @@ public class DBGenerator implements CommandLineRunner {
 //        billHistoryRepository.save(billHistory5);
 //        billHistoryRepository.save(billHistory6);
 //        billHistoryRepository.save(billHistory7);
-        Voucher voucher1 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC", 5))
-                .name("Sale ngày khai trương").value(new BigDecimal(100000))
-                .startDate(new ConvertDateToLong().dateToLong("25/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
-                .quantity(100).status(Status.DANG_SU_DUNG).build();
-        Voucher voucher2 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC", 5))
-                .name("Sale sốc").value(new BigDecimal(100000))
-                .startDate(new ConvertDateToLong().dateToLong("15/06/2023")).endDate(new ConvertDateToLong().dateToLong("25/06/2023"))
-                .quantity(100).status(Status.DANG_SU_DUNG).build();
-        voucherRepository.save(voucher2);
-        voucherRepository.save(voucher1);
+//        Voucher voucher1 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC", 5))
+//                .name("Sale ngày khai trương").value(new BigDecimal(100000))
+//                .startDate(new ConvertDateToLong().dateToLong("25/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
+//                .quantity(100).status(Status.DANG_SU_DUNG).build();
+//        Voucher voucher2 = Voucher.builder().code(new RandomNumberGenerator().randomToString("VC", 5))
+//                .name("Sale sốc").value(new BigDecimal(100000))
+//                .startDate(new ConvertDateToLong().dateToLong("15/06/2023")).endDate(new ConvertDateToLong().dateToLong("25/06/2023"))
+//                .quantity(100).status(Status.DANG_SU_DUNG).build();
+//        voucherRepository.save(voucher2);
+//        voucherRepository.save(voucher1);
+//
+//        Promotion promotion1 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
+//                .name("diem").value(new BigDecimal(10))
+//                .startDate(new ConvertDateToLong().dateToLong("25/04/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
+//                .status(StatusPromotion.DANG_KICH_HOAT).build();
+//        Promotion promotion2 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
+//                .name("diem2003").value(new BigDecimal(100))
+//                .startDate(new ConvertDateToLong().dateToLong("15/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/07/2023"))
+//                .status(StatusPromotion.HET_HAN_KICH_HOAT).build();
+//        promotionRepository.save(promotion1);
+//        promotionRepository.save(promotion2);
+//
+//        PromotionProductDetail promotionProductDetail1 = PromotionProductDetail.builder().promotion(promotion1)
+//                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
+//        PromotionProductDetail promotionProductDetail2 = PromotionProductDetail.builder().promotion(promotion2)
+//                .productDetail(productDetail2).status(Status.KHONG_SU_DUNG).build();
+//        PromotionProductDetail promotionProductDetail3 = PromotionProductDetail.builder().promotion(promotion1)
+//                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
+//        PromotionProductDetail promotionProductDetail4 = PromotionProductDetail.builder().promotion(promotion2)
+//                .productDetail(productDetail1).status(Status.KHONG_SU_DUNG).build();
+//
+//        promotionProductDetailRepository.save(promotionProductDetail1);
+//        promotionProductDetailRepository.save(promotionProductDetail2);
+//        promotionProductDetailRepository.save(promotionProductDetail3);
+//        promotionProductDetailRepository.save(promotionProductDetail4);
 
-        Promotion promotion1 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
-                .name("diem").value(new BigDecimal(10))
-                .startDate(new ConvertDateToLong().dateToLong("25/04/2023")).endDate(new ConvertDateToLong().dateToLong("01/06/2023"))
-                .status(StatusPromotion.DANG_KICH_HOAT).build();
-        Promotion promotion2 = Promotion.builder().code(new RandomNumberGenerator().randomToString("PR"))
-                .name("diem2003").value(new BigDecimal(100))
-                .startDate(new ConvertDateToLong().dateToLong("15/05/2023")).endDate(new ConvertDateToLong().dateToLong("01/07/2023"))
-                .status(StatusPromotion.HET_HAN_KICH_HOAT).build();
-        promotionRepository.save(promotion1);
-        promotionRepository.save(promotion2);
 
-        PromotionProductDetail promotionProductDetail1 = PromotionProductDetail.builder().promotion(promotion1)
-                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
-        PromotionProductDetail promotionProductDetail2 = PromotionProductDetail.builder().promotion(promotion2)
-                .productDetail(productDetail2).status(Status.KHONG_SU_DUNG).build();
-        PromotionProductDetail promotionProductDetail3 = PromotionProductDetail.builder().promotion(promotion1)
-                .productDetail(productDetail1).status(Status.DANG_SU_DUNG).build();
-        PromotionProductDetail promotionProductDetail4 = PromotionProductDetail.builder().promotion(promotion2)
-                .productDetail(productDetail1).status(Status.KHONG_SU_DUNG).build();
-
-        promotionProductDetailRepository.save(promotionProductDetail1);
-        promotionProductDetailRepository.save(promotionProductDetail2);
-        promotionProductDetailRepository.save(promotionProductDetail3);
-        promotionProductDetailRepository.save(promotionProductDetail4);
-
-
-        AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
-        accountVoucherRepository.save(accountVoucher1);
+//        AccountVoucher accountVoucher1 = AccountVoucher.builder().account(account3).voucher(voucher1).status(Status.DANG_SU_DUNG).build();
+//        accountVoucherRepository.save(accountVoucher1);
 
         Address address1 = Address.builder().user(user2).status(Status.DANG_SU_DUNG).line("số 20 ngõ 19, Hoàng Hoa Thám").province("Hưng Yên").district("Huyện Văn Lâm")
                 .ward("Xã Lạc Hồng").provinceId(268).toDistrictId(2046).wardCode("220906").fullName("Ngô Đình Diệm").phoneNumber("0987689098").build();

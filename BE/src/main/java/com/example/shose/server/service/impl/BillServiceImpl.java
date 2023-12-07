@@ -878,7 +878,6 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-
     public Bill createBillAccountOnlineRequest(CreateBillAccountOnlineRequest request) {
         if (request.getPaymentMethod().equals("paymentReceive")) {
             for (BillDetailOnline x : request.getBillDetail()) {
@@ -1168,21 +1167,22 @@ public class BillServiceImpl implements BillService {
         BigDecimal totalBillGive = updateBillGiveBack.getTotalBillGiveBack();
         int checkTotal = totalBill.compareTo(totalBillGive);
         List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
-        ScoringFormula scoringFormula = scoringFormulas.get(0);
-        int pointGiveBack = scoringFormula.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
-        if (idAccount != null) {
-            User customer = accountRepository.findById(idAccount).get().getUser();
-            if (checkTotal == 0) {
-                customer.setPoints(customer.getPoints() + bill.getPoinUse() - pointGiveBack);
-            } else {
-                customer.setPoints(customer.getPoints() - pointGiveBack);
-            }
-            if(Math.max(0, bill.getPoinUse() - pointGiveBack) > 0){
-                historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_HOAN).value(bill.getPoinUse() - pointGiveBack).bill(bill).user(customer).scoringFormula(scoringFormula).build());
-
-            }
-            userReposiory.save(customer);
-        }
+       if(!scoringFormulas.isEmpty()){
+           ScoringFormula scoringFormula = scoringFormulas.get(0);
+           int pointGiveBack = scoringFormula.ConvertMoneyToPoints(bill.getTotalMoney().subtract(totalBillGive));
+           if (idAccount != null) {
+               User customer = accountRepository.findById(idAccount).get().getUser();
+               if (checkTotal == 0) {
+                   customer.setPoints(customer.getPoints() + bill.getPoinUse() - pointGiveBack);
+               } else {
+                   customer.setPoints(customer.getPoints() - pointGiveBack);
+               }
+               if(Math.max(0, bill.getPoinUse() - pointGiveBack) > 0){
+                   historyPoinRepository.save(HistoryPoin.builder().typePoin(TypePoin.DIEM_HOAN).value(bill.getPoinUse() - pointGiveBack).bill(bill).user(customer).scoringFormula(scoringFormula).build());
+               }
+               userReposiory.save(customer);
+           }
+       }
 
         // todo update stattus bill
         bill.setStatusBill(StatusBill.TRA_HANG);
@@ -1246,7 +1246,6 @@ public class BillServiceImpl implements BillService {
     }
 
     private Long getCurrentTimestampInVietnam() {
-
         Instant instant = Instant.now();
         ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
         return instant.atZone(zoneId).toEpochSecond() * 1000;
