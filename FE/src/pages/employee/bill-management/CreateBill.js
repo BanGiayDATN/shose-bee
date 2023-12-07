@@ -1149,6 +1149,7 @@ function CreateBill({
     currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) ? currentVoucher : maxVoucher
   , null);
 
+
 //   const maxAmountVoucher = vouchers.reduce((maxVoucher, currentVoucher) =>
 //   currentVoucher.amount > (maxVoucher ? maxVoucher.amount : 0) &&
 //   newTotalPrice >= currentVoucher.condition

@@ -71,6 +71,7 @@ const DashBoardEmployee = ({ children }) => {
   const handleMenuLeave = () => {
     setOpenInfo(false);
   };
+
   const socket = new SockJS("http://localhost:8080/ws");
   const stompClient = Stomp.over(socket);
 
@@ -92,7 +93,7 @@ const DashBoardEmployee = ({ children }) => {
       console.log(res.data.data);
     });
     stompClient.connect({}, () => {
-      stompClient.subscribe("/topic/admin-notifications", (response) => {
+      stompClient.subscribe("/app/admin-notifications", (response) => {
         NotificationClientApi.getNotRead().then((res) => {
           setNotificationCount(res.data.data.length);
         });
@@ -100,7 +101,6 @@ const DashBoardEmployee = ({ children }) => {
           dispatch(SetNotification(res.data.data));
           setListNotification(res.data.data);
         });
-        toast.success(response.body);
       });
     });
 

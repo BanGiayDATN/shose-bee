@@ -861,9 +861,13 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(request.getItemDiscount())
                     .build();
             voucherDetailRepository.save(voucherDetail);
+
+            voucher.setQuantity(voucher.getQuantity()-1);
+            voucherRepository.save(voucher);
         }
 
         CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
+
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -986,6 +990,8 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(request.getItemDiscount())
                     .build();
             voucherDetailRepository.save(voucherDetail);
+            voucher.setQuantity(voucher.getQuantity()-1);
+            voucherRepository.save(voucher);
         }
 
         Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
@@ -995,6 +1001,7 @@ public class BillServiceImpl implements BillService {
             cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
         }
         CompletableFuture.runAsync(() -> sendMailOnline(bill.getId()), Executors.newCachedThreadPool());
+
         Notification notification = Notification.builder()
                 .receiver("admin")
                 .notifyContent("Vừa mua đơn hàng")
@@ -1233,8 +1240,13 @@ public class BillServiceImpl implements BillService {
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
         return bill;
     }
+    @Override
+    public List<BillResponse> getBillCanceled() {
+        return billRepository.getBillCanceled();
+    }
 
     private Long getCurrentTimestampInVietnam() {
+
         Instant instant = Instant.now();
         ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
         return instant.atZone(zoneId).toEpochSecond() * 1000;

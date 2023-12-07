@@ -151,13 +151,6 @@ function CardItem({ item, index }) {
       }
     }
   };
-
-  const listCartAccount = () => {
-    CartClientApi.listCart(idAccountLocal).then((response) => {
-      setCartAccount(response.data.data);
-      console.log(response.data.data);
-    });
-  };
   const getDetailProduct = (idProductDetail) => {
     setItemSize(idProductDetail);
     ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
@@ -187,7 +180,6 @@ function CardItem({ item, index }) {
   const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
     getDetailProduct(idProductDetail);
-    listCartAccount();
     setId(idProductDetail);
   };
   const closeModal = () => {

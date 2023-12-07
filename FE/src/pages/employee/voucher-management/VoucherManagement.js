@@ -148,6 +148,14 @@ const VoucherManagement = () => {
       render: (_, record) => formatCurrency(record.value),
     },
     {
+      title: "Đơn tối thiểu",
+      dataIndex: "minimumBill",
+      align: "center",
+      key: "minimumBill",
+      sorter: (a, b) => a.minimumBill - b.minimumBill,
+      render: (_, record) => formatCurrency(record.minimumBill),
+    },
+    {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
       align: "center",
@@ -177,12 +185,21 @@ const VoucherManagement = () => {
       key: "status",
       align: "center",
       render: (text) => {
-        const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
         return (
-          <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Còn hạn" : "Hết hạn"}
-          </button>
+          <div
+            style={{
+              backgroundColor:text === "DANG_SU_DUNG" ? "lightgreen" : (text === "KHONG_SU_DUNG"? "rgb(243, 87, 87)" :"rgb(255, 153, 0)"),
+              borderRadius: 20,
+              width: 130,
+              height: 30,
+              display:"flex",
+              alignItems:"center",
+              justifyContent:"center"
+            }}
+          >
+              {text === "DANG_SU_DUNG" ? "Đang kích hoạt" : (text === "KHONG_SU_DUNG"? "Ngừng kích hoạt" :"Chưa kích hoạt")}
+            
+          </div>
         );
       },
     },

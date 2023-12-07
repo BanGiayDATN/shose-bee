@@ -290,4 +290,20 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             """, nativeQuery = true)
     List<BillGiveBack> getBillGiveBack(@Param("idBill") String idBill);
 
+    @Query(value = """
+               SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill,
+               CASE
+               WHEN total_money + money_ship - item_discount < 0 THEN 0
+               ELSE total_money + money_ship - item_discount
+               END  AS total_money
+               , bi.item_discount  FROM bill bi
+               LEFT JOIN account ac ON ac.id = bi.id_account
+               LEFT JOIN account em ON em.id = bi.id_employees
+               LEFT JOIN customer cu ON cu.id = bi.id_customer
+               LEFT JOIN user usac ON usac.id = ac.id_user
+               LEFT JOIN user usem ON usem.id = em.id_user
+               WHERE bi.status_bill LIKE 'DA_HUY'
+               ORDER BY bi.last_modified_date DESC
+            """, nativeQuery = true)
+    List<BillResponse> getBillCanceled();
 }
