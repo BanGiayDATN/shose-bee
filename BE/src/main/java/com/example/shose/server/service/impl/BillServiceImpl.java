@@ -634,9 +634,6 @@ public class BillServiceImpl implements BillService {
         }else if (billHistories.size() > 3 && bill.get().getStatusBill() == StatusBill.DA_HUY) {
             bill.get().setStatusBill(billHistories.get(billHistories.size() - 2).getStatusBill());
         }else if (billHistories.size() <= 3 && bill.get().getStatusBill() == StatusBill.DA_HUY) {
-            if(billHistories.size() == 2){
-                throw new RestApiException(Message.CHANGED_STATUS_ERROR);
-            }
             if(billHistories.stream()
                     .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.XAC_NHAN) || billHistories.stream()
                     .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN)){
