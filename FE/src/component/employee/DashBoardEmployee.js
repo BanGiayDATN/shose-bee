@@ -71,7 +71,7 @@ const DashBoardEmployee = ({ children }) => {
   const handleMenuLeave = () => {
     setOpenInfo(false);
   };
-  const socket = new SockJS("http://103.56.161.210:8080/ws");
+  const socket = new SockJS("http://komf.id.vn:3000/ws");
   const stompClient = Stomp.over(socket);
 
   const data = useAppSelector(GetNotification);
