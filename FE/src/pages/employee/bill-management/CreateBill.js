@@ -1134,7 +1134,7 @@ function CreateBill({
     setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
-
+const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
   useEffect(() => {
     // Tính tổng giá tiền dựa trên số lượng sản phẩm và giá của từng sản phẩm
     const newTotalPrice = products.reduce(
@@ -1145,26 +1145,31 @@ function CreateBill({
     var price = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
-    var record = listVoucher.reduce((maxVoucher, currentVoucher) =>
-    currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) ? currentVoucher : maxVoucher
-  , null);
+    setListVoucher(
+      dataVoucher.filter((voucher) => newTotalPrice >= voucher.minimumBill)
+    );
+    const record = dataVoucher.reduce(
+      (maxVoucher, currentVoucher) =>
+        currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) &&
+        newTotalPrice >= currentVoucher.minimumBill
+          ? currentVoucher
+          : maxVoucher,
+      null
+    );
+    if (record != null) {
+      setVoucher({
+        idVoucher: record.id,
+        beforPrice: price,
+        afterPrice: price - record.value,
+        discountPrice: record.value,
+      });
+      setCodeVoucher(record.code + " - " + record.name);
+      setIsModalVoucherOpen(false);
+    }
 
-//   const maxAmountVoucher = vouchers.reduce((maxVoucher, currentVoucher) =>
-//   currentVoucher.amount > (maxVoucher ? maxVoucher.amount : 0) &&
-//   newTotalPrice >= currentVoucher.condition
-//     ? currentVoucher
-//     : maxVoucher
-// , null);
-    setVoucher({
-      idVoucher: record.id,
-      beforPrice: price,
-      afterPrice: price - record.value,
-      discountPrice: record.value,
-    });
-    setCodeVoucher(record.code + " - " + record.name);
-    setIsModalVoucherOpen(false);
-  }, [products]);
+  }, [products, changeQuanTiTy]);
   
+
   const [voucher, setVoucher] = useState({
     idVoucher: "",
     beforPrice: 0,
@@ -2447,10 +2452,20 @@ function CreateBill({
               </Col>
             </Row>
             <Row style={{ margin: "10px 0 " }}>
-              <Col span={16}>
+              <Col
+                span={5}
+                style={{
+                  margin: "2px",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                }}
+              >
+                Mã giảm giá:{" "}
+              </Col>
+              <Col span={13}>
                 <Input
                   style={{ width: "100%", backgroundColor: "white" }}
-                  value={codeVoucher}
+                  value={products.length !== 0 ? codeVoucher : ""}
                   readOnly
                 />
               </Col>
@@ -2461,12 +2476,17 @@ function CreateBill({
                 </Button>
               </Col>
             </Row>
-            {}
             {isOpenDelivery ? (
-              <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-                <Col span={5} style={{ display: "flex", alignItems: "center" }}>
-                  {" "}
-                  Trả sau:{" "}
+              <Row style={{ margin: "20px 0 5px 0px", width: "100%" }}>
+                <Col
+                  span={5}
+                  style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "15px",
+                  }}
+                >
+                  Trả Sau:{" "}
                 </Col>
                 <Col
                   span={12}
@@ -2482,7 +2502,7 @@ function CreateBill({
             ) : (
               <Row></Row>
             )}
-            <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
+            <Row style={{ margin: "20px 0 5px 0px", width: "100%" }}>
               <Col
                 span={5}
                 style={{
@@ -2491,7 +2511,7 @@ function CreateBill({
                   fontSize: "15px",
                 }}
               >
-                Giao hàng:{" "}
+                Giao Hàng:{" "}
               </Col>
               <Col
                 span={12}
