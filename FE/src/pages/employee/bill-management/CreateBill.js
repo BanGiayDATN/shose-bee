@@ -1155,6 +1155,7 @@ function CreateBill({
 //     ? currentVoucher
 //     : maxVoucher
 // , null);
+    if(record != null){
     setVoucher({
       idVoucher: record.id,
       beforPrice: price,
@@ -1163,6 +1164,7 @@ function CreateBill({
     });
     setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
+    }
   }, [products]);
   
   const [voucher, setVoucher] = useState({
