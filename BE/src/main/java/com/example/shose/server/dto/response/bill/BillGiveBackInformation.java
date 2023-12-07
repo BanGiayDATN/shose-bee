@@ -47,4 +47,5 @@ public interface BillGiveBackInformation {
 
     @Value("#{target.moneyShip}")
     BigDecimal getMoneyShip();
+
 }
