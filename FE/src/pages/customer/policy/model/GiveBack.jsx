@@ -61,6 +61,11 @@ export default function Giveback() {
           hàng của khách hàng
         </p>
       </div>
+      <div>
+        <span style={{ fontWeight: "bold", color: "red" }}>* Note</span> : Khi
+        trả hàng sẽ không được áp dụng voucher trước đó khi đã áp dụng vào hóa
+        đơn.
+      </div>
     </>
   );
 }

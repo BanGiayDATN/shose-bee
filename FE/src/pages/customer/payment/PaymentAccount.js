@@ -234,7 +234,7 @@ function PaymentAccount() {
           PaymentClientApi.paymentVnpay(data).then(
             (res) => {
               window.location.replace(res.data.data);
-              sessionStorage.setItem("formBill", JSON.stringify(dataBill));
+              sessionStorage.setItem("formBill", JSON.stringify(dataBillSave));
             },
             (err) => {}
           );

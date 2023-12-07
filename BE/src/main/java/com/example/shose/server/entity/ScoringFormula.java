@@ -34,7 +34,6 @@ public class ScoringFormula extends PrimaryEntity {
     @Transient
     public int ConvertMoneyToPoints(BigDecimal totalMoney){
         return totalMoney.divide(exchangeRatePoin, 0, BigDecimal.ROUND_DOWN).intValue();
-
     }
     @Transient
     public BigDecimal  ConvertPoinToMoney(int poin){

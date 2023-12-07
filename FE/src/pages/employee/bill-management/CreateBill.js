@@ -1134,7 +1134,7 @@ function CreateBill({
     setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
-
+  const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
   useEffect(() => {
     // Tính tổng giá tiền dựa trên số lượng sản phẩm và giá của từng sản phẩm
     const newTotalPrice = products.reduce(
@@ -1166,7 +1166,7 @@ function CreateBill({
       setCodeVoucher(record.code + " - " + record.name);
       setIsModalVoucherOpen(false);
     }
-  }, [products]);
+  }, [products, changeQuanTiTy]);
 
   const [voucher, setVoucher] = useState({
     idVoucher: "",
@@ -2444,10 +2444,20 @@ function CreateBill({
               </Col>
             </Row>
             <Row style={{ margin: "10px 0 " }}>
-              <Col span={16}>
+              <Col
+                span={5}
+                style={{
+                  margin: "2px",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                }}
+              >
+                Mã giảm giá:{" "}
+              </Col>
+              <Col span={13}>
                 <Input
                   style={{ width: "100%", backgroundColor: "white" }}
-                  value={codeVoucher}
+                  value={products.length !== 0 ? codeVoucher : ""}
                   readOnly
                 />
               </Col>
@@ -2458,12 +2468,17 @@ function CreateBill({
                 </Button>
               </Col>
             </Row>
-            {}
             {isOpenDelivery ? (
-              <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
-                <Col span={5} style={{ display: "flex", alignItems: "center" }}>
-                  {" "}
-                  Trả sau:{" "}
+              <Row style={{ margin: "20px 0 5px 0px", width: "100%" }}>
+                <Col
+                  span={5}
+                  style={{
+                    margin: "2px",
+                    fontWeight: "bold",
+                    fontSize: "15px",
+                  }}
+                >
+                  Trả Sau:{" "}
                 </Col>
                 <Col
                   span={12}
@@ -2479,7 +2494,7 @@ function CreateBill({
             ) : (
               <Row></Row>
             )}
-            <Row style={{ margin: "20px 0 5px 5px", width: "100%" }}>
+            <Row style={{ margin: "20px 0 5px 0px", width: "100%" }}>
               <Col
                 span={5}
                 style={{
@@ -2488,7 +2503,7 @@ function CreateBill({
                   fontSize: "15px",
                 }}
               >
-                Giao hàng:{" "}
+                Giao Hàng:{" "}
               </Col>
               <Col
                 span={12}

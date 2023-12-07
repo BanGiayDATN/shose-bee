@@ -188,7 +188,7 @@ function DetailBill() {
   };
   const handleCanCelOk = () => {
     setIsModalCanCelOpen(false);
-    if (statusBill.actionDescription == "") {
+    if (statusBill.actionDescription === "") {
       toast.error("Vui lòng nhập mô tả");
     } else {
       Modal.confirm({
@@ -200,12 +200,12 @@ function DetailBill() {
           await BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
             dispatch(getBill(res.data.data));
             var index = listStatus.findIndex(
-              (item) => item.status == res.data.data.statusBill
+              (item) => item.status === res.data.data.statusBill
             );
-            if (res.data.data.statusBill == "TRA_HANG") {
+            if (res.data.data.statusBill === "TRA_HANG") {
               index = 7;
             }
-            if (res.data.data.statusBill == "DA_HUY") {
+            if (res.data.data.statusBill === "DA_HUY") {
               index = 8;
             }
             var history = {
@@ -1211,7 +1211,7 @@ function DetailBill() {
                 open={isModalCanCelOpen}
                 onOk={handleCanCelOk}
                 onCancel={handleCanCelClose}
-                cancelText={"huỷ"}
+                cancelText={"Huỷ"}
                 okText={"Xác nhận"}
               >
                 <Form
@@ -1532,7 +1532,7 @@ function DetailBill() {
           </Col>
           <Col span={4} align={"end"}>
             {" "}
-            {statusPresent < 1 ? (
+            {statusPresent < 3 ? (
               <Row
                 style={{ width: "100%", marginRight: "15px" }}
                 justify={"end"}
