@@ -1145,6 +1145,7 @@ function CreateBill({
     var price = products.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.price * currentValue.quantity;
     }, 0);
+    setListVoucher(dataVoucher.filter(voucher => newTotalPrice >= voucher.minimumBill))
     const record = dataVoucher.reduce((maxVoucher, currentVoucher) =>
   currentVoucher.value > (maxVoucher ? maxVoucher.value : 0) &&
   newTotalPrice >= currentVoucher.minimumBill
