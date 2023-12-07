@@ -47,4 +47,6 @@ public class Voucher extends PrimaryEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    private Integer minimumBill;
 }
