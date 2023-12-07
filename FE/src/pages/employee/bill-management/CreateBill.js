@@ -104,7 +104,7 @@ function CreateBill({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
-      price: product.price,
+      price: product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion ,
       promotion: product.promotion,
     }));
     var newVoucher = [];
@@ -824,7 +824,7 @@ function CreateBill({
       price:
         product.promotion === null
           ? product.price
-          : (product.price / (100 - product.promotion)) * 100,
+          : (product.price * 100 / (100 - product.promotion)) ,
       promotion: product.promotion,
     }));
     console.log(newProduct);
@@ -1294,7 +1294,7 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
             idProduct: res.data.data.id,
             quantity: 1,
             price:
-              (res.data.data.price * (100 - res.data.data.promotion)) / 100,
+              (res.data.data.price * 100 / (100 - res.data.data.promotion)) ,
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
             promotion: res.data.data.promotion,

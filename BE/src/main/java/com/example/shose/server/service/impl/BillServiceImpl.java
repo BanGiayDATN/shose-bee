@@ -81,13 +81,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -627,14 +621,29 @@ public class BillServiceImpl implements BillService {
         }
         StatusBill statusBill[] = StatusBill.values();
         int nextIndex = (bill.get().getStatusBill().ordinal() - 1) % statusBill.length;
-
-        boolean checkDaThanhToan = billHistoryRepository.findAllByBill(bill.get()).stream()
+        List<BillHistory> billHistories = billHistoryRepository.findAllByBill(bill.get()).stream()
+                .sorted(Comparator.comparing(BillHistory::getCreatedDate))
+                .collect(Collectors.toList());
+        boolean checkDaThanhToan = billHistories.stream()
                 .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
         if (nextIndex < 3) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
         if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setStatusBill(StatusBill.VAN_CHUYEN);
+        }else if (billHistories.size() > 3 && bill.get().getStatusBill() == StatusBill.DA_HUY) {
+            bill.get().setStatusBill(billHistories.get(billHistories.size() - 2).getStatusBill());
+        }else if (billHistories.size() <= 3 && bill.get().getStatusBill() == StatusBill.DA_HUY) {
+            if(billHistories.size() == 2){
+                throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+            }
+            if(billHistories.stream()
+                    .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.XAC_NHAN) || billHistories.stream()
+                    .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN)){
+                bill.get().setStatusBill(StatusBill.CHO_XAC_NHAN);
+            }else{
+                throw new RestApiException(Message.CHANGED_STATUS_ERROR);
+            }
         } else {
             bill.get().setStatusBill(StatusBill.valueOf(statusBill[nextIndex].name()));
         }
@@ -646,7 +655,7 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
-        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
+//        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
         return billRepository.save(bill.get());
     }
 
