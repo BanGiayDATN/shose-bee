@@ -1532,7 +1532,7 @@ function DetailBill() {
           </Col>
           <Col span={4} align={"end"}>
             {" "}
-            {statusPresent < 3 ? (
+            {statusPresent < 1 ? (
               <Row
                 style={{ width: "100%", marginRight: "15px" }}
                 justify={"end"}
