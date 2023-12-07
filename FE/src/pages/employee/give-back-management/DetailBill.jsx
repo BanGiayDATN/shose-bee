@@ -860,17 +860,6 @@ export default function DetailBillGiveBack() {
                     </h3>
                   </Col>
                 </Row>
-                <Row style={{ marginTop: "30px" }}>
-                  <Col span={12}>
-                    <h3>Tổng giá trả hàng : </h3>
-                  </Col>
-                  <Col span={12}>
-                    <h3 style={{ color: "blue" }}>
-                      {" "}
-                      {formatCurrency(totalMoneyBillGiveBack())}
-                    </h3>
-                  </Col>
-                </Row>
                 {bill !== null && bill.voucherValue !== null && (
                   <Row style={{ marginTop: "30px" }}>
                     <Col span={12}>
@@ -897,42 +886,87 @@ export default function DetailBillGiveBack() {
                     </Col>
                   </Row>
                 )}
-                <br />
-                <hr />
                 <Row style={{ marginTop: "30px" }}>
                   <Col span={12}>
-                    <h3>Tiền thừa trả khách : </h3>
+                    <h3>Tổng tiền thanh toán : </h3>
                   </Col>
                   <Col span={12}>
-                    {totalMoneyBillGiveBack() !== totalMoneyBill() ? (
-                      <h3 style={{ color: "blue" }}>
-                        {formatCurrency(totalMoneyBillGiveBack())}
-                      </h3>
-                    ) : (
-                      bill !== null && (
-                        <h3 style={{ color: "blue" }}>
-                          {totalMoneyBillGiveBack() > 0
-                            ? bill.poin !== null && bill.voucherValue !== null
-                              ? formatCurrency(
-                                  totalMoneyBillGiveBack() -
-                                    bill.poin * 1000 -
-                                    bill.voucherValue
-                                )
-                              : bill.poin === null && bill.voucherValue !== null
-                              ? formatCurrency(
-                                  totalMoneyBillGiveBack() - bill.voucherValue
-                                )
-                              : bill.poin !== null && bill.voucherValue === null
-                              ? formatCurrency(
-                                  totalMoneyBillGiveBack() - bill.poin * 1000
-                                )
-                              : formatCurrency(totalMoneyBillGiveBack())
-                            : formatCurrency(totalMoneyBillGiveBack())}
-                        </h3>
-                      )
-                    )}
+                    <h3 style={{ color: "blue" }}>
+                      {" "}
+                      {formatCurrency(
+                        totalMoneyBill() -
+                          (bill !== null
+                            ? bill.voucherValue !== null
+                              ? bill.voucherValue
+                              : 0
+                            : 0) -
+                          (bill !== null
+                            ? bill.poin !== null
+                              ? bill.poin
+                              : 0
+                            : 0)
+                      )}
+                    </h3>
                   </Col>
                 </Row>
+                <Row style={{ marginTop: "30px" }}>
+                  <Col span={12}>
+                    <h3>Tổng giá hàng trả: </h3>
+                  </Col>
+                  <Col span={12}>
+                    <h3 style={{ color: "blue" }}>
+                      {" "}
+                      {formatCurrency(totalMoneyBillGiveBack())}
+                    </h3>
+                  </Col>
+                </Row>
+                <br />
+                <hr />
+                <Tooltip title="Tổng tiền trả khách  = Tổng giá hàng trả - Voucher đã sử dụng">
+                  <Row style={{ marginTop: "30px" }}>
+                    <Col span={12}>
+                      <h3>Tổng tiền trả khách : </h3>
+                    </Col>
+                    <Col span={12}>
+                      {totalMoneyBillGiveBack() !== totalMoneyBill() ? (
+                        <h3 style={{ color: "blue" }}>
+                          {formatCurrency(
+                            totalMoneyBillGiveBack() -
+                              (bill !== null && totalMoneyBillGiveBack() !== 0
+                                ? bill.voucherValue !== null
+                                  ? bill.voucherValue
+                                  : 0
+                                : 0)
+                          )}
+                        </h3>
+                      ) : (
+                        bill !== null && (
+                          <h3 style={{ color: "blue" }}>
+                            {totalMoneyBillGiveBack() > 0
+                              ? bill.poin !== null && bill.voucherValue !== null
+                                ? formatCurrency(
+                                    totalMoneyBillGiveBack() -
+                                      bill.poin * 1000 -
+                                      bill.voucherValue
+                                  )
+                                : bill.poin === null &&
+                                  bill.voucherValue !== null
+                                ? formatCurrency(
+                                    totalMoneyBillGiveBack() - bill.voucherValue
+                                  )
+                                : bill.poin !== null &&
+                                  bill.voucherValue === null
+                                ? formatCurrency(
+                                    totalMoneyBillGiveBack() - bill.poin * 1000
+                                  )
+                                : formatCurrency(totalMoneyBillGiveBack())
+                              : formatCurrency(totalMoneyBillGiveBack())}
+                          </h3>
+                        )
+                      )}
+                    </Col>
+                  </Row>
+                </Tooltip>
                 <Row style={{ marginTop: "30px" }}>
                   <Col>
                     <Form.Item
