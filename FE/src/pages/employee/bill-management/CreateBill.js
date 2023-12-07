@@ -39,6 +39,7 @@ import "./style-bill.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
+import { useReactToPrint } from "react-to-print";
 
 function CreateBill({
   removePane,
@@ -47,7 +48,6 @@ function CreateBill({
   code,
   key,
   id,
-  getHtmlByIdBill,
 }) {
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
@@ -799,6 +799,18 @@ function CreateBill({
   };
   // enad modal thanh toán
 
+  const generatePDF = useReactToPrint({
+    content: () => document.getElementById("pdfContent"),
+    documentTitle: "Userdata",
+    onAfterPrint: () => {},
+  });
+  const getHtmlByIdBill2 = (id) => {
+    BillApi.fetchHtmlIdBill(id).then((res) => {
+      document.getElementById("pdfContent").innerHTML = res.data.data;
+      generatePDF();
+      removePane(targetKey, invoiceNumber, items);
+    });
+  };
   const openDelivery = (e) => {
     // setShipFee(0);
     setIsOpenDelivery(!isOpenDelivery);
@@ -944,8 +956,7 @@ function CreateBill({
                 BillApi.createBillWait(data)
                   .then((res) => {
                     toast.success("Xuất hóa đơn thành công");
-                    removePane(targetKey, invoiceNumber, items);
-                    getHtmlByIdBill(code);
+                    getHtmlByIdBill2(code);
                     form.resetFields();
                   })
                   .catch((error) => {
@@ -977,9 +988,9 @@ function CreateBill({
             onOk: async () => {
               BillApi.createBillWait(data)
                 .then((res) => {
-                  removePane(targetKey, invoiceNumber, items);
+                  // removePane(targetKey, invoiceNumber, items);
                   toast.success("Đặt hàng thành công");
-                  getHtmlByIdBill(code);
+                  getHtmlByIdBill2(code);
                 })
                 .catch((error) => {
                   toast.error(error.response.data.message);
@@ -3344,7 +3355,9 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
           )}
         </Form>
       </Modal>
-
+      <div style={{ display: "none" }}>
+        <div id="pdfContent" />
+      </div>
       {/* end modal payment  */}
     </div>
   );
