@@ -40,7 +40,7 @@ function TabBillDetail({ dataBillDetail }) {
     });
     return formatter.format(value);
   };
-  
+
   const totalMoneyProduct = (product) => {
     return product.promotion === null
       ? product.price * product.quantity
@@ -88,33 +88,33 @@ function TabBillDetail({ dataBillDetail }) {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          var note = document.getElementById('myTextArea').value;
+          var note = document.getElementById("myTextArea").value;
           if (note.trim() !== "" && note.trim().length > 10) {
-            data.note = note
-          await BillApi.updateProductInBill(record.id, data)
-            .then((res) => {
-              toast.success("Sửa sản phẩm thành công");
-              dispatch(updateTotalBill(data.totalMoney));
-              let sum = 0;
-              billDetai.forEach((product) => {
-                sum += product.quantity || 0;
+            data.note = note;
+            await BillApi.updateProductInBill(record.id, data)
+              .then((res) => {
+                toast.success("Sửa sản phẩm thành công");
+                dispatch(updateTotalBill(data.totalMoney));
+                let sum = 0;
+                billDetai.forEach((product) => {
+                  sum += product.quantity || 0;
+                });
+                dispatch(ChangeProductInBill(sum + quantityCustom));
+              })
+              .catch((error) => {
+                toast.error(error.response.data.message);
               });
-              dispatch(ChangeProductInBill(sum + quantityCustom));
-            })
-            .catch((error) => {
-              toast.error(error.response.data.message);
+            await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
+              (res) => {
+                setBillDetail(res.data.data);
+              }
+            );
+            await BillApi.fetchDetailBill(bill.id).then((res) => {
+              dispatch(getBill(res.data.data));
             });
-          await BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then(
-            (res) => {
-              setBillDetail(res.data.data);
-            }
-          );
-          await BillApi.fetchDetailBill(bill.id).then((res) => {
-            dispatch(getBill(res.data.data));
-          });
-        }else{
-          toast.warning("Vui lòng nhập mô tả và tối thiểu 10 ký tự")
-        }
+          } else {
+            toast.warning("Vui lòng nhập mô tả và tối thiểu 10 ký tự");
+          }
         },
         onCancel: () => {},
       });
@@ -493,24 +493,30 @@ function TabBillDetail({ dataBillDetail }) {
       },
     },
   ];
-  
+
   const handleDelete = (record) => {
-    if(billDetai.length == 1){
-      toast.warning("Phải có tối thiểu 1 sản phẩm trong giỏ hàng ")
-    }else{
+    if (billDetai.length == 1) {
+      toast.warning("Phải có tối thiểu 1 sản phẩm trong giỏ hàng ");
+    } else {
       Modal.confirm({
         title: "Xác nhận",
         content: (
           <div>
-            <p>{"Bạn có đồng ý xóa sản phẩm " + record.productName + " không?"}</p>
-            <TextArea rows={4}  placeholder="Nhập ghi chú..."  id="myTextAreaDeteleProduct"/>
+            <p>
+              {"Bạn có đồng ý xóa sản phẩm " + record.productName + " không?"}
+            </p>
+            <TextArea
+              rows={4}
+              placeholder="Nhập ghi chú..."
+              id="myTextAreaDeteleProduct"
+            />
           </div>
         ),
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          var note = document.getElementById('myTextAreaDeteleProduct').value;
-          if(note.trim() != "" && note.trim().length > 10){
+          var note = document.getElementById("myTextAreaDeteleProduct").value;
+          if (note.trim() != "" && note.trim().length > 10) {
             const updatedProducts = billDetai.filter(
               (product) => product.id !== record.idProduct
             );
@@ -549,16 +555,13 @@ function TabBillDetail({ dataBillDetail }) {
             await BillApi.fetchDetailBill(bill.id).then((res) => {
               dispatch(getBill(res.data.data));
             });
-          }else{
-            toast.warning("Vui lòng nhập mô tả và tối thiểu 10 ký tự ")
+          } else {
+            toast.warning("Vui lòng nhập mô tả và tối thiểu 10 ký tự ");
           }
-          
         },
-        onCancel: () =>{
-        }
+        onCancel: () => {},
       });
     }
-    
   };
   useEffect(() => {
     BillApi.fetchAllProductsInBillByIdBill(dataBillDetail).then((res) => {
@@ -614,7 +617,6 @@ function TabBillDetail({ dataBillDetail }) {
           </Row>
         </Row>
       )}
-
     </>
   );
 }
