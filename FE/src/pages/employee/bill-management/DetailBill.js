@@ -621,7 +621,7 @@ function DetailBill() {
   };
 
   const handleOkRollBackStatus = () => {
-    if (statusBill.actionDescription == "") {
+    if (statusBill.actionDescription.trim() == "" || statusBill.actionDescription.trim().length < 50) {
       toast.error("Vui lòng nhập mô tả");
     } else {
       Modal.confirm({
@@ -1275,7 +1275,7 @@ function DetailBill() {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 className="widthModal"
-                width={800}
+                width={1400}
                 cancelText={"huỷ"}
                 okText={"Xác nhận"}
               >
@@ -1532,7 +1532,7 @@ function DetailBill() {
           </Col>
           <Col span={4} align={"end"}>
             {" "}
-            {statusPresent < 3 ? (
+            {statusPresent < 2 ? (
               <Row
                 style={{ width: "100%", marginRight: "15px" }}
                 justify={"end"}
@@ -1555,7 +1555,7 @@ function DetailBill() {
           </Col>
         </Row>
         <Row>
-          {statusPresent < 3 ? (
+          {statusPresent < 2 ? (
             <Col span={24}>
               <TabBillDetail
                 style={{ width: "100%" }}

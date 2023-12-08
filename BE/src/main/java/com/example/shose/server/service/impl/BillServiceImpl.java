@@ -451,8 +451,8 @@ public class BillServiceImpl implements BillService {
                 optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
             }
             if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
-                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
-                        .employees(optional.get().getEmployees()).build());
+//                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
+//                        .employees(optional.get().getEmployees()).build());
             } else {
                 billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
                         .employees(optional.get().getEmployees()).build());

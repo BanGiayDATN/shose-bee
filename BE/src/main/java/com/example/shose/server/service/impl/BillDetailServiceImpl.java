@@ -133,6 +133,9 @@ public class BillDetailServiceImpl implements BillDetailService {
         billDetail.setQuantity(request.getQuantity());
         billDetail.setPrice(new BigDecimal(request.getPrice()));
         billDetail.setProductDetail(productDetail.get());
+        if(request.getPromotion() != null){
+            billDetail.setPromotion(new BigDecimal(request.getPromotion()));
+        }
         billDetail.setBill(bill.get());
         billDetailRepository.save(billDetail);
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(request.getIdBill(), "THANH_CONG"));
