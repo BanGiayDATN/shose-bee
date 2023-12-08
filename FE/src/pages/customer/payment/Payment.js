@@ -131,7 +131,6 @@ function Payment() {
   }, [keyMethodPayment]);
 
   const payment = () => {
-    console.log(formBill);
     const phoneNumberPattern =
       /^(03[2-9]|05[6-9]|07[0-9]|08[1-9]|09[0-9])[0-9]{7}$/;
 
@@ -189,6 +188,7 @@ function Payment() {
           ...formBill,
           shippingTime: dayShip,
         };
+        console.log(dataBillSave);
 
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
@@ -207,7 +207,7 @@ function Payment() {
         } else {
           BillClientApi.createBillOnline(dataBillSave).then(
             (res) => {
-              stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
+              stompClient.send("/action/notifyAdmin", {}, "Có đơn hàng mới");
               const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
               const updatelist = cartLocal.filter((item) => {
                 return !formBill.billDetail.some(
@@ -307,7 +307,9 @@ function Payment() {
     AddressClientApi.getDayShip(districtId, wardCode).then(
       (res) => {
         const leadtimeInSeconds = res.data.data.leadtime;
-        const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
+        const formattedDate = moment
+          .unix(leadtimeInSeconds)
+          .format("DD/MM/YYYY");
         setDayShip(formattedDate);
       },
       (err) => {

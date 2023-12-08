@@ -153,7 +153,7 @@ function BillManagement() {
       : key === "CHO_XAC_NHAN"
       ? "Chờ xác nhận"
       : key === "XAC_NHAN"
-      ? "Xác nhận"
+      ? "Đã xác nhận"
       : key === "CHO_VAN_CHUYEN"
       ? "Chờ vận chuyển"
       : key === "VAN_CHUYEN"
