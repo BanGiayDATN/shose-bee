@@ -423,6 +423,7 @@ function DetailBill() {
     setAddress({ ...address, city: bill.address?.split(",")[3] });
     setAddress({ ...address, detail: bill.address?.split(",")[0] });
   };
+
   const checkNotEmptyBill = () => {
     return Object.keys(billRequest)
       .filter((key) => key !== "note" && key !== "address")
@@ -981,8 +982,34 @@ function DetailBill() {
   const [clickRadio, setClickRadio] = useState("");
 
   const changeRadio = (index, item) => {
-    console.log("item", item);
     setClickRadio(index);
+
+    setAddress({
+      wards: item.ward,
+      district: item.district,
+      city: item.province,
+      detail: item.line
+    });
+    setBillRequest({ ...billRequest, address: item.address });
+
+    const totalQuantity =
+      products.length > 0
+        ? products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.quantity;
+        }, 0)
+        : 1;
+    if (totalQuantity > 2) {
+      setShipFee(0);
+    } else {
+      AddressApi.fetchAllMoneyShip(
+        item.toDistrictId,
+        item.wardCode,
+        totalQuantity
+      ).then((res) => {
+        setShipFee(res.data.data.total);
+      });
+    }
+
   };
 
   const selectedAddress = () => {
@@ -2205,9 +2232,9 @@ function DetailBill() {
         <Row style={{ width: "100%" }}>
           <Col span={16}></Col>
           <Col span={1}>
-            <Button onClick={() => handleOpenAddAdress()}>
+            {/* <Button onClick={() => handleOpenAddAdress()}>
               + Thêm địa chỉ mới
-            </Button>
+            </Button> */}
           </Col>
         </Row>
         <Row style={{ marginTop: "20px" }}></Row>
@@ -2258,7 +2285,7 @@ function DetailBill() {
                   ) : null}
                 </Col>
                 <Col span={4}>
-                  <Button
+                  {/* <Button
                     type="dashed"
                     title="Chọn"
                     style={{
@@ -2269,7 +2296,7 @@ function DetailBill() {
                   >
                     {" "}
                     Cập nhật
-                  </Button>
+                  </Button> */}
                 </Col>
               </Row>
             </div>
