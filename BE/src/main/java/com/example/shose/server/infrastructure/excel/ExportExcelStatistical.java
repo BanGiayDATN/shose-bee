@@ -4,6 +4,13 @@ import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
 import com.example.shose.server.repository.BillRepository;
+import com.example.shose.server.util.ConvertDateToLong;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,12 +20,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 @Service
 public class ExportExcelStatistical {
@@ -41,7 +50,12 @@ public class ExportExcelStatistical {
 
             List<StatisticalDayResponse> statisticalDayList = billRepository.getAllStatisticalDay(getStartOfToday(), getEndOfToday());
             List<StatisticalMonthlyResponse> statisticalMonthList = billRepository.getAllStatisticalMonthly(getStartMonth(), getEndMonth());
-            List<BillResponse> listBillCanceled = billRepository.getBillCanceled();
+            List<CustomBillCanceled> listBillCanceled = billRepository.getBillCanceled()
+                    .stream().map(billCanceled ->{
+                        CustomBillCanceled bill = new CustomBillCanceled(billCanceled);
+                        return bill;
+                    }).collect(Collectors.toList());
+
 
             Map<String, Object> map = new HashMap<>();
             map.put("apiData", statisticalDayList);
@@ -69,61 +83,71 @@ public class ExportExcelStatistical {
     }
 
     public Long getStartOfToday() {
-        // Tạo đối tượng Calendar và đặt ngày là hôm nay
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarStart.setTime(currentDate);
         calendarStart.set(Calendar.HOUR_OF_DAY, 0);
         calendarStart.set(Calendar.MINUTE, 0);
         calendarStart.set(Calendar.SECOND, 0);
         calendarStart.set(Calendar.MILLISECOND, 0);
-
-        // Lấy thời điểm đầu hôm nay dưới dạng currentTimeMillis
         return calendarStart.getTimeInMillis();
     }
 
     public Long getEndOfToday() {
-        // Tạo đối tượng Calendar và đặt ngày là hôm nay
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarEnd.setTime(currentDate);
         calendarEnd.set(Calendar.HOUR_OF_DAY, 23);
         calendarEnd.set(Calendar.MINUTE, 59);
         calendarEnd.set(Calendar.SECOND, 59);
         calendarEnd.set(Calendar.MILLISECOND, 999);
-
-        // Lấy thời điểm cuối hôm nay dưới dạng currentTimeMillis
         return calendarEnd.getTimeInMillis();
     }
 
     public Long getStartMonth() {
-        // Tạo đối tượng Calendar và đặt ngày trong tháng thành 1
         Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
+        calendarStart.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarStart.setTime(currentDate);
         calendarStart.set(Calendar.DAY_OF_MONTH, 1);
         calendarStart.set(Calendar.HOUR_OF_DAY, 0);
         calendarStart.set(Calendar.MINUTE, 0);
         calendarStart.set(Calendar.SECOND, 0);
         calendarStart.set(Calendar.MILLISECOND, 0);
-
-        // Lấy thời điểm đầu tháng dưới dạng currentTimeMillis
         return calendarStart.getTimeInMillis();
     }
 
     public Long getEndMonth() {
-        // Tạo đối tượng Calendar và đặt ngày trong tháng thành ngày cuối cùng
         Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC")); // Để tránh ảnh hưởng của múi giờ
+        calendarEnd.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendarEnd.setTime(currentDate);
         calendarEnd.set(Calendar.DAY_OF_MONTH, calendarEnd.getActualMaximum(Calendar.DAY_OF_MONTH));
         calendarEnd.set(Calendar.HOUR_OF_DAY, 23);
         calendarEnd.set(Calendar.MINUTE, 59);
         calendarEnd.set(Calendar.SECOND, 59);
         calendarEnd.set(Calendar.MILLISECOND, 999);
-
-        // Lấy thời điểm cuối tháng dưới dạng currentTimeMillis
         return calendarEnd.getTimeInMillis();
+    }
+
+    @Setter
+    @Getter
+    @ToString
+    public class CustomBillCanceled{
+
+        private String code;
+        private String userName;
+        private String nameEmployees;
+        private String type;
+        private BigDecimal totalMoney;
+        private String lastModifiedDate;
+
+        public CustomBillCanceled(BillResponse response) {
+            this.code = response.getCode();
+            this.userName = response.getUserName();
+            this.nameEmployees = response.getNameEmployees();
+            this.type = response.getType();
+            this.totalMoney = response.getTotalMoney();
+            this.lastModifiedDate = new ConvertDateToLong().longToDate(response.getLastModifiedDate());
+        }
     }
 
 }

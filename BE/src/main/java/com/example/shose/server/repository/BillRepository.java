@@ -36,6 +36,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     @Query(value = """
                SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, 
                bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill,
+               bi.last_modified_date AS lastModifiedDate ,
                CASE
                WHEN total_money + money_ship - item_discount < 0 THEN 0
                ELSE total_money + money_ship - item_discount
@@ -300,7 +301,9 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     List<BillGiveBack> getBillGiveBack(@Param("idBill") String idBill);
 
     @Query(value = """
-               SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt, bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill,
+               SELECT  ROW_NUMBER() OVER( ORDER BY bi.last_modified_date DESC ) AS stt,
+                bi.id, bi.code, bi.created_date, bi.user_name AS userName ,  usem.full_name AS nameEmployees , bi.type, bi.status_bill,
+                bi.last_modified_date AS lastModifiedDate ,
                CASE
                WHEN total_money + money_ship - item_discount < 0 THEN 0
                ELSE total_money + money_ship - item_discount
