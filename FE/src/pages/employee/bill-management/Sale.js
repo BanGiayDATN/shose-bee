@@ -54,7 +54,6 @@ function Sale() {
                     invoiceNumber={1}
                     removePane={remove}
                     targetKey={newActiveKey}
-                    getHtmlByIdBill={getHtmlByIdBill}
                   />
                 ),
                 key: newActiveKey,
@@ -83,7 +82,6 @@ function Sale() {
                 style={{ width: "100%" }}
                 removePane={remove}
                 targetKey={newActiveKey}
-                getHtmlByIdBill={getHtmlByIdBill}
               />
             ),
             key: newActiveKey,
@@ -138,7 +136,6 @@ function Sale() {
                 style={{ width: "100%" }}
                 removePane={remove}
                 targetKey={newActiveKey}
-                getHtmlByIdBill={getHtmlByIdBill}
               />
             ),
             key: newActiveKey,
@@ -189,7 +186,6 @@ function Sale() {
                 style={{ width: "100%" }}
                 removePane={remove}
                 targetKey={newActiveKey}
-                getHtmlByIdBill={getHtmlByIdBill}
               />
             ),
             key: newActiveKey,
@@ -211,17 +207,7 @@ function Sale() {
     }
   };
 
-  const generatePDF = useReactToPrint({
-    content: () => document.getElementById("pdfContent"),
-    documentTitle: "Userdata",
-    onAfterPrint: () => {},
-  });
-  const getHtmlByIdBill = (id) => {
-    BillApi.fetchHtmlIdBill(id).then((res) => {
-      document.getElementById("pdfContent").innerHTML = res.data.data;
-      generatePDF();
-    });
-  };
+
   return (
     <div>
       <Row style={{ background: "white", width: "100%" }}>
@@ -251,9 +237,6 @@ function Sale() {
           />
         </Row>
       </Row>
-      <div style={{ display: "none" }}>
-        <div id="pdfContent" />
-      </div>
     </div>
   );
 }
