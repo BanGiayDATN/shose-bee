@@ -369,6 +369,7 @@ function ModalAddProductDetail({
         theme: "light",
       });
     } else {
+    console.log(productSelected);
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có đồng ý thêm sản phẩm  không?",
