@@ -2592,7 +2592,7 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
                   <NumberFormat
                     thousandSeparator={true}
                     suffix=" VND"
-                    placeholder="Vui lòng nhập phí ship"
+                    placeholder="Vui lòng nhập phí vân chuyển và lớn hơn 0"
                     style={{
                       width: "100%",
                       position: "relative",
