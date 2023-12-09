@@ -2592,7 +2592,7 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
                   <NumberFormat
                     thousandSeparator={true}
                     suffix=" VND"
-                    placeholder="Vui lòng nhập phí vân chuyển và lớn hơn 0"
+                    placeholder={"Vui lòng nhập phí ship ( " + formatCurrency(shipFee)  +" )"}
                     style={{
                       width: "100%",
                       position: "relative",
@@ -2605,31 +2605,7 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
                       var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
                       console.log(phiShip);
                       if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
-                        toast.warning("Vui lòng nhập phí ship")
-                      } else {
-                        setShipFee(
-                          phiShip
-                        );
-                      }
-                    }}
-                  />
-                  {/* {formatCurrency(shipFee)} */}<NumberFormat
-                    thousandSeparator={true}
-                    suffix=" VND"
-                    placeholder="Vui lòng nhập phí ship"
-                    style={{
-                      width: "100%",
-                      position: "relative",
-                      height: "37px",
-                    }}
-                    min={0}
-                    customInput={Input}
-                    defaultValue={shipFee}
-                    onChange={(e) => {
-                      var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
-                      console.log(phiShip);
-                      if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
-                        toast.warning("Vui lòng nhập phí ship")
+                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn 0")
                       } else {
                         setShipFee(
                           phiShip
