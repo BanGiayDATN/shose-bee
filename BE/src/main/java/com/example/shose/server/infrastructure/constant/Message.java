@@ -37,6 +37,7 @@ public enum Message {
     PAYMENT_TRANSACTION("Mã giao dịch đã tồn tại"),
     PAYMENT_ERROR("Thanh toán thất bại"),
     NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán"),
+    ERROR_ROLLBACK("Hóa đơn đã quá hạn không thể quay  lại"),
     VALIDATE_PASSWORD("Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 số");
 
 
