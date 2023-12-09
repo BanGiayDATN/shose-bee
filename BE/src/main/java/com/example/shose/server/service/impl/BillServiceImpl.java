@@ -629,6 +629,9 @@ public class BillServiceImpl implements BillService {
         if (nextIndex < 3) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
+        if(bill.get().getStatusBill() == StatusBill.THANH_CONG){
+            CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
+        }
         if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setStatusBill(StatusBill.VAN_CHUYEN);
         }else if (billHistories.size() > 3 && bill.get().getStatusBill() == StatusBill.DA_HUY) {
@@ -652,7 +655,6 @@ public class BillServiceImpl implements BillService {
         billHistory.setActionDescription(request.getActionDescription());
         billHistory.setEmployees(account.get());
         billHistoryRepository.save(billHistory);
-//        CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
         return billRepository.save(bill.get());
     }
 

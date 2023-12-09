@@ -623,6 +623,15 @@ function PaymentAccount() {
               <br />
               <Row>
                 <Col span={12}>
+                  <h3>Mã giảm giá </h3>
+                </Col>
+                <Col span={12}>
+                  <h3> : {formatMoney(voucher.value)}</h3>
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col span={12}>
                   <h3>Tổng thanh toán</h3>
                 </Col>
                 <Col span={12}>

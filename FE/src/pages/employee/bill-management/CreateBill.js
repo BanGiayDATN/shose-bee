@@ -41,14 +41,7 @@ import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
 import { useReactToPrint } from "react-to-print";
 
-function CreateBill({
-  removePane,
-  targetKey,
-  invoiceNumber,
-  code,
-  key,
-  id,
-}) {
+function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
@@ -104,7 +97,7 @@ function CreateBill({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
-      price: product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion ,
+      price: product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)) ,
       promotion: product.promotion,
     }));
     var newVoucher = [];
@@ -190,7 +183,7 @@ function CreateBill({
         idProduct: product.idProduct,
         size: product.nameSize,
         quantity: product.quantity,
-        price:  product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion,
+        price:  product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)),
         promotion: product.promotion,
       }));
       var newVoucher = [];
@@ -824,7 +817,7 @@ function CreateBill({
       price:
         product.promotion === null
           ? product.price
-          : (product.price * 100 / (100 - product.promotion)) ,
+          : (product.price * 100) / (100 - product.promotion),
       promotion: product.promotion,
     }));
     console.log(newProduct);
@@ -1145,7 +1138,7 @@ function CreateBill({
     setCodeVoucher(record.code + " - " + record.name);
     setIsModalVoucherOpen(false);
   };
-const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
+  const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
   useEffect(() => {
     // Tính tổng giá tiền dựa trên số lượng sản phẩm và giá của từng sản phẩm
     const newTotalPrice = products.reduce(
@@ -1178,9 +1171,7 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
       setCodeVoucher(record.code + " - " + record.name);
       setIsModalVoucherOpen(false);
     }
-
   }, [products, changeQuanTiTy]);
-  
 
   const [voucher, setVoucher] = useState({
     idVoucher: "",
@@ -1294,7 +1285,7 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
             idProduct: res.data.data.id,
             quantity: 1,
             price:
-              (res.data.data.price * 100 / (100 - res.data.data.promotion)) ,
+              (res.data.data.price * 100) / (100 - res.data.data.promotion),
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
             promotion: res.data.data.promotion,
@@ -2589,7 +2580,31 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
                     marginRight: "10px",
                   }}
                 >
-                  {formatCurrency(shipFee)}
+                  <NumberFormat
+                    thousandSeparator={true}
+                    suffix=" VND"
+                    placeholder={"Vui lòng nhập phí ship ( " + formatCurrency(shipFee)  +" )"}
+                    style={{
+                      width: "100%",
+                      position: "relative",
+                      height: "37px",
+                    }}
+                    min={0}
+                    customInput={Input}
+                    defaultValue={shipFee}
+                    onChange={(e) => {
+                      var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
+                      console.log(phiShip);
+                      if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
+                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn 0")
+                      } else {
+                        setShipFee(
+                          phiShip
+                        );
+                      }
+                    }}
+                  />
+                  {/* {formatCurrency(shipFee)} */}
                 </Col>
               </Row>
             ) : (
