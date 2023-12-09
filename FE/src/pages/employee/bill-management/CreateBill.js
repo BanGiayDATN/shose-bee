@@ -104,7 +104,7 @@ function CreateBill({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
-      price: product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion ,
+      price: product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)) ,
       promotion: product.promotion,
     }));
     var newVoucher = [];
@@ -190,7 +190,7 @@ function CreateBill({
         idProduct: product.idProduct,
         size: product.nameSize,
         quantity: product.quantity,
-        price:  product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion,
+        price:  product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)),
         promotion: product.promotion,
       }));
       var newVoucher = [];
