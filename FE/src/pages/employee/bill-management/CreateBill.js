@@ -104,7 +104,7 @@ function CreateBill({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
-      price: product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion ,
+      price: product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)) ,
       promotion: product.promotion,
     }));
     var newVoucher = [];
@@ -190,7 +190,7 @@ function CreateBill({
         idProduct: product.idProduct,
         size: product.nameSize,
         quantity: product.quantity,
-        price:  product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion,
+        price:  product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)),
         promotion: product.promotion,
       }));
       var newVoucher = [];
@@ -2589,7 +2589,31 @@ const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
                     marginRight: "10px",
                   }}
                 >
-                  {formatCurrency(shipFee)}
+                  <NumberFormat
+                    thousandSeparator={true}
+                    suffix=" VND"
+                    placeholder={"Vui lòng nhập phí ship ( " + formatCurrency(shipFee)  +" )"}
+                    style={{
+                      width: "100%",
+                      position: "relative",
+                      height: "37px",
+                    }}
+                    min={0}
+                    customInput={Input}
+                    defaultValue={shipFee}
+                    onChange={(e) => {
+                      var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
+                      console.log(phiShip);
+                      if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
+                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn 0")
+                      } else {
+                        setShipFee(
+                          phiShip
+                        );
+                      }
+                    }}
+                  />
+                  {/* {formatCurrency(shipFee)} */}
                 </Col>
               </Row>
             ) : (
