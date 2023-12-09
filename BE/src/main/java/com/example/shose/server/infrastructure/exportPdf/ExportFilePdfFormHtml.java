@@ -129,7 +129,6 @@ public class ExportFilePdfFormHtml {
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
 
         NumberFormat formatter = formatCurrency();
-
         BigDecimal totalMoney = bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
         InvoiceResponse invoice = InvoiceResponse.builder()
                 .phoneNumber(bill.getPhoneNumber())
@@ -140,7 +139,7 @@ public class ExportFilePdfFormHtml {
                 .itemDiscount(formatter.format(bill.getItemDiscount()))
                 .totalMoney(formatter.format(bill.getTotalMoney()))
                 .note(bill.getNote())
-                .checkShip(false)
+                .checkShip(true)
                 .moneyShip(formatter.format(bill.getMoneyShip()))
                 .build();
 
