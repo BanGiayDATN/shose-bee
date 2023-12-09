@@ -138,7 +138,7 @@ public class ExportFilePdfFormHtml {
                 .code(bill.getCode())
                 .ship(formatter.format(bill.getMoneyShip()))
                 .itemDiscount(formatter.format(bill.getItemDiscount()))
-                .totalMoney(formatter.format(totalMoney))
+                .totalMoney(formatter.format(bill.getTotalMoney()))
                 .note(bill.getNote())
                 .checkShip(false)
                 .moneyShip(formatter.format(bill.getMoneyShip()))
