@@ -2596,7 +2596,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
                       console.log(phiShip);
                       if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
-                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn 0")
+                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0")
                       } else {
                         setShipFee(
                           phiShip

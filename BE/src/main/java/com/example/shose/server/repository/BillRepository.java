@@ -67,10 +67,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                AND ( :#{#request.type} IS NULL
                         OR :#{#request.type} LIKE ''
                         OR bi.type = :#{#request.type})
-              AND ( :role = 'ROLE_ADMIN' OR bi.id_employees = :id )
+              AND ( :role = 'ROLE_ADMIN' OR 'CHO_XAC_NHAN' IN (:#{#request.status}) OR bi.id_employees = :id )
                ORDER BY bi.last_modified_date DESC
-
-
             """, nativeQuery = true)
     List<BillResponse> getAll(@Param("id") String id, @Param("role") String role, BillRequest request);
 

@@ -157,9 +157,9 @@ function PaymentAccount() {
           addressDefault.line +
           ", " +
           addressDefault.ward +
-          " - " +
+          ", " +
           addressDefault.district +
-          " - " +
+          ", " +
           addressDefault.province,
         phoneNumber: addressDefault.phoneNumber,
         userName: addressDefault.fullName,

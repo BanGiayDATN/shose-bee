@@ -80,6 +80,8 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -630,7 +632,14 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
         if(bill.get().getStatusBill() == StatusBill.THANH_CONG){
-            CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
+//            CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
+            long confirmedTimestamp = bill.get().getCompletionDate();
+            Instant confirmedInstant = Instant.ofEpochMilli(confirmedTimestamp);
+            LocalDateTime confirmedDateTime = LocalDateTime.ofInstant(confirmedInstant, ZoneId.systemDefault());
+            LocalDate currentDate = LocalDate.now();
+            if (currentDate.isAfter(confirmedDateTime.toLocalDate().plusDays(1))) {
+                throw new RestApiException(Message.ERROR_ROLLBACK);
+            }
         }
         if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
             bill.get().setStatusBill(StatusBill.VAN_CHUYEN);

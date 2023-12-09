@@ -39,6 +39,7 @@ import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import TabBillDetail from "./tabBillDetail/TabBillDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import NumberFormat from "react-number-format";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -99,6 +100,7 @@ function DetailBill() {
         moneyShip: res.data.data.moneyShip,
         note: res.data.data.note,
       });
+      setShipFee(res.data.data.moneyShip)
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
       );
@@ -638,6 +640,7 @@ function DetailBill() {
         onOk: async () => {
           await BillApi.rollBackStatusBill(id, statusBill)
             .then((res) => {
+              toast.success("Chuyển lại trạng thái thành công");
               dispatch(getBill(res.data.data));
               var index = listStatus.findIndex(
                 (item) => item.status == res.data.data.statusBill
@@ -659,7 +662,7 @@ function DetailBill() {
           await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
             dispatch(getBillHistory(res.data.data));
           });
-          toast.success("Chuyển lại trạng thái thành công");
+         
           setIsModalOpenRollBackStatus(false);
         },
         onCancel: () => {
@@ -1993,7 +1996,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("city", v)}
                           onChange={handleProvinceChange}
-                          defaultValue={bill.address?.split(",")[3]}
+                          defaultValue={address.city}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2045,7 +2048,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("district", v)}
                           onChange={handleDistrictChange}
-                          defaultValue={bill.address?.split(",")[2]}
+                          defaultValue={address.wards}
                           style={{ width: "90%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2096,7 +2099,7 @@ function DetailBill() {
                           optionFilterProp="children"
                           // onChange={(v) => onChangeAddress("wards", v)}
                           onChange={handleWardChange}
-                          defaultValue={bill.address?.split(",")[1]}
+                          defaultValue={address.district}
                           style={{ width: "94%", position: "relative" }}
                           filterOption={(input, option) =>
                             (option?.label ?? "")
@@ -2163,11 +2166,48 @@ function DetailBill() {
                 ]}
               >
                 <Input
-                  defaultValue={bill.address?.split(",")[0]}
+                  defaultValue={address.detail}
                   onChange={(e) => onChangeAddress("detail", e.target.value)}
                   placeholder="Nhập địa chỉ"
                   style={{ width: "98%", position: "relative", height: "40px" }}
                 />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row style={{ width: "100%" }}>
+            <Col span={24} style={{ marginTop: "20px" }}>
+              <label
+                className="label-bill"
+                style={{ marginTop: "-4px", top: "-25%" }}
+              >
+                Phí vận chuyển 
+              </label>
+              <Form.Item
+                label=""
+                style={{ marginBottom: "20px" }}>
+                 <NumberFormat
+                    thousandSeparator={true}
+                    suffix=" VND"
+                    placeholder={"Vui lòng nhập phí ship ( " + formatCurrency(shipFee)  +" )"}
+                    style={{
+                      width: "100%",
+                      position: "relative",
+                      height: "37px",
+                    }}
+                    min={0}
+                    customInput={Input}
+                    defaultValue={shipFee}
+                    onChange={(e) => {
+                      var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
+                      if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
+                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0")
+                      } else {
+                        setShipFee(
+                          phiShip
+                        );
+                      }
+                    }}
+                  />
               </Form.Item>
             </Col>
           </Row>
