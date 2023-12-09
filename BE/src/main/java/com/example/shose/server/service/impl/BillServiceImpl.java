@@ -629,7 +629,7 @@ public class BillServiceImpl implements BillService {
         if (nextIndex < 3) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
-        f(bill.get().getStatusBill() == StatusBill.THANH_CONG){
+        if(bill.get().getStatusBill() == StatusBill.THANH_CONG){
             CompletableFuture.runAsync(() -> sendEmailService.sendEmailRollBackBill("vinhnvph23845@fpt.edu.vn", request.getActionDescription(), id), Executors.newCachedThreadPool());
         }
         if (checkDaThanhToan && bill.get().getStatusBill() == StatusBill.THANH_CONG) {
