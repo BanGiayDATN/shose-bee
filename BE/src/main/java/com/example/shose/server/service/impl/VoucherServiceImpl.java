@@ -48,6 +48,10 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher add(CreateVoucherRequest request) throws RestApiException {
+        Optional<Voucher>  optional = voucherRepository.findByName(request.getName());
+        if(optional.isPresent()){
+            throw new RestApiException("Tên khuyến mãi đã tồn tại");
+        }
         if(request.getEndDate() <= request.getStartDate()){
             throw new RestApiException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }

@@ -56,6 +56,10 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     @Transactional
     public Promotion add(CreatePromotionRequest request) throws Exception {
+        Optional<Promotion>  optionalPromotion = promotionRepository.findByName(request.getName());
+        if(optionalPromotion.isPresent()){
+            throw new RestApiException("Tên khuyến mại đã tồn tại");
+        }
         if (ObjectUtils.isEmpty(request.getIdProductDetails())) {
             throw new RestApiException("Không có sản phẩm");
         }

@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 
 import "./style.css";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
+import { BillClientApi } from "../../../../../api/customer/bill/billClient.api";
 
 export default function TabAllBill({ listBill }) {
   const nav = useNavigate();
@@ -15,6 +17,13 @@ export default function TabAllBill({ listBill }) {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
     );
   };
+
+  const cancelBill = (id)=>{
+    BillClientApi.cancelBill(id).then((res)=>{
+      toast.success("Hủy đơn thành công")
+      window.location.href = "/purchase"
+    });
+  }
 
   return (
     <React.Fragment>
@@ -111,10 +120,9 @@ export default function TabAllBill({ listBill }) {
               </span>
             </div>
             <div className="box-repurchase">
-              {item.statusBill === "THANH_CONG" ||
-              item.statusBill === "DA_HUY" ? (
+              {item.statusBill === "CHO_XAC_NHAN"  ? (
                 <>
-                  <div className="repurchase">Mua lại</div>
+                  <div className="repurchase" onClick={()=>cancelBill(item.id)}>Hủy đơn</div>
                 </>
               ) : null}
               {item.statusBill !== "DA_HUY" ? (
