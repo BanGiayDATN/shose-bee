@@ -369,6 +369,7 @@ function ModalAddProductDetail({
         theme: "light",
       });
     } else {
+    console.log(productSelected);
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có đồng ý thêm sản phẩm  không?",
@@ -387,61 +388,59 @@ function ModalAddProductDetail({
           await BillApi.fetchAllProductsInBillByIdBill({
             idBill: bill.id,
             status: "THANH_CONG",
-          }).then((res) => {
+          }).then(async (res) => {
             check = res.data.data.find(
               (product) =>
                 product.idProduct === productSelected.idProduct &&
-                (product.promotion == null
-                  ? product.price
-                  : (product.price * (100 - product.promotion)) / 100) ===
-                  (productSelected.promotion
-                    ? productSelected.price
-                    : (productSelected.price *
-                        (100 - productSelected.promotion)) /
-                      100)
+                (product.promotion == null? product.price : (product.price * (100 - product.promotion)) / 100) ==
+                (productSelected.promotion == null ? productSelected.price : (productSelected.price *(100 - productSelected.promotion)) / 100)
             );
-          });
-          if (check === undefined) {
-            await BillApi.addProductInBill(data).then((res) => {
-              var price = productSelected.price;
-              if (productSelected.promotion != null) {
-                price =
-                  (productSelected.price * (100 - productSelected.promotion)) /
-                  100;
-              }
-              toast.success("Thêm sản phẩm thành công");
-              var product = {
-                id: res.data.data,
-                image: productSelected.image,
-                productName: productSelected.nameProduct,
-                nameSize: productSelected.nameSize,
-                idProduct: productSelected.id,
-                quantity: quantity,
-                price: price,
-                promotion: productSelected.promotion,
-                codeColor: productSelected.codeColor,
-              };
-              dispatch(addProductInBillDetail(product));
-              dispatch(ChangeProductInBill(changeQuanTiTy + quantity));
-            });
-          } else {
-            data.quantity = data.quantity + check.quantity;
-            await BillApi.updateProductInBill(check.id, data)
-              .then((res) => {
+            console.log(check);
+            if (check === undefined) {
+              await BillApi.addProductInBill(data).then((res) => {
+                var price = productSelected.price;
+                if (productSelected.promotion != null) {
+                  price =
+                    (productSelected.price * (100 - productSelected.promotion)) /
+                    100;
+                }
                 toast.success("Thêm sản phẩm thành công");
+                var product = {
+                  id: res.data.data,
+                  image: productSelected.image,
+                  productName: productSelected.nameProduct,
+                  nameSize: productSelected.nameSize,
+                  idProduct: productSelected.id,
+                  quantity: quantity,
+                  price: price,
+                  promotion: productSelected.promotion,
+                  codeColor: productSelected.codeColor,
+                };
+                dispatch(addProductInBillDetail(product));
                 dispatch(ChangeProductInBill(changeQuanTiTy + quantity));
+              });
+            } else {
+              data.quantity = data.quantity + check.quantity;
+              console.log(data);
+              data.note = "Thêm sản phẩm giỏ hàng"
+              await BillApi.updateProductInBill(check.id, data)
+                .then((res) => {
+                  toast.success("Thêm sản phẩm thành công");
+                  dispatch(ChangeProductInBill(changeQuanTiTy + quantity));
+                })
+                .catch((error) => {
+                  toast.error(error.response.data.message);
+                });
+            }
+            await BillApi.fetchDetailBill(bill.id)
+              .then((res) => {
+                dispatch(getBill(res.data.data));
               })
               .catch((error) => {
                 toast.error(error.response.data.message);
               });
-          }
-          await BillApi.fetchDetailBill(bill.id)
-            .then((res) => {
-              dispatch(getBill(res.data.data));
-            })
-            .catch((error) => {
-              toast.error(error.response.data.message);
-            });
+          });
+         
         },
         onCancel: () => {},
       });

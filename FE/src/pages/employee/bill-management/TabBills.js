@@ -142,7 +142,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       toast.error(error.response.data.message);
     });
     stompClient.connect({}, () => {
-      stompClient.subscribe("/topic/admin-notifications", (response) => {
+      stompClient.subscribe("/app/admin-notifications", (response) => {
         BillApi.fetchAll(data).then((res) => {
           setDataBill(res.data.data);
         });

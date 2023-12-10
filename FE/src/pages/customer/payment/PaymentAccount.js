@@ -157,9 +157,9 @@ function PaymentAccount() {
           addressDefault.line +
           ", " +
           addressDefault.ward +
-          " - " +
+          ", " +
           addressDefault.district +
-          " - " +
+          ", " +
           addressDefault.province,
         phoneNumber: addressDefault.phoneNumber,
         userName: addressDefault.fullName,
@@ -618,6 +618,15 @@ function PaymentAccount() {
                 </Col>
                 <Col span={12}>
                   <h3> : {formatMoney(moneyShip)}</h3>
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col span={12}>
+                  <h3>Mã giảm giá </h3>
+                </Col>
+                <Col span={12}>
+                  <h3> : {formatMoney(voucher.value)}</h3>
                 </Col>
               </Row>
               <br />
