@@ -1249,6 +1249,7 @@ public class BillServiceImpl implements BillService {
         bill.setStatusBill(StatusBill.TRA_HANG);
         bill.setTotalMoney(totalBill.subtract(totalBillGive).add(bill.getItemDiscount()));
         bill.setItemDiscount(new BigDecimal(0));
+        bill.setMoneyShip(checkTotal == 0 ? new BigDecimal(0) : bill.getMoneyShip());
         billRepository.save(bill);
 
         BillHistory billHistory = BillHistory.builder()

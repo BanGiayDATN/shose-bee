@@ -60,7 +60,7 @@ function PayMentSuccess() {
               console.log(err);
             }
           );
-          stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
+          stompClient.send("/action/notifyAdmin", {}, "Có đơn hàng mới");
         },
         (err) => {
           console.log(err);
@@ -70,7 +70,7 @@ function PayMentSuccess() {
     } else {
       BillClientApi.createBillOnline(formBill).then(
         (res) => {
-          stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
+          stompClient.send("/action/notifyAdmin", {}, "Có đơn hàng mới");
           console.log("thanh toán khi nhận hàng!");
           const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
           const updatelist = cartLocal.filter((item) => {
