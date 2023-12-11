@@ -4,12 +4,14 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./style-header.css";
 import { deleteToken } from "../../../helper/useCookies";
 function SalesHeader() {
   const idUser = sessionStorage.getItem("idAccount");
   const [openInfor, setOpenInfo] = useState(false);
+
+  const nav = useNavigate();
 
   useEffect(() => {
     console.log(idUser);
@@ -60,16 +62,10 @@ function SalesHeader() {
         </Link>
         {openInfor && idUser !== null ? (
           <ul className="dropdown-list">
-            <li
-              className="dropdown-item"
-              onClick={() => (window.location.href = "/profile")}
-            >
+            <li className="dropdown-item" onClick={() => nav("/profile")}>
               Tài khoản của tôi
             </li>
-            <li
-              className="dropdown-item"
-              onClick={() => (window.location.href = "/purchase")}
-            >
+            <li className="dropdown-item" onClick={() => nav("/purchase")}>
               Đơn mua
             </li>
             <li className="dropdown-item" onClick={logout}>

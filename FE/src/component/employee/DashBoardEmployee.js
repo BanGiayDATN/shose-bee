@@ -101,6 +101,7 @@ const DashBoardEmployee = ({ children }) => {
           dispatch(SetNotification(res.data.data));
           setListNotification(res.data.data);
         });
+        toast.success("Bạn có đơn hàng mới.");
       });
     });
 
