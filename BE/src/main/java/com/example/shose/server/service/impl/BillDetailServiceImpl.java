@@ -131,7 +131,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         BillDetail billDetail = new BillDetail();
         billDetail.setStatusBill(StatusBill.THANH_CONG);
         billDetail.setQuantity(request.getQuantity());
-        billDetail.setPrice(new BigDecimal(request.getPrice()));
+        billDetail.setPrice(productDetail.get().getPrice());
         billDetail.setProductDetail(productDetail.get());
         if(request.getPromotion() != null){
             billDetail.setPromotion(new BigDecimal(request.getPromotion()));
@@ -173,7 +173,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         productDetail.get().setQuantity( (productDetail.get().getQuantity() + billDetail.get().getQuantity() ) - request.getQuantity());
         productDetailRepository.save(productDetail.get());
 
-        billDetail.get().setPrice(new BigDecimal(request.getPrice()));
+        billDetail.get().setPrice(productDetail.get().getPrice());
         billDetail.get().setQuantity(request.getQuantity());
         billDetail.get().setStatusBill(StatusBill.THANH_CONG);
         billDetailRepository.save(billDetail.get());
