@@ -66,7 +66,6 @@ public class CreateBillOfflineRequest {
     @NotNull
     private List<CreatePaymentsMethodRequest> paymentsMethodRequests;
 
-    @NotNull
     private List<CreateVoucherDetailRequest> vouchers;
 
 }
