@@ -2591,10 +2591,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     }}
                     min={0}
                     customInput={Input}
-                    defaultValue={shipFee}
+                    value={shipFee}
                     onChange={(e) => {
                       var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
-                      console.log(phiShip);
                       if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
                         toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0")
                       } else {
@@ -2604,7 +2603,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       }
                     }}
                   />
-                  {/* {formatCurrency(shipFee)} */}
+                  {/* {formatCurrency(
+                    
+                  )} */}
                 </Col>
               </Row>
             ) : (

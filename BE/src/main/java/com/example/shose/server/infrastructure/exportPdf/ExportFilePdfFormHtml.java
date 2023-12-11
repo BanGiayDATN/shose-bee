@@ -128,6 +128,11 @@ public class ExportFilePdfFormHtml {
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill);
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
 
+        BigDecimal totalPaymentTraSau = paymentsMethods.stream()
+                .filter(payment -> payment.getStatus() == StatusPayMents.TRA_SAU)
+                .map(PaymentsMethod::getTotalMoney)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         NumberFormat formatter = formatCurrency();
         BigDecimal totalMoney = bill.getTotalMoney().add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
         InvoiceResponse invoice = InvoiceResponse.builder()
@@ -140,6 +145,7 @@ public class ExportFilePdfFormHtml {
                 .totalMoney(formatter.format(bill.getTotalMoney()))
                 .note(bill.getNote())
                 .checkShip(true)
+                .totalTraSau(formatter.format(totalPaymentTraSau))
                 .moneyShip(formatter.format(bill.getMoneyShip()))
                 .build();
 

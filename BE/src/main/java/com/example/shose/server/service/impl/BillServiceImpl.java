@@ -594,8 +594,11 @@ public class BillServiceImpl implements BillService {
         if (nextIndex > 6) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
-        if (bill.get().getStatusBill() == StatusBill.CHO_XAC_NHAN) {
+        if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
+            CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId()),
+                    Executors.newCachedThreadPool()); CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId()),
+                    Executors.newCachedThreadPool());
         } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
@@ -712,6 +715,8 @@ public class BillServiceImpl implements BillService {
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
             if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
+                CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId()),
+                        Executors.newCachedThreadPool());
             } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
             } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
@@ -1114,9 +1119,8 @@ public class BillServiceImpl implements BillService {
         }
         if (bill.getStatusBill() != StatusBill.THANH_CONG && !email.isEmpty()) {
             invoice.setCheckShip(true);
-            CompletableFuture.runAsync(() -> sendMail(invoice,
-                            domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail()),
-                    Executors.newCachedThreadPool());
+          sendMail(invoice,
+                            domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail());
         }
         return true;
     }
