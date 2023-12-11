@@ -134,7 +134,6 @@ public class BillDetailServiceImpl implements BillDetailService {
         productDetail.get().setQuantity( productDetail.get().getQuantity() - request.getQuantity());
         productDetailRepository.save(productDetail.get());
 
-
         BillDetail billDetail = new BillDetail();
         billDetail.setStatusBill(StatusBill.THANH_CONG);
         billDetail.setQuantity(request.getQuantity());
@@ -204,6 +203,10 @@ public class BillDetailServiceImpl implements BillDetailService {
         BigDecimal totalBill = total.add(bill.get().getMoneyShip()).subtract(bill.get().getItemDiscount());
         bill.get().setTotalMoney(total);
         billRepository.save(bill.get());
+        if(!request.getNote().isEmpty()){
+            billHistoryRepository.save(BillHistory.builder().bill(bill.get()).actionDescription(request.getNote())
+                    .employees(account.get()).build());
+        }
         saveOrUpdatePayment(totalBill, bill.get(), account.get());
         return billDetail.get().getId();
     }
@@ -240,6 +243,10 @@ public class BillDetailServiceImpl implements BillDetailService {
         BigDecimal totalBill = total.add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
         bill.setTotalMoney(total);
         billRepository.save(bill);
+        if(!note.isEmpty()){
+            billHistoryRepository.save(BillHistory.builder().bill(bill).actionDescription(note)
+                    .employees(account.get()).build());
+        }
         saveOrUpdatePayment(totalBill, bill, account.get());
         return true;
     }
