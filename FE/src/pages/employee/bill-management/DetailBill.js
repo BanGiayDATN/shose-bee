@@ -920,6 +920,9 @@ function DetailBill() {
     if (id !== null) {
       loadDataProductDetailToBillDetail();
     }
+     PaymentsMethodApi.findByIdBill(id).then((res) => {
+      dispatch(getPaymentsMethod(res.data.data));
+    });
   }, [id, changeQuanTiTy]);
 
   // total product detail give back

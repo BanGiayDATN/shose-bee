@@ -303,7 +303,26 @@ public class BillServiceImpl implements BillService {
 
         request.getPaymentsMethodRequests().forEach(item -> {
             if (item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null) {
-                if (item.getTotalMoney().signum() != 0) {
+                if(item.getStatus() == StatusPayMents.TRA_SAU){
+                    PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                            .method(item.getMethod())
+                            .status( StatusPayMents.TRA_SAU)
+                            .employees(optional.get().getEmployees())
+                            .totalMoney( request.getBillDetailRequests().stream()
+                                    .map(billDetailRequest -> {
+                                        return (billDetailRequest.getPromotion() == null)
+                                                ? new BigDecimal(billDetailRequest.getPrice()).multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                                                : new BigDecimal(billDetailRequest.getQuantity())
+                                                .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                                        .multiply(new BigDecimal(billDetailRequest.getPrice()))
+                                                        .divide(new BigDecimal(100)));
+                                    })
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add).add(new BigDecimal(request.getMoneyShip())).subtract(new BigDecimal(request.getItemDiscount())))
+                            .description(item.getActionDescription())
+                            .bill(optional.get())
+                            .build();
+                    paymentsMethodRepository.save(paymentsMethod);
+                }else if (item.getTotalMoney().signum() != 0) {
                     PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                             .method(item.getMethod())
                             .status(StatusPayMents.valueOf(request.getStatusPayMents()))
