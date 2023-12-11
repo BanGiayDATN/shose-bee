@@ -303,12 +303,9 @@ public class BillServiceImpl implements BillService {
 
         request.getPaymentsMethodRequests().forEach(item -> {
             if (item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null) {
-                if(item.getStatus() == StatusPayMents.TRA_SAU){
-                    PaymentsMethod paymentsMethod = PaymentsMethod.builder()
-                            .method(item.getMethod())
-                            .status( StatusPayMents.TRA_SAU)
-                            .employees(optional.get().getEmployees())
-                            .totalMoney( request.getBillDetailRequests().stream()
+                
+                if(item.getStatus() == StatusPayMents.TRA_SAU ){
+                    BigDecimal totalPaymentTraSau = request.getBillDetailRequests().stream()
                                     .map(billDetailRequest -> {
                                         return (billDetailRequest.getPromotion() == null)
                                                 ? new BigDecimal(billDetailRequest.getPrice()).multiply(new BigDecimal(billDetailRequest.getQuantity()))
@@ -317,11 +314,18 @@ public class BillServiceImpl implements BillService {
                                                         .multiply(new BigDecimal(billDetailRequest.getPrice()))
                                                         .divide(new BigDecimal(100)));
                                     })
-                                    .reduce(BigDecimal.ZERO, BigDecimal::add).add(new BigDecimal(request.getMoneyShip())).subtract(new BigDecimal(request.getItemDiscount())))
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add).add(new BigDecimal(request.getMoneyShip())).subtract(new BigDecimal(request.getItemDiscount()));
+                   if(totalPaymentTraSau.compareTo(BigDecimal.ZERO) > 0){
+                       PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                            .method(item.getMethod())
+                            .status( StatusPayMents.TRA_SAU)
+                            .employees(optional.get().getEmployees())
+                            .totalMoney(totalPaymentTraSau )
                             .description(item.getActionDescription())
                             .bill(optional.get())
                             .build();
                     paymentsMethodRepository.save(paymentsMethod);
+                   }
                 }else if (item.getTotalMoney().signum() != 0) {
                     PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                             .method(item.getMethod())
