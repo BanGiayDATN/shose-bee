@@ -2818,6 +2818,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         onOk={handleOkAccount}
         className="account"
         onCancel={handleCancelAccount}
+        width={700}
         footer={[
           <Button key="cancel" onClick={handleCancelAccount}>
             Hủy
