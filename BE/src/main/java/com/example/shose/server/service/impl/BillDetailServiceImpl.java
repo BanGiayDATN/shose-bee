@@ -143,18 +143,26 @@ public class BillDetailServiceImpl implements BillDetailService {
         billDetail.setBill(bill.get());
         billDetailRepository.save(billDetail);
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(request.getIdBill(), "THANH_CONG"));
-        bill.get().setTotalMoney(
-                billDetailResponses.stream()
-                        .map(billDetailRequest -> {
-                            return (billDetailRequest.getPromotion() == null)
-                                    ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
-                                    : new BigDecimal(billDetailRequest.getQuantity())
-                                    .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
-                                            .multiply(billDetailRequest.getPrice())
-                                            .divide(new BigDecimal(100)));
-                        })
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-        );
+        BigDecimal total =  billDetailResponses.stream()
+                .map(billDetailRequest -> {
+                    return (billDetailRequest.getPromotion() == null)
+                            ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                            : new BigDecimal(billDetailRequest.getQuantity())
+                            .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                    .multiply(billDetailRequest.getPrice())
+                                    .divide(new BigDecimal(100)));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        bill.get().setTotalMoney(total);
+         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.get().getId());
+        if(!findAllPaymentByIdBillAndMethod.isEmpty()){
+            findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
+                Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
+                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).subtract(bill.get().getItemDiscount()));
+                paymentsMethodRepository.save(paymentsMethod.get());
+            });
+        }
+        
         billRepository.save(bill.get());
         return billDetail.getId();
     }
@@ -204,7 +212,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         if(!findAllPaymentByIdBillAndMethod.isEmpty()){
             findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
                 Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
-                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).multiply(bill.get().getItemDiscount()));
+                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).subtract(bill.get().getItemDiscount()));
                 paymentsMethodRepository.save(paymentsMethod.get());
             });
         }
@@ -247,7 +255,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         if(!findAllPaymentByIdBillAndMethod.isEmpty()){
             findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
                 Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
-                paymentsMethod.get().setTotalMoney(total.add(bill.getMoneyShip()).multiply(bill.getItemDiscount()));
+                paymentsMethod.get().setTotalMoney(total.add(bill.getMoneyShip()).subtract(bill.getItemDiscount()));
                 paymentsMethodRepository.save(paymentsMethod.get());
             });
         }
