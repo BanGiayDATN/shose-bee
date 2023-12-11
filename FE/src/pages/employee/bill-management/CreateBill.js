@@ -97,7 +97,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
-      price: product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)) ,
+      price:
+        product.promotion == null
+          ? product.price
+          : (product.price * 100) / (100 - product.promotion),
       promotion: product.promotion,
     }));
     var newVoucher = [];
@@ -183,7 +186,10 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         idProduct: product.idProduct,
         size: product.nameSize,
         quantity: product.quantity,
-        price:  product.promotion == null ? product.price :  (product.price * 100 / (100 - product.promotion)),
+        price:
+          product.promotion == null
+            ? product.price
+            : (product.price * 100) / (100 - product.promotion),
         promotion: product.promotion,
       }));
       var newVoucher = [];
@@ -1806,6 +1812,19 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     </span>{" "}
                   </Row>
                   <Row>
+                    <span
+                      style={{
+                        color: "red",
+                        fontWeight: "500",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      {item.price >= 1000
+                        ? formatCurrency(item.price)
+                        : item.price + " VND"}
+                    </span>{" "}
+                  </Row>
+                  <Row>
                     {item.promotion != null ? (
                       <span
                         style={{
@@ -1823,17 +1842,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     ) : (
                       <span></span>
                     )}
-                    <span
-                      style={{
-                        color: "red",
-                        fontWeight: "500",
-                        marginLeft: "15px",
-                      }}
-                    >
-                      {item.price >= 1000
-                        ? formatCurrency(item.price)
-                        : item.price + " VND"}
-                    </span>{" "}
                   </Row>
                   <Row>
                     <span
@@ -1843,7 +1851,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                         marginLeft: "15px",
                       }}
                     >
-                      Size: {item.nameSize}
+                      Kích cỡ: {item.nameSize}
                     </span>{" "}
                   </Row>
                   <Row>
@@ -2583,7 +2591,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                   <NumberFormat
                     thousandSeparator={true}
                     suffix=" VND"
-                    placeholder={"Vui lòng nhập phí ship ( " + formatCurrency(shipFee)  +" )"}
+                    placeholder={
+                      "Vui lòng nhập phí ship ( " +
+                      formatCurrency(shipFee) +
+                      " )"
+                    }
                     style={{
                       width: "100%",
                       position: "relative",
@@ -2593,13 +2605,20 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     customInput={Input}
                     value={shipFee}
                     onChange={(e) => {
-                      var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
-                      if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
-                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0")
-                      } else {
-                        setShipFee(
-                          phiShip
+                      var phiShip = parseFloat(
+                        e.target.value.replace(/[^0-9.-]+/g, "")
+                      );
+                      if (
+                        phiShip == null ||
+                        isNaN(phiShip) ||
+                        phiShip == undefined ||
+                        phiShip < 0
+                      ) {
+                        toast.warning(
+                          "Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0"
                         );
+                      } else {
+                        setShipFee(phiShip);
                       }
                     }}
                   />
@@ -2799,6 +2818,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         onOk={handleOkAccount}
         className="account"
         onCancel={handleCancelAccount}
+        width={700}
         footer={[
           <Button key="cancel" onClick={handleCancelAccount}>
             Hủy
