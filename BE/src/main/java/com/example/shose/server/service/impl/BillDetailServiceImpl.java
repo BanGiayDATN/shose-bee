@@ -51,6 +51,9 @@ public class BillDetailServiceImpl implements BillDetailService {
     @Autowired
     private SizeRepository sizeRepository;
 
+    @Autowired
+    private PaymentsMethodRepository paymentsMethodRepository;
+
     private FormUtils formUtils = new FormUtils();
 
     @Autowired
