@@ -109,7 +109,7 @@ function Payment() {
     console.log(dayShip);
   }, [dayShip]);
   useEffect(() => {
-    setTotalBillToPay(totalBillToPay + moneyShip);
+    setTotalBillToPay(totalBillToPay);
     setFormBill({ ...formBill, moneyShip: moneyShip });
   }, [moneyShip]);
   useEffect(() => {

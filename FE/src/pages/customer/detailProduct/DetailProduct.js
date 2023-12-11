@@ -60,10 +60,10 @@ function DetailProduct() {
 
   useEffect(() => {
     getDetailProduct(id.id);
-    if(idAccountLocal !== null){
-      CartClientApi.listCart(idAccountLocal).then((res)=>{
-        setCartAccount(res.data.data)
-      })
+    if (idAccountLocal !== null) {
+      CartClientApi.listCart(idAccountLocal).then((res) => {
+        setCartAccount(res.data.data);
+      });
     }
   }, []);
   useEffect(() => {
@@ -135,7 +135,6 @@ function DetailProduct() {
     getDetailProduct(item);
   };
 
-
   const handleAddCartLocal = (newCartItem) => {
     setCartLocal((prev) => {
       console.log(cartLocal);
@@ -181,21 +180,22 @@ function DetailProduct() {
           detailProduct.quantity
         ) {
           handleAddCartLocal(newCartItem);
-          window.location.href = `/detail-product/${id.id}`
+          window.location.href = `/detail-product/${id.id}`;
           toast.success("Thêm giỏ hàng thành công", {
             autoClose: 3000,
           });
         } else {
           toast.warning(
-            detailProduct.quantity - detailProductCart.quantity > 0 ? 
-            (`Bạn chỉ được thêm tối đa ${
-              detailProduct.quantity - detailProductCart.quantity
-            } sản phẩm`) :("Số lượng của sản phẩm trong giỏ đã đầy")
+            detailProduct.quantity - detailProductCart.quantity > 0
+              ? `Bạn chỉ được thêm tối đa ${
+                  detailProduct.quantity - detailProductCart.quantity
+                } sản phẩm`
+              : "Số lượng của sản phẩm trong giỏ đã đầy"
           );
         }
       } else {
         handleAddCartLocal(newCartItem);
-        window.location.href = `/detail-product/${id.id}`
+        window.location.href = `/detail-product/${id.id}`;
         toast.success("Thêm giỏ hàng thành công", {
           autoClose: 3000,
         });
@@ -210,7 +210,7 @@ function DetailProduct() {
       const detailProductCart = cartAccount.find(
         (item) => item.idProductDetail === id.id
       );
-debugger
+      debugger;
       console.log(detailProductCart);
       if (detailProductCart !== undefined) {
         if (
@@ -218,21 +218,22 @@ debugger
           detailProduct.quantity
         ) {
           await CartClientApi.addCart(newCartItem);
-          window.location.href = `/detail-product/${id.id}`
+          window.location.href = `/detail-product/${id.id}`;
           toast.success("Thêm giỏ hàng thành công", {
             autoClose: 3000,
           });
         } else {
           toast.warning(
-            detailProduct.quantity - detailProductCart.quantity > 0 ? 
-            (`Bạn chỉ được thêm tối đa ${
-              detailProduct.quantity - detailProductCart.quantity
-            } sản phẩm`) :("Số lượng của sản phẩm trong giỏ đã đầy")
+            detailProduct.quantity - detailProductCart.quantity > 0
+              ? `Bạn chỉ được thêm tối đa ${
+                  detailProduct.quantity - detailProductCart.quantity
+                } sản phẩm`
+              : "Số lượng của sản phẩm trong giỏ đã đầy"
           );
         }
       } else {
         await CartClientApi.addCart(newCartItem);
-        window.location.href = `/detail-product/${id.id}`
+        window.location.href = `/detail-product/${id.id}`;
         toast.success("Thêm giỏ hàng thành công", {
           autoClose: 3000,
         });
@@ -508,8 +509,11 @@ debugger
               </div>
             </div>
           </Col>
-          <Col span={10} style={{marginLeft:"5%", marginTop:"54px"}}>
-            <div className="box-policy" style={{ width: "100%" , height:"90%"}}>
+          <Col span={10} style={{ marginLeft: "5%", marginTop: "54px" }}>
+            <div
+              className="box-policy"
+              style={{ width: "100%", height: "90%" }}
+            >
               <h2>Mô tả sản phẩm</h2> <br />
               <p>GIÀY SNEAKERS - HÀNG CHÍNH HÃNG</p>
               <p>
