@@ -352,7 +352,7 @@ public class BillServiceImpl implements BillService {
                 throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
             }
             BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
-                    .productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice()))
+                    .productDetail(productDetail.get()).price(productDetail.get().getPrice())
                     .quantity(billDetailRequest.getQuantity()).build();
             if (billDetailRequest.getPromotion() != null) {
                 billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
@@ -498,7 +498,7 @@ public class BillServiceImpl implements BillService {
                     throw new RestApiException(Message.NOT_PAYMENT_PRODUCT);
                 }
                 BillDetail billDetail = BillDetail.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
-                        .productDetail(productDetail.get()).price(new BigDecimal(billDetailRequest.getPrice()))
+                        .productDetail(productDetail.get()).price(productDetail.get().getPrice())
                         .quantity(billDetailRequest.getQuantity()).build();
                 if (billDetailRequest.getPromotion() != null) {
                     billDetail.setPromotion(new BigDecimal(billDetailRequest.getPromotion()));
