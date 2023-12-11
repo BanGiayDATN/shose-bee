@@ -894,7 +894,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         ship -
         exchangeRateMoney -
         voucher.discountPrice;
-      if(total > 0){
       dataPayMentTraSau = [
         {
           actionDescription: "",
@@ -903,7 +902,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
           status: "TRA_SAU",
         },
       ];
-      }
       totaPayMent = total;
     }
     var data = {
