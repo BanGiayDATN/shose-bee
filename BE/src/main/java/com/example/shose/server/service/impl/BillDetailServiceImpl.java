@@ -181,23 +181,33 @@ public class BillDetailServiceImpl implements BillDetailService {
         billDetail.get().setStatusBill(StatusBill.THANH_CONG);
         billDetailRepository.save(billDetail.get());
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(request.getIdBill(), "THANH_CONG"));
-        bill.get().setTotalMoney(
-                billDetailResponses.stream()
-                        .map(billDetailRequest -> {
-                            return (billDetailRequest.getPromotion() == null)
-                                    ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
-                                    : new BigDecimal(billDetailRequest.getQuantity())
-                                    .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
-                                            .multiply(billDetailRequest.getPrice())
-                                            .divide(new BigDecimal(100)));
-                        })
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-        );
+        BigDecimal total =  billDetailResponses.stream()
+                .map(billDetailRequest -> {
+                    return (billDetailRequest.getPromotion() == null)
+                            ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                            : new BigDecimal(billDetailRequest.getQuantity())
+                            .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                    .multiply(billDetailRequest.getPrice())
+                                    .divide(new BigDecimal(100)));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        bill.get().setTotalMoney(total);
         if(!request.getNote().isEmpty()){
             Optional<Account> account = accountRepository.findById(idEmployees);
             billHistoryRepository.save(BillHistory.builder().bill(bill.get()).actionDescription(request.getNote())
                     .employees(account.get()).build());
         }
+        bill.get().setTotalMoney(total);
+        billRepository.save(bill.get());
+        List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.get().getId());
+        if(!findAllPaymentByIdBillAndMethod.isEmpty()){
+            findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
+                Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
+                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).multiply(bill.get().getItemDiscount()));
+                paymentsMethodRepository.save(paymentsMethod.get());
+            });
+        }
+        
         billRepository.save(bill.get());
         return billDetail.get().getId();
     }
@@ -220,18 +230,26 @@ public class BillDetailServiceImpl implements BillDetailService {
         productDetailRepository.save(optional.get());
         billDetailRepository.deleteById(id);
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(billDetail.get().getBill().getId(), "THANH_CONG"));
-        bill.setTotalMoney(
-                billDetailResponses.stream()
-                        .map(billDetailRequest -> {
-                            return (billDetailRequest.getPromotion() == null)
-                                    ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
-                                    : new BigDecimal(billDetailRequest.getQuantity())
-                                    .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
-                                            .multiply(billDetailRequest.getPrice())
-                                            .divide(new BigDecimal(100)));
-                        })
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-        );
+        BigDecimal total =  billDetailResponses.stream()
+                .map(billDetailRequest -> {
+                    return (billDetailRequest.getPromotion() == null)
+                            ? billDetailRequest.getPrice().multiply(new BigDecimal(billDetailRequest.getQuantity()))
+                            : new BigDecimal(billDetailRequest.getQuantity())
+                            .multiply(new BigDecimal(100 - billDetailRequest.getPromotion())
+                                    .multiply(billDetailRequest.getPrice())
+                                    .divide(new BigDecimal(100)));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        bill.get().setTotalMoney(total);
+        billRepository.save(bill.get());
+        List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.get().getId());
+        if(!findAllPaymentByIdBillAndMethod.isEmpty()){
+            findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
+                Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
+                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).multiply(bill.get().getItemDiscount()));
+                paymentsMethodRepository.save(paymentsMethod.get());
+            });
+        }
         if(!note.isEmpty()){
             Optional<Account> account = accountRepository.findById(idEmployees);
             billHistoryRepository.save(BillHistory.builder().bill(bill).actionDescription(note)
