@@ -2,6 +2,7 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.voucher.FindVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
+import com.example.shose.server.entity.Promotion;
 import com.example.shose.server.entity.Voucher;
 import com.example.shose.server.infrastructure.constant.Status;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Nguyễn Vinh
@@ -94,4 +96,6 @@ public interface VoucherRepository extends JpaRepository<Voucher,String> {
             " WHERE vc.quantity >= 1")
     List<Voucher> getAllHaveQuantity();
     List<Voucher> findAllByStatus(Status status);
+    Optional<Voucher> findByName(String name);
+    Optional<Voucher> findByCode(String code);
 }

@@ -60,5 +60,8 @@ public class BillClientRestController {
     public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
         return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request));
     }
-
+    @PutMapping("/cancel/{id}")
+    public ResponseObject cancel(@PathVariable("id") String id)  {
+        return new ResponseObject(billService.changeStatusBill(id));
+    }
 }

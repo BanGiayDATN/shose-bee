@@ -1030,6 +1030,30 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public Bill changeStatusBill(String idBill) {
+        Optional<Bill> optional = billRepository.findById(idBill);
+        Optional<BillHistory> optionalBillHistory = billHistoryRepository.findByBill_Id(idBill);
+
+        if(optional.isEmpty()){
+            throw new RestApiException("Hóa đơn không tồn tại");
+        }
+        if(optionalBillHistory.isEmpty()){
+            throw new RestApiException("Lịch sử hóa đơn không tồn tại");
+        }
+
+        Bill bill = optional.get();
+        BillHistory billHistory = optionalBillHistory.get();
+        if(billHistory.getStatusBill().equals(StatusBill.CHO_XAC_NHAN)){
+            billHistory.setStatusBill(StatusBill.DA_HUY);
+            bill.setStatusBill(StatusBill.DA_HUY);
+        }else{
+            throw new RestApiException("Chỉ được hủy hóa đơn chờ xác nhận");
+        }
+
+        return billRepository.save(bill);
+    }
+
+    @Override
     public Bill findByCode(String code, String phoneNumber) {
         Optional<Bill> bill = billRepository.findByCodeAndPhoneNumber(code, phoneNumber);
         if (!bill.isPresent()) {
