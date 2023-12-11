@@ -749,6 +749,7 @@ public class BillServiceImpl implements BillService {
             billHistory.setBill(bill.get());
             billHistory.setStatusBill(bill.get().getStatusBill());
             billHistory.setEmployees(account.get());
+            billHistory.setActionDescription(request.getNote());
             billHistoryRepository.save(billHistory);
             billRepository.save(bill.get());
         });
