@@ -9,6 +9,7 @@ import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillDetail;
 import com.example.shose.server.entity.BillHistory;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
@@ -24,7 +25,7 @@ import com.example.shose.server.util.FormUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.example.shose.server.repository.PaymentsMethodRepository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -240,13 +241,13 @@ public class BillDetailServiceImpl implements BillDetailService {
                                     .divide(new BigDecimal(100)));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        bill.get().setTotalMoney(total);
-        billRepository.save(bill.get());
-        List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.get().getId());
+        bill.setTotalMoney(total);
+        billRepository.save(bill);
+        List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
         if(!findAllPaymentByIdBillAndMethod.isEmpty()){
             findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
                 Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
-                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).multiply(bill.get().getItemDiscount()));
+                paymentsMethod.get().setTotalMoney(total.add(bill.getMoneyShip()).multiply(bill.getItemDiscount()));
                 paymentsMethodRepository.save(paymentsMethod.get());
             });
         }
