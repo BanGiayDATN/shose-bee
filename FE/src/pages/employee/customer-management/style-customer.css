@@ -176,10 +176,13 @@
 
 .DIEM_THUONG {
   background-color: rgb(124, 245, 11);
+  border-radius: 15px;
 }
 .DIEM_SU_DUNG{
   background-color: rgb(245, 241, 11);
+  border-radius: 15px;
 }
 .DIEM_HOAN{
   background-color: rgb(245, 97, 11);
+  border-radius: 15px;
 }
