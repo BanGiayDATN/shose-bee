@@ -393,7 +393,7 @@ function ModalAddProductDetail({
               (product) =>
                 product.idProduct === productSelected.idProduct &&
                 (product.promotion == null? product.price : (product.price * (100 - product.promotion)) / 100) ==
-                (productSelected.promotion == null ? productSelected.price : (productSelected.price *(100 - productSelected.promotion)) / 100)
+                (productSelected.price)
             );
             console.log(check);
             if (check === undefined) {

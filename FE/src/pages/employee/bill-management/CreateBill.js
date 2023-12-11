@@ -2603,12 +2603,11 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                     }}
                     min={0}
                     customInput={Input}
-                    defaultValue={shipFee}
+                    value={shipFee}
                     onChange={(e) => {
                       var phiShip = parseFloat(
                         e.target.value.replace(/[^0-9.-]+/g, "")
                       );
-                      console.log(phiShip);
                       if (
                         phiShip == null ||
                         isNaN(phiShip) ||
@@ -2623,7 +2622,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       }
                     }}
                   />
-                  {/* {formatCurrency(shipFee)} */}
+                  {/* {formatCurrency(
+                    
+                  )} */}
                 </Col>
               </Row>
             ) : (

@@ -13,6 +13,8 @@ import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.StatusBill;
+import com.example.shose.server.infrastructure.constant.StatusMethod;
+import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -116,9 +118,10 @@ public class BillDetailServiceImpl implements BillDetailService {
     }
 
     @Override
-    public String create(CreateBillDetailRequest request) {
+    public String create(String idEmployees,CreateBillDetailRequest request) {
         Optional<Bill> bill = billRepository.findById(request.getIdBill());
         Optional<ProductDetail> productDetail = productDetailRepository.findById(request.getIdProduct());
+        Optional<Account> account = accountRepository.findById(idEmployees);
         if(!bill.isPresent()){
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
@@ -153,17 +156,10 @@ public class BillDetailServiceImpl implements BillDetailService {
                                     .divide(new BigDecimal(100)));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalBill = total.add(bill.get().getMoneyShip()).subtract(bill.get().getItemDiscount());
         bill.get().setTotalMoney(total);
-         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.get().getId());
-        if(!findAllPaymentByIdBillAndMethod.isEmpty()){
-            findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
-                Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
-                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).subtract(bill.get().getItemDiscount()));
-                paymentsMethodRepository.save(paymentsMethod.get());
-            });
-        }
-        
         billRepository.save(bill.get());
+        saveOrUpdatePayment(totalBill, bill.get(), account.get());
         return billDetail.getId();
     }
     @Override
@@ -200,24 +196,15 @@ public class BillDetailServiceImpl implements BillDetailService {
                                     .divide(new BigDecimal(100)));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        bill.get().setTotalMoney(total);
+        Optional<Account> account = accountRepository.findById(idEmployees);
         if(!request.getNote().isEmpty()){
-            Optional<Account> account = accountRepository.findById(idEmployees);
             billHistoryRepository.save(BillHistory.builder().bill(bill.get()).actionDescription(request.getNote())
                     .employees(account.get()).build());
         }
+        BigDecimal totalBill = total.add(bill.get().getMoneyShip()).subtract(bill.get().getItemDiscount());
         bill.get().setTotalMoney(total);
         billRepository.save(bill.get());
-        List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.get().getId());
-        if(!findAllPaymentByIdBillAndMethod.isEmpty()){
-            findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
-                Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
-                paymentsMethod.get().setTotalMoney(total.add(bill.get().getMoneyShip()).subtract(bill.get().getItemDiscount()));
-                paymentsMethodRepository.save(paymentsMethod.get());
-            });
-        }
-        
-        billRepository.save(bill.get());
+        saveOrUpdatePayment(totalBill, bill.get(), account.get());
         return billDetail.get().getId();
     }
 
@@ -231,6 +218,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         if (!optional.isPresent()) {
             throw new RestApiException(Message.NOT_EXISTS);
         }
+        Optional<Account> account = accountRepository.findById(idEmployees);
         Bill bill = billDetail.get().getBill();
         bill.setTotalMoney(bill.getTotalMoney().subtract(billDetail.get().getPrice()));
         billRepository.save(bill);
@@ -249,23 +237,56 @@ public class BillDetailServiceImpl implements BillDetailService {
                                     .divide(new BigDecimal(100)));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalBill = total.add(bill.getMoneyShip()).subtract(bill.getItemDiscount());
         bill.setTotalMoney(total);
         billRepository.save(bill);
+        saveOrUpdatePayment(totalBill, bill, account.get());
+        return true;
+    }
+
+    private void saveOrUpdatePayment(BigDecimal totalBill, Bill bill, Account account){
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
-        if(!findAllPaymentByIdBillAndMethod.isEmpty()){
+        List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill);
+        BigDecimal totalPaymentThanhToan = paymentsMethods.stream()
+                .filter(payment -> payment.getStatus() != StatusPayMents.TRA_SAU)
+                .map(PaymentsMethod::getTotalMoney)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPaymentTraSau = paymentsMethods.stream()
+                .filter(payment -> payment.getStatus() == StatusPayMents.TRA_SAU)
+                .map(PaymentsMethod::getTotalMoney)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if(!findAllPaymentByIdBillAndMethod.isEmpty() &&  totalPaymentThanhToan.compareTo(BigDecimal.ZERO) == 0){
             findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
                 Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
-                paymentsMethod.get().setTotalMoney(total.add(bill.getMoneyShip()).subtract(bill.getItemDiscount()));
+                paymentsMethod.get().setTotalMoney(totalBill);
                 paymentsMethodRepository.save(paymentsMethod.get());
             });
+        }else{
+            BigDecimal totalPayMent = totalPaymentThanhToan.add(totalPaymentTraSau);
+            if(totalBill.compareTo(totalPayMent) > 0){
+                if(totalPaymentTraSau.compareTo(BigDecimal.ZERO) == 0){
+                    PaymentsMethod paymentsMethod = PaymentsMethod.builder()
+                            .method(StatusMethod.TIEN_MAT)
+                            .status( StatusPayMents.TRA_SAU)
+                            .employees(account)
+                            .totalMoney(totalBill.subtract(totalPaymentThanhToan))
+                            .description("Thêm sản phẩm")
+                            .bill(bill)
+                            .build();
+                    paymentsMethodRepository.save(paymentsMethod);
+                }else{
+                    findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
+                        Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
+                        paymentsMethod.get().setTotalMoney(totalBill.subtract(totalPaymentThanhToan));
+                        paymentsMethodRepository.save(paymentsMethod.get());
+                    });
+                }
+            }else if(totalBill.compareTo(totalPaymentThanhToan) <= 0){
+                findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
+                    paymentsMethodRepository.deleteById(item);
+                });
+            }
         }
-        if(!note.isEmpty()){
-            Optional<Account> account = accountRepository.findById(idEmployees);
-            billHistoryRepository.save(BillHistory.builder().bill(bill).actionDescription(note)
-                    .employees(account.get()).build());
-        }
-        billRepository.save(bill);
-        return true;
     }
 
 }
