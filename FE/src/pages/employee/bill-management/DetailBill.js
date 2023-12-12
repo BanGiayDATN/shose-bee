@@ -91,7 +91,7 @@ function DetailBill() {
       dispatch(getBill(res.data.data));
       console.log(res.data.data);
       if (res.data.data.account != null) {
-        setUserId(res.data.data.account.user.id)
+        setUserId(res.data.data.account.user.id);
       }
       setBillRequest({
         name: res.data.data.userName,
@@ -100,7 +100,13 @@ function DetailBill() {
         moneyShip: res.data.data.moneyShip,
         note: res.data.data.note,
       });
-      setShipFee(res.data.data.moneyShip)
+      setAddress({
+        wards: res.data.data.address?.split(",")[1],
+        district: res.data.data.address?.split(",")[2],
+        city: res.data.data.address?.split(",")[3],
+        detail: res.data.data.address?.split(",")[0],
+      });
+      setShipFee(res.data.data.moneyShip);
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
       );
@@ -169,8 +175,8 @@ function DetailBill() {
     const totalQuantity =
       products.length > 0
         ? products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.quantity;
-        }, 0)
+            return accumulator + currentValue.quantity;
+          }, 0)
         : 1;
     setAddress({ ...address, wards: valueWard.value });
     if (totalQuantity > 2) {
@@ -420,10 +426,12 @@ function DetailBill() {
   const [isModaBillOpen, setIsModalBillOpen] = useState(false);
   const showModalBill = (e) => {
     setIsModalBillOpen(true);
-    setAddress({ ...address, wards: bill.address?.split(",")[1] });
-    setAddress({ ...address, district: bill.address?.split(",")[2] });
-    setAddress({ ...address, city: bill.address?.split(",")[3] });
-    setAddress({ ...address, detail: bill.address?.split(",")[0] });
+    setAddress({
+      wards: bill.address?.split(",")[1],
+      district: bill.address?.split(",")[2],
+      city: bill.address?.split(",")[3],
+      detail: bill.address?.split(",")[0],
+    });
   };
 
   const checkNotEmptyBill = () => {
@@ -450,13 +458,19 @@ function DetailBill() {
         address.city;
     }
     const data = {
-      name: String(billRequest.name).trim(),
-      phoneNumber: billRequest.phoneNumber.trim(),
-      address: addressuser.trim(),
+      name: String(billRequest.name),
+      phoneNumber: billRequest.phoneNumber,
+      address: addressuser,
       moneyShip: shipFee,
-      note: billRequest.note.trim(),
+      note: billRequest.note,
     };
-    if (checkNotEmptyBill()) {
+    if (
+      checkNotEmptyBill() &&
+      address.detail != "" &&
+      address.wards != "" &&
+      address.district != "" &&
+      address.city != ""
+    ) {
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có xác nhận thay đổi không?",
@@ -525,7 +539,7 @@ function DetailBill() {
   const generatePDF = useReactToPrint({
     content: () => document.getElementById("pdfContent"),
     documentTitle: "Userdata",
-    onAfterPrint: () => { },
+    onAfterPrint: () => {},
   });
 
   const [isModalOpenChangeStatus, setIsModalOpenChangeStatus] = useState(false);
@@ -563,7 +577,8 @@ function DetailBill() {
                 };
                 BillApi.fetchAllFilePdfByIdBill(data)
                   .then((response) => {
-                    document.getElementById("pdfContent").innerHTML = response.data.data;
+                    document.getElementById("pdfContent").innerHTML =
+                      response.data.data;
                     generatePDF();
                   })
                   .catch((error) => {
@@ -629,7 +644,10 @@ function DetailBill() {
   };
 
   const handleOkRollBackStatus = () => {
-    if (statusBill.actionDescription.trim() == "" || statusBill.actionDescription.trim().length < 50) {
+    if (
+      statusBill.actionDescription.trim() == "" ||
+      statusBill.actionDescription.trim().length < 50
+    ) {
       toast.error("Vui lòng nhập mô tả");
     } else {
       Modal.confirm({
@@ -662,7 +680,7 @@ function DetailBill() {
           await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
             dispatch(getBillHistory(res.data.data));
           });
-         
+
           setIsModalOpenRollBackStatus(false);
         },
         onCancel: () => {
@@ -745,21 +763,22 @@ function DetailBill() {
           {statusBill === "TAO_HOA_DON"
             ? "Hóa đơn chờ"
             : statusBill === "CHO_XAC_NHAN"
-              ? " Chờ xác nhận"
-              : statusBill === "XAC_NHAN"
-                ? "Đã xác nhận"
-                : statusBill === "CHO_VAN_CHUYEN"
-                  ? "Chờ vận chuyển"
-                  : statusBill === "VAN_CHUYEN"
-                    ? "Đang vận chuyển"
-                    : statusBill === "DA_THANH_TOAN"
-                      ? "Đã thanh toán"
-                      : statusBill === "TRA_HANG"
-                        ? "Trả hàng"
-                        : statusBill === "THANH_CONG"
-                          ? "Thành công"
-                          : statusBill === "DA_HUY"
-                            ? "Đã hủy" : ""}
+            ? " Chờ xác nhận"
+            : statusBill === "XAC_NHAN"
+            ? "Đã xác nhận"
+            : statusBill === "CHO_VAN_CHUYEN"
+            ? "Chờ vận chuyển"
+            : statusBill === "VAN_CHUYEN"
+            ? "Đang vận chuyển"
+            : statusBill === "DA_THANH_TOAN"
+            ? "Đã thanh toán"
+            : statusBill === "TRA_HANG"
+            ? "Trả hàng"
+            : statusBill === "THANH_CONG"
+            ? "Thành công"
+            : statusBill === "DA_HUY"
+            ? "Đã hủy"
+            : ""}
         </span>
       ),
     },
@@ -811,8 +830,8 @@ function DetailBill() {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-              ? "Chuyển khoản"
-              : "Tiền mặt và chuyển khoản"}
+            ? "Chuyển khoản"
+            : "Tiền mặt và chuyển khoản"}
         </span>
       ),
     },
@@ -837,8 +856,8 @@ function DetailBill() {
           {status == "THANH_TOAN"
             ? "Thanh toán"
             : status == "TRA_SAU"
-              ? "Trả sau"
-              : "Hoàn tiền"}
+            ? "Trả sau"
+            : "Hoàn tiền"}
         </Button>
       ),
     },
@@ -854,8 +873,8 @@ function DetailBill() {
           {method == "TIEN_MAT"
             ? "Tiền mặt"
             : method == "CHUYEN_KHOAN"
-              ? "Chuyển khoản"
-              : "Thẻ"}
+            ? "Chuyển khoản"
+            : "Thẻ"}
         </Button>
       ),
     },
@@ -920,7 +939,7 @@ function DetailBill() {
     if (id !== null) {
       loadDataProductDetailToBillDetail();
     }
-     PaymentsMethodApi.findByIdBill(id).then((res) => {
+    PaymentsMethodApi.findByIdBill(id).then((res) => {
       dispatch(getPaymentsMethod(res.data.data));
     });
   }, [id, changeQuanTiTy]);
@@ -994,15 +1013,15 @@ function DetailBill() {
       wards: item.ward,
       district: item.district,
       city: item.province,
-      detail: item.line
+      detail: item.line,
     });
     setBillRequest({ ...billRequest, address: item.address });
 
     const totalQuantity =
       products.length > 0
         ? products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.quantity;
-        }, 0)
+            return accumulator + currentValue.quantity;
+          }, 0)
         : 1;
     if (totalQuantity > 2) {
       setShipFee(0);
@@ -1015,7 +1034,6 @@ function DetailBill() {
         setShipFee(res.data.data.total);
       });
     }
-
   };
 
   const selectedAddress = () => {
@@ -1081,9 +1099,19 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent > 3 && bill.shippingTime != null && bill.statusBill !== "TRA_HANG" ? 5 : 0}>
+                  <Col
+                    span={
+                      statusPresent > 3 &&
+                      bill.shippingTime != null &&
+                      bill.statusBill !== "TRA_HANG"
+                        ? 5
+                        : 0
+                    }
+                  >
                     {" "}
-                    {statusPresent > 3 && bill.shippingTime != null && bill.statusBill !== "TRA_HANG" ? (
+                    {statusPresent > 3 &&
+                    bill.shippingTime != null &&
+                    bill.statusBill !== "TRA_HANG" ? (
                       <Button
                         type="danger"
                         className="btn btn-danger"
@@ -1102,7 +1130,13 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent < 5 ? 6 : 0}>
+                  <Col
+                    span={
+                      statusPresent < 5 && bill.statusBill != "DA_THANH_TOAN"
+                        ? 6
+                        : 0
+                    }
+                  >
                     {statusPresent < 5 ? (
                       <Button
                         type="danger"
@@ -1467,20 +1501,20 @@ function DetailBill() {
                     {bill.statusBill == "TAO_HOA_DON"
                       ? "Tạo Hóa đơn"
                       : bill.statusBill == "CHO_XAC_NHAN"
-                        ? "Chờ xác nhận"
-                        : bill.statusBill == "XAC_NHAN"
-                          ? "Đã xác nhận"
-                          : bill.statusBill == "CHO_VAN_CHUYEN"
-                            ? "Chờ chờ vận chuyển"
-                            : bill.statusBill === "VAN_CHUYEN"
-                              ? "Đang vận chuyển"
-                              : bill.statusBill === "DA_THANH_TOAN"
-                                ? "Đã thanh toán"
-                                : bill.statusBill === "THANH_CONG"
-                                  ? "Thành công"
-                                  : bill.statusBill === "TRA_HANG"
-                                    ? "Trả hàng"
-                                    : "Đã hủy"}
+                      ? "Chờ xác nhận"
+                      : bill.statusBill == "XAC_NHAN"
+                      ? "Đã xác nhận"
+                      : bill.statusBill == "CHO_VAN_CHUYEN"
+                      ? "Chờ chờ vận chuyển"
+                      : bill.statusBill === "VAN_CHUYEN"
+                      ? "Đang vận chuyển"
+                      : bill.statusBill === "DA_THANH_TOAN"
+                      ? "Đã thanh toán"
+                      : bill.statusBill === "THANH_CONG"
+                      ? "Thành công"
+                      : bill.statusBill === "TRA_HANG"
+                      ? "Trả hàng"
+                      : "Đã hủy"}
                   </Button>
                 </Col>
               </Row>
@@ -1889,7 +1923,9 @@ function DetailBill() {
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
           <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Button style={{ marginLeft: "75%" }} onClick={selectedAddress}>Chọn địa chỉ</Button>
+            <Button style={{ marginLeft: "75%" }} onClick={selectedAddress}>
+              Chọn địa chỉ
+            </Button>
           </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
@@ -2006,7 +2042,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                        // options={[]}
+                          // options={[]}
                         >
                           {listProvince?.map((item) => {
                             return (
@@ -2058,7 +2094,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                        // options={[]}
+                          // options={[]}
                         >
                           {listDistricts?.map((item) => {
                             return (
@@ -2109,7 +2145,7 @@ function DetailBill() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                        // options={[]}
+                          // options={[]}
                         >
                           {listWard?.map((item) => {
                             return (
@@ -2183,34 +2219,41 @@ function DetailBill() {
                 className="label-bill"
                 style={{ marginTop: "-4px", top: "-25%" }}
               >
-                Phí vận chuyển 
+                Phí vận chuyển
               </label>
-              <Form.Item
-                label=""
-                style={{ marginBottom: "20px" }}>
-                 <NumberFormat
-                    thousandSeparator={true}
-                    suffix=" VND"
-                    placeholder={"Vui lòng nhập phí ship ( " + formatCurrency(shipFee)  +" )"}
-                    style={{
-                      width: "100%",
-                      position: "relative",
-                      height: "37px",
-                    }}
-                    min={0}
-                    customInput={Input}
-                    defaultValue={shipFee}
-                    onChange={(e) => {
-                      var phiShip = parseFloat(e.target.value.replace(/[^0-9.-]+/g, ""))
-                      if (phiShip == null || isNaN(phiShip) || phiShip == undefined || phiShip < 0) {
-                        toast.warning("Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0")
-                      } else {
-                        setShipFee(
-                          phiShip
-                        );
-                      }
-                    }}
-                  />
+              <Form.Item label="" style={{ marginBottom: "20px" }}>
+                <NumberFormat
+                  thousandSeparator={true}
+                  suffix=" VND"
+                  placeholder={
+                    "Vui lòng nhập phí ship ( " + formatCurrency(shipFee) + " )"
+                  }
+                  style={{
+                    width: "100%",
+                    position: "relative",
+                    height: "37px",
+                  }}
+                  min={0}
+                  customInput={Input}
+                  defaultValue={shipFee}
+                  onChange={(e) => {
+                    var phiShip = parseFloat(
+                      e.target.value.replace(/[^0-9.-]+/g, "")
+                    );
+                    if (
+                      phiShip == null ||
+                      isNaN(phiShip) ||
+                      phiShip == undefined ||
+                      phiShip < 0
+                    ) {
+                      toast.warning(
+                        "Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0"
+                      );
+                    } else {
+                      setShipFee(phiShip);
+                    }
+                  }}
+                />
               </Form.Item>
             </Col>
           </Row>

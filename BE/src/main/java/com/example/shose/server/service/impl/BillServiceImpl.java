@@ -211,7 +211,6 @@ public class BillServiceImpl implements BillService {
         optional.get().setUserName(request.getUserName());
         optional.get().setAddress(request.getAddress());
         optional.get().setPhoneNumber(request.getPhoneNumber());
-        optional.get().setEmail(request.getEmail());
         optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
         optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
         optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
@@ -244,6 +243,7 @@ public class BillServiceImpl implements BillService {
 
         if (!request.getDeliveryDate().isEmpty()) {
             optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+            optional.get().setEmail(request.getEmail());
         }
         List<ScoringFormula> scoringFormulas = scoringFormulaRepository.findAllByOrderByCreatedDateDesc();
         if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
@@ -434,13 +434,11 @@ public class BillServiceImpl implements BillService {
             optional.get().setUserName(request.getUserName());
             optional.get().setAddress(request.getAddress());
             optional.get().setPhoneNumber(request.getPhoneNumber());
-            optional.get().setEmail(request.getEmail());
             optional.get().setItemDiscount(new BigDecimal(request.getItemDiscount()));
             optional.get().setTotalMoney(new BigDecimal(request.getTotalMoney()));
             optional.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
             optional.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
             optional.get().setPoinUse(request.getPoin());
-            billRepository.save(optional.get());
 
             List<BillDetailResponse> billDetailResponse = billDetailRepository
                     .findAllByIdBill(new BillDetailRequest(optional.get().getId(), "THANH_CONG"));
@@ -474,6 +472,7 @@ public class BillServiceImpl implements BillService {
             }
             if (!request.getDeliveryDate().isEmpty()) {
                 optional.get().setShippingTime(new ConvertDateToLong().dateToLong(request.getDeliveryDate()));
+                optional.get().setEmail(request.getEmail());
             }
             if (TypeBill.valueOf(request.getTypeBill()) != TypeBill.OFFLINE || !request.isOpenDelivery()) {
                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
@@ -558,10 +557,10 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         updateBill.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
-        updateBill.get().setAddress(request.getAddress().trim());
-        updateBill.get().setUserName(request.getName().trim());
-        updateBill.get().setPhoneNumber(request.getPhoneNumber().trim());
-        updateBill.get().setNote(request.getNote().trim());
+        updateBill.get().setAddress(request.getAddress());
+        updateBill.get().setUserName(request.getName());
+        updateBill.get().setPhoneNumber(request.getPhoneNumber());
+        updateBill.get().setNote(request.getNote());
         updateBill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         return billRepository.save(updateBill.get());
     }
@@ -839,7 +838,7 @@ public class BillServiceImpl implements BillService {
                 .code(codeBill)
                 .shippingTime(new ConvertDateToLong().dateToLong(request.getShippingTime()))
                 .phoneNumber(request.getPhoneNumber())
-                .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-'
+                .address(request.getAddress() + ", " + request.getWard() + ", " + request.getDistrict() + ", "
                         + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
