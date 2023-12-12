@@ -519,7 +519,7 @@ function UpdatePromotionManagement() {
       <Row>
         <Col className="add-promotion" lg={{ span: 7, offset: 0 }}>
           <div className="title-add-promotion">
-            <h1>Cập nhập khuyến mại</h1>
+            <h4>Cập nhập đợt giảm giá</h4>
           </div>
 
           <Form layout="vertical" autoComplete="off">

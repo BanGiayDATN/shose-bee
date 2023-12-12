@@ -167,7 +167,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             SELECT
                 p.id as idProduct,
                 pd.id as idProductDetail,
-                REPLACE(c.code, '#', '%23') as codeColor,
+                c.code as codeColor,
                 s.name as nameSize,
                 GROUP_CONCAT(i.name) as image,
                 p.name as nameProduct,
@@ -201,7 +201,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             SELECT
                 p.id as idProduct,
                 pd.id as idProductDetail,
-                REPLACE(c.code, '#', '%23') as codeColor,
+                c.code as codeColor,
                 s.name as nameSize,
                 GROUP_CONCAT(i.name) as image,
                 p.name as nameProduct,
@@ -236,7 +236,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             SELECT
                 p.id as idProduct,
                 pd.id as idProductDetail,
-                REPLACE(c.code, '#', '%23') as codeColor,
+                c.code as codeColor,
                 s.name as nameSize,
                 GROUP_CONCAT(i.name) as image,
                 p.name as nameProduct,
@@ -270,7 +270,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             SELECT
                 p.id as idProduct,
                 pd.id as idProductDetail,
-                REPLACE(c.code, '#', '%23') as codeColor,
+                c.code as codeColor,
                 s.name as nameSize,
                 GROUP_CONCAT(i.name) as image,
                 p.name as nameProduct,
@@ -409,7 +409,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             SELECT
                 p.id as idProduct,
                 pd.id as idProductDetail,
-                REPLACE(cl.code, '#', '%23') as codeColor,
+                cl.code as codeColor,
                 s.name as nameSize,
                 GROUP_CONCAT(i.name) as image,
                 p.name as nameProduct,

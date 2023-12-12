@@ -24,10 +24,10 @@ import { AddressClientApi } from "./../../../api/customer/address/addressClient.
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
 import { UserPoinApi } from "../../../api/customer/user/user.api";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
 dayjs.extend(utc);
 function PaymentAccount() {
@@ -157,9 +157,9 @@ function PaymentAccount() {
           addressDefault.line +
           ", " +
           addressDefault.ward +
-          " - " +
+          ", " +
           addressDefault.district +
-          " - " +
+          ", " +
           addressDefault.province,
         phoneNumber: addressDefault.phoneNumber,
         userName: addressDefault.fullName,

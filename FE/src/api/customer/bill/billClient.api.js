@@ -70,4 +70,10 @@ export class BillClientApi {
       params: data,
     });
   };
+  static cancelBill = (idBill) => {
+    return requestCustomer({
+      method: "PUT",
+      url: `/client/bill/cancel/${idBill}`,
+    });
+  };
 }

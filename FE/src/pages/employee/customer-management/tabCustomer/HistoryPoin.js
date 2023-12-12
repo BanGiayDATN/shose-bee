@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { HistoryPoinApi } from "../../../../api/employee/historyPoin/historyPoin.api";
 import moment from "moment";
-import { Col, Row, Table } from "antd";
+import { Button, Col, Row, Table } from "antd";
 
 function HistoryPoin({ id, customer }) {
   const [historyPoin, setHistoryPoin] = useState([]);
@@ -59,7 +59,12 @@ function HistoryPoin({ id, customer }) {
       dataIndex: "tyePoin",
       key: "tyePoin",
       render: (tyePoin) => {
-        return formatTyePoin(tyePoin);
+        return (
+          <Button
+          style={{ width: "130px", pointerEvents: "none" }}
+          className={tyePoin}
+        >{formatTyePoin(tyePoin)}</Button>
+        ) ;
       },
     },
     {

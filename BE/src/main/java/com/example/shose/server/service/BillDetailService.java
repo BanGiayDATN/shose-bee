@@ -20,7 +20,7 @@ public interface BillDetailService {
 
     BillDetail refundProduct(RefundProductRequest request);
 
-    String create(CreateBillDetailRequest request);
+    String create(String idEmployees,CreateBillDetailRequest request);
 
     String update(String id, String idEmployees, CreateBillDetailRequest request);
 

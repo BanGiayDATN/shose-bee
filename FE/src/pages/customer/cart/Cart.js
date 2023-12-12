@@ -381,7 +381,7 @@ function Cart() {
             );
           }
         } else {
-          toast.success("Sản phẩm đang được chọn!", {
+          toast.warning("Sản phẩm đang được chọn!", {
             autoClose: 3000,
           });
         }

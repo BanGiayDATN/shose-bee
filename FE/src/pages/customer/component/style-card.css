@@ -119,6 +119,10 @@
     display: flex;
     margin-bottom: 15px;
   }
+  .list-color-detail-card {
+    display: flex;
+   justify-content: center;
+  }
   .img-detail-product {
     width: 400px;
     height: 500px;

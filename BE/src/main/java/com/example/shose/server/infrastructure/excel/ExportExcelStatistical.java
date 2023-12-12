@@ -139,6 +139,7 @@ public class ExportExcelStatistical {
         private String type;
         private BigDecimal totalMoney;
         private String lastModifiedDate;
+        private String note;
 
         public CustomBillCanceled(BillResponse response) {
             this.code = response.getCode();
@@ -147,6 +148,7 @@ public class ExportExcelStatistical {
             this.type = response.getType();
             this.totalMoney = response.getTotalMoney();
             this.lastModifiedDate = new ConvertDateToLong().longToDate(response.getLastModifiedDate());
+            this.note = response.getNote();
         }
     }
 
