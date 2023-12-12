@@ -1298,7 +1298,7 @@ public class BillServiceImpl implements BillService {
         bill.setMoneyShip(checkTotal == 0 ? new BigDecimal(0) : bill.getMoneyShip());
         bill.setPoinUse(checkTotal == 0 ? 0 : bill.getPoinUse());
         bill.setValuePoin(checkTotal == 0 ? new BigDecimal(0) : bill.getValuePoin());
-        bill.setItemDiscount(voucher == null ? bill.getValuePoin() : voucher.getValue().add(bill.getValuePoin() == null ? new BigDecimal(0) : bill.getValuePoin()));
+        bill.setItemDiscount(voucher.getValue() == null ? bill.getValuePoin() : voucher.getValue().add(bill.getValuePoin() == null ? new BigDecimal(0) : bill.getValuePoin()));
         billRepository.save(bill);
 
         BillHistory billHistory = BillHistory.builder()
