@@ -184,12 +184,15 @@ function CreateVoucherManagement() {
             autoClose: 5000,
           });
           nav("/promotion-management");
+          setFormData({});
+          setListProductDetail([]);
+          onSelectChange("");
+          onSelectChangeDetail("");
+          setSelectedRowKeysDetail("");
+        },(err)=>{
+          
         });
-        setFormData({});
-        setListProductDetail([]);
-        onSelectChange("");
-        onSelectChangeDetail("");
-        setSelectedRowKeysDetail("");
+      
       },
     });
   };

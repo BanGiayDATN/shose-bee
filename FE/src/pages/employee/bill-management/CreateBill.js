@@ -41,14 +41,7 @@ import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
 import { useReactToPrint } from "react-to-print";
 
-function CreateBill({
-  removePane,
-  targetKey,
-  invoiceNumber,
-  code,
-  key,
-  id,
-}) {
+function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
@@ -104,7 +97,10 @@ function CreateBill({
       idProduct: product.idProduct,
       size: product.nameSize,
       quantity: product.quantity,
-      price: product.promotion == null ? product.price :  product.price * 100 / 100 - product.promotion ,
+      price:
+        product.promotion == null
+          ? product.price
+          : (product.price * 100) / (100 - product.promotion),
       promotion: product.promotion,
     }));
     var newVoucher = [];
@@ -190,7 +186,10 @@ function CreateBill({
         idProduct: product.idProduct,
         size: product.nameSize,
         quantity: product.quantity,
-        price: product.price,
+        price:
+          product.promotion == null
+            ? product.price
+            : (product.price * 100) / (100 - product.promotion),
         promotion: product.promotion,
       }));
       var newVoucher = [];
@@ -824,7 +823,7 @@ function CreateBill({
       price:
         product.promotion === null
           ? product.price
-          : (product.price * 100 / (100 - product.promotion)) ,
+          : (product.price * 100) / (100 - product.promotion),
       promotion: product.promotion,
     }));
     console.log(newProduct);
@@ -1292,7 +1291,7 @@ function CreateBill({
             idProduct: res.data.data.id,
             quantity: 1,
             price:
-              (res.data.data.price * 100 / (100 - res.data.data.promotion)) ,
+              (res.data.data.price * 100) / (100 - res.data.data.promotion),
             idSizeProduct: res.data.data.id,
             maxQuantity: res.data.data.quantity,
             promotion: res.data.data.promotion,
@@ -1807,6 +1806,19 @@ function CreateBill({
                     </span>{" "}
                   </Row>
                   <Row>
+                    <span
+                      style={{
+                        color: "red",
+                        fontWeight: "500",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      {item.price >= 1000
+                        ? formatCurrency(item.price)
+                        : item.price + " VND"}
+                    </span>{" "}
+                  </Row>
+                  <Row>
                     {item.promotion != null ? (
                       <span
                         style={{
@@ -1824,17 +1836,6 @@ function CreateBill({
                     ) : (
                       <span></span>
                     )}
-                    <span
-                      style={{
-                        color: "red",
-                        fontWeight: "500",
-                        marginLeft: "15px",
-                      }}
-                    >
-                      {item.price >= 1000
-                        ? formatCurrency(item.price)
-                        : item.price + " VND"}
-                    </span>{" "}
                   </Row>
                   <Row>
                     <span
@@ -1844,7 +1845,7 @@ function CreateBill({
                         marginLeft: "15px",
                       }}
                     >
-                      Size: {item.nameSize}
+                      Kích cỡ: {item.nameSize}
                     </span>{" "}
                   </Row>
                   <Row>
@@ -2581,7 +2582,43 @@ function CreateBill({
                     marginRight: "10px",
                   }}
                 >
-                  {formatCurrency(shipFee)}
+                  <NumberFormat
+                    thousandSeparator={true}
+                    suffix=" VND"
+                    placeholder={
+                      "Vui lòng nhập phí ship ( " +
+                      formatCurrency(shipFee) +
+                      " )"
+                    }
+                    style={{
+                      width: "100%",
+                      position: "relative",
+                      height: "37px",
+                    }}
+                    min={0}
+                    customInput={Input}
+                    value={shipFee}
+                    onChange={(e) => {
+                      var phiShip = parseFloat(
+                        e.target.value.replace(/[^0-9.-]+/g, "")
+                      );
+                      if (
+                        phiShip == null ||
+                        isNaN(phiShip) ||
+                        phiShip == undefined ||
+                        phiShip < 0
+                      ) {
+                        toast.warning(
+                          "Vui lòng nhập phí vân chuyển và lớn hơn hoặc bằng 0"
+                        );
+                      } else {
+                        setShipFee(phiShip);
+                      }
+                    }}
+                  />
+                  {/* {formatCurrency(
+                    
+                  )} */}
                 </Col>
               </Row>
             ) : (
@@ -2775,6 +2812,7 @@ function CreateBill({
         onOk={handleOkAccount}
         className="account"
         onCancel={handleCancelAccount}
+        width={700}
         footer={[
           <Button key="cancel" onClick={handleCancelAccount}>
             Hủy

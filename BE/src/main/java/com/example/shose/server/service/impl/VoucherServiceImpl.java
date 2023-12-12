@@ -25,16 +25,14 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class VoucherServiceImpl implements VoucherService {
+
     @Autowired
     private VoucherRepository voucherRepository;
-
-
 
     @Override
     public List<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest) {
         return voucherRepository.getAllVoucher(findVoucherRequest);
     }
-
 
     @Override
     public List<Voucher> findAll() {
@@ -48,6 +46,10 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher add(CreateVoucherRequest request) throws RestApiException {
+        Optional<Voucher>  optional = voucherRepository.findByName(request.getName());
+        if(optional.isPresent()){
+            throw new RestApiException("Tên khuyến mãi đã tồn tại");
+        }
         if(request.getEndDate() <= request.getStartDate()){
             throw new RestApiException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }
@@ -140,7 +142,6 @@ public class VoucherServiceImpl implements VoucherService {
         return startVouchers;
     }
 
-
     @Override
     public Voucher getByCode(String code) {
         return voucherRepository.getByCode(code);
@@ -151,8 +152,9 @@ public class VoucherServiceImpl implements VoucherService {
         return voucherRepository.findAll();
     }
 
-    public static void main(String[] args) {
-        System.out.println(new ConvertDateToLong().longToDate(1695313928194l));
-        System.out.println(new ConvertDateToLong().longToDate(1695313940000l));
+    @Override
+    public VoucherRespone getVoucherByMinimum(int minimum) {
+        return voucherRepository.getVoucherByMinimum(minimum);
     }
+
 }

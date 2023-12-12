@@ -440,12 +440,10 @@ const CustomerManagement = () => {
   const [listAddress, setListAddress] = useState([]);
 
   const selectedAccount = (record) => {
-    console.log(record);
     setIsModalAddressOpen(true);
     setCustomerId(record.id);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
-      console.log(res.data.data);
     });
   };
 

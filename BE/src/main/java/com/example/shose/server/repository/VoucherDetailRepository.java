@@ -42,4 +42,7 @@ public interface VoucherDetailRepository extends JpaRepository<VoucherDetail,Str
     BigDecimal getTotolDiscountBill(@Param("id") String idBill);
 
     List<VoucherDetail> findAllByBill(Bill bill);
+
+    @Query(value = " SELECT v FROM VoucherDetail  v WHERE v.bill.id = :id")
+    VoucherDetail findVoucherDetailByIdBill (@Param("id") String idBill);
 }

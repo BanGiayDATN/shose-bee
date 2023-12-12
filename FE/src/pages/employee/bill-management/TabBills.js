@@ -10,6 +10,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import ModalAccountEmployee from "./modal/ModalAccountEmployee";
 import { useReactToPrint } from "react-to-print";
+import TextArea from "antd/es/input/TextArea";
 
 
 function TabBills({ statusBill, dataFillter, addNotify }) {
@@ -219,35 +220,53 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
   const changeStatusBill = (e) => {
     Modal.confirm({
       title: "Xác nhận",
-      content: `Bạn có đồng ý ${convertString(statusBill)} không?`,
+      content: (
+        <div>
+          <p>
+            {`Bạn có đồng ý ${convertString(statusBill)} không?`}
+          </p>
+          <TextArea
+            rows={4}
+            placeholder="Nhập ghi chú..."
+            id="myTextAreaChangeStatus"
+          />
+        </div>
+      ),
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: async () => {
-        var data = {
-          ids: dataIdCheck,
-          status: nextStatusBill(),
-        };
-        if(statusBill=="XAC_NHAN"){
-           BillApi.fetchAllFilePdfByIdBill(data).then((response) => {
-            document.getElementById("pdfContent").innerHTML   = response.data.data
-            generatePDF()
-            console.log(response);
+        var note = document.getElementById("myTextAreaChangeStatus").value;
+        if (note.trim() != "" && note.trim().length > 10){
+          var data = {
+            ids: dataIdCheck,
+            status: nextStatusBill(),
+            note: note
+          };
+          if(statusBill=="XAC_NHAN"){
+             BillApi.fetchAllFilePdfByIdBill(data).then((response) => {
+              document.getElementById("pdfContent").innerHTML   = response.data.data
+              generatePDF()
+              console.log(response);
+            }).catch((error) => {
+              toast.error(error.response.data.message);
+            });
+          }
+          await BillApi.changeStatusAllBillByIds(data).then((response) => {
+            if (response.data.data == true) {
+              toast.success(`${convertString(statusBill)} thành công`);
+            }
           }).catch((error) => {
             toast.error(error.response.data.message);
           });
+          await BillApi.fetchAll(fillter).then((res) => {
+            setDataBill(res.data.data);
+          }).catch((error) => {
+            toast.error(error.response.data.message);
+          });
+        }else{
+          toast.warning("Vui lòng nhập mô tả và tối thiểu 10 ký tự ");
         }
-        await BillApi.changeStatusAllBillByIds(data).then((response) => {
-          if (response.data.data == true) {
-            toast.success(`${convertString(statusBill)} thành công`);
-          }
-        }).catch((error) => {
-          toast.error(error.response.data.message);
-        });
-        await BillApi.fetchAll(fillter).then((res) => {
-          setDataBill(res.data.data);
-        }).catch((error) => {
-          toast.error(error.response.data.message);
-        });
+       
       },
       onCancel: () => {},
     });

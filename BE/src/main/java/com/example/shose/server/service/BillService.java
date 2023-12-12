@@ -65,6 +65,8 @@ public interface BillService {
 
     Bill createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
+    Bill changeStatusBill(String idBill);
+
     String createFilePdfAtCounter(String idBill);
 
     String createAllFilePdf(ChangAllStatusBillByIdsRequest request);

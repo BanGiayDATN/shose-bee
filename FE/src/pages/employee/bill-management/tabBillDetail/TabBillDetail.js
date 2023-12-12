@@ -243,31 +243,6 @@ function TabBillDetail({ dataBillDetail }) {
       key: "quantity",
       align: "center",
       dataIndex: "quantity",
-      render: (quantity, record) => {
-        return statusPresent < 3 ? (
-          <Col span={4} align={"center"} style={{ alignItems: "center" }}>
-            <Row>
-              <Col span={24}>
-                <InputNumber
-                  min={1}
-                  max={
-                    record.promotion == null
-                      ? record.maxQuantity
-                      : record.quantity
-                  }
-                  style={{ margin: "0 5px" }}
-                  value={record.quantity}
-                  onChange={(value) => {
-                    handleQuantityChange(value, record);
-                  }}
-                />
-              </Col>
-            </Row>
-          </Col>
-        ) : (
-          <span>{quantity}</span>
-        );
-      },
     },
     {
       title: (
@@ -420,9 +395,8 @@ function TabBillDetail({ dataBillDetail }) {
       key: "quantity",
       align: "center",
       dataIndex: "quantity",
-      render: (quantity, record) => {
-        return statusPresent < 3 ? (
-          <Col span={4} align={"center"} style={{ alignItems: "center" }}>
+      render: (_, record) => {
+         return <Col span={4} align={"center"} style={{ alignItems: "center" }}>
             <Row>
               <Col span={24}>
                 <InputNumber
@@ -441,9 +415,6 @@ function TabBillDetail({ dataBillDetail }) {
               </Col>
             </Row>
           </Col>
-        ) : (
-          <span>{quantity}</span>
-        );
       },
     },
     {
@@ -579,13 +550,14 @@ function TabBillDetail({ dataBillDetail }) {
   const [billDetai, setBillDetail] = useState([]);
   const statusPresent = useSelector((state) => state.bill.bill.status);
 
+  console.log( bill.statusBill =="CHO_XAC_NHAN");
   return (
     <>
       {billDetai.length > 0 ? (
         <Table
           className="table-bill-detail"
           columns={
-            bill.statusBill == "CHO_XAC_NHAN" || bill.statusBill == "XAC_NHAN"
+            bill.statusBill =="CHO_XAC_NHAN"
               ? columneEditProductBill
               : columnProductBill
           }

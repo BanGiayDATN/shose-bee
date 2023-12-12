@@ -369,6 +369,7 @@ function ModalAddProductDetail({
         theme: "light",
       });
     } else {
+    console.log(productSelected);
       Modal.confirm({
         title: "Xác nhận",
         content: "Bạn có đồng ý thêm sản phẩm  không?",
@@ -392,7 +393,7 @@ function ModalAddProductDetail({
               (product) =>
                 product.idProduct === productSelected.idProduct &&
                 (product.promotion == null? product.price : (product.price * (100 - product.promotion)) / 100) ==
-                (productSelected.promotion == null ? productSelected.price : (productSelected.price *(100 - productSelected.promotion)) / 100)
+                (productSelected.price)
             );
             console.log(check);
             if (check === undefined) {

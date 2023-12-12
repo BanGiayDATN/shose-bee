@@ -15,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PromotionRepository extends JpaRepository<Promotion,String> {
@@ -120,4 +121,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,String> {
                 GROUP BY pd.id , ppd.status
             """, nativeQuery = true)
     GetPromotionOfProductDetail getPromotionOfProductDetail(@Param("id") String id);
+
+    Optional<Promotion> findByName(String name);
+    Optional<Promotion> findByCode(String code);
 }
