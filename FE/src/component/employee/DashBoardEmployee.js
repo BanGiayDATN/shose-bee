@@ -100,8 +100,8 @@ const DashBoardEmployee = ({ children }) => {
         NotificationClientApi.getAll().then((res) => {
           dispatch(SetNotification(res.data.data));
           setListNotification(res.data.data);
+          // toast.success("Bạn có đơn hàng mới.");
         });
-        toast.success("Bạn có đơn hàng mới.");
       });
     });
 

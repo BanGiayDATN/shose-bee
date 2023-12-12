@@ -282,7 +282,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                 bd.promotion AS promotion,
                 bd.price AS price,
                 c2.code AS codeColor,
-                bd.status_bill AS statusBillDetail
+                bd.status_bill AS statusBillDetail,
+                bi.money_ship AS moneyShip 
             FROM bill bi
             JOIN bill_detail bd ON bi.id = bd.id_bill
             JOIN product_detail detail ON bd.id_product_detail = detail.id

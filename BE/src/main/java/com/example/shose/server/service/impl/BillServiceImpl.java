@@ -1267,11 +1267,38 @@ public class BillServiceImpl implements BillService {
             }
         }
 
+        //todo update voucher detail new to bill
+        Voucher voucher = new Voucher();
+        if(updateBillGiveBack.getIdVoucher() != null) {
+            voucher =  voucherRepository.findById(updateBillGiveBack.getIdVoucher()).get();
+            VoucherDetail billDetailVoucher = voucherDetailRepository.findVoucherDetailByIdBill(bill.getId());
+            if(billDetailVoucher != null && voucher != null){
+                billDetailVoucher.setBill(bill);
+                billDetailVoucher.setVoucher(voucher);
+                billDetailVoucher.setUpdatedBy(shoseSession.getEmployee().getEmail());
+                billDetailVoucher.setBeforPrice(totalBill.subtract(totalBillGive).add(bill.getItemDiscount()));
+                billDetailVoucher.setAfterPrice(totalBill.subtract(totalBillGive).add(bill.getItemDiscount()).subtract(voucher.getValue()));
+                billDetailVoucher.setDiscountPrice(voucher.getValue());
+                voucherDetailRepository.save(billDetailVoucher);
+            }else if(voucher != null) {
+                VoucherDetail voucherDetail = new VoucherDetail();
+                voucherDetail.setBill(bill);
+                voucherDetail.setVoucher(voucher);
+                voucherDetail.setUpdatedBy(shoseSession.getEmployee().getEmail());
+                voucherDetail.setBeforPrice(totalBill.subtract(totalBillGive).add(bill.getItemDiscount()));
+                voucherDetail.setAfterPrice(totalBill.subtract(totalBillGive).add(bill.getItemDiscount()).subtract(voucher.getValue()));
+                voucherDetail.setDiscountPrice(voucher.getValue());
+                voucherDetailRepository.save(voucherDetail);
+            }
+        }
+
         // todo update stattus bill
         bill.setStatusBill(StatusBill.TRA_HANG);
-        bill.setTotalMoney(totalBill.subtract(totalBillGive).add(bill.getItemDiscount()));
-        bill.setItemDiscount(new BigDecimal(0));
+        bill.setTotalMoney(totalBill.subtract(totalBillGive));
         bill.setMoneyShip(checkTotal == 0 ? new BigDecimal(0) : bill.getMoneyShip());
+        bill.setPoinUse(checkTotal == 0 ? 0 : bill.getPoinUse());
+        bill.setValuePoin(checkTotal == 0 ? new BigDecimal(0) : bill.getValuePoin());
+        bill.setItemDiscount(voucher == null ? bill.getValuePoin() : voucher.getValue().add(bill.getValuePoin() == null ? new BigDecimal(0) : bill.getValuePoin()));
         billRepository.save(bill);
 
         BillHistory billHistory = BillHistory.builder()

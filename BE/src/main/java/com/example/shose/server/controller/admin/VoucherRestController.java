@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -40,33 +41,37 @@ import java.util.List;
 public class VoucherRestController {
     @Autowired
     private VoucherService voucherService;
+
     @GetMapping()
     public ResponseObject getAll(@ModelAttribute final FindVoucherRequest findVoucherRequest) {
         return new ResponseObject(voucherService.getAll(findVoucherRequest));
 
     }
+
     @GetMapping("/{id}")
     public ResponseObject getById(@PathVariable("id") String id) {
         return new ResponseObject(voucherService.getById(id));
     }
 
     @PostMapping
-    public ResponseObject add(@Valid @RequestBody  CreateVoucherRequest request, BindingResult bindingResult) throws Exception {
-        if(bindingResult.hasErrors()){
-        throw new CustomListValidationException(404,bindingResult.getAllErrors());
+    public ResponseObject add(@Valid @RequestBody CreateVoucherRequest request, BindingResult bindingResult) throws Exception {
+        if (bindingResult.hasErrors()) {
+            throw new CustomListValidationException(404, bindingResult.getAllErrors());
         }
         return new ResponseObject(voucherService.add(request));
     }
+
     @PostMapping("/expired/{id}")
     public ResponseObject voucherExpired(@PathVariable("id") String id) throws RestApiException {
 
         return new ResponseObject(voucherService.updateStatus(id));
     }
+
     @PutMapping("/{id}")
-    public ResponseObject update(@PathVariable("id") String id,@Valid @RequestBody  UpdateVoucherRequest request , BindingResult bindingResult) throws CustomListValidationException {
+    public ResponseObject update(@PathVariable("id") String id, @Valid @RequestBody UpdateVoucherRequest request, BindingResult bindingResult) throws CustomListValidationException {
         request.setId(id);
-        if(bindingResult.hasErrors()){
-            throw new CustomListValidationException(404,bindingResult.getAllErrors());
+        if (bindingResult.hasErrors()) {
+            throw new CustomListValidationException(404, bindingResult.getAllErrors());
         }
         return new ResponseObject(voucherService.update(request));
     }
@@ -74,5 +79,10 @@ public class VoucherRestController {
     @DeleteMapping("/{id}")
     public ResponseObject delete(@PathVariable("id") String id) {
         return new ResponseObject(voucherService.delete(id));
+    }
+
+    @GetMapping("/minimum/{minimum}")
+    public ResponseObject getVoucherByMinimum(@PathVariable("minimum") int minimum) {
+        return new ResponseObject(voucherService.getVoucherByMinimum(minimum));
     }
 }
