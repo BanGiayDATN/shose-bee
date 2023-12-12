@@ -28,4 +28,6 @@ public interface VoucherService {
     Voucher getByCode(String code);
 
     List<Voucher> getVoucherByIdAccount();
+
+    VoucherRespone getVoucherByMinimum(int minimum);
 }
