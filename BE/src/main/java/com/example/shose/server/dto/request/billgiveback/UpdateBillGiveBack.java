@@ -22,4 +22,6 @@ public class UpdateBillGiveBack {
     private String note;
 
     private BigDecimal totalBillGiveBack;
+
+    private String idVoucher;
 }

@@ -46,4 +46,9 @@ public interface BillResponse {
     @Value("#{target.item_discount}")
     BigDecimal getItemDiscount();
 
+    @Value("#{target.note}")
+    String getNote();
+
+
+
 }

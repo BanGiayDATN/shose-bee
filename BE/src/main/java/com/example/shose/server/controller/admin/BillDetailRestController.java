@@ -55,7 +55,7 @@ public class BillDetailRestController {
 
     @PostMapping("/add-product")
     public ResponseObject addProduct(@RequestBody CreateBillDetailRequest request){
-        return  new ResponseObject(billDetailService.create(request));
+        return  new ResponseObject(billDetailService.create(shoseSession.getEmployee().getId(), request));
     }
 
     @DeleteMapping("/remove/{id}/{productDetail}")
