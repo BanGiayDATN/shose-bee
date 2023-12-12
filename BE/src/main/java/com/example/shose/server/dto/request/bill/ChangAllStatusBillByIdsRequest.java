@@ -22,4 +22,6 @@ public class ChangAllStatusBillByIdsRequest {
     @NotEmpty
     private  String status;
 
+    private String note;
+
 }
