@@ -102,9 +102,10 @@ public class VoucherServiceImpl implements VoucherService {
             throw new RestApiException("Khuyến mãi không tồn tại");
         }
         Voucher voucher = optional.get();
-        if(voucher.getStatus().equals(Status.DANG_SU_DUNG)){
+        long currentSeconds = System.currentTimeMillis();
+        if(voucher.getEndDate()<= currentSeconds){
             voucher.setStatus(Status.KHONG_SU_DUNG);
-        }else{
+        } else if (voucher.getEndDate()>= currentSeconds) {
             voucher.setStatus(Status.DANG_SU_DUNG);
         }
         voucherRepository.save(voucher);
