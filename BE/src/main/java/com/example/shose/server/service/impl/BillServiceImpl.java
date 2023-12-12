@@ -850,7 +850,7 @@ public class BillServiceImpl implements BillService {
                 .code(codeBill)
                 .shippingTime(new ConvertDateToLong().dateToLong(request.getShippingTime()))
                 .phoneNumber(request.getPhoneNumber())
-                .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-'
+                .address(request.getAddress() + ',' + request.getWard() + ',' + request.getDistrict() + ','
                         + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())

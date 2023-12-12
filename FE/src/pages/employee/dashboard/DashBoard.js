@@ -216,13 +216,7 @@ const DashBoard = () => {
           dataGrowthyear =
             ((dataYear - dataYearPrevious) / dataYearPrevious) * 100;
         }
-        if (dataProductMonthPrevious != null) {
-          dataGrowthProductMonth =
-            ((dataProductMonth - dataProductMonthPrevious) /
-              dataProductMonthPrevious) *
-            100;
-        }
-        if (dataProductMonthPrevious != null) {
+        if (dataProductMonthPrevious != null && dataProductMonthPrevious != 0) {
           dataGrowthProductMonth =
             ((dataProductMonth - dataProductMonthPrevious) /
               dataProductMonthPrevious) *
