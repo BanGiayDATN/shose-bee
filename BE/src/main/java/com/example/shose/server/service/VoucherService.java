@@ -16,7 +16,7 @@ public interface VoucherService {
 
     List<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest);
     List<Voucher> findAll();
-    List<Voucher> findByStatus();
+    List<Voucher> getAllHaveQuantity();
     Voucher add(CreateVoucherRequest request) throws RestApiException;
     Voucher update(UpdateVoucherRequest request) throws RestApiException;
     Voucher updateStatus(String id) throws RestApiException;
@@ -28,4 +28,6 @@ public interface VoucherService {
     Voucher getByCode(String code);
 
     List<Voucher> getVoucherByIdAccount();
+
+    VoucherRespone getVoucherByMinimum(int minimum);
 }

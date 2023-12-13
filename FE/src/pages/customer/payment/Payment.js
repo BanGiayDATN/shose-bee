@@ -16,6 +16,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import {parseInt} from "lodash";
 dayjs.extend(utc);
 function Payment() {
   const { updateTotalQuantity } = useCart();
@@ -25,6 +26,16 @@ function Payment() {
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
   const navigate = useNavigate();
+  const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
+  const voucher = JSON.parse(sessionStorage.getItem("voucher"));
+  const totalMoney = listproductOfBill.reduce(
+      (total, item) =>
+          total +
+          (parseInt(item.price) *
+              item.quantity
+          ),
+      0
+  );
   const [formBill, setFormBill] = useState({
     address: "",
     billDetail: [],
@@ -36,7 +47,7 @@ function Payment() {
     phoneNumber: "",
     province: "",
     provinceId: "",
-    totalMoney: 0,
+    totalMoney: totalMoney,
     userName: "",
     ward: "",
     wardCode: "",
@@ -50,12 +61,11 @@ function Payment() {
   const [totalBill, setTotalBill] = useState(0);
   const [totalBillToPay, setTotalBillToPay] = useState(0);
   const [formGetMoneyShip, setFormGetMoneyShip] = useState([]);
-  const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
-  const voucher = JSON.parse(sessionStorage.getItem("voucher"));
+
   const comercial = [
     { title: "CHÀO MỪNG QUÝ KHÁCH!" },
     { title: " CHÚC QUÝ KHÁCH MUA HÀNG HAPPY!" },
-    { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
+    { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 2 TRIỆU!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
   const socket = new SockJS("http://localhost:8080/ws");
@@ -75,7 +85,7 @@ function Payment() {
         ),
       0
     );
-    setTotalBill(totalPrice - voucher.value);
+    setTotalBill(totalPrice-voucher.value);
 
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % comercial.length);
@@ -84,7 +94,7 @@ function Payment() {
     return () => clearInterval(interval);
   }, []);
   useEffect(() => {
-    setTotalBillToPay(totalBill);
+    setTotalBillToPay(totalBill-voucher.value);
     formBillChange("afterPrice", totalBill);
     const updatedListproductOfBill = listproductOfBill.map((item) => {
       const { nameProduct, nameSize, image, ...rest } = item;
@@ -109,15 +119,11 @@ function Payment() {
     console.log(dayShip);
   }, [dayShip]);
   useEffect(() => {
-    setTotalBillToPay(totalBillToPay + moneyShip);
+    setTotalBillToPay(totalBillToPay);
+
     setFormBill({ ...formBill, moneyShip: moneyShip });
   }, [moneyShip]);
-  useEffect(() => {
-    setFormBill((prevFormBill) => ({
-      ...prevFormBill,
-      totalMoney: totalBillToPay,
-    }));
-  }, [totalBillToPay]);
+
   useEffect(() => {
     if (formGetMoneyShip.ward === "") {
       setDayShip("");
@@ -290,7 +296,7 @@ function Payment() {
     setFormGetMoneyShip({ ...formGetMoneyShip, [name]: value });
   };
   const getMoneyShip = (districtId, wardCode) => {
-    if (totalBill > 2000000) {
+    if (totalBill >= 2000000) {
       setMoneyShip(0);
     } else {
       AddressClientApi.getMoneyShip(districtId, wardCode).then(

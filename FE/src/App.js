@@ -44,12 +44,17 @@ import LoginManagement from "./pages/employee/login-management/LoginManagement";
 import DetailProduct from "./pages/customer/detailProduct/DetailProduct";
 import { useAppDispatch, useAppSelector } from "../src/app/hook";
 import { VoucherApi } from "../src/api/employee/voucher/Voucher.api";
-import { UpdateVoucher, GetVoucher } from "../src/app/reducer/Voucher.reducer";
+import {
+  UpdateVoucher,
+  GetVoucher,
+  SetVoucher,
+} from "../src/app/reducer/Voucher.reducer";
 import { PromotionApi } from "../src/api/employee/promotion/Promotion.api";
 import Login from "./pages/customer/login/Login";
 import {
   UpdatePromotion,
   GetPromotion,
+  SetPromotion,
 } from "../src/app/reducer/Promotion.reducer";
 import dayjs from "dayjs";
 import { GetLoading } from "./app/reducer/Loading.reducer";
@@ -85,6 +90,7 @@ function App() {
   const [showOnTop, setShowOnTop] = useState(false);
 
   useEffect(() => {
+    
     const handleScroll = () => {
       if (window.scrollY > 300) {
         setShowOnTop(true);
@@ -108,8 +114,6 @@ function App() {
     }
   };
   const dispatch = useAppDispatch();
-  const [listVoucher, setListVoucher] = useState([]);
-  const [listPromotion, setListPromotion] = useState([]);
   const dataVoucher = useAppSelector(GetVoucher);
   const dataPromotion = useAppSelector(GetPromotion);
   const updateItemList = (items, api, updateFunction) => {
@@ -117,7 +121,6 @@ function App() {
     items.forEach((item) => {
       const endDate = dayjs.unix(item.endDate / 1000);
       const startDate = dayjs.unix(item.startDate / 1000);
-
       if (endDate.isSame(now, "second") || startDate.isSame(now, "second")) {
         api(item.id)
           .then((res) => {
@@ -129,22 +132,11 @@ function App() {
       }
     });
   };
-  useEffect(() => {
-    if (dataVoucher != null) {
-      setListVoucher(dataVoucher);
-    }
-  }, [dataVoucher]);
-
-  useEffect(() => {
-    if (dataPromotion != null) {
-      setListPromotion(dataPromotion);
-    }
-  }, [dataPromotion]);
 
   useEffect(() => {
     VoucherApi.fetchAll("").then(
       (res) => {
-        setListVoucher(res.data.data);
+        dispatch(SetVoucher(res.data.data))
       },
       (err) => {
         console.log(err);
@@ -153,7 +145,7 @@ function App() {
 
     PromotionApi.fetchAll("").then(
       (res) => {
-        setListPromotion(res.data.data);
+        dispatch(SetPromotion(res.data.data))
       },
       (err) => {
         console.log(err);
@@ -163,19 +155,19 @@ function App() {
 
   useEffect(() => {
     const intervalVoucher = setInterval(() => {
-      updateItemList(listVoucher, VoucherApi.updateStatus, UpdateVoucher);
+      updateItemList(dataVoucher, VoucherApi.updateStatus, UpdateVoucher);
     }, 1000);
 
     return () => clearInterval(intervalVoucher);
-  }, [listVoucher]);
+  }, [dataVoucher]);
 
   useEffect(() => {
     const intervalPromotion = setInterval(() => {
-      updateItemList(listPromotion, PromotionApi.updateStatus, UpdatePromotion);
+      updateItemList(dataPromotion, PromotionApi.updateStatus, UpdatePromotion);
     }, 1000);
 
     return () => clearInterval(intervalPromotion);
-  }, [listPromotion]);
+  }, [dataPromotion]);
 
   const isLoading = useAppSelector(GetLoading);
 

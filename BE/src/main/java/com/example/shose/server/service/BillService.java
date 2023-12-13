@@ -2,6 +2,8 @@ package com.example.shose.server.service;
 
 
 import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.BillShipRequest;
+import com.example.shose.server.dto.request.bill.CancelBillClientRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
@@ -24,6 +26,7 @@ import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -65,7 +68,9 @@ public interface BillService {
 
     Bill createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
-    String createFilePdfAtCounter(String idBill);
+    Bill changeStatusBill(CancelBillClientRequest request);
+
+    String createFilePdfAtCounter(String idBill, BigDecimal totalExcessMoney);
 
     String createAllFilePdf(ChangAllStatusBillByIdsRequest request);
 
@@ -81,4 +86,6 @@ public interface BillService {
     Bill updateBillGiveBack(UpdateBillGiveBack updateBillGiveBack , List<UpdateBillDetailGiveBack> updateBillDetailGiveBacks);
 
     List<BillResponse> getBillCanceled();
+
+    String getShipBill (BillShipRequest request);
 }

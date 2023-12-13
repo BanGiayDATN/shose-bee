@@ -35,4 +35,8 @@ public class CartDetailClientRestCotroller {
     public ResponseObject changeQuantity(@RequestBody ChangeQuantity changeQuantity) {
         return new ResponseObject(cartDetailService.changeQuantity(changeQuantity));
     }
+    @DeleteMapping("/deleteAll/{idAccount}")
+    public void deleteAllCart(@PathVariable("idAccount") String idAccount) {
+        cartDetailService.deleteAllCart(idAccount);
+    }
 }

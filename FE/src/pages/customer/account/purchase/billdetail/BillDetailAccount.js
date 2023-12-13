@@ -47,7 +47,6 @@ function BillDetailAccount() {
     console.log(paymentMethod);
   }, [paymentMethod]);
   useEffect(() => {
-    const paymentM = null;
     PaymentMethodClientApi.getByBill(id.id).then((res) => {
       setPaymentMethod(res.data.data);
      
@@ -103,7 +102,23 @@ function BillDetailAccount() {
         </div>
         <div className="box-code-bill-account">Mã đơn hàng: {bill.code}</div>
         <div>|</div>
-        <div className="box-status-bill-account"> {bill.statusBill}</div>
+        <div className="box-status-bill-account">  {bill.statusBill === "TAO_HOA_DON"
+                    ? "Tạo Hóa đơn"
+                    : bill.statusBill === "CHO_XAC_NHAN"
+                    ? "Chờ xác nhận"
+                    : bill.statusBill === "XAC_NHAN"
+                    ? "Xác nhận"
+                    : bill.statusBill === "CHO_VAN_CHUYEN"
+                    ? "Chờ vận chuyển"
+                    : bill.statusBill === "VAN_CHUYEN"
+                    ? "Đang vận chuyển"
+                    : bill.statusBill === "DA_THANH_TOAN"
+                    ? "Đã thanh toán"
+                    : bill.statusBill === "THANH_CONG"
+                    ? "Thành công"
+                    : bill.statusBill === "TRA_HANG"
+                    ? "Trả hàng"
+                    : "Đã hủy"}</div>
       </div>
       <div style={{ borderBottom: "1px solid rgb(224, 224, 224)",maxWidth:"890px" }}>
         <Timeline

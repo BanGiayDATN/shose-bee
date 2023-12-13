@@ -24,10 +24,10 @@ import { AddressClientApi } from "./../../../api/customer/address/addressClient.
 import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import ModalCreateAddressAccount from "./modal/ModalCreateAddressAccount";
 import "./style-payment-account.css";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 import { AccountPoinApi } from "../../../api/customer/poin/accountpoin.api";
 import { UserPoinApi } from "../../../api/customer/user/user.api";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
 dayjs.extend(utc);
 function PaymentAccount() {
@@ -47,10 +47,9 @@ function PaymentAccount() {
     idVoucher: "",
     afterPrice: 0,
   });
-  const [moneyShip, setMoneyShip] = useState(0);
+  const [moneyShip, setMoneyShip] = useState(1);
   const [dayShip, setDayShip] = useState("");
   const [keyMethodPayment, setKeyMethodPayment] = useState("paymentReceive");
-  const [totalBill, setTotalBill] = useState(0);
   const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
   const voucher = JSON.parse(sessionStorage.getItem("voucher"));
   const comercial = [
@@ -59,7 +58,7 @@ function PaymentAccount() {
     { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
-  const [totalAfter, setTotalAfter] = useState({});
+  const [totalAfter, setTotalAfter] = useState(0);
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
@@ -126,9 +125,6 @@ function PaymentAccount() {
     console.log(formBill);
   }, [formBill]);
   useEffect(() => {
-    formBillChange("totalMoney", totalBefore);
-  }, [totalBefore]);
-  useEffect(() => {
     setTotalBefore(total.totalMoney);
   }, [total]);
   useEffect(() => {
@@ -136,12 +132,13 @@ function PaymentAccount() {
   }, [totalAfter]);
 
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney - voucher.value);
+    console.log(moneyShip)
+    setTotalAfter(totalBefore + moneyShip - voucher.value);
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
-    console.log(exchangeRateMoney);
+    setTotalAfter(totalAfter - exchangeRateMoney);
+
   }, [exchangeRateMoney]);
   useEffect(() => {
     if (addressDefault !== null) {
@@ -202,6 +199,7 @@ function PaymentAccount() {
       cancelText: "Hủy",
       onOk() {
         var dataBill = formBill;
+
         dataBill.itemDiscount += exchangeRateMoney;
         var poin = 0;
         if (exchangeRateMoney > 0) {
@@ -267,7 +265,8 @@ function PaymentAccount() {
   };
 
   const getMoneyShip = (districtId, wardCode) => {
-    if (totalBill > 2000000) {
+    console.log(totalBefore-voucher.value)
+    if (totalBefore-voucher.value >= 2000000) {
       setMoneyShip(0);
     } else {
       AddressClientApi.getMoneyShip(districtId, wardCode).then(
@@ -327,6 +326,15 @@ function PaymentAccount() {
         ),
       0
     );
+
+    formBillChange("totalMoney", listproductOfBill.reduce(
+        (total, item) =>
+            total +
+                (parseInt(item.price) *
+                item.quantity
+            ),
+        0
+    ))
     const quantity = listproductOfBill.reduce(
       (total, item) => total + parseInt(item.quantity),
       0
