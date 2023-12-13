@@ -60,6 +60,8 @@ public class CreateBillOfflineRequest {
 
     private String email;
 
+    private BigDecimal totalExcessMoney;
+
     @NotNull
     private List<CreateBillDetailRequest> billDetailRequests;
 
