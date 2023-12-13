@@ -30,6 +30,6 @@ public class VoucherClientRestController {
     }
     @GetMapping("/list")
     public ResponseObject getListVoucher() {
-        return new ResponseObject(voucherService.findByStatus());
+        return new ResponseObject(voucherService.getAllHaveQuantity());
     }
 }

@@ -1,15 +1,20 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 
 import "./style.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import { BillClientApi } from "../../../../../api/customer/bill/billClient.api";
+import {Button, Form, Modal} from "antd";
 
 export default function TabAllBill({ listBill }) {
   const nav = useNavigate();
+  const [modalReason,setModalReason] = useState(false);
+  const [reason,setReason] = useState('');
+  const [errror,setError] = useState('');
+  const [id,setId] = useState('');
   useEffect(() => {
-    console.log(listBill);
-  }, [listBill]);
+    console.log(reason);
+  }, [reason]);
   const formatMoney = (price) => {
     return (
       parseInt(price)
@@ -18,11 +23,28 @@ export default function TabAllBill({ listBill }) {
     );
   };
 
-  const cancelBill = (id)=>{
-    BillClientApi.cancelBill(id).then((res)=>{
+  const cancelBill = ()=>{
+    const data={
+      "id":id,
+      "description":reason
+    }
+    console.log(data)
+    if(reason === ''){
+      setError("Vui lòng nhập lý do hủy đơn");
+      return;
+    }
+    BillClientApi.cancelBill(data).then((res)=>{
       toast.success("Hủy đơn thành công")
       window.location.href = "/purchase"
     });
+  }
+  const openModal = (id)=>{
+    setModalReason(true);
+    setId(id)
+  }
+  const closeModal = ()=>{
+    setModalReason(false);
+    setReason('')
   }
 
   return (
@@ -122,7 +144,7 @@ export default function TabAllBill({ listBill }) {
             <div className="box-repurchase">
               {item.statusBill === "CHO_XAC_NHAN"  ? (
                 <>
-                  <div className="repurchase" onClick={()=>cancelBill(item.id)}>Hủy đơn</div>
+                  <div className="repurchase" onClick={()=>openModal(item.id)}>Hủy đơn</div>
                 </>
               ) : null}
               {item.statusBill !== "DA_HUY" ? (
@@ -144,6 +166,41 @@ export default function TabAllBill({ listBill }) {
           </div>
         ))}
       </div>
+
+      <Modal
+      open={modalReason}
+      // onCancel={closeModal}
+      okButtonProps={{ style: { display: "none" } }}
+      cancelButtonProps={{ style: { display: "none" } }}
+      >
+        <Form>
+          <Form.Item
+          label={"Lý do hủy đơn"}
+          validateStatus={errror ? "error" : ""}
+          help={errror || ""}
+          >
+
+            <textarea style={{height:130,width:300,padding:10,fontSize:17}} value={reason} onChange={(e)=>setReason(e.target.value)}/>
+          </Form.Item>
+          <Form.Item>
+            <div style={{ float: "right" }}>
+              <Button onClick={closeModal}>Hủy</Button>
+              <Button
+                  className="button-add-promotion"
+                  key="submit"
+                  title="Xác nhận hủy đơn"
+                  onClick={cancelBill}
+                  style={{ marginLeft: "20px" }}
+              >
+                Xác nhận
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+
+
+
+      </Modal>
     </React.Fragment>
   );
 }

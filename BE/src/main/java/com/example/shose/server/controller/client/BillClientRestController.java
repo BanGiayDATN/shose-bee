@@ -1,5 +1,6 @@
 package com.example.shose.server.controller.client;
 
+import com.example.shose.server.dto.request.bill.CancelBillClientRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.StatusRequest;
 import com.example.shose.server.dto.request.bill.billaccount.CreateBillAccountOnlineRequest;
@@ -60,8 +61,8 @@ public class BillClientRestController {
     public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
         return  new ResponseObject(billService.cancelBill(id, shoseSession.getEmployee().getId(), request));
     }
-    @PutMapping("/cancel/{id}")
-    public ResponseObject cancel(@PathVariable("id") String id)  {
-        return new ResponseObject(billService.changeStatusBill(id));
+    @PutMapping("/cancel")
+    public ResponseObject cancel(@RequestBody CancelBillClientRequest cancelBillClientRequest)  {
+        return new ResponseObject(billService.changeStatusBill(cancelBillClientRequest));
     }
 }

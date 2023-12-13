@@ -1,6 +1,7 @@
 package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.CancelBillClientRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
@@ -1072,9 +1073,9 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill changeStatusBill(String idBill) {
-        Optional<Bill> optional = billRepository.findById(idBill);
-        Optional<BillHistory> optionalBillHistory = billHistoryRepository.findByBill_Id(idBill);
+    public Bill changeStatusBill(CancelBillClientRequest request) {
+        Optional<Bill> optional = billRepository.findById(request.getId());
+        Optional<BillHistory> optionalBillHistory = billHistoryRepository.findByBill_Id(request.getId());
 
         if (optional.isEmpty()) {
             throw new RestApiException("Hóa đơn không tồn tại");
@@ -1085,9 +1086,11 @@ public class BillServiceImpl implements BillService {
 
         Bill bill = optional.get();
         BillHistory billHistory = optionalBillHistory.get();
-        if (billHistory.getStatusBill().equals(StatusBill.CHO_XAC_NHAN)) {
+        if (bill.getStatusBill().equals(StatusBill.CHO_XAC_NHAN)) {
             billHistory.setStatusBill(StatusBill.DA_HUY);
+            billHistory.setActionDescription(request.getDescription());
             bill.setStatusBill(StatusBill.DA_HUY);
+            billHistoryRepository.save(billHistory);
         } else {
             throw new RestApiException("Chỉ được hủy hóa đơn chờ xác nhận");
         }

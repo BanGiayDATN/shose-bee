@@ -97,7 +97,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, String> {
     List<Voucher> findStartVouchers(@Param("currentDate") Long currentDate);
 
     @Query("select vc from Voucher vc" +
-            " WHERE vc.quantity >= 1")
+            " WHERE vc.quantity >= 1 and vc.status = 'DANG_SU_DUNG'")
     List<Voucher> getAllHaveQuantity();
 
     List<Voucher> findAllByStatus(Status status);

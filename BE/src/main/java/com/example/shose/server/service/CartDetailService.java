@@ -11,4 +11,5 @@ public interface CartDetailService {
     String changeSizeCartDetail(ChangeSizeInCart changeSize);
     Boolean deleteCartDetail(String id);
     String changeQuantity(ChangeQuantity changeQuantity);
+     void deleteAllCart(String idAccount);
 }

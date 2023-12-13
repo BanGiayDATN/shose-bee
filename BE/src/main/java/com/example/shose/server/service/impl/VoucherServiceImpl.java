@@ -40,8 +40,8 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public List<Voucher> findByStatus() {
-        return voucherRepository.findAllByStatus(Status.DANG_SU_DUNG);
+    public List<Voucher> getAllHaveQuantity() {
+        return voucherRepository.getAllHaveQuantity();
     }
 
     @Override
