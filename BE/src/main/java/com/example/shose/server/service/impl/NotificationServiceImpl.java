@@ -28,7 +28,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> getListNotiOfAdmin() {
-        Sort sort = Sort.by(Sort.Order.asc("status"));
+        Sort sort = Sort.by(
+                Sort.Order.asc("status"),
+                Sort.Order.desc("createdDate")
+        );
         return notificationRepository.findAllByReceiver("admin",sort);
     }
 

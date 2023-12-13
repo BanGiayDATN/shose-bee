@@ -2,6 +2,7 @@ package com.example.shose.server.service;
 
 
 import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.CancelBillClientRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
@@ -65,7 +66,7 @@ public interface BillService {
 
     Bill createBillAccountOnlineRequest( CreateBillAccountOnlineRequest request) ;
 
-    Bill changeStatusBill(String idBill);
+    Bill changeStatusBill(CancelBillClientRequest request);
 
     String createFilePdfAtCounter(String idBill);
 
