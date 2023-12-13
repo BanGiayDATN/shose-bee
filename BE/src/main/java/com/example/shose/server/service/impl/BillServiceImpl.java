@@ -1,6 +1,7 @@
 package com.example.shose.server.service.impl;
 
 import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.BillShipRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
@@ -391,7 +392,7 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        CompletableFuture.runAsync(() -> createTemplateSendMail(optional.get().getId()),
+        CompletableFuture.runAsync(() -> createTemplateSendMail(optional.get().getId(), request.getTotalExcessMoney()),
                 Executors.newCachedThreadPool());
         return optional.get();
     }
@@ -567,10 +568,10 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         updateBill.get().setMoneyShip(new BigDecimal(request.getMoneyShip()));
-        updateBill.get().setAddress(request.getAddress().trim());
-        updateBill.get().setUserName(request.getName().trim());
-        updateBill.get().setPhoneNumber(request.getPhoneNumber().trim());
-        updateBill.get().setNote(request.getNote().trim());
+        updateBill.get().setAddress(request.getAddress());
+        updateBill.get().setUserName(request.getName());
+        updateBill.get().setPhoneNumber(request.getPhoneNumber());
+        updateBill.get().setNote(request.getNote());
         updateBill.get().setLastModifiedDate(Calendar.getInstance().getTimeInMillis());
         return billRepository.save(updateBill.get());
     }
@@ -605,9 +606,9 @@ public class BillServiceImpl implements BillService {
         }
         if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-            CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId()),
+            CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId(), new BigDecimal(0)),
                     Executors.newCachedThreadPool());
-            CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId()),
+            CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId(), new BigDecimal(0)),
                     Executors.newCachedThreadPool());
         } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
@@ -726,7 +727,7 @@ public class BillServiceImpl implements BillService {
             bill.get().setStatusBill(StatusBill.valueOf(request.getStatus()));
             if (bill.get().getStatusBill() == StatusBill.XAC_NHAN) {
                 bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-                CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId()),
+                CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId(), new BigDecimal(0)),
                         Executors.newCachedThreadPool());
             } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
                 bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
@@ -1146,10 +1147,10 @@ public class BillServiceImpl implements BillService {
         return true;
     }
 
-    public boolean createTemplateSendMail(String idBill) {
+    public boolean createTemplateSendMail(String idBill, BigDecimal totalExcessMoney) {
         // begin create file pdf
         Optional<Bill> optional = billRepository.findById(idBill);
-        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get(), totalExcessMoney);
         Bill bill = optional.get();
         String email = bill.getEmail();
         if (email == null) {
@@ -1164,9 +1165,9 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public String createFilePdfAtCounter(String code) {
+    public String createFilePdfAtCounter(String code,BigDecimal totalExcessMoney) {
         Optional<Bill> optional = billRepository.findByCode(code);
-        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get(), totalExcessMoney);
         Context dataContext = exportFilePdfFormHtml.setData(invoice);
         return springTemplateEngine.process("templateBill", dataContext);
     }
@@ -1176,7 +1177,7 @@ public class BillServiceImpl implements BillService {
         StringBuilder stringBuilder = new StringBuilder();
         request.getIds().parallelStream().forEach(item -> {
             Optional<Bill> optional = billRepository.findById(item);
-            InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+            InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get(), new BigDecimal(0));
             if (optional.get().getStatusBill() != StatusBill.THANH_CONG) {
                 invoice.setTypeBill(true);
                 invoice.setCheckShip(true);
@@ -1189,7 +1190,7 @@ public class BillServiceImpl implements BillService {
 
     public void sendMailOnline(String idBill) {
         Optional<Bill> optional = billRepository.findById(idBill);
-        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get(), new BigDecimal(0));
         invoice.setCheckShip(true);
         if ((optional.get().getEmail() != null)) {
             sendMail(invoice,
@@ -1356,6 +1357,14 @@ public class BillServiceImpl implements BillService {
     @Override
     public List<BillResponse> getBillCanceled() {
         return billRepository.getBillCanceled();
+    }
+
+    @Override
+    public String getShipBill(BillShipRequest request) {
+        Optional<Bill> optional = billRepository.findById(request.getIdBill());
+        optional.get().setMoneyShip(request.getShip());
+        billRepository.save(optional.get());
+        return "Thành công";
     }
 
     private Long getCurrentTimestampInVietnam() {

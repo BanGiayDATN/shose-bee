@@ -61,10 +61,12 @@ function HistoryPoin({ id, customer }) {
       render: (tyePoin) => {
         return (
           <Button
-          style={{ width: "130px", pointerEvents: "none" }}
-          className={tyePoin}
-        >{formatTyePoin(tyePoin)}</Button>
-        ) ;
+            style={{ width: "130px", pointerEvents: "none" }}
+            className={tyePoin}
+          >
+            {formatTyePoin(tyePoin)}
+          </Button>
+        );
       },
     },
     {
@@ -92,7 +94,15 @@ function HistoryPoin({ id, customer }) {
           Lịch sử điểm
         </h1>
       </Row>
-      <Row style={{ margin: "10px 0", width: "100%", fontSize: "31px", fontWeight: "600" }} justify={"end"}>
+      <Row
+        style={{
+          margin: "10px 0",
+          width: "100%",
+          fontSize: "31px",
+          fontWeight: "600",
+        }}
+        justify={"end"}
+      >
         <Row style={{ width: "100%" }}>
           <Col span={12}>
             <Row>
@@ -115,18 +125,31 @@ function HistoryPoin({ id, customer }) {
         <Row style={{ width: "100%" }}>
           <Col span={12}>
             <Row>
-                {console.log(historyPoin)}
+              {console.log(historyPoin)}
               <Col span={6}>Tổng Tiền đơn hàng</Col>
-              <Col span={4}>{historyPoin.reduce((total, item) => total + item.totalMoney, 0)}</Col>
+              <Col span={4}>
+                {formatCurrency(
+                  historyPoin.reduce(
+                    (total, item) => total + item.totalMoney,
+                    0
+                  )
+                )}
+              </Col>
             </Row>
           </Col>
           <Col span={12}>
             <Row justify={"end"}>
               <Col span={8}>Tổng Tiền sử dụng từ điểm</Col>
               <Col span={4}>
-                {historyPoin
-                  .filter((item) => item.status === "DIEM_SU_DUNG")
-                  .reduce((total, item) => total  + item.value * item.exchangeRateMoney, 0)}
+                {formatCurrency(
+                  historyPoin
+                    .filter((item) => item.status === "DIEM_SU_DUNG")
+                    .reduce(
+                      (total, item) =>
+                        total + item.value * item.exchangeRateMoney,
+                      0
+                    )
+                )}
               </Col>
               <Col span={1}></Col>
             </Row>

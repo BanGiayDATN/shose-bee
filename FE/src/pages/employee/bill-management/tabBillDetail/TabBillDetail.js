@@ -1,16 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { faBookmark, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Button,
-  Col,
-  Form,
-  InputNumber,
-  Modal,
-  Row,
-  Table,
-  Tooltip,
-} from "antd";
+import { Button, Col, InputNumber, Modal, Row, Table, Tooltip } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { BillApi } from "../../../../api/employee/bill/bill.api";
 import "./tabBillDetail.css";
@@ -22,7 +13,6 @@ import {
   getBill,
   updateTotalBill,
 } from "../../../../app/reducer/Bill.reducer";
-import { debounce } from "lodash";
 import TextArea from "antd/es/input/TextArea";
 
 function TabBillDetail({ dataBillDetail }) {
@@ -99,7 +89,7 @@ function TabBillDetail({ dataBillDetail }) {
                 billDetai.forEach((product) => {
                   sum += product.quantity || 0;
                 });
-                dispatch(ChangeProductInBill(sum + quantityCustom));
+                dispatch(ChangeProductInBill(changeQuanTiTy + 1));
               })
               .catch((error) => {
                 toast.error(error.response.data.message);
@@ -396,7 +386,8 @@ function TabBillDetail({ dataBillDetail }) {
       align: "center",
       dataIndex: "quantity",
       render: (_, record) => {
-         return <Col span={4} align={"center"} style={{ alignItems: "center" }}>
+        return (
+          <Col span={4} align={"center"} style={{ alignItems: "center" }}>
             <Row>
               <Col span={24}>
                 <InputNumber
@@ -415,6 +406,7 @@ function TabBillDetail({ dataBillDetail }) {
               </Col>
             </Row>
           </Col>
+        );
       },
     },
     {
@@ -550,14 +542,14 @@ function TabBillDetail({ dataBillDetail }) {
   const [billDetai, setBillDetail] = useState([]);
   const statusPresent = useSelector((state) => state.bill.bill.status);
 
-  console.log( bill.statusBill =="CHO_XAC_NHAN");
+  console.log(bill.statusBill == "CHO_XAC_NHAN");
   return (
     <>
       {billDetai.length > 0 ? (
         <Table
           className="table-bill-detail"
           columns={
-            bill.statusBill =="CHO_XAC_NHAN"
+            bill.statusBill == "CHO_XAC_NHAN"
               ? columneEditProductBill
               : columnProductBill
           }
