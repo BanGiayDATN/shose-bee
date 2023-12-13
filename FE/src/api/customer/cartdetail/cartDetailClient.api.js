@@ -14,6 +14,13 @@ export class CartDetailClientApi {
       url: `/cart-detail/${idCartDetail}`,
     });
   };
+  static deleteAllCartDetail = (idAccount) => {
+    return requestCustomer({
+      method: "DELETE",
+      url: `/cart-detail/deleteAll/${idAccount}`,
+    });
+  };
+
   static changeQuantity = (data) => {
     return requestCustomer({
       method: "POST",

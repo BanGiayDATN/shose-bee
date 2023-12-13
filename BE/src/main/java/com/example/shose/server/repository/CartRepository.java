@@ -52,7 +52,6 @@ public interface CartRepository extends JpaRepository<Cart,String> {
     Integer quantityInCart(@Param("idAccount") String idAccount);
 
 
-
 }
 
 

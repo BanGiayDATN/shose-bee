@@ -439,20 +439,29 @@ function Products() {
 
           <div className="box-products">
             <img className="title-of-products" src={banner} alt="..." />
-            <div className="list-product">
-              {list.map((item, index) => (
-                <CardItem item={item} index={index} />
-              ))}
-            </div>
+            {list.length === 0 ?(
+                <div style={{textAlign:"center",color:"#ff4400",fontSize:30}}>
+                  Không có sản phẩm nào!
+                </div>
+            ):(
+               <>
+                 <div className="list-product">
+                   {list.map((item, index) => (
+                       <CardItem item={item} index={index} />
+                   ))}
+                 </div>
 
-            <div className="box-pagination-products">
-              <Pagination
-                defaultCurrent={1}
-                current={currentPage + 1}
-                total={totalPagesProduct * 10}
-                onChange={handlePageChange}
-              />
-            </div>
+                 <div className="box-pagination-products">
+                   <Pagination
+                       defaultCurrent={1}
+                       current={currentPage + 1}
+                       total={totalPagesProduct * 10}
+                       onChange={handlePageChange}
+                   />
+                 </div>
+               </>
+            )}
+
           </div>
         </Col>
       </Row>

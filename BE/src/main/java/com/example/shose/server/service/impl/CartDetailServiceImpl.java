@@ -44,4 +44,9 @@ public class CartDetailServiceImpl implements CartDetailService {
         cartDetailRepository.save(cartDetail);
         return "ok";
     }
+
+    @Override
+    public void deleteAllCart(String idAccount) {
+         cartDetailRepository.deleteAllCart(idAccount);
+    }
 }
