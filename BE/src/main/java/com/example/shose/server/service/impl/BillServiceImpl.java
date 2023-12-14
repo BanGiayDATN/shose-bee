@@ -345,7 +345,7 @@ public class BillServiceImpl implements BillService {
                                 .build();
                         paymentsMethodRepository.save(paymentsMethod);
                     }
-                } else if (item.getTotalMoney().signum() != 0) {
+                } else if (item.getTotalMoney().compareTo(BigDecimal.ZERO) > 0) {
                     PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                             .method(item.getMethod())
                             .status(StatusPayMents.valueOf(request.getStatusPayMents()))
@@ -550,7 +550,7 @@ public class BillServiceImpl implements BillService {
 
             request.getPaymentsMethodRequests().forEach(item -> {
                 if (item.getMethod() != StatusMethod.CHUYEN_KHOAN && item.getTotalMoney() != null) {
-                    if (item.getTotalMoney().signum() != 0) {
+                    if (item.getTotalMoney().compareTo(BigDecimal.ZERO) > 0) {
                         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                                 .method(item.getMethod())
                                 .status(StatusPayMents.valueOf(request.getStatusPayMents()))
