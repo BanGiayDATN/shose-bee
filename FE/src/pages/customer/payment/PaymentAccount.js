@@ -137,8 +137,11 @@ function PaymentAccount() {
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
   useEffect(() => {
-    setTotalAfter(totalAfter - exchangeRateMoney);
-
+    if(exchangeRateMoney != 0){
+      setTotalAfter(totalBefore  - exchangeRateMoney);
+    }else{
+      setTotalAfter(totalBefore  + (dataPoin.exchangeRateMoney * account?.points));
+    }
   }, [exchangeRateMoney]);
   useEffect(() => {
     if (addressDefault !== null) {
