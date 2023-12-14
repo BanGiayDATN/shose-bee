@@ -706,13 +706,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     if (isOpenDelivery) {
       ship = shipFee;
     }
-    var total =
+    var total = Math.max(
         products.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.price * currentValue.quantity;
         }, 0) +
         ship -
         exchangeRateMoney -
-        voucher.discountPrice;
+        voucher.discountPrice, 0);
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
