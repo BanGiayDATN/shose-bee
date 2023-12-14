@@ -89,12 +89,7 @@ public class ExportFilePdfFormHtml {
     public String htmlToPdf(String processedHtml, String code) {
 
         String downloadPath = System.getProperty("user.home") + "/Downloads";
-
-//        String appRoot = servletContext.getRealPath("/");
-
-        // Xây dựng đường dẫn tới thư mục download của người dùng
-//        String userDownloadDirectoryPath = appRoot + File.separator + "user" + File.separator + "Downloads";
-
+        
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              PdfWriter pdfwriter = new PdfWriter(byteArrayOutputStream)) {
 
@@ -188,15 +183,12 @@ public class ExportFilePdfFormHtml {
                         .build())
                 .collect(Collectors.toList());
 
-        BigDecimal totalPayment = paymentsMethods.stream()
-                .map(PaymentsMethod::getTotalMoney)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPayment = totalMoney.add(totalExcessMoney);
         invoice.setTotalPayment(formatter.format(totalPayment));
+
         BigDecimal change = totalExcessMoney;
         invoice.setChange(formatter.format(change));
-        if (totalPayment.add(totalExcessMoney).compareTo(totalMoney) == 0) {
-            invoice.setChange(formatter.format(BigDecimal.ZERO));
-        }
+
         invoice.setPaymentsMethodRequests(paymentsMethodRequests);
         invoice.setItems(items);
 
