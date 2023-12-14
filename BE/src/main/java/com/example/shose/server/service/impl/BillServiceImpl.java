@@ -401,8 +401,7 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        CompletableFuture.runAsync(() -> createTemplateSendMail(optional.get().getId(), request.getTotalExcessMoney()),
-                Executors.newCachedThreadPool());
+        createTemplateSendMail(optional.get().getId(), request.getTotalExcessMoney());
         return optional.get();
     }
 
@@ -844,7 +843,6 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-
     public Bill createBillCustomerOnlineRequest(CreateBillCustomerOnlineRequest request) {
         if (request.getPaymentMethod().equals("paymentReceive")) {
             for (BillDetailOnline x : request.getBillDetail()) {
