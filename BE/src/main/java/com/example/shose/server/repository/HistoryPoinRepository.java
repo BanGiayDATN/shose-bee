@@ -20,7 +20,7 @@ public interface HistoryPoinRepository extends JpaRepository<HistoryPoin, String
     @Query(value = """
                SELECT b.code, h.created_date, h.value, h.type_poin, b.total_money, s.exchange_rate_money, s.exchange_rate_poin 
                FROM history_poin h
-                       LEFT JOIN scoring_formula s ON h.id = h.id_scoring_formula
+                       LEFT JOIN scoring_formula s ON s.id = h.id_scoring_formula
                        LEFT JOIN bill b ON b.id = h.id_bill
                        LEFT JOIN user u ON u.id = h.id_user
                        WHERE u.id = :id
