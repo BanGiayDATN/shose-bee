@@ -16,7 +16,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import {parseInt} from "lodash";
+import { parseInt } from "lodash";
 dayjs.extend(utc);
 function Payment() {
   const { updateTotalQuantity } = useCart();
@@ -29,12 +29,8 @@ function Payment() {
   const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
   const voucher = JSON.parse(sessionStorage.getItem("voucher"));
   const totalMoney = listproductOfBill.reduce(
-      (total, item) =>
-          total +
-          (parseInt(item.price) *
-              item.quantity
-          ),
-      0
+    (total, item) => total + parseInt(item.price) * item.quantity,
+    0
   );
   const [formBill, setFormBill] = useState({
     address: "",
@@ -85,7 +81,7 @@ function Payment() {
         ),
       0
     );
-    setTotalBill(totalPrice-voucher.value);
+    setTotalBill(totalPrice);
 
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % comercial.length);
@@ -94,7 +90,7 @@ function Payment() {
     return () => clearInterval(interval);
   }, []);
   useEffect(() => {
-    setTotalBillToPay(totalBill-voucher.value);
+    setTotalBillToPay(totalBill - voucher.value);
     formBillChange("afterPrice", totalBill);
     const updatedListproductOfBill = listproductOfBill.map((item) => {
       const { nameProduct, nameSize, image, ...rest } = item;
