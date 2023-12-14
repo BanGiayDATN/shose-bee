@@ -115,7 +115,7 @@ function HistoryPoin({ id, customer }) {
               <Col span={8}>Tổng điểm đã sử dụng</Col>
               <Col span={4}>
                 {historyPoin
-                  .filter((item) => item.status === "DIEM_SU_DUNG")
+                  .filter((item) => item.tyePoin === "DIEM_SU_DUNG")
                   .reduce((total, item) => total + item.value, 0)}
               </Col>
               <Col span={1}></Col>
@@ -143,7 +143,7 @@ function HistoryPoin({ id, customer }) {
               <Col span={4}>
                 {formatCurrency(
                   historyPoin
-                    .filter((item) => item.status === "DIEM_SU_DUNG")
+                    .filter((item) => item.tyePoin === "DIEM_SU_DUNG")
                     .reduce(
                       (total, item) =>
                         total + item.value * item.exchangeRateMoney,
