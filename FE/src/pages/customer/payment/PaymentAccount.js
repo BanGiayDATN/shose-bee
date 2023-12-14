@@ -132,17 +132,15 @@ function PaymentAccount() {
   }, [totalAfter]);
 
   useEffect(() => {
-    console.log(moneyShip)
+    console.log(moneyShip);
     setTotalAfter(totalBefore + moneyShip - voucher.value);
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
+  
   useEffect(() => {
-    if(exchangeRateMoney != 0){
-      setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
-    }else{
-      setTotalAfter(totalBefore + moneyShip + (dataPoin.exchangeRateMoney * account?.points));
-    }
+    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
   }, [exchangeRateMoney]);
+
   useEffect(() => {
     if (addressDefault !== null) {
       getMoneyShip(addressDefault.districtId, addressDefault.wardCode);
@@ -268,8 +266,8 @@ function PaymentAccount() {
   };
 
   const getMoneyShip = (districtId, wardCode) => {
-    console.log(totalBefore-voucher.value)
-    if (totalBefore-voucher.value >= 2000000) {
+    console.log(totalBefore - voucher.value);
+    if (totalBefore - voucher.value >= 2000000) {
       setMoneyShip(0);
     } else {
       AddressClientApi.getMoneyShip(districtId, wardCode).then(
@@ -330,14 +328,13 @@ function PaymentAccount() {
       0
     );
 
-    formBillChange("totalMoney", listproductOfBill.reduce(
-        (total, item) =>
-            total +
-                (parseInt(item.price) *
-                item.quantity
-            ),
+    formBillChange(
+      "totalMoney",
+      listproductOfBill.reduce(
+        (total, item) => total + parseInt(item.price) * item.quantity,
         0
-    ))
+      )
+    );
     const quantity = listproductOfBill.reduce(
       (total, item) => total + parseInt(item.quantity),
       0
