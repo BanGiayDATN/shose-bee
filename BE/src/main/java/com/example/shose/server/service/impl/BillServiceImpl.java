@@ -497,7 +497,7 @@ public class BillServiceImpl implements BillService {
                 billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
                         .employees(optional.get().getEmployees()).build());
             } else {
-                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
+                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(optional.get())
                         .employees(optional.get().getEmployees()).build());
             }
             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
