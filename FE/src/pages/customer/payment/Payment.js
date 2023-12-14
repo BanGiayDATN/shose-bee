@@ -189,6 +189,7 @@ function Payment() {
         const dataBillSave = {
           ...formBill,
           shippingTime: dayShip,
+          totalMoney: totalBill,
         };
         console.log(dataBillSave);
 
