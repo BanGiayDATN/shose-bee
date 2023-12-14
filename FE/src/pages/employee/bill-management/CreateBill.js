@@ -982,10 +982,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      totalExcessMoney: Math.max(
-        totaPayMent -
-          (totalBill + shipFee - exchangeRateMoney - voucher.discountPrice)
-      ),
+      totalExcessMoney:Math.max(
+        totaPayMent - Math.max(total, 0), 0),
       poin: poin,
     };
     console.log(totalBill);
