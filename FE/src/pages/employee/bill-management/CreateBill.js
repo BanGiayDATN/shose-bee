@@ -702,15 +702,26 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const addPayMent = async (e, method) => {
     var data = dataPayment.filter((payment) => payment.method === "TIEN_MAT");
     var listPayment = dataPayment;
-    var totalBill = products.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.price * currentValue.quantity;
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
+    }
+    var total = Math.max(
+        products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0) +
+        ship -
+        exchangeRateMoney -
+        voucher.discountPrice, 0);
+    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.totalMoney;
     }, 0);
-    if (data != null && data.totalMoney > totalBill) {
+    if (data != null && totaPayMent > total) {
       listPayment = [
         {
           actionDescription: "",
           method: "TIEN_MAT",
-          totalMoney: totalBill,
+          totalMoney: total,
           status: "THANH_TOAN",
           vnp_TransactionNo: "",
         },
@@ -917,14 +928,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ngayShip = dayShip;
     }
     var dataPayMentTraSau = dataPayment;
-    if (traSau) {
-      var total =
+    var total =
         products.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.price * currentValue.quantity;
         }, 0) +
         ship -
         exchangeRateMoney -
         voucher.discountPrice;
+    if (traSau) {
       dataPayMentTraSau = [
         {
           actionDescription: "",
@@ -940,13 +951,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     );
     if (
       dataPayMentTienMat != null &&
-      dataPayMentTienMat.totalMoney > totalBill
+      totaPayMent > total
     ) {
       dataPayMentTraSau = [
         {
           actionDescription: "",
           method: "TIEN_MAT",
-          totalMoney: totalBill,
+          totalMoney: total,
           status: "THANH_TOAN",
           vnp_TransactionNo: "",
         },
@@ -971,10 +982,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      totalExcessMoney: Math.max(
-        totaPayMent -
-          (totalBill + shipFee - exchangeRateMoney - voucher.discountPrice)
-      ),
+      totalExcessMoney:Math.max(
+        totaPayMent - Math.max(total, 0), 0),
       poin: poin,
     };
     console.log(totalBill);
