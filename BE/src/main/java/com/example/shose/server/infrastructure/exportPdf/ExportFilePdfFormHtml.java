@@ -190,7 +190,7 @@ public class ExportFilePdfFormHtml {
 
         BigDecimal totalPayment = paymentsMethods.stream()
                 .map(PaymentsMethod::getTotalMoney)
-                .reduce(BigDecimal.ZERO, BigDecimal::add).add(totalExcessMoney);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         invoice.setTotalPayment(formatter.format(totalPayment));
         BigDecimal change = totalExcessMoney;
         invoice.setChange(formatter.format(change));
