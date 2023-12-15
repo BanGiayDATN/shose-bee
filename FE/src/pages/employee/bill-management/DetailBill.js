@@ -1112,12 +1112,12 @@ function DetailBill() {
                   </Col>
                   <Col
                     span={
-                      statusPresent < 5 && bill.statusBill != "DA_THANH_TOAN"
+                      statusPresent < 4 && bill.statusBill != "DA_THANH_TOAN"
                         ? 6
                         : 0
                     }
                   >
-                    {statusPresent < 5 ? (
+                    {statusPresent < 4 ? (
                       <Button
                         type="danger"
                         onClick={() => showModalCanCel()}

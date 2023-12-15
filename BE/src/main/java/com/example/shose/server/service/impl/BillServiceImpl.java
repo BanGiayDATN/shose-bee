@@ -401,8 +401,7 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(new BigDecimal(voucher.getDiscountPrice())).build();
             voucherDetailRepository.save(voucherDetail);
         });
-        CompletableFuture.runAsync(() -> createTemplateSendMail(optional.get().getId(), request.getTotalExcessMoney()),
-                Executors.newCachedThreadPool());
+        createTemplateSendMail(optional.get().getId(), request.getTotalExcessMoney());
         return optional.get();
     }
 
@@ -498,7 +497,7 @@ public class BillServiceImpl implements BillService {
                 billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.THANH_CONG).bill(optional.get())
                         .employees(optional.get().getEmployees()).build());
             } else {
-                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.XAC_NHAN).bill(optional.get())
+                billHistoryRepository.save(BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).bill(optional.get())
                         .employees(optional.get().getEmployees()).build());
             }
             optional.get().setStatusBill(StatusBill.TAO_HOA_DON);
@@ -844,7 +843,6 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-
     public Bill createBillCustomerOnlineRequest(CreateBillCustomerOnlineRequest request) {
         if (request.getPaymentMethod().equals("paymentReceive")) {
             for (BillDetailOnline x : request.getBillDetail()) {
