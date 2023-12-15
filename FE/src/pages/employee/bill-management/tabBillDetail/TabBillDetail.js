@@ -507,7 +507,7 @@ function TabBillDetail({ dataBillDetail }) {
                 billDetai.forEach((product) => {
                   sum += product.quantity || 0;
                 });
-                dispatch(ChangeProductInBill(sum - record.quantity));
+                 dispatch(ChangeProductInBill(changeQuanTiTy + 1));
               })
               .catch((error) => {
                 toast.error(error.response.data.message);
