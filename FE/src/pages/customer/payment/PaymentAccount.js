@@ -138,7 +138,11 @@ function PaymentAccount() {
   }, [moneyShip]);
   
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
+    if(exchangeRateMoney != 0){
+      setTotalAfter(totalAfter - exchangeRateMoney);
+    }else if(exchangeRateMoney == 0 && dataPoin!= null && account != null){
+      setTotalAfter(totalAfter + dataPoin.exchangeRateMoney * account?.points); 
+    }
   }, [exchangeRateMoney]);
 
   useEffect(() => {
