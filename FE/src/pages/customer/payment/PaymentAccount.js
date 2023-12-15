@@ -136,12 +136,12 @@ function PaymentAccount() {
     setTotalAfter(totalBefore + moneyShip - voucher.value);
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
-  
+
   useEffect(() => {
-    if(exchangeRateMoney != 0){
+    if (exchangeRateMoney != 0) {
       setTotalAfter(totalAfter - exchangeRateMoney);
-    }else if(exchangeRateMoney == 0 && dataPoin!= null && account != null){
-      setTotalAfter(totalAfter + dataPoin.exchangeRateMoney * account?.points); 
+    } else if (exchangeRateMoney == 0 && dataPoin != null && account != null) {
+      setTotalAfter(totalAfter + dataPoin.exchangeRateMoney * account?.points);
     }
   }, [exchangeRateMoney]);
 
