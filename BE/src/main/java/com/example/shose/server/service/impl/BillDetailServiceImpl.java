@@ -292,6 +292,12 @@ public class BillDetailServiceImpl implements BillDetailService {
                 findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
                     paymentsMethodRepository.deleteById(item);
                 });
+            }else if(totalBill.compareTo(totalPayMent) < 0 && totalPaymentTraSau.compareTo(BigDecimal.ZERO) != 0){
+                findAllPaymentByIdBillAndMethod.stream().forEach(item -> {
+                    Optional<PaymentsMethod> paymentsMethod = paymentsMethodRepository.findById(item);
+                    paymentsMethod.get().setTotalMoney(totalBill.subtract(totalPaymentThanhToan));
+                    paymentsMethodRepository.save(paymentsMethod.get());
+                });
             }
         }
     }
