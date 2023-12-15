@@ -20,6 +20,7 @@ import { CartDetailClientApi } from "./../../../api/customer/cartdetail/cartDeta
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
 import { VoucherClientApi } from "./../../../api/customer/voucher/voucherClient.api";
 import "./style-cart.css";
+import {parseInt} from "lodash";
 
 function Cart() {
   const nav = useNavigate();
@@ -92,10 +93,11 @@ function Cart() {
       getListCart(idAccountLocal);
       setTotalPrice(0);
     }
-    console.log(chooseItemCart.length, cart.length);
+    console.log(dayjs().format("DD-MM-YYYY"));
     if (chooseItemCart.length === cart.length && chooseItemCart.length !== 0) {
       setSelectAllChecked(true);
     }
+
   }, []);
 
   useEffect(() => {
@@ -522,10 +524,24 @@ function Cart() {
     }
   };
   const payment = () => {
+    const totalBill = chooseItemCart.reduce(
+        (total, item) =>
+            total +
+            parseInt(
+                (parseInt(item.price) -
+                    parseInt(item.price) * (item.valuePromotion / 100)) *
+                item.quantity
+            ),
+        0
+    );
+
     if (chooseItemCart.length === 0) {
       toast.warning("Quý khách chưa chọn sản phẩm để thanh toán!", {
         autoClose: 2000,
       });
+    }else if(totalBill>100000000){
+      toast.warning("Đơn hàng đã lớn hơn  100 triệu, vui lòng liên hệ với  cửa hàng hoặc chọn lại sản phẩm!")
+      return;
     } else {
       if (idAccountLocal === null) {
         window.location.href = "/payment";
@@ -536,13 +552,30 @@ function Cart() {
       }
     }
   };
+  const deleteAllCart = ()=>{
+    debugger
+    if(idAccountLocal === null){
+      setCart([]);
+      window.location.href = "/cart"
+    }else{
+      CartDetailClientApi.deleteAllCartDetail(idAccountLocal);
+      window.location.href = "/cart"
+    }
+  }
+  const customSort = (a, b) => {
+    const aHidden = totalBill < a.minimumBill ? 1 : 0;
+    const bHidden = totalBill < b.minimumBill ? 1 : 0;
+
+    if (aHidden !== bHidden) {
+      return aHidden - bHidden;
+    }
+
+    return a.minimumBill - b.minimumBill;
+  };
+
 
   return (
     <div className="cart">
-      {/* <div className="img-banner">
-        <img className="img-shoe" src={imgShoe} alt="..." />
-        <h1 className="text-welcome">Chào mừng đến với giỏ hàng bạn</h1>
-      </div> */}
       <div className="content-cart">
         <div className="title-cart">
           <p className="cart-text">Giỏ Hàng</p>
@@ -796,6 +829,7 @@ function Cart() {
                     <div
                       className="button-delete-all-cart"
                       style={{ borderRadius: "7px" }}
+                      onClick={deleteAllCart}
                     >
                       XOÁ TẤT CẢ
                     </div>
@@ -954,12 +988,11 @@ function Cart() {
 
           <p>Chọn 1 voucher</p>
           <div className="voucher-list">
-            {listVoucher.map((item, index) => (
+            {  listVoucher.sort(customSort).map((item, index) => (
               <div
+                  key={index}
                 className={`item-voucher ${
-                  totalBill < item.minimumBill ||
-                  dayjs(item.endDate).format("DD-MM-YYYY") <=
-                    dayjs().format("DD-MM-YYYY")
+                  totalBill < item.minimumBill 
                     ? "hidden"
                     : ""
                 }`}
@@ -989,9 +1022,7 @@ function Cart() {
                     <Radio
                       value={item.id}
                       disabled={
-                        totalBill < item.minimumBill ||
-                        dayjs(item.endDate).format("DD-MM-YYYY") <=
-                          dayjs().format("DD-MM-YYYY")
+                        totalBill < item.minimumBill
                       }
                     ></Radio>
                   </Radio.Group>

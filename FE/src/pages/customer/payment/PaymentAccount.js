@@ -47,10 +47,9 @@ function PaymentAccount() {
     idVoucher: "",
     afterPrice: 0,
   });
-  const [moneyShip, setMoneyShip] = useState(0);
+  const [moneyShip, setMoneyShip] = useState(1);
   const [dayShip, setDayShip] = useState("");
   const [keyMethodPayment, setKeyMethodPayment] = useState("paymentReceive");
-  const [totalBill, setTotalBill] = useState(0);
   const listproductOfBill = JSON.parse(sessionStorage.getItem("bill"));
   const voucher = JSON.parse(sessionStorage.getItem("voucher"));
   const comercial = [
@@ -59,7 +58,7 @@ function PaymentAccount() {
     { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
-  const [totalAfter, setTotalAfter] = useState({});
+  const [totalAfter, setTotalAfter] = useState(0);
   const [total, setTotal] = useState({});
   const [totalBefore, setTotalBefore] = useState(0);
   const [userId, setUserId] = useState("");
@@ -126,9 +125,6 @@ function PaymentAccount() {
     console.log(formBill);
   }, [formBill]);
   useEffect(() => {
-    formBillChange("totalMoney", totalBefore);
-  }, [totalBefore]);
-  useEffect(() => {
     setTotalBefore(total.totalMoney);
   }, [total]);
   useEffect(() => {
@@ -136,13 +132,19 @@ function PaymentAccount() {
   }, [totalAfter]);
 
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney - voucher.value);
+    console.log(moneyShip);
+    setTotalAfter(totalBefore + moneyShip - voucher.value);
     formBillChange("moneyShip", moneyShip);
   }, [moneyShip]);
+
   useEffect(() => {
-    setTotalAfter(totalBefore + moneyShip - exchangeRateMoney);
-    console.log(exchangeRateMoney);
+    if (exchangeRateMoney != 0) {
+      setTotalAfter(totalAfter - exchangeRateMoney);
+    } else if (exchangeRateMoney == 0 && dataPoin != null && account != null) {
+      setTotalAfter(totalAfter + dataPoin.exchangeRateMoney * account?.points);
+    }
   }, [exchangeRateMoney]);
+
   useEffect(() => {
     if (addressDefault !== null) {
       getMoneyShip(addressDefault.districtId, addressDefault.wardCode);
@@ -202,6 +204,7 @@ function PaymentAccount() {
       cancelText: "Hủy",
       onOk() {
         var dataBill = formBill;
+
         dataBill.itemDiscount += exchangeRateMoney;
         var poin = 0;
         if (exchangeRateMoney > 0) {
@@ -267,7 +270,8 @@ function PaymentAccount() {
   };
 
   const getMoneyShip = (districtId, wardCode) => {
-    if (totalBill > 2000000) {
+    console.log(totalBefore - voucher.value);
+    if (totalBefore - voucher.value >= 2000000) {
       setMoneyShip(0);
     } else {
       AddressClientApi.getMoneyShip(districtId, wardCode).then(
@@ -326,6 +330,14 @@ function PaymentAccount() {
             item.quantity
         ),
       0
+    );
+
+    formBillChange(
+      "totalMoney",
+      listproductOfBill.reduce(
+        (total, item) => total + parseInt(item.price) * item.quantity,
+        0
+      )
     );
     const quantity = listproductOfBill.reduce(
       (total, item) => total + parseInt(item.quantity),

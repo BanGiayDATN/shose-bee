@@ -178,21 +178,21 @@ function CreateVoucherManagement() {
           setFormErrors(errors);
           return;
         }
-        PromotionApi.create(convertToLong()).then((res) => {
-          dispatch(CreatePromotion(res.data.data));
-          toast.success("Thêm thành công.", {
-            autoClose: 5000,
-          });
-          nav("/promotion-management");
-          setFormData({});
-          setListProductDetail([]);
-          onSelectChange("");
-          onSelectChangeDetail("");
-          setSelectedRowKeysDetail("");
-        },(err)=>{
-          
-        });
-      
+        PromotionApi.create(convertToLong()).then(
+          (res) => {
+            dispatch(CreatePromotion(res.data.data));
+            toast.success("Thêm thành công.", {
+              autoClose: 5000,
+            });
+            nav("/promotion-management");
+            setFormData({});
+            setListProductDetail([]);
+            onSelectChange("");
+            onSelectChangeDetail("");
+            setSelectedRowKeysDetail("");
+          },
+          (err) => {}
+        );
       },
     });
   };

@@ -208,7 +208,7 @@ const PromotionManagement = () => {
         <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             type="primary"
-            title="Chi tiết thể loại"
+            title="Chi tiết khuyến mại"
             style={{ backgroundColor: "#FF9900" }}
             onClick={() => openDetail(record.id)}
           >
@@ -219,7 +219,7 @@ const PromotionManagement = () => {
             <Link to="/update-promotion-management">
               <Button
                 type="primary"
-                title="Chỉnh sửa thể loại"
+                title="Chỉnh sửa khuyến mại"
                 style={{ backgroundColor: "green", borderColor: "green" }}
                 onClick={() => openUpdate(record.id)}
               >

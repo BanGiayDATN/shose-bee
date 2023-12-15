@@ -213,7 +213,7 @@ const DashBoardEmployee = ({ children }) => {
     NotificationClientApi.setStatus(idNotify).then((res) => {
       dispatch(UpdateNotification(res.data.data));
     });
-    nav(`/bill-management/detail-bill/${idBill}`);
+    window.location.href =  `/bill-management/detail-bill/${idBill}`;
   };
 
   return (

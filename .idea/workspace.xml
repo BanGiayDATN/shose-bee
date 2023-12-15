@@ -5,13 +5,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0abcb6f-82ce-4957-9346-c269be5e31e0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/CancelBillClientRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/0082ab40-537a-44f4-960e-f5b14d36902c.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/0082ab40-537a-44f4-960e-f5b14d36902c.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/StatusRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/StatusRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/BillRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/BillRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/BillClientRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/BillClientRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/CartDetailClientRestCotroller.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/CartDetailClientRestCotroller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/VoucherClientRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/VoucherClientRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartDetailRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/BillService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/BillService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartDetailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/BillServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/BillServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/account/purchase/Purchase.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/account/purchase/Purchase.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/CartDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/CartDetailServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/NotificationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/NotificationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/api/customer/bill/billClient.api.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/api/customer/bill/billClient.api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/api/customer/cartdetail/cartDetailClient.api.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/api/customer/cartdetail/cartDetailClient.api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/component/employee/DashBoardEmployee.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/component/employee/DashBoardEmployee.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/account/purchase/tabscontent/TabAllBill.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/account/purchase/tabscontent/TabAllBill.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/cart/Cart.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/cart/Cart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/component/style-card.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/component/style-card.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/Payment.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/Payment.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentAccount.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentAccount.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/products/Products.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/products/Products.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,32 +65,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "develop__diemdkph23701",
-    "last_opened_file_path": "E:/duantotnghiep/shose/BE",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "spring.configuration.checksum": "cf1e8c14e54505f60aa10ceb8d5d8ab3",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop__diemdkph23701&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/duantotnghiep/shose&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;cf1e8c14e54505f60aa10ceb8d5d8ab3&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\DUAN_FPT\shose" />
@@ -152,6 +171,8 @@
       <workItem from="1700579401916" duration="2767000" />
       <workItem from="1700665997545" duration="5042000" />
       <workItem from="1700915690009" duration="2677000" />
+      <workItem from="1702404768867" duration="9389000" />
+      <workItem from="1702441047782" duration="14202000" />
     </task>
     <servers />
   </component>

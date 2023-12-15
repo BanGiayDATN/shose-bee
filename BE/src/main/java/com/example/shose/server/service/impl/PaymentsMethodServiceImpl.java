@@ -585,7 +585,7 @@ public class PaymentsMethodServiceImpl implements PaymentsMethodService {
         //     begin   create file pdf
         String finalHtml = null;
         Optional<Bill> optional = billRepository.findById(idBill);
-        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
+        InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get(), new BigDecimal(0));
         Bill bill = optional.get();
         String email = bill.getEmail();
         if(email == null){
