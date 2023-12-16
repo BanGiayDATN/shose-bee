@@ -20,7 +20,7 @@ public interface VoucherService {
     Voucher add(CreateVoucherRequest request) throws RestApiException;
     Voucher update(UpdateVoucherRequest request) throws RestApiException;
     Voucher updateStatus(String id) throws RestApiException;
-
+    Voucher updateStatusQuantity(String id) throws RestApiException;
     Boolean delete(String id);
     Voucher getById(String id);
     List<Voucher> expiredVoucher();

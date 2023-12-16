@@ -90,7 +90,6 @@ function App() {
   const [showOnTop, setShowOnTop] = useState(false);
 
   useEffect(() => {
-    
     const handleScroll = () => {
       if (window.scrollY > 300) {
         setShowOnTop(true);
@@ -132,11 +131,24 @@ function App() {
       }
     });
   };
+  const updateItemListQuantity = (items, api, updateFunction) => {
+    items.forEach((item) => {
+      if (item.quantity < 1) {
+        api(item.id)
+          .then((res) => {
+            dispatch(updateFunction(res.data.data));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
+  };
 
   useEffect(() => {
     VoucherApi.fetchAll("").then(
       (res) => {
-        dispatch(SetVoucher(res.data.data))
+        dispatch(SetVoucher(res.data.data));
       },
       (err) => {
         console.log(err);
@@ -145,7 +157,7 @@ function App() {
 
     PromotionApi.fetchAll("").then(
       (res) => {
-        dispatch(SetPromotion(res.data.data))
+        dispatch(SetPromotion(res.data.data));
       },
       (err) => {
         console.log(err);
@@ -156,6 +168,11 @@ function App() {
   useEffect(() => {
     const intervalVoucher = setInterval(() => {
       updateItemList(dataVoucher, VoucherApi.updateStatus, UpdateVoucher);
+      updateItemListQuantity(
+        dataVoucher,
+        VoucherApi.updateStatusQuantity,
+        UpdateVoucher
+      );
     }, 1000);
 
     return () => clearInterval(intervalVoucher);
