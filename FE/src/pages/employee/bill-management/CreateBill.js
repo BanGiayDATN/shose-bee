@@ -427,8 +427,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         res.data.data.map((item) => {
           if (
             item.status == "DANG_SU_DUNG"
-            // && item.quantity != null
-            // && item.quantity > 0
+             && item.quantity > 0
           ) {
             data.push(item);
           }
