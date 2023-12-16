@@ -35,5 +35,7 @@ public interface BillGiveBack {
 
     @Value("#{target.statusBillDetail}")
     String getStatusBillDetail();
+    @Value("#{target.moneyShip}")
+    BigDecimal getMoneyShip();
 
 }

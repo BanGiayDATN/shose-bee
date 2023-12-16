@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Nguyễn Vinh
@@ -43,5 +44,6 @@ public interface BillHistoryRepository extends JpaRepository<BillHistory, String
             ORDER BY bh.created_date ASC
             """, nativeQuery = true)
     List<BillHistory> getBillHistoryByIdBill(@Param("idBill") String idBill);
+    Optional<BillHistory> findByBill_Id(String ibBill);
 
 }

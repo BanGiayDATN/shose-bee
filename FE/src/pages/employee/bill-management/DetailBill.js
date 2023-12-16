@@ -93,18 +93,13 @@ function DetailBill() {
       if (res.data.data.account != null) {
         setUserId(res.data.data.account.user.id);
       }
+      setShipFeeCustomer(res.data.data.moneyShip);
       setBillRequest({
         name: res.data.data.userName,
         phoneNumber: res.data.data.phoneNumber,
         address: res.data.data.address,
         moneyShip: res.data.data.moneyShip,
         note: res.data.data.note,
-      });
-      setAddress({
-        wards: res.data.data.address?.split(",")[1],
-        district: res.data.data.address?.split(",")[2],
-        city: res.data.data.address?.split(",")[3],
-        detail: res.data.data.address?.split(",")[0],
       });
       setShipFee(res.data.data.moneyShip);
       var index = listStatus.findIndex(
@@ -117,6 +112,12 @@ function DetailBill() {
         index = 8;
       }
       dispatch(addStatusPresent(index));
+      setAddress({
+        wards: res.data.data.address?.split(",")[1],
+        district: res.data.data.address?.split(",")[2],
+        city: res.data.data.address?.split(",")[3],
+        detail: res.data.data.address?.split(",")[0],
+      });
     });
     BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
       dispatch(getBillHistory(res.data.data));
@@ -144,6 +145,7 @@ function DetailBill() {
   const loadDataProvince = () => {
     AddressApi.fetchAllProvince().then(
       (res) => {
+        console.log();
         setListProvince(res.data.data);
       },
       (err) => {
@@ -179,7 +181,7 @@ function DetailBill() {
           }, 0)
         : 1;
     setAddress({ ...address, wards: valueWard.value });
-    if (totalQuantity > 2) {
+    if (bill.totalMoney >= 2000000) {
       setShipFee(0);
     } else {
       AddressApi.fetchAllMoneyShip(
@@ -461,7 +463,7 @@ function DetailBill() {
       name: String(billRequest.name),
       phoneNumber: billRequest.phoneNumber,
       address: addressuser,
-      moneyShip: shipFee,
+      moneyShip: totalProductDetailGiveBackAndSuccse() >= 2000000 ? 0 : shipFee,
       note: billRequest.note,
     };
     if (
@@ -489,6 +491,7 @@ function DetailBill() {
               index = 8;
             }
             dispatch(addStatusPresent(index));
+            setShipFeeCustomer(res.data.data.moneyShip);
           });
           toast.success("Thay đổi hóa đơn thành công");
           setIsModalBillOpen(false);
@@ -986,62 +989,39 @@ function DetailBill() {
   };
   const typeAddProductBill = id;
 
-  const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
-  const [modalVisibleAddAddress, setModalVisibleAddAddress] = useState(false);
-
-  const showModalAddress = (e) => {
-    setIsModalAddressOpen(true);
-  };
-  const handleOkAddress = () => {
-    setIsModalAddressOpen(false);
-  };
-  const handleCancelAddress = () => {
-    setIsModalAddressOpen(false);
-  };
-  const handleOpenAddAdress = () => {
-    setIsModalAddressOpen(false);
-    setModalVisibleAddAddress(true);
-  };
-  const [listAddress, setListAddress] = useState([]);
-
-  const [clickRadio, setClickRadio] = useState("");
-
-  const changeRadio = (index, item) => {
-    setClickRadio(index);
-
-    setAddress({
-      wards: item.ward,
-      district: item.district,
-      city: item.province,
-      detail: item.line,
-    });
-    setBillRequest({ ...billRequest, address: item.address });
-
-    const totalQuantity =
-      products.length > 0
-        ? products.reduce((accumulator, currentValue) => {
-            return accumulator + currentValue.quantity;
-          }, 0)
-        : 1;
-    if (totalQuantity > 2) {
-      setShipFee(0);
+  const [shipFeeCustomer, setShipFeeCustomer] = useState(null);
+  useEffect(() => {
+    if (totalProductDetailGiveBackAndSuccse() >= 2000000) {
+      setShipFeeCustomer(0);
     } else {
-      AddressApi.fetchAllMoneyShip(
-        item.toDistrictId,
-        item.wardCode,
-        totalQuantity
-      ).then((res) => {
-        setShipFee(res.data.data.total);
-      });
+      setShipFeeCustomer(bill.moneyShip);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productDetailToBillDetail]);
+
+  const updateShipBill = (idBill, ship) => {
+    const data = {
+      ship: ship,
+      idBill: idBill,
+    };
+    BillApi.UpdateShipBill(data)
+      .then((res) => {
+        console.log(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
-  const selectedAddress = () => {
-    setIsModalAddressOpen(true);
-    AddressApi.fetchAllAddressByUser(userId).then((res) => {
-      setListAddress(res.data.data);
-    });
-  };
+  useEffect(() => {
+    if (shipFeeCustomer === 0) {
+      updateShipBill(id, 0);
+    } else {
+      console.log(shipFee);
+      updateShipBill(id, shipFee);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shipFeeCustomer]);
 
   return (
     <div>
@@ -1132,12 +1112,12 @@ function DetailBill() {
                   </Col>
                   <Col
                     span={
-                      statusPresent < 5 && bill.statusBill != "DA_THANH_TOAN"
+                      statusPresent < 4 && bill.statusBill != "DA_THANH_TOAN"
                         ? 6
                         : 0
                     }
                   >
-                    {statusPresent < 5 ? (
+                    {statusPresent < 4 ? (
                       <Button
                         type="danger"
                         onClick={() => showModalCanCel()}
@@ -1709,7 +1689,8 @@ function DetailBill() {
                     </Col>
                     <Col span={10} align={"end"}>
                       <span style={{ fontSize: "16px" }}>
-                        {formatCurrency(bill.moneyShip)}
+                        {shipFeeCustomer !== null &&
+                          formatCurrency(shipFeeCustomer)}
                       </span>
                     </Col>
                   </Row>
@@ -1723,7 +1704,7 @@ function DetailBill() {
                       span={9}
                       style={{ fontWeight: "bold", fontSize: "16px" }}
                     >
-                      Điểm sử dụng :{bill.poinUse}
+                      Điểm sử dụng {bill.poinUse} :
                     </Col>
                     <Col span={10} align={"end"}>
                       <span style={{ fontSize: "16px" }}>
@@ -1736,13 +1717,29 @@ function DetailBill() {
                 ) : (
                   <Row></Row>
                 )}
+
                 <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
                   <Col span={5}></Col>
                   <Col
                     span={9}
                     style={{ fontWeight: "bold", fontSize: "16px" }}
                   >
-                    Tiền giảm :{" "}
+                    Voucher giảm giá :{" "}
+                  </Col>
+                  <Col span={10} align={"end"}>
+                    <span style={{ fontSize: "16px" }}>
+                      {formatCurrency(bill.itemDiscount - bill.valuePoin)}
+                    </span>
+                  </Col>
+                </Row>
+
+                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                  <Col span={5}></Col>
+                  <Col
+                    span={9}
+                    style={{ fontWeight: "bold", fontSize: "16px" }}
+                  >
+                    Tổng tiền giảm :{" "}
                   </Col>
                   <Col span={10} align={"end"}>
                     <span style={{ fontSize: "16px" }}>
@@ -1922,11 +1919,6 @@ function DetailBill() {
         okText={"Xác nhận"}
       >
         <Form initialValues={initialValues} form={form} ref={formRef}>
-          <Row style={{ width: "100%", marginTop: "10px" }}>
-            <Button style={{ marginLeft: "75%" }} onClick={selectedAddress}>
-              Chọn địa chỉ
-            </Button>
-          </Row>
           <Row style={{ width: "100%" }}>
             <Col span={24} style={{ marginTop: "20px" }}>
               <label
@@ -2235,7 +2227,7 @@ function DetailBill() {
                   }}
                   min={0}
                   customInput={Input}
-                  defaultValue={shipFee}
+                  value={shipFee}
                   onChange={(e) => {
                     var phiShip = parseFloat(
                       e.target.value.replace(/[^0-9.-]+/g, "")
@@ -2306,88 +2298,6 @@ function DetailBill() {
           width={1600}
           footer={null}
         />
-      </Modal>
-
-      <Modal
-        title="Địa chỉ"
-        open={isModalAddressOpen}
-        onOk={handleOkAddress}
-        onCancel={handleCancelAddress}
-        height={400}
-      >
-        <Row style={{ width: "100%" }}>
-          <Col span={16}></Col>
-          <Col span={1}>
-            {/* <Button onClick={() => handleOpenAddAdress()}>
-              + Thêm địa chỉ mới
-            </Button> */}
-          </Col>
-        </Row>
-        <Row style={{ marginTop: "20px" }}></Row>
-        <div style={{ overflowY: "auto", height: "450px" }}>
-          {listAddress.map((item, index) => (
-            <div
-              style={{
-                marginTop: "10px",
-                marginBottom: "20px",
-                borderTop: "1px solid grey",
-                padding: "10px 0",
-              }}
-            >
-              <Row style={{ marginTop: "20px" }}>
-                <Col span={2}>
-                  <Radio
-                    name="group-radio"
-                    value={item}
-                    checked={
-                      !clickRadio
-                        ? item.status === "DANG_SU_DUNG"
-                        : index === clickRadio
-                    }
-                    onChange={() => changeRadio(index, item)}
-                  />
-                </Col>
-                <Col span={17}>
-                  <Row>
-                    <span
-                      style={{ fontSize: 17, fontWeight: 600, marginRight: 3 }}
-                    >
-                      {item.fullName}
-                    </span>
-                    {"  |  "}
-                    <span style={{ marginTop: "2px", marginLeft: 3 }}>
-                      {item.phoneNumber}
-                    </span>
-                  </Row>
-                  <Row>
-                    <span style={{ fontSize: 14 }}>{item.address}</span>
-                  </Row>
-                  {item.status === "DANG_SU_DUNG" ? (
-                    <Row>
-                      <div style={{ marginTop: "10px", marginRight: "30px" }}>
-                        <span className="status-default-address">Mặc định</span>
-                      </div>
-                    </Row>
-                  ) : null}
-                </Col>
-                <Col span={4}>
-                  {/* <Button
-                    type="dashed"
-                    title="Chọn"
-                    style={{
-                      border: "1px solid #ff4400",
-                      fontWeight: "470",
-                    }}
-                  // onClick={() => handleViewUpdate(item.id)}
-                  >
-                    {" "}
-                    Cập nhật
-                  </Button> */}
-                </Col>
-              </Row>
-            </div>
-          ))}
-        </div>
       </Modal>
       <div style={{ display: "none" }}>
         <div id="pdfContent" />

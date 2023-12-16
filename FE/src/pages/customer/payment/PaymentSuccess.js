@@ -11,8 +11,6 @@ import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
 import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 import { CartClientApi } from "../../../api/customer/cart/cartClient.api";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 function PayMentSuccess() {
   const idAccount = sessionStorage.getItem("idAccount");
   const urlObject = new URL(window.location.href);
@@ -20,8 +18,6 @@ function PayMentSuccess() {
   const vnp_Amount = urlObject.searchParams.get("vnp_Amount");
   const formBill = JSON.parse(sessionStorage.getItem("formBill"));
   const { updateTotalQuantity } = useCart();
-  const socket = new SockJS("http://localhost:8080/ws");
-  const stompClient = Stomp.over(socket);
   useEffect(() => {
     if (vnp_ResponseCode === "00") {
       if (formBill !== null) {
@@ -60,7 +56,6 @@ function PayMentSuccess() {
               console.log(err);
             }
           );
-          stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
         },
         (err) => {
           console.log(err);
@@ -70,7 +65,6 @@ function PayMentSuccess() {
     } else {
       BillClientApi.createBillOnline(formBill).then(
         (res) => {
-          stompClient.send("/app/notifyAdmin", {}, "Có đơn hàng mới");
           console.log("thanh toán khi nhận hàng!");
           const cartLocal = JSON.parse(localStorage.getItem("cartLocal"));
           const updatelist = cartLocal.filter((item) => {

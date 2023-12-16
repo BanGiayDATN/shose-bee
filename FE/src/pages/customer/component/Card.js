@@ -45,6 +45,11 @@ function CardItem({ item, index }) {
       dayjs.unix(item.createdDate / 1000).format("DD-MM-YYYY"),
       now.format("DD-MM-YYYY")
     );
+    if(idAccountLocal !== null){
+      CartClientApi.listCart(idAccountLocal).then((res)=>{
+        setCartAccount(res.data.data)
+      })
+    }
   }, []);
 
   const handleAddCartLocal = (newCartItem) => {
@@ -102,9 +107,10 @@ function CardItem({ item, index }) {
           });
         } else {
           toast.warning(
-            `Bạn chỉ được thêm tối đa ${
+            detailProduct.quantity - detailProductCart.quantity > 0 ? 
+            (`Bạn chỉ được thêm tối đa ${
               detailProduct.quantity - detailProductCart.quantity
-            } sản phẩm`
+            } sản phẩm`) :("Số lượng của sản phẩm trong giỏ đã đầy")
           );
         }
       } else {
@@ -137,9 +143,10 @@ function CardItem({ item, index }) {
           });
         } else {
           toast.warning(
-            `Bạn chỉ được thêm tối đa ${
+            detailProduct.quantity - detailProductCart.quantity > 0 ? 
+            (`Bạn chỉ được thêm tối đa ${
               detailProduct.quantity - detailProductCart.quantity
-            } sản phẩm`
+            } sản phẩm`) :("Số lượng của sản phẩm trong giỏ đã đầy")
           );
         }
       } else {
@@ -228,7 +235,6 @@ function CardItem({ item, index }) {
   return (
     <>
       <div
-        to="/detail"
         className="card-item"
         data-slick-index="-1"
         tabindex="0"
@@ -237,7 +243,7 @@ function CardItem({ item, index }) {
           <Link
             className="link-card-item"
             to={`/detail-product/${item.idProductDetail}`}
-            onClick={() => nav(`/detail-product/${item.idProductDetail}`)}
+            onClick={() => window.location.href = `/detail-product/${item.idProductDetail}`}
           >
             <div className="box-img-product">
               <div
@@ -261,6 +267,15 @@ function CardItem({ item, index }) {
                 {item.nameProduct} - [{item.nameSize}]
               </p>
             </div>
+            <div className="list-color-detail-card">
+                  <div
+                    className="color-product"
+                    key={index}
+                    style={{
+                      backgroundColor: item.codeColor,
+                    }}
+                  ></div>
+                </div>
             <p className="price-product">
               {item.valuePromotion !== null ? (
                 <>

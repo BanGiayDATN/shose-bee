@@ -207,25 +207,29 @@ const VoucherManagement = () => {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
-      align: "center",
       render: (text, record) => (
         <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             type="primary"
-            title="Chi tiết thể loại"
+            title="Chi tiết khuyến mãi"
             style={{ backgroundColor: "#FF9900" }}
             onClick={() => openDetail(record.id)}
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          <Button
-            type="primary"
-            title="Chỉnh sửa thể loại"
-            style={{ backgroundColor: "green", borderColor: "green" }}
-            onClick={() => openUpdate(record.id)}
-          >
-            <FontAwesomeIcon icon={faEdit} />
-          </Button>
+          {record.status === "DANG_SU_DUNG" ||
+          record.status === "CHUA_KICH_HOAT" ? (
+         
+              <Button
+                type="primary"
+                title="Chỉnh sửa khuyến mãi"
+                style={{ backgroundColor: "green", borderColor: "green" }}
+                onClick={() => openUpdate(record.id)}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+            
+          ) : null}
         </div>
       ),
     },

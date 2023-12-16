@@ -26,6 +26,7 @@ import { BillApi } from "../../../api/employee/bill/bill.api";
 import { useNavigate, useParams } from "react-router";
 import moment from "moment";
 import ModalQuantityGiveBack from "./modal/ModalQuantityGiveBack";
+import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 
 export default function DetailBillGiveBack() {
   const [form] = Form.useForm();
@@ -551,6 +552,7 @@ export default function DetailBillGiveBack() {
           idBill: bill.idBill,
           idAccount: bill.idAccount,
           totalBillGiveBack: totalMoneyBillGiveBack(),
+          idVoucher: voucher === null ? null : voucher.id,
         };
         const formData = new FormData();
         formData.append("data", JSON.stringify(dataProductGiveBack));
@@ -566,6 +568,15 @@ export default function DetailBillGiveBack() {
       })
       .catch((err) => console.log({ err }));
   };
+
+  const [voucher, setVoucher] = useState(null);
+  const total = totalMoneyBill() - totalMoneyBillGiveBack();
+  useEffect(() => {
+    VoucherApi.getVoucherByMinimum(total).then((voucher) => {
+      setVoucher(voucher.data.data);
+      console.log(voucher.data.data);
+    });
+  }, [total]);
 
   return (
     <>
@@ -805,7 +816,7 @@ export default function DetailBillGiveBack() {
                     <Table
                       columns={columnProductGiveBack}
                       dataSource={dataProductGiveBack}
-                      pagination={{ pageSize: 4 }}
+                      pagination={{ pageSize: 5 }}
                       rowKey={"id"}
                     />
                   </div>
@@ -873,6 +884,19 @@ export default function DetailBillGiveBack() {
                     </Col>
                   </Row>
                 )}
+                {bill !== null && bill.moneyShip !== null && (
+                  <Row style={{ marginTop: "30px" }}>
+                    <Col span={12}>
+                      <h3>Tiền ship : </h3>
+                    </Col>
+                    <Col span={12}>
+                      <h3 style={{ color: "blue" }}>
+                        {" "}
+                        {formatCurrency(bill.moneyShip)}
+                      </h3>
+                    </Col>
+                  </Row>
+                )}
                 {bill !== null && bill.poin !== null && (
                   <Row style={{ marginTop: "30px" }}>
                     <Col span={12}>
@@ -902,7 +926,12 @@ export default function DetailBillGiveBack() {
                             : 0) -
                           (bill !== null
                             ? bill.poin !== null
-                              ? bill.poin
+                              ? bill.poin * 1000
+                              : 0
+                            : 0) +
+                          (bill !== null
+                            ? bill.moneyShip !== null
+                              ? bill.moneyShip
                               : 0
                             : 0)
                       )}
@@ -920,21 +949,44 @@ export default function DetailBillGiveBack() {
                     </h3>
                   </Col>
                 </Row>
+                <Row style={{ marginTop: "30px" }}>
+                  <Col span={12}>
+                    <h3>Voucher mới: </h3>
+                  </Col>
+                  <Col span={12}>
+                    <h3 style={{ color: "blue" }}>
+                      {" "}
+                      {voucher === null
+                        ? formatCurrency(0)
+                        : formatCurrency(voucher.value)}
+                    </h3>
+                  </Col>
+                </Row>
                 <br />
                 <hr />
-                <Tooltip title="Tổng tiền trả khách  = Tổng giá hàng trả - Voucher đã sử dụng">
+                <Tooltip title="Tổng tiền trả khách  = Tổng giá hàng trả - Voucher đã sử dụng - số điểm sử dụng + Voucher mới ">
                   <Row style={{ marginTop: "30px" }}>
                     <Col span={12}>
                       <h3>Tổng tiền trả khách : </h3>
                     </Col>
                     <Col span={12}>
-                      {totalMoneyBillGiveBack() !== totalMoneyBill() ? (
+                      {totalMoneyBillGiveBack() === totalMoneyBill() ? (
                         <h3 style={{ color: "blue" }}>
                           {formatCurrency(
-                            totalMoneyBillGiveBack() -
-                              (bill !== null && totalMoneyBillGiveBack() !== 0
+                            totalMoneyBill() -
+                              (bill !== null
                                 ? bill.voucherValue !== null
                                   ? bill.voucherValue
+                                  : 0
+                                : 0) -
+                              (bill !== null
+                                ? bill.poin !== null
+                                  ? bill.poin * 1000
+                                  : 0
+                                : 0) +
+                              (bill !== null
+                                ? bill.moneyShip !== null
+                                  ? bill.moneyShip
                                   : 0
                                 : 0)
                           )}
@@ -943,21 +995,22 @@ export default function DetailBillGiveBack() {
                         bill !== null && (
                           <h3 style={{ color: "blue" }}>
                             {totalMoneyBillGiveBack() > 0
-                              ? bill.poin !== null && bill.voucherValue !== null
+                              ? bill.voucherValue !== null
                                 ? formatCurrency(
                                     totalMoneyBillGiveBack() -
-                                      bill.poin * 1000 -
-                                      bill.voucherValue
+                                      bill.voucherValue +
+                                      (voucher !== null ? voucher.value : 0)
                                   )
-                                : bill.poin === null &&
-                                  bill.voucherValue !== null
+                                : bill.voucherValue !== null
                                 ? formatCurrency(
-                                    totalMoneyBillGiveBack() - bill.voucherValue
+                                    totalMoneyBillGiveBack() -
+                                      bill.voucherValue +
+                                      (voucher !== null ? voucher.value : 0)
                                   )
-                                : bill.poin !== null &&
-                                  bill.voucherValue === null
+                                : bill.voucherValue === null
                                 ? formatCurrency(
-                                    totalMoneyBillGiveBack() - bill.poin * 1000
+                                    totalMoneyBillGiveBack() +
+                                      (voucher !== null ? voucher.value : 0)
                                   )
                                 : formatCurrency(totalMoneyBillGiveBack())
                               : formatCurrency(totalMoneyBillGiveBack())}

@@ -1,6 +1,7 @@
 package com.example.shose.server.controller.admin;
 
 import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.BillShipRequest;
 import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
 import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
 import com.example.shose.server.dto.request.bill.ChangeAllEmployeeRequest;
@@ -18,6 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,9 +115,9 @@ public class BillRestController {
         return  new ResponseObject(billService.updateBillWait(request));
     }
 
-    @GetMapping("/invoice-pdf/{code}")
-    public ResponseObject getFilePdf(@PathVariable("code") String code)  {
-        return new ResponseObject(billService.createFilePdfAtCounter(code));
+    @GetMapping("/invoice-pdf/{code}/{totalExcessMoney}")
+    public ResponseObject getFilePdf(@PathVariable("code") String code, @PathVariable("totalExcessMoney") BigDecimal totalExcessMoney)  {
+        return new ResponseObject(billService.createFilePdfAtCounter(code, totalExcessMoney));
     }
 
     @PutMapping("/invoice-all-pdf")
@@ -158,6 +161,11 @@ public class BillRestController {
         }
         System.out.println(listDataBillDetail);
         return new ResponseObject(billService.updateBillGiveBack(updateBillGiveBack, listDataBillDetail));
+    }
+
+    @PostMapping("/ship-bill")
+    public ResponseObject UpdateShipBill (@RequestBody BillShipRequest request){
+        return new ResponseObject(billService.getShipBill(request));
     }
 
 }

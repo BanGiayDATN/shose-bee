@@ -100,6 +100,7 @@ const DashBoardEmployee = ({ children }) => {
         NotificationClientApi.getAll().then((res) => {
           dispatch(SetNotification(res.data.data));
           setListNotification(res.data.data);
+          // toast.success("Bạn có đơn hàng mới.");
         });
       });
     });
@@ -213,7 +214,7 @@ const DashBoardEmployee = ({ children }) => {
     NotificationClientApi.setStatus(idNotify).then((res) => {
       dispatch(UpdateNotification(res.data.data));
     });
-    nav(`/bill-management/detail-bill/${idBill}`);
+    window.location.href =  `/bill-management/detail-bill/${idBill}`;
   };
 
   return (

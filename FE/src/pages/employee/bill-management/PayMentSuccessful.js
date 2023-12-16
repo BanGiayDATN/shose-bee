@@ -82,10 +82,12 @@ function PayMentSuccessful() {
     PaymentsMethodApi.checkPaymentVnPay(param)
       .then((res) => {
         setLoadLink(false);
-        BillApi.fetchHtmlIdBill(param.get("vnp_TxnRef").split("-")[0]).then((res) => {
-          document.getElementById("pdfContent").innerHTML = res.data.data;
-          generatePDF();
-        });
+        BillApi.fetchHtmlIdBill(param.get("vnp_TxnRef").split("-")[0], 0).then(
+          (res) => {
+            document.getElementById("pdfContent").innerHTML = res.data.data;
+            generatePDF();
+          }
+        );
       })
       .catch((error) => {
         toast.error(error.response.data.message);
