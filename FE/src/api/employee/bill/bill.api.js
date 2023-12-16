@@ -40,7 +40,7 @@ export class BillApi {
     return request({
       method: "PUT",
       url: `/admin/bill/invoice-all-pdf`,
-      data:data
+      data: data,
     });
   };
   static fetchCountPayMentPostpaidByIdBill = (id) => {
@@ -50,10 +50,10 @@ export class BillApi {
     });
   };
 
-  static fetchHtmlIdBill = (id) => {
+  static fetchHtmlIdBill = (id, totalExcessMoney) => {
     return request({
       method: "GET",
-      url: `/admin/bill/invoice-pdf/${id}`,
+      url: `/admin/bill/invoice-pdf/${id}/${totalExcessMoney}`,
     });
   };
   static fetchDataUsers = () => {
@@ -225,6 +225,13 @@ export class BillApi {
     return request({
       method: "POST",
       url: `/admin/bill/give-back`,
+      data: data,
+    });
+  };
+  static UpdateShipBill = (data) => {
+    return request({
+      method: "POST",
+      url: `/admin/bill/ship-bill`,
       data: data,
     });
   };

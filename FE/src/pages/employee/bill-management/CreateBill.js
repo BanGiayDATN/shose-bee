@@ -427,8 +427,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         res.data.data.map((item) => {
           if (
             item.status == "DANG_SU_DUNG"
-            // && item.quantity != null
-            // && item.quantity > 0
+             && item.quantity > 0
           ) {
             data.push(item);
           }
@@ -466,6 +465,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   };
 
   //load data phí ship và ngày ship
+  var totalBill = products.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue.price * currentValue.quantity;
+  }, 0);
   const handleWardChange = (value, valueWard) => {
     setAddress({ ...address, wards: valueWard.value });
     const totalQuantity =
@@ -474,9 +476,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             return accumulator + currentValue.quantity;
           }, 0)
         : 1;
+    const checkShipFee = Math.max(
+      totalBill + shipFee - exchangeRateMoney - voucher.discountPrice
+    );
     setValueAddressShip(valueWard);
     // số lượng sản phầm lớn hơn 2 free ship
-    if (totalQuantity > 2) {
+    if (checkShipFee >= 2000000) {
       setShipFee(0);
     } else {
       AddressApi.fetchAllMoneyShip(
@@ -606,6 +611,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       setExchangeRateMoney(0);
     }
   };
+  const [accountAddress, setAccountAddress] = useState(null);
   const selectedAccount = (record) => {
     setShipFee(0);
     form.resetFields();
@@ -618,6 +624,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     AddressApi.getAddressByUserIdAndStatusRoleEmployee(record.id).then(
       (res) => {
         const addressData = res.data.data;
+        setAccountAddress(res.data.data);
         const formValues = {
           phoneNumber: record.phoneNumber,
           name: record.fullName,
@@ -630,6 +637,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
             wards: addressData.ward,
             detail: addressData.line,
           });
+
           addressFull(
             addressData.provinceId,
             addressData.toDistrictId,
@@ -691,8 +699,35 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   const formRef = React.useRef(null);
 
   const addPayMent = async (e, method) => {
+    var data = dataPayment.filter((payment) => payment.method === "TIEN_MAT");
+    var listPayment = dataPayment;
+    var ship = 0;
+    if (isOpenDelivery) {
+      ship = shipFee;
+    }
+    var total = Math.max(
+        products.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0) +
+        ship -
+        exchangeRateMoney -
+        voucher.discountPrice, 0);
+    var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.totalMoney;
+    }, 0);
+    if (data != null && totaPayMent > total) {
+      listPayment = [
+        {
+          actionDescription: "",
+          method: "TIEN_MAT",
+          totalMoney: total,
+          status: "THANH_TOAN",
+          vnp_TransactionNo: "",
+        },
+      ];
+    }
     if (method == "CHUYEN_KHOAN") {
-      await updateBillWhenSavePayMent([...dataPayment]);
+      await updateBillWhenSavePayMent([...listPayment]);
       await submitCodeTransactionNext(e);
     } else if (method != "CHUYEN_KHOAN" && totalMoneyPayMent >= 1000) {
       var data = {
@@ -803,8 +838,8 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     documentTitle: "Userdata",
     onAfterPrint: () => {},
   });
-  const getHtmlByIdBill2 = (id) => {
-    BillApi.fetchHtmlIdBill(id).then((res) => {
+  const getHtmlByIdBill2 = (id, totalExcessMoney) => {
+    BillApi.fetchHtmlIdBill(id, totalExcessMoney).then((res) => {
       document.getElementById("pdfContent").innerHTML = res.data.data;
       generatePDF();
       removePane(targetKey, invoiceNumber, items);
@@ -892,14 +927,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ngayShip = dayShip;
     }
     var dataPayMentTraSau = dataPayment;
-    if (traSau) {
-      var total =
+    var total =
         products.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.price * currentValue.quantity;
         }, 0) +
         ship -
         exchangeRateMoney -
         voucher.discountPrice;
+    if (traSau) {
       dataPayMentTraSau = [
         {
           actionDescription: "",
@@ -910,6 +945,24 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       ];
       totaPayMent = total;
     }
+    var dataPayMentTienMat = dataPayment.filter(
+      (payment) => payment.method === "TIEN_MAT"
+    );
+    if (
+      dataPayMentTienMat != null &&
+      totaPayMent > total
+    ) {
+      dataPayMentTraSau = [
+        {
+          actionDescription: "",
+          method: "TIEN_MAT",
+          totalMoney: total,
+          status: "THANH_TOAN",
+          vnp_TransactionNo: "",
+        },
+      ];
+    }
+
     var data = {
       phoneNumber: billRequest.phoneNumber.trim(),
       address: addressuser ? addressuser.trim() : null,
@@ -928,8 +981,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
+      totalExcessMoney:Math.max(
+        totaPayMent - Math.max(total, 0), 0),
       poin: poin,
     };
+    console.log(totalBill);
+    console.log(data);
+    console.log(totaPayMent);
+
     if (isOpenDelivery) {
       if (
         address.detail !== "" &&
@@ -955,7 +1014,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 BillApi.createBillWait(data)
                   .then((res) => {
                     toast.success("Xuất hóa đơn thành công");
-                    getHtmlByIdBill2(code);
+                    getHtmlByIdBill2(code, data.totalExcessMoney);
                     form.resetFields();
                   })
                   .catch((error) => {
@@ -989,7 +1048,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                 .then((res) => {
                   // removePane(targetKey, invoiceNumber, items);
                   toast.success("Đặt hàng thành công");
-                  getHtmlByIdBill2(code);
+                  getHtmlByIdBill2(code, data.totalExcessMoney);
                 })
                 .catch((error) => {
                   toast.error(error.response.data.message);
@@ -1177,7 +1236,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
       setCodeVoucher(record.code + " - " + record.name);
       setIsModalVoucherOpen(false);
     }
-  }, [products, changeQuanTiTy]);
+    if (accountAddress !== null) {
+      addressFull(
+        accountAddress.provinceId,
+        accountAddress.toDistrictId,
+        accountAddress.wardCode
+      );
+    }
+  }, [products, changeQuanTiTy, totalBill]);
 
   const [voucher, setVoucher] = useState({
     idVoucher: "",
@@ -1393,7 +1459,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     setIsModalAddressOpen(false);
   };
   const [listAddress, setListAddress] = useState([]);
-  const [initialAddressList, setInitialAddressList] = useState([]);
   const [listInfoUser, setListInfoUser] = useState([]);
 
   const selectedAddress = (record) => {
@@ -1418,9 +1483,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
   };
 
   const addressFull = (provinceId, toDistrictId, wardCode) => {
-    AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
-      setShipFee(res.data.data.total);
-    });
+    if (totalBill < 2000000) {
+      AddressApi.fetchAllMoneyShip(toDistrictId, wardCode).then((res) => {
+        setShipFee(res.data.data.total);
+      });
+    } else {
+      setShipFee(0);
+    }
     AddressApi.fetchAllDayShip(toDistrictId, wardCode).then((res) => {
       const leadtimeInSeconds = res.data.data.leadtime;
       const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
@@ -2622,9 +2691,6 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
                       }
                     }}
                   />
-                  {/* {formatCurrency(
-                    
-                  )} */}
                 </Col>
               </Row>
             ) : (

@@ -89,12 +89,7 @@ public class ExportFilePdfFormHtml {
     public String htmlToPdf(String processedHtml, String code) {
 
         String downloadPath = System.getProperty("user.home") + "/Downloads";
-
-//        String appRoot = servletContext.getRealPath("/");
-
-        // Xây dựng đường dẫn tới thư mục download của người dùng
-//        String userDownloadDirectoryPath = appRoot + File.separator + "user" + File.separator + "Downloads";
-
+        
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              PdfWriter pdfwriter = new PdfWriter(byteArrayOutputStream)) {
 
@@ -121,7 +116,7 @@ public class ExportFilePdfFormHtml {
     }
 
 
-    public InvoiceResponse getInvoiceResponse(Bill bill) {
+    public InvoiceResponse getInvoiceResponse(Bill bill, BigDecimal totalExcessMoney) {
         CompletableFuture<String> qrFuture = CompletableFuture.supplyAsync(() -> qrCodeAndCloudinary.generateAndUploadQRCode(bill.getCode()));
 
         List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.getId(), "THANH_CONG"));
@@ -181,22 +176,19 @@ public class ExportFilePdfFormHtml {
 
         List<InvoicePaymentResponse> paymentsMethodRequests = paymentsMethods.stream()
                 .map(item -> InvoicePaymentResponse.builder()
-                        .total(formatter.format(item.getTotalMoney()))
+                        .total(formatter.format(item.getMethod() == StatusMethod.TIEN_MAT ? item.getTotalMoney().add(totalExcessMoney) : item.getTotalMoney()))
                         .method(getPaymentMethod(item.getMethod()))
                         .status(getPaymentStatus(item.getStatus()))
                         .vnp_TransactionNo(item.getVnp_TransactionNo())
                         .build())
                 .collect(Collectors.toList());
 
-        BigDecimal totalPayment = paymentsMethods.stream()
-                .map(PaymentsMethod::getTotalMoney)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPayment = totalMoney.add(totalExcessMoney);
         invoice.setTotalPayment(formatter.format(totalPayment));
-        BigDecimal change = totalPayment.add(bill.getItemDiscount()).subtract(totalMoney);
+
+        BigDecimal change = totalExcessMoney;
         invoice.setChange(formatter.format(change));
-        if (totalPayment.compareTo(totalMoney) == 0) {
-            invoice.setChange(formatter.format(BigDecimal.ZERO));
-        }
+
         invoice.setPaymentsMethodRequests(paymentsMethodRequests);
         invoice.setItems(items);
 
