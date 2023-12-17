@@ -120,6 +120,11 @@ public class BillRestController {
         return new ResponseObject(billService.createFilePdfAtCounter(code, totalExcessMoney));
     }
 
+    @GetMapping("/status-bill")
+    public ResponseObject getAllStatusBill()  {
+        return new ResponseObject(billService.getAllSatusBill());
+    }
+
     @PutMapping("/invoice-all-pdf")
     public ResponseObject getAllFilePdf(@RequestBody ChangAllStatusBillByIdsRequest request)  {
         return new ResponseObject(billService.createAllFilePdf(request));

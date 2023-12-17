@@ -21,13 +21,13 @@ function BillManagement() {
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);
   var [quantityNotify, setQuantityNotify] = useState([]);
-
+  var [listStatusTab, setListStatusTab] = useState([]);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log(fillter);
-    BillApi.fetchAll(fillter).then((res) => {
-      dispatch(getAllBill(res.data.data));
+    BillApi.fetchAllStatusBill().then((res) => {
+      setQuantityNotify(res.data.data)
+      setListStatusTab(listtab)
     });
   }, []);
 
@@ -105,9 +105,6 @@ function BillManagement() {
       "DA_HUY",
     ]);
     console.log(fillter);
-    BillApi.fetchAll(fillter).then((res) => {
-      dispatch(getAllBill(res.data.data));
-    });
   };
 
   const [fillter, setFillter] = useState({
@@ -131,10 +128,6 @@ function BillManagement() {
     type: "",
     page: 0,
   });
-
-  const onChange = (key) => {
-    setQuantityNotify(quantityNotify.filter((item) => item.status !== key));
-  };
 
   const listtab = [
     "",
@@ -164,14 +157,6 @@ function BillManagement() {
       ? "Hoàn thành"
       : "Hủy";
   };
-  const checkNotifyNew = (key) => {
-    var index = quantityNotify.findIndex((item) => item.name == key);
-    if (index == -1) {
-      return false;
-    } else {
-      return true;
-    }
-  };
 
   const showQuantityBillNotify = (key) => {
     var index = quantityNotify.findIndex((item) => item.status == key);
@@ -182,9 +167,15 @@ function BillManagement() {
   };
 
   const addNotify = (notify) => {
-    setQuantityNotify([...quantityNotify, notify]);
+    var index = quantityNotify.findIndex((item) => item.code === notify.code);
+    if (index != -1) {
+      var data = quantityNotify
+      data.splice(index,1,notify)
+      setQuantityNotify(data);
+    }
   };
 
+  console.log(quantityNotify);
   return (
     <div>
       <div className="title_category">
@@ -236,12 +227,12 @@ function BillManagement() {
         </div>
         <div style={{ marginTop: "25px" }}>
           <Tabs
-            onChange={onChange}
             type="card"
-            items={listtab.map((item) => {
+            items={listStatusTab.map((item) => {
+              var index = quantityNotify.findIndex((notify) => item == notify.status);
               return {
                 label: (
-                  <Badge count={showQuantityBillNotify(item)}>
+                  <Badge count={quantityNotify[index]?.quantity}>
                     <span>{convertString(item)}</span>
                   </Badge>
                 ),
@@ -250,6 +241,7 @@ function BillManagement() {
                   <TabBills
                     statusBill={item}
                     dataFillter={fillter}
+                    quantityNotify={quantityNotify}
                     addNotify={addNotify}
                   />
                 ),
