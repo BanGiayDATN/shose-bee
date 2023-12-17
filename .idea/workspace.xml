@@ -5,32 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0abcb6f-82ce-4957-9346-c269be5e31e0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/dto/request/bill/CancelBillClientRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/0082ab40-537a-44f4-960e-f5b14d36902c.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/0082ab40-537a-44f4-960e-f5b14d36902c.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/BillClientRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/BillClientRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/CartDetailClientRestCotroller.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/CartDetailClientRestCotroller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/VoucherClientRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/controller/client/VoucherClientRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartDetailRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/CartRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/repository/VoucherRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/BillService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/BillService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartDetailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/CartService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/VoucherService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/BillServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/BillServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/CartDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/CartDetailServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/NotificationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/NotificationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BE/src/main/java/com/example/shose/server/service/impl/VoucherServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/api/customer/bill/billClient.api.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/api/customer/bill/billClient.api.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/api/customer/cartdetail/cartDetailClient.api.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/api/customer/cartdetail/cartDetailClient.api.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/component/employee/DashBoardEmployee.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/component/employee/DashBoardEmployee.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/account/purchase/tabscontent/TabAllBill.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/account/purchase/tabscontent/TabAllBill.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/cart/Cart.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/cart/Cart.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/component/style-card.css" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/component/style-card.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/Payment.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/Payment.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentAccount.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/payment/PaymentAccount.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FE/src/pages/customer/products/Products.js" beforeDir="false" afterPath="$PROJECT_DIR$/FE/src/pages/customer/products/Products.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,7 +149,8 @@
       <workItem from="1700665997545" duration="5042000" />
       <workItem from="1700915690009" duration="2677000" />
       <workItem from="1702404768867" duration="9389000" />
-      <workItem from="1702441047782" duration="14202000" />
+      <workItem from="1702441047782" duration="15002000" />
+      <workItem from="1702740731771" duration="1159000" />
     </task>
     <servers />
   </component>

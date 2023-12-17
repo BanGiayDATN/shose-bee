@@ -162,6 +162,13 @@ export class BillApi {
     });
   };
 
+  static fetchAllStatusBill = () => {
+    return request({
+      method: "GET",
+      url: `/admin/bill/status-bill`,
+    });
+  };
+
   static updateProductInBill = (id, data) => {
     return request({
       method: "PUT",

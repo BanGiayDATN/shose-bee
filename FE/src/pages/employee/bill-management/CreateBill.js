@@ -41,7 +41,7 @@ import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
 import { useReactToPrint } from "react-to-print";
 
-function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
+function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNotify }) {
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
@@ -400,12 +400,19 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
         toast.error(error.response.data.message);
       });
   }, []);
-
+  const changeQuanTiTyAddProduct = useSelector((state) => state.bill.bill.change);
   useEffect(() => {
     if (valueAddressShip != null) {
       handleWardChange(valueAddressShip.children, valueAddressShip);
     }
-  }, [products]);
+    addNotify({
+      code: code,
+      quantity: products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.quantity;
+      }, 0)
+    })
+    console.log("gia tri code: "+  code);
+  }, [products, changeQuanTiTyAddProduct]);
 
   const loadData = () => {
     CustomerApi.fetchAll().then(
@@ -960,7 +967,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id }) {
     }
 
     var data = {
-      phoneNumber: billRequest.phoneNumber.trim(),
+      phoneNumber: billRequest.phoneNumber,
       address: addressuser ? addressuser.trim() : null,
       userName: billRequest.userName ? billRequest.userName.trim() : null,
       itemDiscount: itemDiscount,

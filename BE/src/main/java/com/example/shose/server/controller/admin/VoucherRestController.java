@@ -66,6 +66,11 @@ public class VoucherRestController {
 
         return new ResponseObject(voucherService.updateStatus(id));
     }
+    @PostMapping("/expired-quantity/{id}")
+    public ResponseObject voucherExpiredQuantity(@PathVariable("id") String id) throws RestApiException {
+
+        return new ResponseObject(voucherService.updateStatusQuantity(id));
+    }
 
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable("id") String id, @Valid @RequestBody UpdateVoucherRequest request, BindingResult bindingResult) throws CustomListValidationException {

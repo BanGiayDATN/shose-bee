@@ -24,6 +24,7 @@ import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
+import com.example.shose.server.dto.response.bill.ListStatusRespone;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.HistoryPoin;
@@ -591,6 +592,11 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         return bill.get();
+    }
+
+    @Override
+    public List<ListStatusRespone> getAllSatusBill() {
+        return billRepository.getAllSatusBill();
     }
 
     @Override
@@ -1281,12 +1287,13 @@ public class BillServiceImpl implements BillService {
                 User customer = accountRepository.findById(idAccount).get().getUser();
                 if (checkTotal == 0) {
                     customer.setPoints(customer.getPoints() + bill.getPoinUse() - pointGiveBack);
+                    historyPoinRepository.save(
+                            HistoryPoin.builder().typePoin(TypePoin.DIEM_HOAN).value(bill.getPoinUse())
+                                    .bill(bill).user(customer).scoringFormula(scoringFormula).build());
                 } else {
                     customer.setPoints(customer.getPoints() - pointGiveBack);
-                }
-                if (Math.max(0, bill.getPoinUse() - pointGiveBack) > 0) {
                     historyPoinRepository.save(
-                            HistoryPoin.builder().typePoin(TypePoin.DIEM_HOAN).value(bill.getPoinUse() - pointGiveBack)
+                            HistoryPoin.builder().typePoin(TypePoin.DIEM_HOAN).value(bill.getPoinUse()- pointGiveBack)
                                     .bill(bill).user(customer).scoringFormula(scoringFormula).build());
                 }
                 userReposiory.save(customer);
