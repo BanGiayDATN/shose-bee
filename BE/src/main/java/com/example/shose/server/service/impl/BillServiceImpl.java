@@ -683,7 +683,7 @@ public class BillServiceImpl implements BillService {
                 .collect(Collectors.toList());
         boolean checkDaThanhToan = billHistories.stream()
                 .anyMatch(invoice -> invoice.getStatusBill() == StatusBill.DA_THANH_TOAN);
-        if (nextIndex < 3) {
+        if (nextIndex < 1) {
             throw new RestApiException(Message.CHANGED_STATUS_ERROR);
         }
         if (bill.get().getStatusBill() == StatusBill.THANH_CONG) {
