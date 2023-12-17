@@ -3,6 +3,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import {
   faBookmark,
+  faList12,
+  faRectangleList,
   faRotateBack,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -590,6 +592,10 @@ export default function DetailBillGiveBack() {
         }}
       >
         <div>
+          <h1 style={{ fontSize: "25px", marginBottom: "5px" }}>
+            <FontAwesomeIcon icon={faRectangleList} size="xl" /> Quản lý trả
+            hàng
+          </h1>
           <Card style={{ marginRight: "20px" }}>
             <h1 style={{ fontSize: "22px" }}>Thông tin khách hàng</h1>
             {bill != null && (
