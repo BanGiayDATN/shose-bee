@@ -8,6 +8,7 @@ import com.example.shose.server.dto.response.bill.BillGiveBack;
 import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
+import com.example.shose.server.dto.response.bill.ListStatusRespone;
 import com.example.shose.server.dto.response.statistical.StatisticalBestSellingProductResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
@@ -105,6 +106,12 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          ORDER BY bi.created_date
             """, nativeQuery = true)
     List<UserBillResponse> getAllUserInBill();
+
+    @Query(value = """
+            SELECT status_bill, COUNT(id) AS quantity FROM bill
+            GROUP BY status_bill
+            """, nativeQuery = true)
+    List<ListStatusRespone> getAllSatusBill();
 
     @Query(value = """
             SELECT bi.id FROM bill bi

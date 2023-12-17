@@ -24,6 +24,7 @@ import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
 import com.example.shose.server.dto.response.bill.InvoiceResponse;
+import com.example.shose.server.dto.response.bill.ListStatusRespone;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
 import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.HistoryPoin;
@@ -591,6 +592,11 @@ public class BillServiceImpl implements BillService {
             throw new RestApiException(Message.BILL_NOT_EXIT);
         }
         return bill.get();
+    }
+
+    @Override
+    public List<ListStatusRespone> getAllSatusBill() {
+        return billRepository.getAllSatusBill();
     }
 
     @Override

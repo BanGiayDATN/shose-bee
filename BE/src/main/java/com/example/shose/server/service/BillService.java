@@ -22,6 +22,7 @@ import com.example.shose.server.dto.response.bill.BillAccountResponse;
 import com.example.shose.server.dto.response.bill.BillGiveBack;
 import com.example.shose.server.dto.response.bill.BillGiveBackInformation;
 import com.example.shose.server.dto.response.bill.BillResponseAtCounter;
+import com.example.shose.server.dto.response.bill.ListStatusRespone;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.response.bill.BillResponse;
 import com.example.shose.server.dto.response.bill.UserBillResponse;
@@ -53,6 +54,8 @@ public interface BillService {
     Bill updateBillOffline(String id, UpdateBillRequest bill);
 
     Bill detail(String id);
+
+    List<ListStatusRespone> getAllSatusBill();
 
     Bill changedStatusbill(String id, String idEmployees, ChangStatusBillRequest request);
 
