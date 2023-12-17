@@ -107,7 +107,7 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
   return (
     <div>
       <Modal
-        title="Thêm khuyến mãi"
+        title="Thêm phiếu giảm giá"
         visible={modalCreate}
         onCancel={closeModal}
         okButtonProps={{ style: { display: "none" } }}
@@ -115,14 +115,14 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
       >
         <Form layout="vertical">
           <Form.Item
-            label="Tên khuyến mãi"
+            label="Tên phiếu giảm giá"
             validateStatus={formErrors["name"] ? "error" : ""}
             help={formErrors["name"] || ""}
           >
             <Input
               name="name"
               className="input-create-voucher"
-              placeholder="Tên khuyến mãi"
+              placeholder="Tên phiếu giảm giá"
               value={formData["name"]}
               onChange={(e) => {
                 inputChange("name", e.target.value);

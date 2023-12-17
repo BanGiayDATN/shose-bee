@@ -70,10 +70,10 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
             startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
             quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
             endDate: !formData.endDate
-            ? "Vui lòng chọn ngày kết thúc"
-            : formData.startDate >= formData.endDate
-            ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-            : "",
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : "",
           };
           setFormErrors(errors);
           return;
@@ -86,7 +86,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               autoClose: 5000,
             });
             closeModal();
-          },(err) => {
+          },
+          (err) => {
             toast.success(err.data.response.message, {
               autoClose: 5000,
             });
@@ -109,8 +110,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
           startDate: dayjs(voucherData.startDate),
           endDate: dayjs(voucherData.endDate),
           status: voucherData.status,
-          createdDate: dayjs(voucherData.createdDate), 
-          minimumBill: voucherData.minimumBill
+          createdDate: dayjs(voucherData.createdDate),
+          minimumBill: voucherData.minimumBill,
         });
       },
       (err) => console.log(err)
@@ -124,7 +125,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
   return (
     <div>
       <Modal
-        title="Cập nhập khuyến mãi"
+        title="Cập nhập phiếu giảm giá"
         visible={modalUpdate}
         onCancel={closeModal}
         okButtonProps={{ style: { display: "none" } }}
@@ -132,26 +133,26 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
       >
         <Form layout="vertical">
           <Form.Item
-            label="Mã khuyến mãi"
+            label="Mã phiếu giảm giá"
             validateStatus={formErrors["code"] ? "error" : ""}
             help={formErrors["code"] || ""}
           >
             <Input
               name="code"
               className="input-create-voucher"
-              placeholder="Tên khuyến mãi"
+              placeholder="Tên phiếu giảm giá"
               value={formData["code"]}
               readOnly
             />
           </Form.Item>
           <Form.Item
-            label="Tên khuyến mãi"
+            label="Tên phiếu giảm giá"
             validateStatus={formErrors["name"] ? "error" : ""}
             help={formErrors["name"] || ""}
           >
             <Input
               name="name"
-              placeholder="Tên khuyến mãi"
+              placeholder="Tên phiếu giảm giá"
               className="input-create-voucher"
               value={formData["name"]}
               onChange={(e) => {
@@ -177,10 +178,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
-          <Form.Item
-            label="Đơn tối thiểu"
-        
-          >
+          <Form.Item label="Đơn tối thiểu">
             <InputNumber
               name="minimumBill"
               placeholder="Đơn tối thiểu"
@@ -190,6 +188,8 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
                 inputChange("minimumBill", value);
               }}
               min="10000"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
           <Form.Item
@@ -248,7 +248,9 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
               value={
                 formData["status"] === "DANG_SU_DUNG"
                   ? "Đang kích hoạt"
-                  : formData["status"] === "CHUA_KICH_HOAT" ?" Chưa kích hoạt":"Không kích hoạt"
+                  : formData["status"] === "CHUA_KICH_HOAT"
+                  ? " Chưa kích hoạt"
+                  : "Không kích hoạt"
               }
             ></Input>
           </Form.Item>
