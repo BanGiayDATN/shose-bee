@@ -90,7 +90,7 @@ function Payment() {
     return () => clearInterval(interval);
   }, []);
   useEffect(() => {
-    setTotalBillToPay(totalBill - voucher.value);
+    setTotalBillToPay(totalBill-voucher.value);
     formBillChange("afterPrice", totalBill);
     const updatedListproductOfBill = listproductOfBill.map((item) => {
       const { nameProduct, nameSize, image, ...rest } = item;
@@ -116,7 +116,6 @@ function Payment() {
   }, [dayShip]);
   useEffect(() => {
     setTotalBillToPay(totalBillToPay);
-
     setFormBill({ ...formBill, moneyShip: moneyShip });
   }, [moneyShip]);
 
@@ -195,7 +194,7 @@ function Payment() {
 
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: totalBillToPay + moneyShip,
+            vnp_Ammount: totalBillToPay,
             billDetail: formBill.billDetail,
           };
           PaymentClientApi.paymentVnpay(data).then(

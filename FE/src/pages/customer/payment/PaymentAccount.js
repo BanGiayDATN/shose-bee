@@ -230,7 +230,7 @@ function PaymentAccount() {
 
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: totalBefore + moneyShip,
+            vnp_Ammount: totalAfter,
             billDetail: formBill.billDetail,
           };
           console.log(listproductOfBill);
