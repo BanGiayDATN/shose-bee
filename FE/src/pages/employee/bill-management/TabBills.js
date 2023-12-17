@@ -13,7 +13,7 @@ import { useReactToPrint } from "react-to-print";
 import TextArea from "antd/es/input/TextArea";
 
 
-function TabBills({ statusBill, dataFillter, addNotify }) {
+function TabBills({ statusBill, dataFillter, addNotify, quantityNotify }) {
   const [dataBill, setDataBill] = useState([]);
   const [dataIdCheck, setDataIdCheck] = useState([]);
   const socket = new SockJS("http://localhost:8080/ws");
@@ -139,6 +139,15 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
+      console.log(statusBill);
+
+      if(statusBill != ""){
+        addNotify({
+          status: statusBill,
+          quantity: res.data.data.length
+        })
+      }
+      
     }).catch((error) => {
       toast.error(error.response.data.message);
     });
@@ -146,6 +155,12 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       stompClient.subscribe("/app/admin-notifications", (response) => {
         BillApi.fetchAll(data).then((res) => {
           setDataBill(res.data.data);
+          if(statusBill != ""){
+        addNotify({
+          status: statusBill,
+          quantity: res.data.data.length
+        })
+      }
         });
       });
     });
@@ -154,7 +169,7 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
       // Ngắt kết nối khi component unmount
       stompClient.disconnect();
     };
-  }, []);
+  }, [statusBill]);
 
   useEffect(() => {
     var data = dataFillter;
@@ -173,6 +188,12 @@ function TabBills({ statusBill, dataFillter, addNotify }) {
     }
     BillApi.fetchAll(data).then((res) => {
       setDataBill(res.data.data);
+      if(statusBill != ""){
+        addNotify({
+          status: statusBill,
+          quantity: res.data.data.length
+        })
+      }
     }).catch((error) => {
       toast.error(error.response.data.message);
     });
