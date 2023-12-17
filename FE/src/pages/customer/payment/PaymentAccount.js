@@ -226,11 +226,9 @@ function PaymentAccount() {
           shippingTime: dayShip,
         };
 
-        console.log(dataBillSave);
-
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: totalBefore + moneyShip,
+            vnp_Ammount: formBill.afterPrice,
             billDetail: formBill.billDetail,
           };
           console.log(listproductOfBill);

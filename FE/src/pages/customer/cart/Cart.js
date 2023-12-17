@@ -859,7 +859,7 @@ function Cart() {
                         color: "blue",
                         cursor: "pointer",
                       }}
-                      onClick={() => openListVoucher(idAccountLocal)}
+                      onClick={() => openListVoucher(idAccountLocal)}                     
                     >
                       {voucher.value !== 0
                         ? "Chọn lại mã giảm giá"
