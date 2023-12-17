@@ -37,6 +37,12 @@ export class VoucherApi {
       url: `/admin/voucher/expired/${id}`,
     });
   };
+  static updateStatusQuantity = (id) => {
+    return request({
+      method: "POST",
+      url: `/admin/voucher/expired-quantity/${id}`,
+    });
+  };
 
   static getVoucherByMinimum = (mimium) => {
     return request({

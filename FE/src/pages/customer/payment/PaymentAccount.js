@@ -228,7 +228,8 @@ function PaymentAccount() {
 
         if (formBill.paymentMethod === "paymentVnpay") {
           const data = {
-            vnp_Ammount: formBill.afterPrice,
+            // vnp_Ammount: formBill.afterPrice,
+            vnp_Ammount: totalAfter,
             billDetail: formBill.billDetail,
           };
           console.log(listproductOfBill);
