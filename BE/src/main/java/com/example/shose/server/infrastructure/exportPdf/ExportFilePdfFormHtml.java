@@ -143,6 +143,7 @@ public class ExportFilePdfFormHtml {
                 .checkShip(true)
                 .totalTraSau(formatter.format(totalPaymentTraSau))
                 .moneyShip(formatter.format(bill.getMoneyShip()))
+                .checkBillTra(bill.getStatusBill() == StatusBill.TRA_HANG ? true : false)
                 .build();
 
         invoice.setTotalBill(totalMoney.compareTo(BigDecimal.ZERO) > 0 ? formatter.format(totalMoney) : "0 đ");
@@ -164,7 +165,7 @@ public class ExportFilePdfFormHtml {
                                     : billDetailRequest.getPrice().multiply(BigDecimal.valueOf(100 - billDetailRequest.getPromotion())).divide(BigDecimal.valueOf(100))))
                             .quantity(billDetailRequest.getQuantity())
                             .promotion(billDetailRequest.getPromotion())
-                            .status(billDetailRequest.getStatus() == "TRA_HANG" ? "Trả hàng ": "Thành công")
+                            .status(billDetailRequest.getStatus().equals("TRA_HANG")  ? "Trả hàng ": "Thành công")
                             .build();
 
                     if (billDetailRequest.getPromotion() != null) {
@@ -178,7 +179,7 @@ public class ExportFilePdfFormHtml {
 
         List<InvoicePaymentResponse> paymentsMethodRequests = paymentsMethods.stream()
                 .map(item -> InvoicePaymentResponse.builder()
-                        .total(formatter.format(item.getMethod() == StatusMethod.TIEN_MAT ? item.getTotalMoney().add(totalExcessMoney) : item.getTotalMoney()))
+                        .total(formatter.format(item.getMethod() == StatusMethod.TIEN_MAT  ? item.getTotalMoney().add(totalExcessMoney) : item.getTotalMoney()))
                         .method(getPaymentMethod(item.getMethod()))
                         .status(getPaymentStatus(item.getStatus()))
                         .vnp_TransactionNo(item.getVnp_TransactionNo())

@@ -31,6 +31,7 @@ public class InvoiceResponse {
     private String ship;
     private boolean method;
     private boolean typeBill;
+    private boolean checkBillTra;
     private String date;
     private Integer quantity;
     private String change;

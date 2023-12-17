@@ -1385,7 +1385,6 @@ public class BillServiceImpl implements BillService {
         billDetailRepository.saveAll(listUpdateBillDetail);
         billDetailRepository.saveAll(listUpdateBillDetailGiveBack);
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
-        createTemplateSendMail(bill.getId(), new BigDecimal(0));
         return bill;
     }
 
@@ -1400,6 +1399,12 @@ public class BillServiceImpl implements BillService {
         optional.get().setMoneyShip(request.getShip());
         billRepository.save(optional.get());
         return "Thành công";
+    }
+
+    @Override
+    public boolean sendMailGiveBack(String id) {
+        sendMailOnline(id);
+        return true;
     }
 
     private Long getCurrentTimestampInVietnam() {
