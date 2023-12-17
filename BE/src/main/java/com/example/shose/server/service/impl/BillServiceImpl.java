@@ -622,8 +622,7 @@ public class BillServiceImpl implements BillService {
             bill.get().setConfirmationDate(Calendar.getInstance().getTimeInMillis());
             CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId(), new BigDecimal(0)),
                     Executors.newCachedThreadPool());
-            CompletableFuture.runAsync(() -> createTemplateSendMail(bill.get().getId(), new BigDecimal(0)),
-                    Executors.newCachedThreadPool());
+
         } else if (bill.get().getStatusBill() == StatusBill.VAN_CHUYEN) {
             bill.get().setDeliveryDate(Calendar.getInstance().getTimeInMillis());
         } else if (bill.get().getStatusBill() == StatusBill.DA_THANH_TOAN) {
@@ -1185,7 +1184,7 @@ public class BillServiceImpl implements BillService {
         if (email == null) {
             return true;
         }
-        if (bill.getStatusBill() != StatusBill.THANH_CONG && !email.isEmpty()) {
+        if ((bill.getStatusBill() == StatusBill.TRA_HANG || bill.getStatusBill() != StatusBill.THANH_CONG ) && !email.isEmpty()) {
             invoice.setCheckShip(true);
             sendMail(invoice,
                     domainClient + "/bill/" + bill.getCode() + "/" + bill.getPhoneNumber(), bill.getEmail());
@@ -1386,6 +1385,7 @@ public class BillServiceImpl implements BillService {
         billDetailRepository.saveAll(listUpdateBillDetail);
         billDetailRepository.saveAll(listUpdateBillDetailGiveBack);
         productDetailGiveBackRepository.saveAll(addProductDetailGiveBacks);
+        createTemplateSendMail(bill.getId(), new BigDecimal(0));
         return bill;
     }
 
