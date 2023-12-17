@@ -111,6 +111,20 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public Voucher updateStatusQuantity(String id) throws RestApiException {
+        Optional<Voucher> optional = voucherRepository.findById(id);
+        if (!optional.isPresent()) {
+            throw new RestApiException("Khuyến mãi không tồn tại");
+        }
+        Voucher voucher = optional.get();
+         if(voucher.getQuantity()<1){
+            voucher.setStatus(Status.KHONG_SU_DUNG);
+        }
+        voucherRepository.save(voucher);
+        return voucher;
+    }
+
+    @Override
     public Boolean delete(String id) {
         Optional<Voucher> voucher = voucherRepository.findById(id);
         voucherRepository.delete(voucher.get());
