@@ -61,7 +61,7 @@ export default function Policy() {
         style={{ marginTop: "30px", marginBottom: "30px" }}
       >
         <Col span={8}>
-          <Card style={{ maxHeight: "670px" }}>
+          <Card style={{ maxHeight: "750px" }}>
             <h2>Thông tin bạn cần biết</h2>
             <hr />
             <Menu
