@@ -4,6 +4,7 @@ import PolicyProduct from "./model/PolicyProduct";
 import PolicySecurity from "./model/PolicySecurity";
 import PolicyVNPay from "./model/PolicyVNPay";
 import PolicyCustomer from "./model/PolicyCustomer";
+import PoinCustomer from "./model/PoinCustomer";
 import PaymentPolicy from "./model/PaymentPolicy";
 import CustomerObligations from "./model/CustomerObligations";
 import EmployeeObligations from "./model/EmployeeObligations";
@@ -48,6 +49,9 @@ function ContentDisplay({ selectedItem }) {
       break;
     case "15":
       content = <EmployeeObligations />;
+      break;
+    case "16":
+      content = <PoinCustomer />;
       break;
     default:
       content = "Select an item from the menu";

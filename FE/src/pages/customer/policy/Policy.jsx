@@ -28,6 +28,7 @@ export default function Policy() {
         getItem("Chính sách bảo mật", "6"),
         getItem("Chính sách bảo mật thông tin thanh toán", "7"),
         getItem("Chính sách dành cho khách hàng", "8"),
+        getItem("Chính sách điểm thưởng thành viên", "16"),
         getItem("Chính sách thanh toán", "9"),
         getItem("Điều khoản dịch vụ", "10"),
         getItem("Chính sách trả hàng", "4"),
