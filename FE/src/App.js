@@ -132,7 +132,7 @@ function App() {
   };
   const updateItemListQuantity = (items, api, updateFunction) => {
     items.forEach((item) => {
-      if (item.quantity < 1) {
+      if (item.quantity < 1 && item.status==='DANG_SU_DUNg') {
         api(item.id)
           .then((res) => {
             dispatch(updateFunction(res.data.data));

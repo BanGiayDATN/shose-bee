@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   faCarRear,
@@ -607,9 +608,15 @@ function PaymentAccount() {
               </div>
             </div>
             <div className="time-recieve-goods">
-              <FontAwesomeIcon
-                icon={faCarRear}
-                style={{ fontSize: "30px", marginRight: "20px" }}
+              <img
+                src={
+                  "https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png"
+                }
+                style={{
+                  width: "130px",
+                  marginLeft: "5px",
+                  marginRight: "10px",
+                }}
               />
               <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
             </div>

@@ -91,4 +91,6 @@ public interface BillService {
     List<BillResponse> getBillCanceled();
 
     String getShipBill (BillShipRequest request);
+
+    boolean sendMailGiveBack(String id);
 }

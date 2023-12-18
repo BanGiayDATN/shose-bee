@@ -32,6 +32,7 @@ import { BillApi } from "../../../api/employee/bill/bill.api";
 import TextArea from "antd/es/input/TextArea";
 import { toast } from "react-toastify";
 import TabBillDetail from "./tabBillDetail/TabBillDetail";
+import { PoinApi } from "../../../api/employee/poin/poin.api";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -148,7 +149,8 @@ function DetailBillClinet() {
             : statusBill === "THANH_CONG"
             ? "Thành công"
             : statusBill === "DA_HUY"
-            ?"Đã hủy" : ""}
+            ? "Đã hủy"
+            : ""}
         </span>
       ),
     },
@@ -365,6 +367,55 @@ function DetailBillClinet() {
     }
   };
   // end  cancelBill
+  const totalMoneyProduct = (product) => {
+    return product.promotion === null
+      ? product.price * product.quantity
+      : (product.price * (100 - product.promotion) * product.quantity) / 100;
+  };
+  const totalProductDetailGiveBack = () => {
+    let total = 0;
+    productDetailToBillDetail.map((data) => {
+      if (data.statusBillDetail === "TRA_HANG") {
+        const money = totalMoneyProduct(data);
+        total += money;
+      }
+    });
+    console.log(total);
+    return total;
+  };
+  const totalProductDetailGiveBackAndSuccse = () => {
+    let total = 0;
+    productDetailToBillDetail.map((data) => {
+      const money = totalMoneyProduct(data);
+      total += money;
+    });
+    console.log(total);
+    return total;
+  };
+  const [productDetailToBillDetail, setProductDetailToBillDetail] = useState(
+    []
+  );
+  const loadDataProductDetailToBillDetail = () => {
+    // BillApi.BillGiveBack(id).then((res) => {
+    //   setProductDetailToBillDetail(res.data.data);
+    //   console.log(res.data.data);
+    // });
+  };
+  const changeQuanTiTy = useSelector((state) => state.bill.bill.change);
+  useEffect(() => {
+    if (id !== null) {
+      loadDataProductDetailToBillDetail();
+    }
+    PoinApi.findPoin()
+      .then((res) => {
+        setDataPoin(res.data.data);
+        console.log(res.data.data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  }, [id, changeQuanTiTy]);
+  const [dataPoin, setDataPoin] = useState(null);
   return (
     <div>
       {checkBillExit ? (
@@ -629,18 +680,26 @@ function DetailBillClinet() {
                     </Col>
                   </Row>
                 </Col>
-                 {bill.shippingTime != null && bill.statusBill != "THANH_CONG" ? (
-               <Col span={12} className="text">
-               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                 <Col span={8} style={{ fontWeight: "bold", fontSize: "16px" }}>
-                   Thời gian dự kiến nhận:
-                 </Col>
-                 <Col span={16}>
-                   <span style={{ color: "black" }}>{moment(bill.shippingTime).format("DD-MM-YYYY")}</span>
-                 </Col>
-               </Row>
-             </Col>
-            ): (<Row></Row>)}
+                {bill.shippingTime != null &&
+                bill.statusBill != "THANH_CONG" ? (
+                  <Col span={12} className="text">
+                    <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                      <Col
+                        span={8}
+                        style={{ fontWeight: "bold", fontSize: "16px" }}
+                      >
+                        Thời gian dự kiến nhận:
+                      </Col>
+                      <Col span={16}>
+                        <span style={{ color: "black" }}>
+                          {moment(bill.shippingTime).format("DD-MM-YYYY")}
+                        </span>
+                      </Col>
+                    </Row>
+                  </Col>
+                ) : (
+                  <Row></Row>
+                )}
                 <Col span={12} className="text">
                   <Row
                     style={{
@@ -706,93 +765,157 @@ function DetailBillClinet() {
                 )}
               </Row>
             </Row>
-            <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
-              <Col span={10}>
-                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                  <Col span={7}></Col>
-                  <Col
-                    span={6}
-                    style={{ fontWeight: "bold", fontSize: "16px" }}
-                  >
-                    Tiền hàng :
-                  </Col>
-                  <Col span={10} align={"end"}>
-                    <span style={{ fontSize: "16px" }}>
-                      {formatCurrency(bill.totalMoney)}
-                    </span>
-                  </Col>
-                </Row>
-                {bill.moneyShip == undefined || bill.moneyShip == "" ? (
+            <Col span={24}>
+              <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
+                <Col span={10}>
                   <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                    <Col span={7}></Col>
+                    <Col span={5}></Col>
                     <Col
-                      span={6}
+                      span={9}
                       style={{ fontWeight: "bold", fontSize: "16px" }}
                     >
-                      Phí vận chuyển :
+                      Tổng tiền hàng :
                     </Col>
                     <Col span={10} align={"end"}>
-                      <span style={{ fontSize: "16px" }}>
-                        {formatCurrency(bill.moneyShip)}
+                      <span
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: "bold",
+                          color: "blue",
+                        }}
+                      >
+                        {formatCurrency(bill.totalMoney)}
                       </span>
                     </Col>
                   </Row>
-                ) : (
-                  <Row></Row>
-                )}
+                  {bill.moneyShip != undefined || bill.moneyShip != "" ? (
+                    <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                      <Col span={5}></Col>
+                      <Col
+                        span={9}
+                        style={{ fontWeight: "bold", fontSize: "16px" }}
+                      >
+                        Phí vận chuyển :
+                      </Col>
+                      <Col span={10} align={"end"}>
+                        <span style={{ fontSize: "16px" }}>
+                          {bill.moneyShip !== null &&
+                            formatCurrency(bill.moneyShip)}
+                        </span>
+                      </Col>
+                    </Row>
+                  ) : (
+                    <Row></Row>
+                  )}
+                  {bill.poinUse > 0 ? (
+                    <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                      <Col span={5}></Col>
+                      <Col
+                        span={9}
+                        style={{ fontWeight: "bold", fontSize: "16px" }}
+                      >
+                        Điểm sử dụng {bill.poinUse} :
+                      </Col>
+                      <Col span={10} align={"end"}>
+                        <span style={{ fontSize: "16px" }}>
+                          {formatCurrency(
+                            bill?.poinUse * dataPoin?.exchangeRateMoney
+                          )}
+                        </span>
+                      </Col>
+                    </Row>
+                  ) : (
+                    <Row></Row>
+                  )}
 
-                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                  <Col span={7}></Col>
-                  <Col
-                    span={6}
-                    style={{ fontWeight: "bold", fontSize: "16px" }}
-                  >
-                    Tiền giảm :{" "}
-                  </Col>
-                  <Col span={10} align={"end"}>
-                    <span style={{ fontSize: "16px" }}>
-                      {formatCurrency(bill.itemDiscount)}
-                    </span>
-                  </Col>
-                </Row>
-                <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                  <Col span={7}></Col>
-                  <Col
-                    span={6}
-                    style={{
-                      marginBottom: "40px",
-                      fontWeight: "bold",
-                      fontSize: "16px",
-                    }}
-                  >
-                    Tổng tiền:{" "}
-                  </Col>
-                  <Col span={10} align={"end"}>
-                    <span
+                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                    <Col span={5}></Col>
+                    <Col
+                      span={9}
+                      style={{ fontWeight: "bold", fontSize: "16px" }}
+                    >
+                      Voucher giảm giá :{" "}
+                    </Col>
+                    <Col span={10} align={"end"}>
+                      <span style={{ fontSize: "16px" }}>
+                        {formatCurrency(bill.itemDiscount - bill.valuePoin)}
+                      </span>
+                    </Col>
+                  </Row>
+
+                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                    <Col span={5}></Col>
+                    <Col
+                      span={9}
+                      style={{ fontWeight: "bold", fontSize: "16px" }}
+                    >
+                      Tổng tiền giảm :{" "}
+                    </Col>
+                    <Col span={10} align={"end"}>
+                      <span style={{ fontSize: "16px" }}>
+                        {formatCurrency(bill.itemDiscount)}
+                      </span>
+                    </Col>
+                  </Row>
+                  {totalProductDetailGiveBack() > 0 && (
+                    <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                      <Col span={5}></Col>
+                      <Col
+                        span={9}
+                        style={{ fontWeight: "bold", fontSize: "16px" }}
+                      >
+                        Tổng tiền hàng trả :
+                      </Col>
+                      <Col span={10} align={"end"}>
+                        <span
+                          style={{
+                            fontSize: "18px",
+                            fontWeight: "bold",
+                            color: "red",
+                          }}
+                        >
+                          {formatCurrency(totalProductDetailGiveBack())}
+                        </span>
+                      </Col>
+                    </Row>
+                  )}
+
+                  <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
+                    <Col span={5}></Col>
+                    <Col span={19}>
+                      <hr />
+                    </Col>
+                    <Col span={5}></Col>
+                    <Col
+                      span={9}
                       style={{
-                        color: "red",
+                        marginBottom: "40px",
                         fontWeight: "bold",
                         fontSize: "16px",
                       }}
                     >
-                      {formatCurrency(
-                        detailProductInBill.reduce(
-                          (accumulator, currentValue) => {
-                            return (
-                              accumulator +
-                              currentValue.price * currentValue.quantity
-                            );
-                          },
-                          0
-                        ) +
-                          bill.moneyShip -
-                          bill.itemDiscount
-                      )}
-                    </span>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
+                      Tổng tiền thanh toán:{" "}
+                    </Col>
+                    <Col span={10} align={"end"}>
+                      <span
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: "bold",
+                          color: "blue",
+                        }}
+                      >
+                        {formatCurrency(
+                          Math.max(
+                            0,
+                            bill.totalMoney + bill.moneyShip - bill.itemDiscount
+                          )
+                        )}
+                      </span>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
           </Row>
           <Modal
             title="Hủy đơn hàng"
