@@ -24,7 +24,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://103.169.35.190:3306/database_shose
       SPRING_DATASOURCE_USERNAME: shose
-      SPRING_DATASOURCE_PASSWORD: ^0Y3H?1%nbG(
+      SPRING_DATASOURCE_PASSWORD: 0ykmug_oMmnQ
 
   # Container cho ứng dụng ReactJS
   react-app:
