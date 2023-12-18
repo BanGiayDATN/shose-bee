@@ -469,7 +469,7 @@ function DetailProduct() {
                       />
                     </div>{" "}
                     <span className="title-policy">
-                      Miễn phí giao hàng đơn từ 800k.{" "}
+                      Miễn phí giao hàng đơn từ 2 triệu.{" "}
                     </span>
                   </li>
                   <li className="item-policy">
