@@ -56,7 +56,7 @@ function PaymentAccount() {
   const comercial = [
     { title: "CHÀO MỪNG QUÝ KHÁCH!" },
     { title: " CHÚC QUÝ KHÁCH MUA HÀNG HAPPY!" },
-    { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
+    { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 2 triệu!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
   const [totalAfter, setTotalAfter] = useState(0);
