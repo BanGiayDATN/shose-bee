@@ -12,6 +12,7 @@ const colorSlice = createSlice({
     CreateColor: (state, action) => {
       const data = action.payload;
       const newColor = {
+        stt: 1,
         id: data.id,
         code: data.code,
         name: data.name,
@@ -20,6 +21,9 @@ const colorSlice = createSlice({
         lastModifiedDate: data.lastModifiedDate,
       };
       state.unshift(newColor);
+      state.forEach((item, index) => {
+        item.stt = index + 1;
+      });
     },
     UpdateColor: (state, action) => {
       const updatedColor = action.payload; // backend

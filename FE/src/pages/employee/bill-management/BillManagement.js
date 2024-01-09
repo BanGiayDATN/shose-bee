@@ -1,56 +1,33 @@
+import { PlusOutlined } from "@ant-design/icons";
 import {
-  faEye,
   faFilter,
   faKaaba,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Button,
-  Form,
-  Table,
-  Select,
-  Space,
-  Row,
-  Col,
-  Tabs,
-  Tooltip,
-  Badge,
-} from "antd";
-import moment from "moment";
-import React from "react";
-import { useEffect } from "react";
+import { Badge, Button, Select, Tabs } from "antd";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { BillApi } from "../../../api/employee/bill/bill.api";
-import { useState } from "react";
-import { useAppDispatch } from "../../../app/hook";
-import {
-  getAllBill,
-  getEmployees,
-  getUsers,
-} from "../../../app/reducer/Bill.reducer";
-import "./style-bill.css";
-import { useRef } from "react";
-import { AccountApi } from "../../../api/employee/account/account.api";
-import FormSearch from "./FormSearch";
 import { Link } from "react-router-dom";
-import { AddressApi } from "../../../api/employee/address/address.api";
+import { BillApi } from "../../../api/employee/bill/bill.api";
+import { useAppDispatch } from "../../../app/hook";
+import { getAllBill } from "../../../app/reducer/Bill.reducer";
+import FormSearch from "./FormSearch";
 import TabBills from "./TabBills";
+import "./style-bill.css";
 
 function BillManagement() {
-  var listBill = useSelector((state) => state.bill.bills.value);
-
   var users = useSelector((state) => state.bill.search.users);
   var employees = useSelector((state) => state.bill.search.employees);
   var [status, setStatus] = useState([]);
-  var [quantityNotify, setQuantityNotify] = useState([ ])
-
+  var [quantityNotify, setQuantityNotify] = useState([]);
+  var [listStatusTab, setListStatusTab] = useState([]);
   const dispatch = useAppDispatch();
-  const { Option } = Select;
 
   useEffect(() => {
-    BillApi.fetchAll(fillter).then((res) => {
-      dispatch(getAllBill(res.data.data));
+    BillApi.fetchAllStatusBill().then((res) => {
+      setQuantityNotify(res.data.data)
+      setListStatusTab(listtab)
     });
   }, []);
 
@@ -64,7 +41,9 @@ function BillManagement() {
 
   const handleSubmitSearch = (e) => {
     var data = fillter;
-    data.status = status;
+    if (status.length != 0) {
+      data.status = status;
+    }
     setFillter(data);
     BillApi.fetchAll(fillter).then((res) => {
       dispatch(getAllBill(res.data.data));
@@ -98,7 +77,15 @@ function BillManagement() {
     setFillter({
       startTimeString: "",
       endTimeString: "",
-      status: [],
+      status: [
+        "CHO_XAC_NHAN",
+        "CHO_VAN_CHUYEN",
+        "VAN_CHUYEN",
+        "DA_THANH_TOAN",
+        "THANH_CONG",
+        "TRA_HANG",
+        "DA_HUY",
+      ],
       endDeliveryDateString: "",
       startDeliveryDateString: "",
       key: "",
@@ -108,18 +95,30 @@ function BillManagement() {
       type: "",
       page: 0,
     });
-    setStatus([]);
-    BillApi.fetchAll(fillter).then((res) => {
-      dispatch(getAllBill(res.data.data));
-    });
+    setStatus([
+      "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+    ]);
+    console.log(fillter);
   };
-
-  
 
   const [fillter, setFillter] = useState({
     startTimeString: "",
     endTimeString: "",
-    status: [],
+    status: [
+      "CHO_XAC_NHAN",
+      "CHO_VAN_CHUYEN",
+      "VAN_CHUYEN",
+      "DA_THANH_TOAN",
+      "THANH_CONG",
+      "TRA_HANG",
+      "DA_HUY",
+    ],
     endDeliveryDateString: "",
     startDeliveryDateString: "",
     key: "",
@@ -130,18 +129,14 @@ function BillManagement() {
     page: 0,
   });
 
-
-  const onChange = (key) => {
-    setQuantityNotify(quantityNotify.filter(item => item.status !== key))
-  };
-
   const listtab = [
     "",
     "CHO_XAC_NHAN",
+    "XAC_NHAN",
     "CHO_VAN_CHUYEN",
     "VAN_CHUYEN",
     "DA_THANH_TOAN",
-    "KHONG_TRA_HANG",
+    "THANH_CONG",
     "DA_HUY",
   ];
 
@@ -150,39 +145,37 @@ function BillManagement() {
       ? "Tất cả"
       : key === "CHO_XAC_NHAN"
       ? "Chờ xác nhận"
+      : key === "XAC_NHAN"
+      ? "Đã xác nhận"
       : key === "CHO_VAN_CHUYEN"
       ? "Chờ vận chuyển"
       : key === "VAN_CHUYEN"
       ? "Vận chuyển"
       : key === "DA_THANH_TOAN"
-      ? "Thanh toán"
-      : key === "KHONG_TRA_HANG"
+      ? "thanh toán"
+      : key === "THANH_CONG"
       ? "Hoàn thành"
       : "Hủy";
   };
-  const checkNotifyNew = (key) => {
-   var index =  quantityNotify.findIndex((item) => item.name == key)
-   if(index == -1){
-    return false
-   }else{
-    return true
-   }
-  }
 
   const showQuantityBillNotify = (key) => {
     var index = quantityNotify.findIndex((item) => item.status == key);
-    if(index != -1){
-      return quantityNotify[index].quantity
+    if (index != -1) {
+      return quantityNotify[index].quantity;
     }
-    return null
-   }
+    return null;
+  };
 
-  const addNotify = (notify) =>{
-    setQuantityNotify([...quantityNotify, notify])
-  }
+  const addNotify = (notify) => {
+    var index = quantityNotify.findIndex((item) => item.code === notify.code);
+    if (index != -1) {
+      var data = quantityNotify
+      data.splice(index,1,notify)
+      setQuantityNotify(data);
+    }
+  };
 
-  
-
+  console.log(quantityNotify);
   return (
     <div>
       <div className="title_category">
@@ -226,22 +219,32 @@ function BillManagement() {
             Danh sách Hóa đơn
           </span>
           <div style={{ marginLeft: "auto" }}></div>
+          <Link to={"/sale-counter"} style={{ marginRight: "10px" }}>
+            <Button type="primary" icon={<PlusOutlined />} size={"large"}>
+              Tạo đơn hàng
+            </Button>
+          </Link>
         </div>
         <div style={{ marginTop: "25px" }}>
           <Tabs
-            onChange={onChange}
             type="card"
-            items={listtab.map((item) => {
+            items={listStatusTab.map((item) => {
+              var index = quantityNotify.findIndex((notify) => item == notify.status);
               return {
                 label: (
-                  <Badge count={showQuantityBillNotify(item)}>
-                    <span >
-                      {convertString(item)}
-                    </span>
+                  <Badge count={quantityNotify[index]?.quantity}>
+                    <span>{convertString(item)}</span>
                   </Badge>
                 ),
                 key: item,
-                children: <TabBills statusBill={item} dataFillter={fillter} addNotify={addNotify}/>,
+                children: (
+                  <TabBills
+                    statusBill={item}
+                    dataFillter={fillter}
+                    quantityNotify={quantityNotify}
+                    addNotify={addNotify}
+                  />
+                ),
               };
             })}
           />

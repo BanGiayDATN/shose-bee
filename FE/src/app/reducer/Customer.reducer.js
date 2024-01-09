@@ -18,6 +18,7 @@ const accountSlice = createSlice({
         email: data.email,
         phoneNumber: data.phoneNumber,
         dateOfBirth: data.dateOfBirth,
+        citizenIdentity: data.citizenIdentity,
         password: data.password,
         points: data.points,
         status: data.status,

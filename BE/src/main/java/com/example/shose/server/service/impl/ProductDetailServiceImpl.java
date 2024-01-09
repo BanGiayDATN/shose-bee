@@ -3,7 +3,8 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.ProductDetailDTO;
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
-import com.example.shose.server.dto.request.productdetail.CreateSizeData;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysConvertRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
@@ -11,9 +12,9 @@ import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.cart.ListSizeOfItemCart;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
+import com.example.shose.server.dto.response.productdetail.GetProductDetail;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.dto.response.productdetail.GetProductDetailInCart;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.entity.Category;
 import com.example.shose.server.entity.Color;
@@ -21,11 +22,13 @@ import com.example.shose.server.entity.Image;
 import com.example.shose.server.entity.Material;
 import com.example.shose.server.entity.Product;
 import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.ProductDetailGiveBack;
 import com.example.shose.server.entity.Size;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.cloudinary.CloudinaryResult;
 import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
+import com.example.shose.server.infrastructure.common.PageableRequest;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -35,16 +38,20 @@ import com.example.shose.server.repository.CategoryRepository;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.repository.ImageRepository;
 import com.example.shose.server.repository.MaterialRepository;
+import com.example.shose.server.repository.ProductDetailGiveBackRepository;
 import com.example.shose.server.repository.ProductDetailRepository;
 import com.example.shose.server.repository.ProductRepository;
-import com.example.shose.server.repository.PromotionRepository;
 import com.example.shose.server.repository.SizeRepository;
 import com.example.shose.server.repository.SoleRepository;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.RandomNumberGenerator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,8 +59,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -64,6 +73,7 @@ import java.util.stream.IntStream;
  */
 @Service
 @Validated
+@Slf4j
 public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Autowired
@@ -97,11 +107,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Autowired
     private UploadImageToCloudinary imageToCloudinary;
 
-    @Autowired
-    private PromotionRepository promotionRepository;
 
     @Autowired
     private QRCodeAndCloudinary qrCodeAndCloudinary;
+
+    @Autowired
+    private ProductDetailGiveBackRepository productDetailGiveBackRepository;
 
 
     @Override
@@ -119,31 +130,53 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         CreateProductDetailRequest request = listData.get(0);
         String productId = request.getProductId();
+        listData.stream().forEach(a -> {
+            ProductDetailReponse reponse = productDetailRepository.getOneProductDetailByAll(a);
+            if (reponse != null) {
+                throw new RestApiException("Sản phẩm : " + request.getProductId() + "[" + request.getSize() + "-" + colorRepository.getOneByCode(request.getColor()).getName() + "]" + " đã tồn tại !!");
+            }
+        });
 
         Product product = createProductIfNotExist(productId);
         Brand brand = brandRepository.getById(request.getBrandId());
         Material material = materialRepository.getById(request.getMaterialId());
         Sole sole = soleRepository.getById(request.getSoleId());
         Category category = categoryRepository.getById(request.getCategoryId());
-        List<ProductDetail> listDetail = listData.parallelStream().map(req -> {
-            ProductDetail add = new ProductDetail();
-            add.setProduct(product);
-            add.setGender(getGenderProductDetail(req.getGender()));
-            add.setSize(sizeRepository.getOneByName(req.getSize()));
-            add.setQuantity(req.getQuantity());
-            add.setStatus(Status.DANG_SU_DUNG);
-            add.setPrice(new BigDecimal(req.getPrice()));
-            add.setColor(colorRepository.getOneByCode(req.getColor()));
-            add.setDescription(req.getDescription());
-            add.setSole(sole);
-            add.setMaterial(material);
-            add.setCategory(category);
-            add.setBrand(brand);
-            return add;
-        }).collect(Collectors.toList());
+        List<CompletableFuture<ProductDetail>> listDetailFutures = listData.stream().map(req ->
+                CompletableFuture.supplyAsync(() -> {
+                    ProductDetail add = new ProductDetail();
+                    add.setProduct(product);
+                    add.setGender(getGenderProductDetail(req.getGender()));
+                    add.setSize(sizeRepository.getOneByName(req.getSize()));
+                    add.setQuantity(req.getQuantity());
+                    add.setStatus(Status.DANG_SU_DUNG);
+                    add.setPrice(new BigDecimal(req.getPrice()));
+                    add.setColor(colorRepository.getOneByCode(req.getColor()));
+                    add.setDescription(req.getDescription());
+                    add.setSole(sole);
+                    add.setMaterial(material);
+                    add.setCategory(category);
+                    add.setBrand(brand);
+                    return add;
+                })
+        ).collect(Collectors.toList());
+
+        List<ProductDetail> listDetail = listDetailFutures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+
         productDetailRepository.saveAll(listDetail);
 
-        listDetail.parallelStream().forEach(a -> a.setMaQR(qrCodeAndCloudinary.generateAndUploadQRCode(a.getId())));
+        List<CompletableFuture<ProductDetail>> list = listDetail.stream()
+                .map(detail ->
+                    CompletableFuture.supplyAsync(() -> {
+                        String qrCode = qrCodeAndCloudinary.generateAndUploadQRCode(detail.getId());
+                        detail.setMaQR(qrCode);
+                        return detail;
+                    })
+                )
+                .collect(Collectors.toList());
+        productDetailRepository.saveAll(list.stream().map(CompletableFuture::join).collect(Collectors.toList()));
 
         // lấy danh sách chứa tất cả màu từ listUrl
         List<String> existingColors = listUrl.stream()
@@ -153,7 +186,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         List<Image> images = listUrl.parallelStream().filter(result -> existingColors.contains(result.getColor()))
                 .flatMap(result -> {
                     List<ProductDetail> matchingDetails = listDetail.stream()
-                            .filter(detail -> detail.getColor().getCode().equals(result.getColor()))
+                            .filter(detail ->  detail.getColor().getCode().equals(result.getColor()))
                             .collect(Collectors.toList());
 
                     return matchingDetails.stream().map(matchingDetail -> {
@@ -196,7 +229,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         update.setSize(size);
         update.setColor(color);
         update.setCategory(category);
-        update.setStatus(getStatus(req.getStatus()));
+        update.setStatus((!req.getStatus().equals("KHONG_SU_DUNG") && req.getQuantity() != 0) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
         productDetailRepository.save(update);
 
 
@@ -231,7 +264,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Transactional
     public List<UpdateQuantityAndPrice> updateList(List<UpdateQuantityAndPrice> requestData) {
         List<ProductDetail> detailList = new ArrayList<>();
-        requestData.parallelStream().forEach(a -> {
+        requestData.stream().forEach(a -> {
             Optional<ProductDetail> detailOptional = productDetailRepository.findById(a.getId());
             System.out.println(detailOptional.get().getId());
             if (!detailOptional.isPresent()) {
@@ -240,12 +273,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             ProductDetail detail = detailOptional.get();
             detail.setPrice(a.getPrice());
             detail.setQuantity(a.getQuantity());
+            detail.setStatus(Status.DANG_SU_DUNG);
             detailList.add(detail);
         });
         productDetailRepository.saveAll(detailList);
         return requestData;
     }
-
 
 
     @Override
@@ -291,7 +324,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         Product product = productRepository.getOneByName(productId);
         if (product == null) {
             product = new Product();
-            product.setCode(new RandomNumberGenerator().randomToString("SP", 1500000000));
+            product.setCode(new RandomNumberGenerator().randomToString("SP", 2000000000));
             product.setName(productId);
             product.setStatus(Status.DANG_SU_DUNG);
             productRepository.save(product);
@@ -304,15 +337,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.findAllByIdProduct(id);
     }
 
-
-//    @Override
-//    public List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req) {
-//        return productDetailRepository.getAllProductDetail(req);
-//    }
-
     @Override
-    public GetDetailProductOfClient getDetailProductOfClient(String id, String codeColor, String nameSize) {
-        return productDetailRepository.getDetailProductOfClient(id, codeColor,nameSize);
+    public GetDetailProductOfClient getDetailProductOfClient(String id) {
+        return productDetailRepository.getDetailProductOfClient(id);
 
 
     }
@@ -322,10 +349,64 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.listSizeByProductAndColor(idProduct, codeColor);
     }
 
+    @Override
+    public Page<GetProductDetail> getProductDetailByCategorys( FindProductDetailByCategorysRequest request,Pageable pageRequest) {
+        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
+        List<String> colorList = request.getColor() != null ? Arrays.asList(request.getColor().split(",")) : null;
+        List<String> brandList = request.getBrand() != null ? Arrays.asList(request.getBrand().split(",")) : null;
+        List<String> materialList = request.getMaterial() != null ? Arrays.asList(request.getMaterial().split(",")) : null;
+        List<String> sizeList = request.getNameSize() != null ? Arrays.asList(request.getNameSize().split(",")) : null;
+        List<String> soleList = request.getSole() != null ? Arrays.asList(request.getSole().split(",")) : null;
+        List<String> categoryList = request.getCategory() != null ? Arrays.asList(request.getCategory().split(",")) : null;
+        List<String> statusList = request.getStatus() != null ? Arrays.asList(request.getStatus().split(",")) : null;
+        System.out.println(colorList);
+        System.out.println(request);
+
+        FindProductDetailByCategorysConvertRequest detail = FindProductDetailByCategorysConvertRequest.builder()
+                .colors(colorList)
+                .brands(brandList)
+                .materials(materialList)
+                .nameSizes(sizeList)
+                .soles(soleList)
+                .categorys(categoryList)
+                .statuss(statusList)
+                .gender(request.getGender())
+                .minPrice(request.getMinPrice())
+                .maxPrice(request.getMaxPrice())
+                .sellOff(request.getSellOff())
+                .newProduct(request.getNewProduct())
+                .build();
+        System.out.println(detail);
+        return productDetailRepository.getProductDetailByCategorys(pageable,detail,request);
+    }
+
+    public ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request) {
+        return productDetailRepository.getOneProductDetailByAll(request);
+    }
+
+    @Override
+    public ProductDetailGiveBack getQuantityProductDetailGiveBack(String idProductDetail) {
+        return productDetailGiveBackRepository.getOneByIdProductDetail(idProductDetail);
+    }
 
     @Override
     public List<GetProductDetailByCategory> GetProductDetailByCategory(String id) {
         return productDetailRepository.getProductDetailByCategory(id);
+    }
+
+    @Override
+    public Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable) {
+        return productDetailRepository.getProductDetailHavePromotion(pageable);
+    }
+
+    @Override
+    public Page<GetProductDetail> getProductDetailNew(Pageable pageable) {
+        return productDetailRepository.getProductDetailNew(pageable);
+    }
+
+    @Override
+    public Page<GetProductDetail> getProductDetailSellMany(Pageable pageable) {
+        return productDetailRepository.getProductDetailSellMany(pageable);
     }
 
 

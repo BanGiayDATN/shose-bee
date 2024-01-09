@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.category.CreateCategoryRequest;
 import com.example.shose.server.dto.request.category.FindCategoryRequest;
 import com.example.shose.server.dto.request.category.UpdateCategoryRequest;
 import com.example.shose.server.dto.response.CategoryResponse;
+import com.example.shose.server.dto.response.category.GetCategoryInProductDetail;
 import com.example.shose.server.entity.Category;
 import com.example.shose.server.infrastructure.common.PageableObject;
 import com.example.shose.server.infrastructure.constant.Message;
@@ -12,6 +13,7 @@ import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.CategoryRepository;
 import com.example.shose.server.service.CategoryService;
 import jakarta.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category add = new Category();
         add.setName(req.getName());
-        add.setStatus(req.getStatus());
+        add.setStatus(Status.valueOf(req.getStatus()));
         return categoryRepository.save(add);
     }
 
@@ -66,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category update = optional.get();
         update.setName(req.getName());
-        update.setStatus(req.getStatus());
+        update.setStatus(Status.valueOf(req.getStatus()));
         return categoryRepository.save(update);
     }
 
@@ -87,5 +89,10 @@ public class CategoryServiceImpl implements CategoryService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public List<GetCategoryInProductDetail> getCategoryInProductDetail() {
+        return categoryRepository.getCategoryInProductDetail();
     }
 }

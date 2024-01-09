@@ -2,8 +2,13 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
+import com.example.shose.server.dto.response.user.GetByAccountResponse;
+import com.example.shose.server.dto.response.user.SimpleUserResponse;
+import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -38,7 +43,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                 a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
-            WHERE a.roles='NHAN_VIEN'
+            WHERE a.roles='ROLE_EMLOYEE'
              AND  
               ( :#{#req.fullName} IS NULL 
                     OR :#{#req.fullName} LIKE '' 
@@ -81,7 +86,7 @@ public interface UserReposiory extends JpaRepository<User, String> {
                  a.id AS idAccount
             FROM user u
               JOIN account a ON u.id = a.id_user
-            WHERE a.roles='USER'
+            WHERE a.roles='ROLE_USER'
              AND  
               ( :#{#req.fullName} IS NULL 
                     OR :#{#req.fullName} LIKE '' 
@@ -158,8 +163,8 @@ public interface UserReposiory extends JpaRepository<User, String> {
     @Query("SELECT u FROM  User u WHERE u.phoneNumber =:phoneNumber")
     User getOneUserByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
-    @Query("SELECT u FROM  User u WHERE u.email =:email")
-    User getOneUserByEmail(@Param("email") String email);
+    @Query("SELECT u FROM  Account u WHERE u.email =:email")
+    Account getOneUserByEmail(@Param("email") String email);
 
     @Query(value = """
             SELECT
@@ -185,5 +190,25 @@ public interface UserReposiory extends JpaRepository<User, String> {
             WHERE u.phoneNumber = :phoneNumber
             """, nativeQuery = true)
     Optional<EmployeeResponse> getOneByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query(value = """
+            SELECT
+                u.id AS id
+            FROM user u
+            JOIN account a ON u.id = a.id_user
+            WHERE a.id = :idAccount
+            """, nativeQuery = true)
+    Optional<GetByAccountResponse> getByAccount(String idAccount);
+
+    Optional<User> findByEmail(String email);
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+            UPDATE user
+            SET points = 0
+            WHERE id = :id
+            """, nativeQuery = true)
+    void resetAllPoinUser(String id);
 
 }

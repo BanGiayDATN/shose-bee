@@ -1,37 +1,26 @@
 import React, { useEffect, useState } from "react";
 import "./../style-voucher.css";
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  Table,
-  Modal,
-  InputNumber,
-  Popconfirm,
-  DatePicker,
-} from "antd";
+import { Form, Input, Button, Modal, InputNumber, DatePicker } from "antd";
 import { VoucherApi } from "../../../../api/employee/voucher/Voucher.api";
 import { UpdateVoucher } from "../../../../app/reducer/Voucher.reducer";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAppDispatch, useAppSelector } from "../../../../app/hook";
+import { useAppDispatch } from "../../../../app/hook";
 dayjs.extend(utc);
-const { Option } = Select;
 function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const dispatch = useAppDispatch();
 
-  
   const inputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
   useEffect(() => {
+    console.log(id);
     if (id !== "") {
-      detailVoucher();
+      detailVoucher(id);
     }
   }, [id]);
   useEffect(() => {
@@ -49,51 +38,67 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
     return convertedFormData;
   };
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
   const handleSubmit = () => {
-    console.log(convertToLong());
-    const isFormValid =
-      formData.name &&
-      formData.value &&
-      formData.quantity &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.startDate < formData.endDate;
+    Modal.confirm({
+      title: "Xác nhận cập nhập",
+      content: "Bạn có chắc chắn muốn cập nhập phiếu giảm giá ?",
+      okText: "Cập nhập",
+      cancelText: "Hủy",
+      onOk() {
+        const isFormValid =
+          formData.code &&
+          formData.name &&
+          formData.value &&
+          formData.quantity &&
+          formData.startDate &&
+          formData.endDate &&
+          formData.startDate < formData.endDate;
 
-    if (!isFormValid) {
-      const errors = {
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-      };
-      setFormErrors(errors);
-      return;
-    }
-
-    VoucherApi.update(id, convertToLong())
-      .then((res) => {
-        dispatch(UpdateVoucher(res.data.data));
-        toast.success("Cập nhập thành công!", {
-          autoClose: 5000,
-        });
-        closeModal();
-      })
-      .catch((error) => {
-        if (error.response.data.message === "BS-400") {
-          toast.success("Vui lòng nhập đầy đủ!", {
-            autoClose: 5000,
-          });
+        if (!isFormValid) {
+          const errors = {
+            code: !formData.code ? "Vui lòng nhập mã khuyễn mãi" : "",
+            name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
+            value: !formData.value ? "Vui lòng nhập giá giảm" : "",
+            startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+            quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
+            endDate: !formData.endDate
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : "",
+          };
+          setFormErrors(errors);
           return;
         }
-      });
+
+        VoucherApi.update(id, convertToLong()).then(
+          (res) => {
+            dispatch(UpdateVoucher(res.data.data));
+            toast.success("Cập nhập thành công!", {
+              autoClose: 5000,
+            });
+            closeModal();
+          },
+          (err) => {
+            toast.success(err.data.response.message, {
+              autoClose: 5000,
+            });
+            console.log(err);
+          }
+        );
+      },
+    });
   };
 
-  const detailVoucher = () => {
+  const detailVoucher = (id) => {
     VoucherApi.getOne(id).then(
       (res) => {
         const voucherData = res.data.data;
@@ -106,6 +111,7 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
           endDate: dayjs(voucherData.endDate),
           status: voucherData.status,
           createdDate: dayjs(voucherData.createdDate),
+          minimumBill: voucherData.minimumBill,
         });
       },
       (err) => console.log(err)
@@ -113,14 +119,13 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
   };
   const closeModal = () => {
     setModalUpdate(false);
-    setFormData([]);
     setFormErrors([]);
   };
 
   return (
     <div>
       <Modal
-        title="Cập nhập khuyến mãi"
+        title="Cập nhập phiếu giảm giá"
         visible={modalUpdate}
         onCancel={closeModal}
         okButtonProps={{ style: { display: "none" } }}
@@ -128,13 +133,26 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
       >
         <Form layout="vertical">
           <Form.Item
-            label="Tên khuyến mãi"
+            label="Mã phiếu giảm giá"
+            validateStatus={formErrors["code"] ? "error" : ""}
+            help={formErrors["code"] || ""}
+          >
+            <Input
+              name="code"
+              className="input-create-voucher"
+              placeholder="Tên phiếu giảm giá"
+              value={formData["code"]}
+              readOnly
+            />
+          </Form.Item>
+          <Form.Item
+            label="Tên phiếu giảm giá"
             validateStatus={formErrors["name"] ? "error" : ""}
             help={formErrors["name"] || ""}
           >
             <Input
               name="name"
-              placeholder="Tên khuyến mãi"
+              placeholder="Tên phiếu giảm giá"
               className="input-create-voucher"
               value={formData["name"]}
               onChange={(e) => {
@@ -156,6 +174,22 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
                 inputChange("value", value);
               }}
               min="1"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
+            />
+          </Form.Item>
+          <Form.Item label="Đơn tối thiểu">
+            <InputNumber
+              name="minimumBill"
+              placeholder="Đơn tối thiểu"
+              className="input-create-voucher"
+              value={formData["minimumBill"]}
+              onChange={(value) => {
+                inputChange("minimumBill", value);
+              }}
+              min="10000"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
           <Form.Item
@@ -207,35 +241,33 @@ function UpdateVoucherManagement({ modalUpdate, setModalUpdate, id }) {
             />
           </Form.Item>
           <Form.Item label="Trạng thái">
-            <Select
+            <Input
+              disable
               className="status"
               name="status"
-              placeholder="Vui lòng chọn trạng thái"
-              value={formData["status"] || ""}
-              onChange={(value) => {
-                inputChange("status", value);
-              }}
-            >
-              <Option value="DANG_SU_DUNG">Còn hạn</Option>
-              <Option value="KHONG_SU_DUNG">Hết hạn</Option>
-            </Select>
+              value={
+                formData["status"] === "DANG_SU_DUNG"
+                  ? "Đang kích hoạt"
+                  : formData["status"] === "CHUA_KICH_HOAT"
+                  ? " Chưa kích hoạt"
+                  : "Không kích hoạt"
+              }
+            ></Input>
           </Form.Item>
 
           <Form.Item>
-            <Button onClick={closeModal}>Hủy</Button>
-            <Popconfirm
-              title="Thông báo"
-              description={"Bạn có chắc chắn muốn thêm không ?"}
-              onConfirm={() => {
-                handleSubmit();
-              }}
-              okText="Có"
-              cancelText="Không"
-            >
-              <Button className="button-submit" key="submit" title="Thêm">
+            <div style={{ float: "right" }}>
+              <Button onClick={closeModal}>Hủy</Button>
+              <Button
+                className="button-add-promotion"
+                key="submit"
+                title="Cập nhập"
+                onClick={handleSubmit}
+                style={{ marginLeft: "20px" }}
+              >
                 Cập nhập
               </Button>
-            </Popconfirm>
+            </div>
           </Form.Item>
         </Form>
       </Modal>

@@ -47,6 +47,8 @@ public class CreateBillOfflineRequest {
     @NotEmpty
     private String code;
 
+    private int poin;
+
     @NotEmpty
     private String statusPayMents;
 
@@ -55,6 +57,10 @@ public class CreateBillOfflineRequest {
     private boolean openDelivery;
 
     private String moneyShip;
+
+    private String email;
+
+    private BigDecimal totalExcessMoney;
 
     @NotNull
     private List<CreateBillDetailRequest> billDetailRequests;

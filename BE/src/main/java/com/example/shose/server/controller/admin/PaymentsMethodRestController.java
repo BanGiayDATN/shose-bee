@@ -3,15 +3,14 @@ package com.example.shose.server.controller.admin;
 import com.example.shose.server.dto.request.payMentMethod.CreatePayMentMethodTransferRequest;
 import com.example.shose.server.dto.request.paymentsmethod.CreatePaymentsMethodRequest;
 import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.PaymentsMethodService;
 import com.example.shose.server.util.ResponseObject;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,8 +29,8 @@ import java.util.List;
 @RequestMapping("/admin/payment")
 public class PaymentsMethodRestController {
 
-    @Value("${user}")
-    private String userId;
+    @Autowired
+    private ShoseSession shoseSession;
 
     @Autowired
     private PaymentsMethodService paymentsMethodService;
@@ -43,7 +42,7 @@ public class PaymentsMethodRestController {
 
     @PostMapping("/bill/{id}")
     public ResponseObject create(@PathVariable("id") String id, @RequestBody CreatePaymentsMethodRequest request){
-        return  new ResponseObject(paymentsMethodService.create(id, userId, request));
+        return  new ResponseObject(paymentsMethodService.create(id, shoseSession.getEmployee().getId(), request));
     }
 
     @GetMapping("/total-money/{id}")
@@ -53,7 +52,7 @@ public class PaymentsMethodRestController {
 
     @PutMapping("/update-status/{id}")
     public ResponseObject sumTotalMoneyByIdBill(@PathVariable("id")  String idBill, @RequestBody() List<String> ids){
-        return  new ResponseObject(paymentsMethodService.updatepayMent(idBill, userId, ids));
+        return  new ResponseObject(paymentsMethodService.updatepayMent(idBill, shoseSession.getEmployee().getId(), ids));
     }
 
 
@@ -68,8 +67,11 @@ public class PaymentsMethodRestController {
 
     @GetMapping("/payment-success")
     public ResponseObject pay(final PayMentVnpayResponse response){
-    return new ResponseObject(paymentsMethodService.paymentSuccess(userId, response)) ;
+    return new ResponseObject(paymentsMethodService.paymentSuccess(shoseSession.getEmployee().getId(), response)) ;
     }
 
-
+    @PostMapping("/refund-payment/{id}")
+    public ResponseObject refundPayment(@RequestBody CreatePaymentsMethodRequest request, @PathVariable("id") String id){
+        return new ResponseObject(paymentsMethodService.refundPayment(shoseSession.getEmployee().getId(), id, request)) ;
+    }
 }

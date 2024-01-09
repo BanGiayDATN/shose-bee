@@ -4,6 +4,9 @@ import com.example.shose.server.entity.base.AuditEntity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 /**
@@ -27,6 +30,8 @@ public class AuditEntityListener {
     }
 
     private long getCurrentTime() {
-        return Calendar.getInstance().getTimeInMillis();
+        ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
+        ZonedDateTime currentTimeInVietnam = Instant.now().atZone(vietnamZone);
+        return currentTimeInVietnam.toInstant().toEpochMilli();
     }
 }

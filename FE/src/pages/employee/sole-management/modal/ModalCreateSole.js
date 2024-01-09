@@ -18,7 +18,6 @@ const ModalCreateSole = ({ visible, onCancel }) => {
   // Trong hàm handleOk, chúng ta gọi form.validateFields() để kiểm tra và lấy giá trị
   // hàm onCreate để xử lý dữ liệu
   const handleOk = () => {
-    console.log(form);
     form
       .validateFields()
       .then((values) => {
@@ -47,7 +46,6 @@ const ModalCreateSole = ({ visible, onCancel }) => {
             onCancel();
           })
           .catch((error) => {
-            toast.error(error.response.data.message);
             console.log("Create failed:", error);
           });
       })
@@ -87,12 +85,25 @@ const ModalCreateSole = ({ visible, onCancel }) => {
                 if (value && value.trim() === "") {
                   return Promise.reject("Không được chỉ nhập khoảng trắng");
                 }
+                if (!/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)) {
+                  return Promise.reject(
+                    "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                  );
+                }
                 return Promise.resolve();
               },
             },
           ]}
         >
-          <Input placeholder="Tên đế giày" />
+          <Input
+            placeholder="Tên đế giày"
+            onKeyDown={(e) => {
+              if (e.target.value === "" && e.key === " ") {
+                e.preventDefault();
+                e.target.value.replace(/\s/g, "");
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item

@@ -10,13 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Nguyễn Vinh
  */
 @Repository
-public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,String> {
+public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod, String> {
 
     List<PaymentsMethod> findAllByBill(Bill bill);
 
@@ -42,5 +41,40 @@ public interface PaymentsMethodRepository extends JpaRepository<PaymentsMethod,S
              AND status = 'TRA_SAU'
             """, nativeQuery = true)
     int countPayMentPostpaidByIdBill(@Param("idBill") String idBill);
+
+    @Modifying
+    @Query(value = """
+                    UPDATE payments_method pa
+                    SET pa.status = 'THANH_TOAN'
+                    WHERE pa.id_bill = :idBill
+                    """, nativeQuery = true)
+    void updateAllByIdBill(@Param("idBill") String idBill);
+
+    @Query(value = """
+                    SELECT id FROM payments_method
+                    WHERE vnp_transaction_no = :code
+                    """, nativeQuery = true)
+    List<String> findAllByVnpTransactionNo(@Param("code") String code);
+
+    @Query(value = """
+                    SELECT id  FROM payments_method
+                    WHERE id_bill = :idBill
+                    AND method = 'TIEN_MAT' 
+                    AND status = 'TRA_SAU' 
+                    """, nativeQuery = true)
+    List<String> findAllPayMentByIdBillAndMethod(@Param("idBill") String idBill);
+
+    @Query(value = """
+                    SELECT sum(total_money)  FROM payments_method
+                    WHERE id_bill = :idBill
+                    """, nativeQuery = true)
+    BigDecimal findTotalPayMnetByIdBill(@Param("idBill") String idBill);
+
+    @Query(value = """
+                    SELECT * FROM payments_method
+                    WHERE id_bill = :idBill
+                    """, nativeQuery = true)
+
+    PaymentsMethod findByBill(@Param("idBill") String idBill);
 
 }

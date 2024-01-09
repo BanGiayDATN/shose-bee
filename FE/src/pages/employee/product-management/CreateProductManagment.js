@@ -8,7 +8,6 @@ import {
   Input,
   InputNumber,
   Modal,
-  Popconfirm,
   Row,
   Select,
   Space,
@@ -27,11 +26,9 @@ import { MaterialApi } from "../../../api/employee/material/Material.api";
 import { CategoryApi } from "../../../api/employee/category/category.api";
 import { SoleApi } from "../../../api/employee/sole/sole.api";
 import { BrandApi } from "../../../api/employee/brand/Brand.api";
-import { ColorApi } from "../../../api/employee/color/Color.api";
 import ModalCreateSole from "../sole-management/modal/ModalCreateSole";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetSole, SetSole } from "../../../app/reducer/Sole.reducer";
-import { GetSize } from "../../../app/reducer/Size.reducer";
 import ModalCreateBrand from "../brand-management/modal/ModalCreateBrand";
 import ModalCreateCategory from "../category-management/modal/ModalCreateCategory";
 import ModalCreateMaterial from "../material-management/modal/ModalCreateManterial";
@@ -45,15 +42,18 @@ import {
 } from "../../../app/reducer/Category.reducer";
 import { GetBrand, SetBrand } from "../../../app/reducer/Brand.reducer";
 import { ProductApi } from "../../../api/employee/product/product.api";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import axios from "axios";
-import ModalAddSizeProduct from "./modal/ModalAddSizeProduct";
+import { PlusOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import AddColorModal from "./modal/ModalAddColor";
 import convert from "color-convert";
-
+import ModalAddListSizeProduct from "./modal/ModalAddListSizeProduct";
+import AddColorModal from "./modal/ModalAddListColor";
+import { useNavigate } from "react-router-dom";
+import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import useDebounce from "../../custom-hook/useDebounce";
+import ModalPriceAndQuantity from "./modal/ModalPriceAndQuantity";
 const CreateProductManagment = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const status = "DANG_SU_DUNG";
   const [form] = Form.useForm();
   const [modalAddSole, setModalAddSole] = useState(false);
@@ -67,7 +67,6 @@ const CreateProductManagment = () => {
   const dataCategory = useAppSelector(GetCategory);
   const dataMaterial = useAppSelector(GetMaterail);
   const dataBrand = useAppSelector(GetBrand);
-  const dataSize = useAppSelector(GetSize);
 
   const initialValues = {
     status: "DANG_SU_DUNG",
@@ -82,49 +81,50 @@ const CreateProductManagment = () => {
     setModalAddSize(false);
   };
 
-  const [listMaterial, setListMaterial] = useState([]);
-  const [listCategory, setListCategory] = useState([]);
-  const [listBrand, setListBrand] = useState([]);
   const [listProduct, setListProduct] = useState([]);
-  const [listSole, setListSole] = useState([]);
 
   const getList = () => {
-    ProductApi.fetchAll().then((res) => {
+    ProductApi.fetchAllByName().then((res) => {
       setListProduct(res.data.data);
     });
     MaterialApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListMaterial(res.data.data);
       dispatch(SetMaterial(res.data.data));
     });
     CategoryApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListCategory(res.data.data);
       dispatch(SetCategory(res.data.data));
     });
     SoleApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListSole(res.data.data);
       dispatch(SetSole(res.data.data));
     });
     BrandApi.fetchAll({
       status: status,
     }).then((res) => {
-      setListBrand(res.data.data);
       dispatch(SetBrand(res.data.data));
     });
   };
 
   const handleSearch = (value) => {
+    setValueInput(value);
+  };
+
+  const [valueInput, setValueInput] = useState("");
+
+  const debouncedNameValue = useDebounce(valueInput, 700);
+
+  useEffect(() => {
     ProductApi.fetchAllByName({
-      name: value,
+      name: valueInput,
     }).then((res) => {
       setListProduct(res.data.data);
     });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameValue]);
 
   const renderOptions = (nameList) => {
     return nameList.map((product, index) => ({
@@ -139,18 +139,15 @@ const CreateProductManagment = () => {
   const handleSaveData = (selectedSizeData) => {
     console.log(selectedSizeData);
     selectedSizeData.forEach((selectedSizeData) => {
-      // Kiểm tra xem kích thước đã tồn tại trong listSizeAdd chưa
       const existingSize = listSizeAdd.find(
         (item) => item.nameSize === selectedSizeData.size
       );
 
       if (existingSize) {
-        // Nếu kích thước đã tồn tại, hiển thị cảnh báo
         toast.warning(
           `Kích cỡ ${selectedSizeData.size} đã tồn tại trong danh sách!`
         );
       } else {
-        // Nếu kích thước chưa tồn tại, thêm vào listSizeAdd
         setListSizeAdd((prevList) => [
           ...prevList,
           {
@@ -226,13 +223,6 @@ const CreateProductManagment = () => {
     });
   };
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  useEffect(() => {
-    if (isSubmitting) {
-      window.location.href = "/product-management";
-    }
-  }, [isSubmitting]);
-
   const handleUpload = () => {
     form
       .validateFields()
@@ -290,11 +280,16 @@ const CreateProductManagment = () => {
           });
         });
         formData.append("data", JSON.stringify(updatedTableData));
-        axios
-          .post("http://localhost:8080/admin/product-detail", formData)
+
+        if (updatedTableData.length === 0) {
+          toast.warning("Bạn không có sản phẩm để thêm.");
+          return;
+        }
+
+        ProducDetailtApi.addListProduct(formData)
           .then((response) => {
             console.log(response.data);
-            setIsSubmitting(true);
+            navigate(`/product-management`);
           })
           .catch((error) => {
             console.error(error);
@@ -309,34 +304,19 @@ const CreateProductManagment = () => {
     getList();
   }, []);
 
-  useEffect(() => {
-    if (
-      dataSole != null ||
-      dataBrand != null ||
-      dataCategory != null ||
-      dataMaterial != null ||
-      dataSize != null
-    ) {
-      setListSole(dataSole);
-      setListCategory(dataCategory);
-      setListMaterial(dataMaterial);
-      setListBrand(dataBrand);
-    }
-  }, [dataSole, dataBrand, dataCategory, dataMaterial, dataSize]);
-
   const columns = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      width: "5%",
+      width: "7%",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Tên Sản Phẩm",
+      title: <div style={{ textAlign: "center" }}>Tên Sản Phẩm</div>,
       dataIndex: "productId",
       key: "productId",
-      width: "25%",
+      width: "30%",
       render: (productId, record) =>
         `${productId} [ ${record.size} - ${getColorName(record.color)} ]`,
     },
@@ -344,6 +324,7 @@ const CreateProductManagment = () => {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
+      align: "center",
       width: "10%",
       render: (_, record) => (
         <InputNumber
@@ -357,9 +338,11 @@ const CreateProductManagment = () => {
       title: "Giá Bán",
       dataIndex: "price",
       key: "price",
+      align: "center",
       width: "15%",
       render: (_, record) => (
         <Input
+          min={100000}
           value={formatCurrency(record.price)}
           onChange={(e) =>
             handlePriceChange(e.target.value.replace(/\D/g, ""), record.key)
@@ -386,9 +369,10 @@ const CreateProductManagment = () => {
       ),
     },
     {
-      title: "Upload Ảnh",
+      title: <div style={{ textAlign: "center" }}>Upload Ảnh</div>,
       dataIndex: "color",
       key: "color",
+      width: "100%",
       render: (color, record, index) => {
         // Lọc các dòng có cùng màu sắc
         const rowsWithSameColor = tableData.filter(
@@ -411,11 +395,14 @@ const CreateProductManagment = () => {
           const uploadColumn = (
             <>
               <Upload
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                 listType="picture-card"
                 fileList={colorFileData}
+                accept="image/*"
                 onPreview={handlePreview}
                 onChange={(info) => handleUploadImages(info, record)}
+                customRequest={({ file, onSuccess }) => {
+                  onSuccess(file);
+                }}
                 beforeUpload={(file) => {
                   // Kiểm tra xem tệp có phải là hình ảnh hay không
                   const isImage = file.type.startsWith("image/");
@@ -455,8 +442,7 @@ const CreateProductManagment = () => {
             children: (
               <td
                 style={{
-                  // border: "1px solid blue", // Màu viền
-                  borderRadius: "15px", //
+                  borderRadius: "15px",
                 }}
                 rowSpan={rowsWithSameColor.length}
               >
@@ -476,6 +462,9 @@ const CreateProductManagment = () => {
 
   // cập nhập số lượng
   const handleQuantityChange = (value, key) => {
+    if (value <= 0) {
+      value = 1;
+    }
     setTableData((prevTableData) =>
       prevTableData.map((item) =>
         item.key === key ? { ...item, quantity: value } : item
@@ -484,6 +473,9 @@ const CreateProductManagment = () => {
   };
   // cập nhập giá tiền
   const handlePriceChange = (value, key) => {
+    if (value <= 0) {
+      value = 100000;
+    }
     setTableData((prevTableData) =>
       prevTableData.map((item) =>
         item.key === key ? { ...item, price: value } : item
@@ -513,7 +505,11 @@ const CreateProductManagment = () => {
         const updatedTableData = tableData.filter(
           (item) => item.key !== recordToDelete.key
         );
-        setTableData(updatedTableData);
+        const updatedTableDataWithSTT = updatedTableData.map((item, index) => ({
+          ...item,
+          stt: index + 1,
+        }));
+        setTableData(updatedTableDataWithSTT);
       },
     });
   };
@@ -592,9 +588,9 @@ const CreateProductManagment = () => {
       listSizeAdd.forEach((sizeItem) => {
         const newRecord = {
           key: `${colorItem.color}-${sizeItem.nameSize}`,
-          ...formData, // Copy existing formData properties
-          color: colorItem.color, // Add color property
-          size: sizeItem.nameSize, // Add size property
+          ...formData,
+          color: colorItem.color,
+          size: sizeItem.nameSize,
           quantity: 1,
           price: "1000000",
           stt: stt++,
@@ -607,7 +603,47 @@ const CreateProductManagment = () => {
 
   useEffect(() => {
     dataDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listColorAdd, listSizeAdd]);
+
+  const handleUploadTableData = () => {
+    dataDetail();
+  };
+
+  // cập nhập giá chúng vs số lượng chung
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const onSelectChange = (newSelectedRowKeys) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  const [openQuantityAndPrice, setQuantityAndPrice] = useState(false);
+  const handleUpdateQuantityAndPrice = (newValues) => {
+    const updatedData = tableData.map((record) => {
+      if (selectedRowKeys.includes(record.key)) {
+        return {
+          ...record,
+          quantity: newValues.quantityCustom,
+          price: newValues.priceCustom,
+        };
+      }
+      return record;
+    });
+
+    setTableData(updatedData);
+    setQuantityAndPrice(false);
+  };
+
+  const showModalQuantityAndPrice = () => {
+    setQuantityAndPrice(true);
+  };
+  const handleCancelQuantityAndPrice = () => {
+    setQuantityAndPrice(false);
+  };
 
   return (
     <>
@@ -630,19 +666,6 @@ const CreateProductManagment = () => {
         <div style={{ marginTop: "1%" }}>
           <div className="content">
             <Form form={form} initialValues={initialValues}>
-              <Form.Item>
-                <Tooltip title="Thêm sản phẩm chi tiết">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="form-submit-btn"
-                    onClick={handleUpload}
-                    disabled={isSubmitting}
-                  >
-                    Hoàn Tất
-                  </Button>
-                </Tooltip>
-              </Form.Item>
               <Form.Item
                 label="Tên sản phẩm"
                 name="productId"
@@ -656,6 +679,13 @@ const CreateProductManagment = () => {
                           "Không được chỉ nhập khoảng trắng"
                         );
                       }
+                      if (
+                        !/^(?=.*[a-zA-Z]|[À-ỹ])[a-zA-Z\dÀ-ỹ\s\-_]*$/.test(value)
+                      ) {
+                        return Promise.reject(
+                          "Phải chứa ít nhất một chữ cái và không có ký tự đặc biệt"
+                        );
+                      }
                       return Promise.resolve();
                     },
                   },
@@ -666,9 +696,9 @@ const CreateProductManagment = () => {
                   placeholder="Nhập tên sản phẩm"
                   onSearch={handleSearch}
                   onSelect={(value) => {
+                    handleProductNameChange(value);
                     setSelectedProduct(value);
-                    setProductNameValid(true);
-                    form.validateFields(["productId"]);
+                    handleUploadTableData();
                   }}
                   value={selectedProduct}
                 >
@@ -676,8 +706,18 @@ const CreateProductManagment = () => {
                     className="form-input"
                     style={{ fontWeight: "bold" }}
                     onChange={(e) => {
-                      handleProductNameChange(e.target.value);
-                      setSelectedProduct(e.target.value);
+                      handleProductNameChange(e.target.value.trim());
+                      setSelectedProduct(e.target.value.trim());
+                      handleUploadTableData();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === " " && e.target.value === "") {
+                        e.preventDefault();
+                        const inputValue = e.target.value.replace(/\s/g, "");
+                        handleProductNameChange(inputValue);
+                        setSelectedProduct(inputValue);
+                        handleUploadTableData();
+                      }
                     }}
                   />
                 </AutoComplete>
@@ -705,6 +745,12 @@ const CreateProductManagment = () => {
                   rows={7}
                   placeholder="Nhập mô tả sản phẩm"
                   className="form-textarea-product "
+                  onKeyDown={(e) => {
+                    if (e.key === " " && e.target.value === "") {
+                      e.preventDefault();
+                      e.target.value.replace(/\s/g, "");
+                    }
+                  }}
                 />
               </Form.Item>
               <br />
@@ -720,7 +766,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn thương hiệu">
-                      {listBrand.map((brand, index) => (
+                      {dataBrand.map((brand, index) => (
                         <Option key={index} value={brand.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {brand.name}
@@ -782,7 +828,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn chất liệu">
-                      {listMaterial.map((material, index) => (
+                      {dataMaterial.map((material, index) => (
                         <Option key={index} value={material.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {material.name}
@@ -814,7 +860,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn đế giày">
-                      {listSole.map((sole, index) => (
+                      {dataSole.map((sole, index) => (
                         <Option key={index} value={sole.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {sole.name}
@@ -884,7 +930,7 @@ const CreateProductManagment = () => {
                     ]}
                   >
                     <Select placeholder="Chọn thể loại">
-                      {listCategory.map((category, index) => (
+                      {dataCategory.map((category, index) => (
                         <Option key={index} value={category.id}>
                           <span style={{ fontWeight: "bold" }}>
                             {category.name}
@@ -944,7 +990,7 @@ const CreateProductManagment = () => {
             gutter={16}
             style={{ marginTop: "50px", marginBottom: "80px" }}
           >
-            <Col span={3} style={{ marginLeft: "25px" }}>
+            <Col span={3} style={{ flex: 1 }}>
               <h2>Kích Cỡ : </h2>
             </Col>
             <Col span={16}>
@@ -963,10 +1009,10 @@ const CreateProductManagment = () => {
                     />
                   </Button>
                 ))}
-                <Col span={5}>
+                <Col span={16}>
                   <Tooltip title="Thêm kích cỡ">
                     <Button
-                      style={{ height: "40px", marginLeft: "20%" }}
+                      style={{ height: "40px", marginLeft: "3%" }}
                       type="primary"
                       onClick={() => {
                         if (isProductNameValid) {
@@ -981,7 +1027,7 @@ const CreateProductManagment = () => {
                       <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Tooltip>
-                  <ModalAddSizeProduct
+                  <ModalAddListSizeProduct
                     visible={modalAddSize}
                     onCancel={handleCancel}
                     onSaveData={handleSaveData}
@@ -996,7 +1042,7 @@ const CreateProductManagment = () => {
             gutter={16}
             style={{ marginTop: "80px", marginBottom: "80px" }}
           >
-            <Col span={3} style={{ marginLeft: "25px" }}>
+            <Col span={3} style={{ flex: 1 }}>
               <h2>Màu Sắc : </h2>
             </Col>
             <Col span={16}>
@@ -1016,17 +1062,10 @@ const CreateProductManagment = () => {
                     />
                   </Button>
                 ))}
-                <Col
-                  span={5}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
+                <Col span={16}>
                   <Tooltip title="Thêm màu sắc">
                     <Button
-                      style={{ height: "40px", marginRight: "50%" }}
+                      style={{ height: "40px", marginLeft: "3%" }}
                       type="primary"
                       onClick={() => {
                         if (isProductNameValid) {
@@ -1073,13 +1112,52 @@ const CreateProductManagment = () => {
             Chi tiết sản phẩm
           </span>
         </div>
+        
+        <Form.Item>
+          <Row gutter={16} justify={"end"}>
+            <Tooltip title=" Chỉnh số lượng và giá chung">
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={showModalQuantityAndPrice}
+                style={{
+                  height: "40px",
+                  fontWeight: "bold",
+                  margin: "0px 20px",
+                }}
+              >
+                Chỉnh số lượng và giá chung
+              </Button>
+            </Tooltip>
+            <Tooltip title="Thêm sản phẩm chi tiết">
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={handleUpload}
+                style={{
+                  height: "40px",
+                  fontWeight: "bold",
+                  margin: "0px 20px",
+                }}
+              >
+                Hoàn Tất
+              </Button>
+            </Tooltip>
+          </Row>
+        </Form.Item>
         <Table
-          rowKey="id"
+          rowKey="key"
+          rowSelection={rowSelection}
           columns={columns}
           dataSource={tableData}
           pagination={{ pageSize: 5 }}
         />
       </div>
+      <ModalPriceAndQuantity
+        open={openQuantityAndPrice}
+        onCancel={handleCancelQuantityAndPrice}
+        onUpdate={handleUpdateQuantityAndPrice}
+      />
     </>
   );
 };

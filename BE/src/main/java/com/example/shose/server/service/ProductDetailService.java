@@ -3,6 +3,7 @@ package com.example.shose.server.service;
 import com.example.shose.server.dto.ProductDetailDTO;
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
@@ -10,10 +11,15 @@ import com.example.shose.server.dto.response.ProductDetailDTOResponse;
 import com.example.shose.server.dto.response.ProductDetailReponse;
 import com.example.shose.server.dto.response.cart.ListSizeOfItemCart;
 import com.example.shose.server.dto.response.productdetail.GetDetailProductOfClient;
+import com.example.shose.server.dto.response.productdetail.GetProductDetail;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByCategory;
 import com.example.shose.server.dto.response.productdetail.GetProductDetailByProduct;
-import com.example.shose.server.entity.ProductDetail;
+import com.example.shose.server.entity.ProductDetailGiveBack;
+import com.example.shose.server.infrastructure.common.PageableRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -41,15 +47,22 @@ public interface ProductDetailService {
 
     List<GetProductDetailByProduct> getByIdProduct(String id);
 
-    //    ProductDetailResponse findByIdProductDetail(String id);
     List<GetProductDetailByCategory> GetProductDetailByCategory(String id);
+
+    Page<GetProductDetail> getProductDetailHavePromotion(Pageable pageable);
+
+    Page<GetProductDetail> getProductDetailNew(Pageable pageable);
+
+    Page<GetProductDetail> getProductDetailSellMany(Pageable pageable);
 
     List<ProductDetailReponse> findAllByIdProduct(String id);
 
-//    List<ProductDetailReponse> getAllProductDetail(FindProductDetailRequest req);
+    GetDetailProductOfClient getDetailProductOfClient(String id);
 
-    GetDetailProductOfClient  getDetailProductOfClient(String id,String codeColor, String nameSize);
+    List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);
 
-//    GetProductDetailInCart getProductDetailInCart()
-List<ListSizeOfItemCart> listSizeByProductAndColor(String idProduct, String codeColor);
+    Page<GetProductDetail> getProductDetailByCategorys(FindProductDetailByCategorysRequest request,Pageable pageable);
+    ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request);
+
+    ProductDetailGiveBack getQuantityProductDetailGiveBack(String idProductDetail);
 }

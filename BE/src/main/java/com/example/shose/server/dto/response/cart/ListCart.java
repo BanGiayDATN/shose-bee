@@ -5,6 +5,8 @@ package com.example.shose.server.dto.response.cart;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import java.math.BigDecimal;
+
 public interface ListCart {
     @Value("#{target.nameSize}")
     String getNameSize();
@@ -31,4 +33,8 @@ public interface ListCart {
     @Value("#{target.quantity}")
     String getQuantity();
 
+    @Value("#{target.quantityProductDetail}")
+    Integer getQuantityProductDetail();
+    @Value("#{target.valuePromotion}")
+    BigDecimal getValuePromotion();
 }

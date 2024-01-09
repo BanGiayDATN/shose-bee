@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Table, Slider, Row, Col, Modal } from "antd";
+import {
+  Input,
+  Button,
+  Select,
+  Table,
+  Slider,
+  Row,
+  Col,
+  Modal,
+  Tooltip,
+  Radio,
+} from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-customer.css";
 import { CustomerApi } from "../../../api/employee/account/customer.api";
@@ -38,7 +49,11 @@ const CustomerManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [clickRadio, setClickRadio] = useState("");
 
+  const changeRadio = (index) => {
+    setClickRadio(index);
+  };
   // Lấy mảng redux ra
   const data = useAppSelector(GetCustomer);
   useEffect(() => {
@@ -68,34 +83,47 @@ const CustomerManagement = () => {
   };
   useEffect(() => {
     const { keyword, status } = searchCustomer;
+
     CustomerApi.fetchAll({ status }).then((res) => {
-      const filteredCustomers = res.data.data.filter(
-        (customer) =>
-          customer.fullName.includes(keyword) ||
-          customer.email.includes(keyword) ||
-          customer.phoneNumber.includes(keyword)
-      );
+      const filteredCustomers = res.data.data
+        .filter((customer) => {
+          const fullName = customer.fullName || "";
+          const phoneNumber = customer.phoneNumber || "";
+          const toKeyword = keyword.toLowerCase();
+
+          return (
+            fullName.toLowerCase().includes(toKeyword) ||
+            phoneNumber.includes(keyword)
+          );
+        })
+        .map((customer, index) => ({
+          ...customer,
+          stt: index + 1,
+        }));
+
       setListaccount(filteredCustomers);
       dispatch(SetCustomer(filteredCustomers));
     });
   }, [searchCustomer.status]);
 
-  const handleSubmitSearch = (event) => {
-    event.preventDefault();
+  const handleSubmitSearch = (value) => {
     const { keyword, status } = searchCustomer;
 
     CustomerApi.fetchAll({ status }).then((res) => {
       const filteredCustomers = res.data.data
-        .filter(
-          (customer) =>
-            customer.fullName.toLowerCase().includes(keyword) ||
-            customer.email.includes(keyword) ||
-            customer.phoneNumber.includes(keyword)
-        )
+        .filter((customer) => {
+          const toKeyword = keyword.toLowerCase();
+          const fullName = customer.fullName
+            ? customer.fullName.toLowerCase()
+            : "";
+          const phoneNumber = customer.phoneNumber ? customer.phoneNumber : "";
+          return fullName.includes(toKeyword) || phoneNumber.includes(keyword);
+        })
         .map((customer, index) => ({
           ...customer,
           stt: index + 1,
         }));
+
       setListaccount(filteredCustomers);
       dispatch(SetCustomer(filteredCustomers));
     });
@@ -138,14 +166,13 @@ const CustomerManagement = () => {
     });
     setStartDate(initialStartDate);
     setEndDate(initialEndDate);
-    filterByDateOfBirthRange(initialStartDate, initialEndDate);
     setListaccount(
       initialCustomerList.map((customer, index) => ({
         ...customer,
         stt: index + 1,
       }))
     );
-    loadData();
+    setAgeRange([0, 100]);
   };
   const filterByAgeRange = (minAge, maxAge) => {
     if (minAge === 0 && maxAge === 100) {
@@ -221,6 +248,7 @@ const CustomerManagement = () => {
   }, []);
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ageRange, initialCustomerList]);
   const columns = [
     {
@@ -235,7 +263,11 @@ const CustomerManagement = () => {
       key: "avata",
       render: (avata) => (
         <img
-          src={avata}
+          src={
+            avata == null
+              ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtp7SBv7iqt9a63k7ghTSJBMPKZF03MpmhDg&usqp=CAU"
+              : avata
+          }
           alt="Hình ảnh"
           style={{ width: "150px", height: "110px", borderRadius: "20px" }}
         />
@@ -248,10 +280,10 @@ const CustomerManagement = () => {
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      sorter: (a, b) => a.email.localeCompare(b.email),
+      title: "CCCD",
+      dataIndex: "citizenIdentity",
+      key: "citizenIdentity",
+      sorter: (a, b) => a.citizenIdentity.localeCompare(b.citizenIdentity),
     },
     {
       title: "Số điện thoại",
@@ -264,14 +296,14 @@ const CustomerManagement = () => {
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       sorter: (a, b) => a.dateOfBirth - b.dateOfBirth,
-      render: (date) => moment(date).format("DD-MM-YYYY"),
+      render: (date) => moment(date).format("DD/MM/YYYY"),
     },
-    {
-      title: "Điểm",
-      dataIndex: "points",
-      key: "points",
-      sorter: (a, b) => a.points.localeCompare(b.points),
-    },
+    // {
+    //   title: "Điểm",
+    //   dataIndex: "points",
+    //   key: "points",
+    //   sorter: (a, b) => a.points.localeCompare(b.points),
+    // },
     {
       title: "Trạng Thái",
       dataIndex: "status",
@@ -325,6 +357,10 @@ const CustomerManagement = () => {
       ),
     },
   ];
+
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
   const columnsAddress = [
     {
       title: "STT",
@@ -404,7 +440,6 @@ const CustomerManagement = () => {
   const [listAddress, setListAddress] = useState([]);
 
   const selectedAccount = (record) => {
-    console.log(record);
     setIsModalAddressOpen(true);
     setCustomerId(record.id);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
@@ -415,57 +450,35 @@ const CustomerManagement = () => {
   return (
     <>
       <div className="title_account">
-        {" "}
         <FontAwesomeIcon icon={faKaaba} style={{ fontSize: "26px" }} />
         <span style={{ marginLeft: "10px" }}>Quản lý tài khoản khách hàng</span>
       </div>
       <div className="filter">
-        <FontAwesomeIcon icon={faFilter} size="2x" />{" "}
+        <FontAwesomeIcon icon={faFilter} size="2x" />
         <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
         <hr />
-        <div className="content">
-          <div className="content-wrapper">
-            <div>
-              <Row>
+        <div className="content_ac">
+          <div className="content-wrapper-ac">
+            <Row>
+              <Col span={24} style={{ marginBottom: "10px" }}>
+                <label>Tìm kiếm:</label>
                 <Input
                   style={{
-                    width: "250px",
-                    height: "38px",
-                    marginRight: "8px",
+                    width: "300px",
+                    marginLeft: "19px",
+                    marginBottom: "20px",
                   }}
-                  placeholder="Tìm kiếm"
+                  placeholder="Tìm kiếm tên và sđt... "
                   type="text"
                   name="keyword"
                   value={searchCustomer.keyword}
                   onChange={handleKeywordChange}
                 />
-                <Button
-                  className="btn_filter"
-                  type="submit"
-                  onClick={handleSubmitSearch}
-                >
-                  Tìm kiếm
-                </Button>
-                <Button
-                  className="btn_clear"
-                  key="submit"
-                  type="primary"
-                  onClick={handleClear}
-                >
-                  Làm mới bộ lọc
-                </Button>
-                ,
-              </Row>
-            </div>
-          </div>
-        </div>
-        <div>
-          <Row gutter={[24, 16]}>
-            <Col span={6}>
-              <div>
-                Trạng thái :{" "}
+              </Col>
+              <Col span={24}>
+                <label>Trạng thái:</label>
                 <Select
-                  style={{ width: "90%", marginLeft: "" }}
+                  style={{ width: "300px", marginLeft: "15px" }}
                   name="status"
                   value={searchCustomer.status}
                   onChange={handleStatusChange}
@@ -474,38 +487,64 @@ const CustomerManagement = () => {
                   <Option value="DANG_SU_DUNG">Kích hoạt</Option>
                   <Option value="KHONG_SU_DUNG">Ngừng kích hoạt</Option>
                 </Select>
-              </div>
-            </Col>
-            <Col span={10}>
-              <div>
-                Ngày sinh : <br />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col span={24}>
+                <label>Ngày sinh:</label>
                 <Input
-                  style={{ width: "47%", height: "40px" }}
+                  style={{
+                    width: "200px",
+                    marginRight: "15px",
+                    marginLeft: "15px",
+                  }}
                   type="date"
                   value={startDate || initialStartDate}
                   onChange={handleStartDateChange}
                 />
                 <Input
-                  style={{ width: "47%", height: "40px" }}
+                  style={{ width: "200px" }}
                   type="date"
                   value={endDate || initialEndDate}
                   onChange={handleEndDateChange}
                 />
-              </div>
-            </Col>
-            <Col span={8}>
-              Khoảng tuổi:<br></br>
-              <Slider
-                style={{ width: "70%" }}
-                range
-                min={0}
-                max={100}
-                defaultValue={ageRange}
-                value={ageRange}
-                onChange={handleAgeRangeChange}
-              />
-            </Col>
-          </Row>
+              </Col>
+
+              <Col
+                span={24}
+                style={{
+                  display: "flex",
+                  marginTop: "30px",
+                }}
+              >
+                <label>Khoảng tuổi:</label>
+                <Slider
+                  style={{ width: "400px", marginLeft: "15px" }}
+                  range
+                  min={0}
+                  max={100}
+                  defaultValue={ageRange}
+                  value={ageRange}
+                  onChange={handleAgeRangeChange}
+                />
+              </Col>
+            </Row>
+          </div>
+        </div>
+        <div>
+          <div className="box_btn_filter">
+            <Button
+              className="btn_filter"
+              type="submit"
+              onClick={handleSubmitSearch}
+            >
+              Tìm kiếm
+            </Button>
+            <Button className="btn_clear" onClick={handleClear}>
+              Làm mới bộ lọc
+            </Button>
+          </div>
         </div>
       </div>
       <div className="account-table">
@@ -522,13 +561,15 @@ const CustomerManagement = () => {
           </span>
           <div style={{ marginLeft: "auto" }}>
             <Link to="/create-customer-management">
-              <Button
-                type="primary"
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={() => setModalVisible(true)}
-              >
-                Thêm
-              </Button>
+              <Tooltip title="Thêm khách hàng">
+                <Button
+                  type="primary"
+                  icon={<FontAwesomeIcon icon={faPlus} />}
+                  onClick={() => setModalVisible(true)}
+                >
+                  Thêm
+                </Button>
+              </Tooltip>
             </Link>
           </div>
         </div>
@@ -537,8 +578,9 @@ const CustomerManagement = () => {
             dataSource={listaccount}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
-            className="customer-table"
+            pagination={{ pageSize: 5 }}
+            className="account-table"
+            rowClassName={getRowClassName}
           />
         </div>
       </div>
@@ -558,33 +600,82 @@ const CustomerManagement = () => {
         title="Địa chỉ"
         open={isModalAddressOpen}
         onOk={handleOkAddress}
-        className="account"
         onCancel={handleCancelAddress}
+        height={400}
       >
         <Row style={{ width: "100%" }}>
-          <Col span={20}></Col>
-          <Col span={1}></Col>
-          <Col span={3}>
-            {" "}
-            <Button
-              className="btn_filter"
-              type="submit"
-              onClick={() => handleOpenAddAdress()}
-            >
-              Thêm địa chỉ
+          <Col span={16}></Col>
+          <Col span={1}>
+            <Button onClick={() => handleOpenAddAdress()}>
+              + Thêm địa chỉ mới
             </Button>
           </Col>
         </Row>
-        <Row style={{ width: "100%", marginTop: "20px" }}>
-          <Table
-            style={{ width: "100%" }}
-            dataSource={listAddress}
-            rowKey="id"
-            columns={columnsAddress}
-            pagination={{ pageSize: 3 }}
-            className="customer-table"
-          />
-        </Row>
+        <Row style={{ marginTop: "20px" }}></Row>
+        <div style={{ overflowY: "auto", height: "450px" }}>
+          {listAddress.map((item, index) => (
+            <div
+              style={{
+                marginTop: "10px",
+                marginBottom: "20px",
+                borderTop: "1px solid grey",
+                padding: "10px 0",
+              }}
+            >
+              <Row style={{ marginTop: "20px" }}>
+                <Col span={2}>
+                  <Radio
+                    name="group-radio"
+                    value={item}
+                    checked={
+                      !clickRadio
+                        ? item.status === "DANG_SU_DUNG"
+                        : index === clickRadio
+                    }
+                    onChange={() => changeRadio(index)}
+                  />
+                </Col>
+                <Col span={17}>
+                  <Row>
+                    <span
+                      style={{ fontSize: 17, fontWeight: 600, marginRight: 3 }}
+                    >
+                      {item.fullName}
+                    </span>
+                    {"  |  "}
+                    <span style={{ marginTop: "2px", marginLeft: 3 }}>
+                      {item.phoneNumber}
+                    </span>
+                  </Row>
+                  <Row>
+                    <span style={{ fontSize: 14 }}>{item.address}</span>
+                  </Row>
+                  {item.status === "DANG_SU_DUNG" ? (
+                    <Row>
+                      <div style={{ marginTop: "10px", marginRight: "30px" }}>
+                        <span className="status-default-address">Mặc định</span>
+                      </div>
+                    </Row>
+                  ) : null}
+                </Col>
+                <Col span={4}>
+                  <Button
+                    type="dashed"
+                    title="Chọn"
+                    style={{
+                      border: "1px solid #ff4400",
+                      fontWeight: "470",
+                    }}
+                    onClick={() => handleViewUpdate(item.id)}
+                  >
+                    {" "}
+                    Cập nhật
+                  </Button>
+                </Col>
+              </Row>
+            </div>
+          ))}
+        </div>
       </Modal>
       {/* end  modal Address */}
     </>

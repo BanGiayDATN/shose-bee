@@ -1,10 +1,17 @@
-import { Row } from "antd";
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import './paymentSuccessFull.css'
-import { white } from "color-name";
+import {
+  faSquareCheck,
+  faTriangleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import logo from "./../../../assets/images/logo_client.png";
+import "./style-payment-success.css";
+import { Button } from "antd";
+import { toast } from "react-toastify";
+import { BillApi } from "../../../api/employee/bill/bill.api";
+import { useReactToPrint } from "react-to-print";
 
 const getUrlVars = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -50,6 +57,7 @@ const getAmount = () => {
 
 function PayMentSuccessful() {
   getUrlVars();
+  console.log(new URLSearchParams(window.location.search));
   const [status, setStatus] = useState();
   const [amount, setAmount] = useState();
   const formatCurrency = (value) => {
@@ -60,133 +68,93 @@ function PayMentSuccessful() {
     });
     return formatter.format(value);
   };
+
+  const generatePDF = useReactToPrint({
+    content: () => document.getElementById("pdfContent"),
+    documentTitle: "Userdata",
+    onAfterPrint: () => {},
+  });
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search)
-
-// // chia chuỗi URL thành các phần tử
-// const parts = url.split("?");
-
-// lấy phần tử thứ hai
-// const queryString = parts[1];
-
-// in kết quả
-// console.log(url);
+    const param = new URLSearchParams(window.location.search);
     fetchData();
     setStatus(getTransactionStatus());
     setAmount(getAmount());
-    PaymentsMethodApi.checkPaymentVnPay(param).then((res) => {
-      
-    })
+    PaymentsMethodApi.checkPaymentVnPay(param)
+      .then((res) => {
+        setLoadLink(false);
+        BillApi.fetchHtmlIdBill(param.get("vnp_TxnRef").split("-")[0], 0).then(
+          (res) => {
+            document.getElementById("pdfContent").innerHTML = res.data.data;
+            generatePDF();
+          }
+        );
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
   }, []);
-  setTimeout(() => {
-    window.open('http://localhost:3000/sale-counter', "_self");
-  }, 10000);
+
+  const [loadLink, setLoadLink] = useState(true);
+
   return (
-    <div>
-      {status == "00" ? (
-        <div style={{ width: "100%" }}>
-          <Row style={{ width: "100%", justifyContent: "center" }}>
-            <div class="loading">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="124"
-                height="124"
-                viewBox="0 0 124 124"
-              >
-                <circle
-                  class="circle-loading"
-                  cx="62"
-                  cy="62"
-                  r="59"
-                  fill="none"
-                  stroke="#0cff00"
-                  stroke-width="6px"
-                ></circle>
-                <circle
-                  class="circle"
-                  cx="62"
-                  cy="62"
-                  r="59"
-                  fill="none"
-                  stroke="#0cff00"
-                  stroke-width="6px"
-                  stroke-linecap="round"
-                ></circle>
-                <polyline
-                  class="check"
-                  points="73.56 48.63 57.88 72.69 49.38 62"
-                  fill="none"
-                  stroke="#0cff00"
-                  stroke-width="6px"
-                  stroke-linecap="round"
-                ></polyline>
-              </svg>
+    <>
+      <div className="header-payment-success">
+        <img className="logo-payment-success" src={logo} alt="logo" />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {status == "00" ? (
+          <div className="content-payment-success">
+            <FontAwesomeIcon
+              className="icon-payment-success"
+              icon={faSquareCheck}
+            />
+            <h1>Thanh toán thành công</h1>
+            <div style={{ marginTop: "5%" }}>
+              Tổng thanh toán: {formatCurrency(amount / 100)}
             </div>
-          </Row>
-          <Row
-            style={{
-              width: "100%",
-              justifyContent: "center",
-              fontSize: "34px",
-              fontWeight: "600",
-              color: "#00f63f",
-            }}
-          >
-            <h2 className="textGradient">Thanh toán thành công</h2>
-          </Row>
-          <Row style={{ width: "100%", justifyContent: "center" }}>
-            <p className="textColor">
-              {" "}
-              Qúy khách đã thanh toán thành công cho đơn hàng{" "}
-            </p>
-          </Row>
-          <Row style={{ width: "100%", justifyContent: "center" }}>
-            <p
+            <Button
+              disabled={loadLink}
               style={{
-                padding: "20px",
-                backgroundColor: "#f05623c9",
-                borderRadius: "20px",
-                fontSize: "16px",
-                fontWeight: "500",
-                color: "white"
+                border: "none",
+                backgroundColor: "#f5f5dc00",
+                color: loadLink ? "#ccc" : "#1677ff",
               }}
             >
-              {" "}
-              Tổng Thanh toán: {formatCurrency(amount)}{" "}
-            </p>
-          </Row>
-        </div>
-      ) : (
-        <div style={{ width: "100%" }}>
-          <Row
-            style={{
-              width: "100%",
-              justifyContent: "center",
-              fontSize: "34px",
-              fontWeight: "600",
-              color: "#00f63f",
-            }}
-          >
-            <h2 className="textGradient">Thanh toán Thất bại</h2>
-          </Row>
-          <Row style={{ width: "100%", justifyContent: "center" }}>
-            <p  className="textColor"> Qúy khách vui lòng thử lại </p>
-          </Row>
-          <Row style={{ width: "100%", justifyContent: "center" }}>
-            <p
-              style={{
-                padding: "20px",
-                backgroundColor: "#f05623c9",
-                borderRadius: "20px",
-              }}
-            >
-              {" "}
-              Tổng Thanh toán: {formatCurrency(amount)}{" "}
-            </p>
-          </Row>
-        </div>
-      )}
-    </div>
+              <Link to="/sale-counter">Tiếp tục bán hàng</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="content-payment-success">
+            <FontAwesomeIcon
+              className="icon-payment-fail"
+              icon={faTriangleExclamation}
+            />
+            <h1>Thanh toán thất bại</h1>
+            <div>
+              <Button
+                disabled={loadLink}
+                style={{
+                  border: "none",
+                  backgroundColor: "#f5f5dc00",
+                  color: loadLink ? "#ccc" : "#1677ff",
+                }}
+              >
+                <Link to="/sale-counter">Tiếp tục bán hàng</Link>
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+      <div style={{ display: "none" }}>
+        <div id="pdfContent" />
+      </div>
+    </>
   );
 }
 

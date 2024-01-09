@@ -18,15 +18,13 @@ import { useAppDispatch, useAppSelector } from "../../../../app/hook";
 dayjs.extend(utc);
 function UpdateVoucherManagement({ modalDetail, setModalDetail, id }) {
   const [formData, setFormData] = useState({});
-  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     if (id !== "") {
       detailVoucher();
     }
   }, [id]);
-  useEffect(() => {
-  }, [formData]);
+  useEffect(() => {}, [formData]);
 
   const detailVoucher = () => {
     VoucherApi.getOne(id).then(
@@ -41,6 +39,7 @@ function UpdateVoucherManagement({ modalDetail, setModalDetail, id }) {
           endDate: dayjs(voucherData.endDate),
           status: voucherData.status,
           createdDate: dayjs(voucherData.createdDate),
+          minimumBill: voucherData.minimumBill,
         });
       },
       (err) => console.log(err)
@@ -50,49 +49,59 @@ function UpdateVoucherManagement({ modalDetail, setModalDetail, id }) {
     setModalDetail(false);
   };
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+
   return (
     <div>
       <Modal
-        title="Chi tiết khuyến mãi"
+        title="Chi tiết phiếu giảm giá"
         visible={modalDetail}
         onCancel={closeModal}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
         <Form layout="vertical">
-        <Form.Item
-            label="Mã khuyến mãi"
-          >
+          <Form.Item label="Mã phiếu giảm giá">
             <Input
-              name="code"  
+              name="code"
               className="input-create-voucher"
               value={formData["code"]}
-           
             />
           </Form.Item>
-          <Form.Item
-            label="Tên khuyến mãi"
-          >
+          <Form.Item label="Tên phiếu giảm giá">
             <Input
               name="name"
-              placeholder="Tên khuyến mãi"
+              placeholder="Tên phiếu giảm giá"
               className="input-create-voucher"
               value={formData["name"]}
             />
           </Form.Item>
-          <Form.Item
-            label="Giá trị giảm"
-          >
+          <Form.Item label="Giá trị giảm">
             <InputNumber
               name="value"
               placeholder="Giá trị giảm"
               className="input-create-voucher"
               value={formData["value"]}
+              formatter={(value) => formatCurrency(value)}
             />
           </Form.Item>
-          <Form.Item
-            label="Số lượng"
-          >
+          <Form.Item label="Đơn tối thiểu">
+            <InputNumber
+              name="minimumBill"
+              placeholder="Đơn tối thiểu"
+              className="input-create-voucher"
+              value={formData["minimumBill"]}
+              formatter={(value) => formatCurrency(value)}
+            />
+          </Form.Item>
+          <Form.Item label="Số lượng">
             <InputNumber
               name="quantity"
               placeholder="Số lượng"
@@ -100,48 +109,42 @@ function UpdateVoucherManagement({ modalDetail, setModalDetail, id }) {
               value={formData["quantity"]}
             />
           </Form.Item>
-          <Form.Item
-            label="Ngày bắt đầu"
-          >
+          <Form.Item label="Ngày bắt đầu">
             <DatePicker
-            showTime
+              showTime
               name="startDate"
               placeholder="Ngày bắt đầu"
               className="input-create-voucher"
               value={formData["startDate"]}
-             
             />
           </Form.Item>
-          <Form.Item
-            label="Ngày kết thúc"
-          >
+          <Form.Item label="Ngày kết thúc">
             <DatePicker
               showTime
               name="endDate"
               placeholder="Ngày kết thúc"
               className="input-create-voucher"
               value={formData["endDate"]}
-           
             />
           </Form.Item>
           <Form.Item label="Trạng thái">
             <Input
               className="input-create-voucher"
               name="status"
-              value={formData["status"] === "DANG_SU_DUNG" ? "Còn hạn" :"Hết hạn"}
+              value={
+                formData["status"] === "DANG_SU_DUNG" ? "Còn hạn" : "Hết hạn"
+              }
             />
-           
           </Form.Item>
           <Form.Item label="Ngày tạo">
             <DatePicker
-            showTime
+              showTime
               className="input-create-voucher"
               name="createdDate"
-              value={formData["createdDate"] }
-             
+              value={formData["createdDate"]}
             />
           </Form.Item>
-          
+
           <Form.Item>
             <Button onClick={closeModal}>Hủy</Button>
           </Form.Item>

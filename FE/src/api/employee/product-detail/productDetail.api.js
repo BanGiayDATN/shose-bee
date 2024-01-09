@@ -51,4 +51,35 @@ export class ProducDetailtApi {
       data: data,
     });
   };
+
+  static addListProduct = (data) => {
+    return request({
+      method: "POST",
+      url: `/admin/product-detail`,
+      data: data,
+    });
+  };
+
+  static updateListProduct = (data) => {
+    return request({
+      method: "PUT",
+      url: `/admin/product-detail/list-data`,
+      data: data,
+    });
+  };
+
+  static updateProduct = (id, data) => {
+    return request({
+      method: "PUT",
+      url: `/admin/product-detail/${id}`,
+      data: data,
+    });
+  };
+
+  static getQuantityProductDetailGiveBack = (idProductDetail) => {
+    return request({
+      method: "GET",
+      url: `/admin/product-detail/quantity-product-detail-give-back?idProductDetail=${idProductDetail}`,
+    });
+  };
 }

@@ -23,19 +23,26 @@ public interface CartRepository extends JpaRepository<Cart,String> {
                       cd.id as idCartDetail,
                       s.name as nameSize,
                       REPLACE(c.code, '#','%23') as codeColor,
-                      i.name as image,
+                      GROUP_CONCAT(i.name) as image,
                       cd.price as price,
-                      cd.quantity as quantity
-                      FROM cart cart
-               JOIN account a on a.id = cart.id_account
-               JOIN cart_detail cd on cart.id = cd.id_cart
+                      cd.quantity as quantity,
+                      pd.quantity as quantityProductDetail,
+                       (select max(pr2.value) from product_detail pd2
+                LEFT JOIN promotion_product_detail ppd2 on pd2.id = ppd2.id_product_detail
+                LEFT JOIN promotion pr2 on pr2.id = ppd2.id_promotion
+                where ppd2.status = 'DANG_SU_DUNG' and pr2.status = 'DANG_KICH_HOAT' AND pd2.id = pd.id)  as valuePromotion
+               FROM cart cart
+                        JOIN account a on a.id = cart.id_account
+                        JOIN cart_detail cd on cart.id = cd.id_cart
                         JOIN product_detail pd on cd.id_product_detail = pd.id
                         JOIN product p on pd.id_product = p.id
                         JOIN image i on pd.id = i.id_product_detail
                         JOIN color c on pd.id_color = c.id
                         JOIN size s on pd.id_size = s.id
-                        WHERE a.id = :idAccount
-                        ORDER BY  cd.created_date desc
+
+               WHERE a.id = :idAccount 
+               group by p.id, p.name, pd.id, cd.id, s.name, REPLACE(c.code, '#','%23'), cd.price, cd.quantity
+               ORDER BY  cd.created_date desc
             """,nativeQuery = true)
     List<ListCart> getListCart(@Param("idAccount") String idAccount);
     @Query(value = "select sum(cd.quantity) from Cart cart" +

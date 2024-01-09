@@ -20,13 +20,25 @@ public interface AddressAccountResponse {
     @Value("#{target.ward}")
     String getWard();
 
+    @Value("#{target.provinceId}")
+    String getProvinceId();
+
+    @Value("#{target.districtId}")
+    String getDistrictId();
+
+    @Value("#{target.wardCode}")
+    String getWardCode();
+
     @Value("#{target.status}")
     String getStatus();
 
     @Value("#{target.fullName}")
-    String getFullname();
+    String getFullName();
 
     @Value("#{target.phoneNumber}")
     String getPhoneNumber();
+
+    @Value("#{target.userId}")
+    String getUserId();
 
 }

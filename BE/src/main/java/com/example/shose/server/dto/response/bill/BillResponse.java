@@ -25,6 +25,8 @@ public interface BillResponse {
 
     @Value("#{target.created_date}")
     long getCreatedDate();
+    @Value("#{target.lastModifiedDate}")
+    long getLastModifiedDate();
 
     @Value("#{target.userName}")
     String getUserName();
@@ -43,5 +45,10 @@ public interface BillResponse {
 
     @Value("#{target.item_discount}")
     BigDecimal getItemDiscount();
+
+    @Value("#{target.note}")
+    String getNote();
+
+
 
 }

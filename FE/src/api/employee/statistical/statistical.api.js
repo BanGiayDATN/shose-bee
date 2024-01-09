@@ -12,16 +12,24 @@ export class StatisticalApi {
       url: `/admin/statistical/month`,
     });
   };
-  static fetchAllStatisticalStatusBill = () => {
+  static fetchAllStatisticalStatusBill = (startDate, endDate) => {
     return request({
       method: "GET",
       url: `/admin/statistical/status-bill`,
+      params: {
+        startDate: startDate,
+        endDate: endDate,
+      },
     });
   };
-  static fetchAllStatisticalBestSellingProduct = () => {
+  static fetchAllStatisticalBestSellingProduct = (startDate, endDate) => {
     return request({
       method: "GET",
       url: `/admin/statistical/best-selling-product`,
+      params: {
+        startDate: startDate,
+        endDate: endDate,
+      },
     });
   };
   static fetchBillByDate = (startDate, endDate) => {
@@ -29,11 +37,29 @@ export class StatisticalApi {
       method: "GET",
       url: `/admin/statistical/bill-date`,
       params: {
-        // startDate: 1692155600977,
-        // endDate: 1792155600977,
         startDate: startDate,
         endDate: endDate,
       },
+    });
+  };
+  static fetchAllStatisticalGrowth = () => {
+    return request({
+      method: "GET",
+      url: `/admin/statistical/growth`,
+    });
+  };
+  static fetchAllStatisticalStock = () => {
+    return request({
+      method: "GET",
+      url: `/admin/statistical/stock`,
+    });
+  };
+
+  static downloadExcel_xlsx = () => {
+    return request({
+      method: "GET",
+      url: `/admin/statistical/download/xlsx`,
+      responseType: "arraybuffer",
     });
   };
 }

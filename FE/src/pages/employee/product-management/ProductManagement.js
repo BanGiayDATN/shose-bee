@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, Col, Slider, Select, Input, Tooltip } from "antd";
 import "./style-product.css";
-import { useAppDispatch } from "../../../app/hook";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,7 +23,6 @@ const ProductManagement = () => {
 
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    console.log(selectedValues);
     ProducDetailtApi.fetchAll(selectedValues).then((res) => {
       setListProduct(res.data.data);
     });
@@ -32,7 +30,6 @@ const ProductManagement = () => {
 
   // Xử lý làm mới bộ lọc
   const handleClear = () => {
-    console.log(selectedValues);
     setSelectedValues({
       keyword: "",
       status: "",
@@ -121,6 +118,8 @@ const ProductManagement = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 4,
+      align: "center",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -145,6 +144,7 @@ const ProductManagement = () => {
     {
       title: "Trạng Thái",
       dataIndex: "status",
+      align: "center",
       key: "status",
       render: (text) => {
         const genderClass =
@@ -160,8 +160,9 @@ const ProductManagement = () => {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
+      align: "center",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Tooltip title="Xem chi tiết sản phẩm">
             <Button
               type="primary"
@@ -220,8 +221,8 @@ const ProductManagement = () => {
                 defaultValue=""
               >
                 <Option value="">Tất cả</Option>
-                <Option value="DANG_SU_DUNG">Đang sử dụng</Option>
-                <Option value="KHONG_SU_DUNG">Không sử dụng</Option>
+                <Option value="DANG_SU_DUNG">Đang kinh doanh</Option>
+                <Option value="KHONG_SU_DUNG">Không kinh doanh</Option>
               </Select>
             </div>
             <div className="content-right">

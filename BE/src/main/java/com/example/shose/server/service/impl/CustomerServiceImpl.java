@@ -5,6 +5,7 @@ import com.example.shose.server.dto.request.address.UpdateAddressRequest;
 import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.QuickCreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
+import com.example.shose.server.dto.request.customer.UpdateInfoClient;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
 import com.example.shose.server.entity.Account;
@@ -20,8 +21,10 @@ import com.example.shose.server.repository.AccountRepository;
 import com.example.shose.server.repository.AddressRepository;
 import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.CustomerService;
+import com.example.shose.server.util.ConvertDateToLong;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +53,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
@@ -71,7 +77,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RestApiException(Message.PHONENUMBER_USER_EXIST);
         }
         //check email có tồn tại không
-        User checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
+        Account checkUserEmail = userReposiory.getOneUserByEmail(request.getEmail());
         if (checkUserEmail != null) {
             throw new RestApiException(Message.EMAIL_USER_EXIST);
         }
@@ -87,18 +93,20 @@ public class CustomerServiceImpl implements CustomerService {
                 .status(request.getStatus())
                 .dateOfBirth(request.getDateOfBirth())
                 .gender(request.getGender())
-                .points(0) // điểm khi tạo mới max định 0
+                .points(0)
+                .citizenIdentity(request.getCitizenIdentity())
                 .avata(urlImage) // đường dẫn ảnh từ url
                 .build();
         userReposiory.save(user); // add user vào database
         User addressUser = userReposiory.getById(user.getId());
 
         // tạo tài khoản cho khách hàng
+        String password = String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber());
         Account account = new Account();
         account.setUser(user);
-        account.setRoles(Roles.USER);
+        account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
-        account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
+        account.setPassword(passwordEncoder.encode(password));
         account.setStatus(Status.DANG_SU_DUNG);
         accountRepository.save(account); // add tài khoản vào database
 
@@ -112,13 +120,15 @@ public class CustomerServiceImpl implements CustomerService {
         address.setLine(addressRequest.getLine());
         address.setProvince(addressRequest.getProvince());
         address.setDistrict(addressRequest.getDistrict());
+        address.setFullName(request.getFullName());
+        address.setPhoneNumber(request.getPhoneNumber());
         address.setUser(addressUser); // add địa chỉ vào database
         addressRepository.save(address);
 
 
         // gửi email
         String subject = "Xin chào, bạn đã đăng ký thành công ";
-        sendEmailService.sendEmailPasword(account.getEmail(), subject, account.getPassword());
+        sendEmailService.sendEmailPasword(account.getEmail(), subject, password);
 
         return user;
     }
@@ -147,6 +157,7 @@ public class CustomerServiceImpl implements CustomerService {
         user.setGender(request.getGender());
         user.setStatus(request.getStatus());
         user.setPoints(0);
+        user.setCitizenIdentity(request.getCitizenIdentity());
         user.setAvata(urlImage);
         user.setDateOfBirth(request.getDateOfBirth());
 
@@ -156,7 +167,7 @@ public class CustomerServiceImpl implements CustomerService {
         Address addressUser = addressRepository.getAddressByUserIdAndStatus(user.getId(), Status.DANG_SU_DUNG);
 
         Address address = new Address();
-        if(addressUser != null){
+        if (addressUser != null) {
             address.setId(addressUser.getId());
         }
         address.setWard(addressRequest.getWard());
@@ -167,10 +178,34 @@ public class CustomerServiceImpl implements CustomerService {
         address.setProvince(addressRequest.getProvince());
         address.setStatus(Status.DANG_SU_DUNG);
         address.setDistrict(addressRequest.getDistrict());
+        address.setFullName(request.getFullName());
+        address.setPhoneNumber(request.getPhoneNumber());
         address.setUser(user);
         addressRepository.save(address);
         return user;
 
+    }
+
+    @Override
+    public User updateInfoClient(UpdateInfoClient req) {
+        Optional<User> optional = userReposiory.findById(req.getId());
+        if (!optional.isPresent()) {
+            throw new RestApiException("Người dùng không tồn tại");
+        }
+
+        User user = optional.get();
+        user.setFullName(req.getFullName());
+        user.setEmail(req.getEmail());
+        user.setPhoneNumber(req.getPhoneNumber());
+        user.setGender(req.getGender());
+        if (req.getAvata() == null) {
+           user.setAvata(user.getAvata());
+        }else{
+            String urlImage = imageToCloudinary.uploadImage(req.getAvata());
+            user.setAvata(urlImage);
+        }
+        user.setDateOfBirth(req.getDateOfBirth());
+        return userReposiory.save(user);
     }
 
 
@@ -202,8 +237,8 @@ public class CustomerServiceImpl implements CustomerService {
 
         User user = User.builder()
                 .fullName(request.getFullName())
+                .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
-//                .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
                 .gender(request.getGender())
                 .points(0)
@@ -213,7 +248,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Account account = new Account();
         account.setUser(user);
-        account.setRoles(Roles.USER);
+        account.setRoles(Roles.ROLE_USER);
         account.setEmail(user.getEmail());
         account.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
         account.setStatus(Status.DANG_SU_DUNG);
@@ -228,5 +263,10 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userReposiory.findByEmail(email).get();
     }
 }

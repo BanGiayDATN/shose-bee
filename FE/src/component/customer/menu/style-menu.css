@@ -13,6 +13,7 @@
   align-items: center;
   height: 80px;
   background-color: rgb(255, 255, 255);
+  box-shadow:   0px 5px 20px 0px  #c2bcbc;
 }
 .space-menu {
   display: flex;
@@ -80,7 +81,7 @@
   background-color: white;
   display: block;
 }
-.left-menu {
+.right-menu {
   margin-left: 15%;
   display: flex;
   justify-content: center;
@@ -114,7 +115,7 @@
   height: 100vh;
   background-color: #ffffff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
+  z-index: 999;
   transition: transform 0.8s, opacity 0.8s ease;
 }
 .search-panel.hidden {
@@ -172,9 +173,9 @@
     .icon-menu-block{
       font-size: 40px;
       display: block;
-      margin-left:20%;
+      margin-left:50px;
     }
-    .left-menu {
+    .right-menu {
       margin:5%;
     }
 }
@@ -188,8 +189,8 @@
     display: block;
     margin-left:100%;
   }
-  .left-menu {
-    margin-left: 30%;
+  .right-menu {
+    margin-left: 10%;
   }
 }
 /* pc: width >= 1024px */

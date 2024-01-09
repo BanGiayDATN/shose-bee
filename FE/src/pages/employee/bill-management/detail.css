@@ -21,6 +21,7 @@
     border-radius: 15px;
     height: 2pc;
     padding:  5px 19px;
+    pointer-events: none;
     /* margin-left: 10px */
   
   }
@@ -30,7 +31,16 @@
   .status_CHO_XAC_NHAN{
     background-color : #3399FF;
   }
+.status_XAC_NHAN{
+    background-color : #3399FF;
+  }
+  .status_CHO_VAN_CHUYEN {
+    background-color: #3399FF;
+  }
   .status_VAN_CHUYEN{
+    background-color: #3399FF;
+  }
+  .status_THANH_CONG {
     background-color: #3399FF;
   }
   .status_DA_THANH_TOAN{
@@ -118,4 +128,8 @@
   border-radius: 15px;
   height: 2pc;
   padding:  5px 19px;
+}
+.title-product{
+  font-size: 16px;
+  font-weight: bold;
 }

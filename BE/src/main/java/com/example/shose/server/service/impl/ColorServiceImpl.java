@@ -4,8 +4,10 @@ import com.example.shose.server.dto.request.color.CreateColorRequest;
 import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.color.UpdateColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
+import com.example.shose.server.dto.response.color.GetColorInProductDetail;
 import com.example.shose.server.entity.Color;
 import com.example.shose.server.infrastructure.constant.Message;
+import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
 import com.example.shose.server.repository.ColorRepository;
 import com.example.shose.server.service.ColorService;
@@ -34,13 +36,13 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     public Color create(@Valid CreateColorRequest req) {
-        Color checkName = colorRepository.getOneByCode(req.getName());
+        Color checkName = colorRepository.getOneByCode(req.getCode());
         if (checkName != null) {
-            throw new RestApiException(Message.NAME_EXISTS);
+            throw new RestApiException(Message.COLOR_NAME_EXISTS);
         }
         Color add = new Color();
         add.setName(req.getName());
-        add.setStatus(req.getStatus());
+        add.setStatus(Status.valueOf(req.getStatus()));
         add.setCode(req.getCode());
         return colorRepository.save(add);
     }
@@ -58,7 +60,7 @@ public class ColorServiceImpl implements ColorService {
         Color update = optional.get();
         update.setCode(req.getCode());
         update.setName(req.getName());
-        update.setStatus(req.getStatus());
+        update.setStatus(Status.valueOf(req.getStatus()));
         return colorRepository.save(update);
     }
 
@@ -84,5 +86,10 @@ public class ColorServiceImpl implements ColorService {
     @Override
     public List<Color> getAllCode() {
         return colorRepository.getAllCode();
+    }
+
+    @Override
+    public List<GetColorInProductDetail> getColorInProductDetail() {
+        return colorRepository.getColorInProductDetail();
     }
 }

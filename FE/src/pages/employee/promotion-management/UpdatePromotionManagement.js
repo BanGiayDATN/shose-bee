@@ -1,41 +1,33 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { faBookmark, faEye } from "@fortawesome/free-solid-svg-icons";
 import {
-  Row,
-  Col,
-  Form,
-  InputNumber,
-  Select,
-  DatePicker,
-  Input,
-  Popconfirm,
   Button,
-  Table,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
   Modal,
+  Popconfirm,
+  Row,
+  Select,
+  Table,
 } from "antd";
-import {
-  faEdit,
-  faEye,
-  faFilter,
-  faKaaba,
-  faListAlt,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { LeftOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import {
-    UpdatePromotion,
-} from "../../../app/reducer/Promotion.reducer";
+import { UpdatePromotion } from "../../../app/reducer/Promotion.reducer";
 
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { ProductApi } from "../../../api/employee/product/product.api";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
-import { GetProductDetail, SetProductDetail } from "../../../app/reducer/ProductDetail.reducer";
+import { ProductApi } from "../../../api/employee/product/product.api";
+import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import {
+  GetProductDetail,
+  SetProductDetail,
+} from "../../../app/reducer/ProductDetail.reducer";
+import { useNavigate } from "react-router-dom";
 
 function UpdatePromotionManagement() {
   const dispatch = useAppDispatch();
@@ -48,7 +40,7 @@ function UpdatePromotionManagement() {
   const [listProductDetail, setListProductDetail] = useState([]);
   const [modal, setModal] = useState(false);
   const [listPromotion, setListPromotion] = useState([]);
-  const { Option } = Select;
+  const nav = useNavigate();
 
   const datas = useAppSelector(GetProductDetail);
   useEffect(() => {
@@ -57,16 +49,17 @@ function UpdatePromotionManagement() {
     }
   }, [datas]);
 
-
   const id = localStorage.getItem("id");
   useEffect(() => {
     console.log(id);
     if (id !== null) {
+      console.log(id);
       PromotionApi.getOne(id).then(
         (res) => {
           console.log(res.data.data);
           const getDetailPromotion = res.data.data;
           setFormData({
+            code: getDetailPromotion.code,
             name: getDetailPromotion.name,
             value: getDetailPromotion.value,
             startDate: dayjs(getDetailPromotion.startDate),
@@ -76,6 +69,7 @@ function UpdatePromotionManagement() {
 
           if (getDetailPromotion.product !== null) {
             setSelectedRowKeys(getDetailPromotion.product.split(","));
+            console.log(getDetailPromotion.product.split(","));
           } else {
             setSelectedRowKeys([]);
           }
@@ -91,7 +85,6 @@ function UpdatePromotionManagement() {
       );
     }
   }, []);
-
 
   useEffect(() => {
     loadDataProduct();
@@ -202,48 +195,60 @@ function UpdatePromotionManagement() {
     return convertedFormData;
   };
   const handleSubmit = (ids) => {
-    console.log(formData);
-    const isFormValid =
-      formData.name &&
-      formData.value &&
-      formData.startDate &&
-      formData.endDate &&
-      // formData.idProductDetails &&
-      formData.startDate < formData.endDate;
+    Modal.confirm({
+      title: "Xác nhận chỉnh sửa",
+      content: "Bạn có chắc chắn muốn chỉnh sửa khuyến mại ?",
+      okText: "Chỉnh sửa",
+      cancelText: "Hủy",
+      onOk() {
+        const isFormValid =
+          formData.code &&
+          formData.name &&
+          formData.value &&
+          formData.startDate &&
+          formData.endDate &&
+          formData.startDate < formData.endDate;
 
-    if (!isFormValid) {
-      const errors = {
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        // idProductDetails:!formData.idProductDetails ? toast.success("Bạn chưa chọn chi tiết sản phẩm!", {
-        //   autoClose: 5000,
-        // }):"",
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-      };
-      setFormErrors(errors);
-      return;
-    }
+        if (!isFormValid) {
+          const errors = {
+            code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
+            name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
+            value: !formData.value ? "Vui lòng nhập giá giảm" : "",
+            startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+            endDate: !formData.endDate
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : "",
+          };
+          setFormErrors(errors);
+          return;
+        }
 
-    PromotionApi.update(ids, convertToLong()).then((res) => {
-      dispatch(UpdatePromotion(res.data.data));
-      toast.success("Cập nhập thành công!", {
-        autoClose: 5000,
-      });
-      window.location.href = "/promotion-management";
+        PromotionApi.update(ids, convertToLong()).then((res) => {
+          dispatch(UpdatePromotion(res.data.data));
+          toast.success("Cập nhập thành công!", {
+            autoClose: 5000,
+          });
+          nav("/promotion-management");
+        });
+        setFormData({});
+        setListProductDetail([]);
+        onSelectChange("");
+        onSelectChangeDetail("");
+        setSelectedRowKeysDetail("");
+      },
     });
-    setFormData({});
-    setListProductDetail([]);
-    onSelectChange("");
-    onSelectChangeDetail("");
-    setSelectedRowKeysDetail("");
-  
   };
   const fields = [
+    {
+      name: "code",
+      type: "text",
+      label: "Mã khuyễn mại",
+      text: "mã khuyễn mại",
+      readOnly: true,
+      class: "input-form-promotion",
+    },
     {
       name: "name",
       type: "text",
@@ -278,8 +283,8 @@ function UpdatePromotionManagement() {
       type: "select",
       label: "Trạng thái",
       options: [
-        { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-        { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
+        { value: "DANG_SU_DUNG", label: "Còn hạn" },
+        { value: "KHONG_SU_DUNG", label: "Hết hạn" },
       ],
       text: "trạng thái",
       class: "input-form-promotion",
@@ -331,12 +336,49 @@ function UpdatePromotionManagement() {
       title: "Ảnh sản phẩm",
       dataIndex: "image",
       key: "image",
-      render: (text) => (
-        <img
-          src={text}
-          alt="Ảnh sản phẩm"
-          style={{ width: "70px", borderRadius: "5px" }}
-        />
+      render: (text, record) => (
+        <div style={{ width: "90px", height: "90px" }}>
+          <div
+            style={{
+              backgroundImage: `url(${text})`,
+              width: "100%",
+              height: "100%",
+              backgroundSize: "cover", // Đặt kích thước để hình ảnh bao phủ toàn bộ phần tử
+              backgroundPosition: "center", // Đặt vị trí của hình ảnh là trung tâm
+              borderRadius: "5px",
+              position: "relative",
+            }}
+          >
+            {record.value !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  right: 0,
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "3em",
+                    color: record.value > 50 ? "red" : "#ffcc00",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    fontSize: "11px",
+                    color: record.value > 50 ? "white" : "black", // Màu của văn bản
+                    zIndex: 1, // Đặt độ sâu trên cùng
+                    textAlign: "center",
+                  }}
+                >
+                  Giảm {record.value}%
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       ),
     },
     {
@@ -361,15 +403,13 @@ function UpdatePromotionManagement() {
       title: "Màu",
       dataIndex: "codeColor",
       key: "codeColor",
-      render: (text,record) => {
-        return(
+      render: (text, record) => {
+        return (
           <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            style={{ backgroundColor: record.codeColor }}
-        />
-        </div>
-        )
-      }
+            <Button style={{ backgroundColor: record.codeColor }} />
+          </div>
+        );
+      },
     },
     {
       title: "Trạng thái",
@@ -479,7 +519,7 @@ function UpdatePromotionManagement() {
       <Row>
         <Col className="add-promotion" lg={{ span: 7, offset: 0 }}>
           <div className="title-add-promotion">
-            <h1>Cập nhập khuyến mại</h1>
+            <h4>Cập nhập đợt giảm giá</h4>
           </div>
 
           <Form layout="vertical" autoComplete="off">
@@ -501,9 +541,8 @@ function UpdatePromotionManagement() {
                           handleInputChange(field.name, value);
                         }}
                         min="1"
-                        max="100"
+                        max="80"
                         formatter={field.formatter}
-                     
                       />
                     )}
                     {field.type === "date" && (
@@ -520,22 +559,18 @@ function UpdatePromotionManagement() {
                       />
                     )}
                     {field.type === "select" && (
-                      <Select
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.label}
-                        value={formData[field.name] || ""}
-                        onChange={(value) => {
-                          handleInputChange(field.name, value);
-                        }}
-                      >
-                        <Option value="">Chọn trạng thái</Option>
-                        {field.options.map((option, optionIndex) => (
-                          <Option key={optionIndex} value={option.value}>
-                            {option.label}
-                          </Option>
-                        ))}
-                      </Select>
+                      <Input
+                        disable
+                        className="status"
+                        name="status"
+                        value={
+                          formData["status"] === "DANG_KICH_HOAT"
+                            ? "Còn hạn"
+                            : (formData["status"] === "CHUA_KICH_HOAT"
+                                ? "Chưa kích hoạt"
+                                : "Hết hạn") || ""
+                        }
+                      ></Input>
                     )}
 
                     {field.type !== "date" &&
@@ -557,23 +592,14 @@ function UpdatePromotionManagement() {
             })}
 
             <Form.Item label=" ">
-              <Popconfirm
-                title="Thông báo"
-                description="Bạn có chắc chắn muốn thêm không ?"
-                onConfirm={() => {
-                  handleSubmit(id);
-                }}
-                okText="Có"
-                cancelText="Không"
+              <Button
+                className="button-add-promotion"
+                key="submit"
+                title="Cập nhập"
+                onClick={() => handleSubmit(id)}
               >
-                <Button
-                  className="button-add-promotion"
-                  key="submit"
-                  title="Cập nhập"
-                >
-                  Cập nhập
-                </Button>
-              </Popconfirm>
+                Cập nhập
+              </Button>
             </Form.Item>
           </Form>
         </Col>
@@ -583,11 +609,18 @@ function UpdatePromotionManagement() {
             <br></br>
             <br></br>
             <h1>Sản phẩm</h1>
-            <div style={{ display: "flex", margin: 20,justifyContent:"center" ,alignItems:"center"}}>
+            <div
+              style={{
+                display: "flex",
+                margin: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <p>Tìm kiếm</p>{" "}
               <Input
                 placeholder="Mã hoặc tên sản phẩm"
-                style={{ width: 400,height:40, marginLeft: 20 }}
+                style={{ width: 400, height: 40, marginLeft: 20 }}
                 onChange={(e) =>
                   handleInputChangeSearch("keyword", e.target.value)
                 }

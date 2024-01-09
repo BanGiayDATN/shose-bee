@@ -19,13 +19,12 @@ public interface GetProductDetailByCategory {
     String getNameSize();
     @Value("#{target.image}")
     String getImage();
-
     @Value("#{target.nameProduct}")
     String getNameProduct();
-
     @Value("#{target.price}")
     BigDecimal getPrice();
-
     @Value("#{target.valuePromotion}")
     String getValuePromotion();
+    @Value("#{target.createdDate}")
+    String getCreatedDate();
 }

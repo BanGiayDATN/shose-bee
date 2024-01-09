@@ -175,7 +175,6 @@ const ModalCreateCustomer = () => {
               navigate("/customer-management");
             })
             .catch((error) => {
-              toast.error(error.response.data.message);
               console.log("Create failed:", error);
             });
         }
@@ -254,11 +253,13 @@ const ModalCreateCustomer = () => {
               <Col span={12}>
                 <div style={{ marginLeft: "20%" }}>
                   <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                     listType="picture-circle"
                     fileList={uploadedFile ? [uploadedFile] : []}
                     onPreview={handlePreview}
                     onChange={handleChange}
+                    customRequest={({ file, onSuccess }) => {
+                      onSuccess(file);
+                    }}
                     showUploadList={{
                       showPreviewIcon: true,
                       showRemoveIcon: true,
@@ -331,7 +332,27 @@ const ModalCreateCustomer = () => {
                   <Form.Item
                     label="Tên khách hàng"
                     name="fullName"
-                    rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập tên" },
+                      {
+                        validator: (_, value) => {
+                          if (value && value[0] === " ") {
+                            return Promise.reject(
+                              "Tên không được nhập khoảng trắng"
+                            );
+                          }
+                          if (value.length > 50) {
+                            return Promise.reject(
+                              "Tên khách hàng tối đa 50 ký tự"
+                            );
+                          }
+                          if (/\d/.test(value)) {
+                            return Promise.reject("Tên không được chứa số");
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
                   >
                     <Input
                       className="input-item"

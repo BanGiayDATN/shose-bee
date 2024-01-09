@@ -5,8 +5,12 @@ import "./style-login-management.css";
 import Logo from "../../../assets/images/logo_client.png";
 import { LoginApi } from "../../../api/employee/login/Login.api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
+import { setToken, setUserToken } from "../../../helper/useCookies";
+import { jwtDecode } from "jwt-decode";
 const LoginManagement = () => {
   const [form] = Form.useForm();
+  const nav = useNavigate();
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
 
   const showPasswordModal = () => {
@@ -19,15 +23,19 @@ const LoginManagement = () => {
   };
 
   const onFinish = (values) => {
-    console.log("Success:", values);
-    LoginApi.authentication(values)
+    LoginApi.authenticationIn(values)
       .then((res) => {
+        setToken(res.data.token);
+        setUserToken(res.data.token);
+        const decodedToken = jwtDecode(res.data.token);
+        if (decodedToken.role.includes("ROLE_ADMIN")) {
+          nav("/dashboard");
+        } else {
+          nav("/sale-counter");
+        }
         toast.success("Đăng nhập thành công");
-        window.location.href = "/dashboard";
       })
-      .catch((err) => {
-        toast.error("Tài khoản hoặc mật khẩu không đúng");
-      });
+      .catch((error) => {});
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -54,14 +62,13 @@ const LoginManagement = () => {
           .then((res) => {
             setPasswordModalVisible(false);
             toast.success("Đổi mật khẩu thành công");
+            nav("/login-management");
           })
           .catch((err) => {
-            toast.error("Tài khoản hoặc mật khẩu không đúng");
+            console.log("Tài khoản hoặc mật khẩu không đúng");
           });
       })
-      .catch(() => {
-        // Xử lý khi người dùng từ chối xác nhận
-      });
+      .catch(() => {});
   };
 
   return (

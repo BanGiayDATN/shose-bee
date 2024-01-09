@@ -19,9 +19,6 @@ public class CreateBillDetailRequest {
     private String idProduct;
 
     @NotNull
-    private Integer size;
-
-    @NotNull
     private int quantity;
 
     @NotEmpty
@@ -29,4 +26,8 @@ public class CreateBillDetailRequest {
 
     @NotEmpty
     private String price;
+
+    private Integer promotion;
+
+    private String note;
 }

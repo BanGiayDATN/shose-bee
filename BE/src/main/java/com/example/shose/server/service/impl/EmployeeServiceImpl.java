@@ -7,6 +7,7 @@ import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
+import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.entity.Address;
 import com.example.shose.server.entity.User;
@@ -22,6 +23,7 @@ import com.example.shose.server.repository.UserReposiory;
 import com.example.shose.server.service.EmployeeService;
 import com.example.shose.server.util.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +50,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private SendEmailService sendEmailService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
@@ -83,11 +88,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         userReposiory.save(user); // add user vào database
         User addressUser = userReposiory.getById(user.getId());
 
+        String password = String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber());
         Account employeeAccount = new Account();
         employeeAccount.setUser(user);
         employeeAccount.setEmail(user.getEmail());
-        employeeAccount.setRoles(Roles.NHAN_VIEN);
-        employeeAccount.setPassword(String.valueOf(new RandomNumberGenerator().generateRandom6DigitNumber()));
+        employeeAccount.setRoles(Roles.ROLE_EMLOYEE);
+        employeeAccount.setPassword(passwordEncoder.encode(password));
         employeeAccount.setStatus(Status.DANG_SU_DUNG);
         accountRepository.save(employeeAccount); // add tài khoản vào database
 
@@ -106,7 +112,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // gửi email
         String subject = "Xin chào, bạn đã đăng ký thành công ";
-        sendEmailService.sendEmailPasword(employeeAccount.getEmail(),subject,employeeAccount.getPassword());
+        sendEmailService.sendEmailPasword(employeeAccount.getEmail(),subject,password);
         return user;
     }
     @Override
@@ -172,5 +178,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return optional.get();
     }
+
+
 
 }

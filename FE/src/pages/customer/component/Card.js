@@ -1,129 +1,193 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./style-card.css";
-import { Card, Modal, Row, Col, Button, InputNumber } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { Col, InputNumber, Modal, Row } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 import { ProductDetailClientApi } from "./../../../api/customer/productdetail/productDetailClient.api";
-function CardItem({
-  item,
-  index
-}) {
-  const [hovered, setHovered] = useState(false);
+import "./style-card.css";
+
+function CardItem({ item, index }) {
+  const now = dayjs();
   const [modal, setModal] = useState(false);
+  const [id, setId] = useState("");
+  const [itemSize, setItemSize] = useState("");
   const [clickedIndex, setClickedIndex] = useState(-1);
-
-
+  const [listSize, setListSize] = useState([]);
+  const [cartAccount, setCartAccount] = useState([]);
+  const nav = useNavigate();
   const [detailProduct, setDetailProduct] = useState({
     codeColor: "",
-    idProduct: "",
-    idProductDetail:"",
+    idProductDetail: "",
     image: "",
     nameSize: "",
-    listNameSize: "",
     nameProduct: "",
     price: 0,
     quantity: 0,
   });
 
-  const idAccountLocal = localStorage.getItem("idAccount");
+  const idAccountLocal = sessionStorage.getItem("idAccount");
   const [quantity, setQuantity] = useState(1);
-  const [cartAccount,setCartAccount] = useState([]);
   const initialCartLocal = JSON.parse(localStorage.getItem("cartLocal")) || [];
 
   const [cartLocal, setCartLocal] = useState(initialCartLocal);
 
   useEffect(() => {
     localStorage.setItem("cartLocal", JSON.stringify(cartLocal));
+    console.log(cartLocal);
   }, [cartLocal]);
+  useEffect(() => {
+    console.log(item);
+    console.log(now.format("HH:mm:ss DD-MM-YYYY"));
+    console.log(
+      now.subtract(15, "day").format("DD-MM-YYYY"),
+      dayjs.unix(item.createdDate / 1000).format("DD-MM-YYYY"),
+      now.format("DD-MM-YYYY")
+    );
+    if(idAccountLocal !== null){
+      CartClientApi.listCart(idAccountLocal).then((res)=>{
+        setCartAccount(res.data.data)
+      })
+    }
+  }, []);
 
-
-
-
-  const addToCard = () => {
-    if (idAccountLocal===null) {
+  const handleAddCartLocal = (newCartItem) => {
+    setCartLocal((prev) => {
+      console.log(cartLocal);
+      const exists = prev.find(
+        (item) => item.idProductDetail === newCartItem.idProductDetail
+      );
+      console.log(exists);
+      if (exists=== undefined) {
+        console.log(exists);
+        return [...prev, newCartItem];
+      } else {
+        console.log(exists);
+        return prev.map((item) =>
+          item.idProductDetail === newCartItem.idProductDetail
+            ? { ...item, quantity: item.quantity + newCartItem.quantity }
+            : item
+        );
+      }
+    });
+  };
+  // them san pham vao gio hang
+  const addToCard = async () => {
+    if (detailProduct.quantity === 0) {
+      toast.error("Sản phẩm đã hết hàng", {
+        autoClose: 3000,
+      });
+      return;
+    }
+    if (idAccountLocal === null) {
       const newCartItem = {
         idProductDetail: detailProduct.idProductDetail,
-        name: detailProduct.nameProduct,
         image: detailProduct.image,
         price: detailProduct.price,
         quantity: quantity,
-        idProduct:detailProduct.idProduct,
-        codeColor:detailProduct.codeColor,
-        nameSize:detailProduct.nameSize
+        nameProduct: detailProduct.nameProduct,
+        codeColor: detailProduct.codeColor,
+        nameSize: detailProduct.nameSize,
+        quantityProductDetail: detailProduct.quantity,
+        valuePromotion: detailProduct.valuePromotion,
       };
-      
-     
-        setCartLocal((prev) => {
-          console.log(cartLocal);
-          const exists = prev.find(item =>item.idProductDetail === newCartItem.idProductDetail); 
-        if (!exists) {
-          console.log("mới");
-          return [...prev, newCartItem];
-        }else{
-          console.log("trùng");
-          return prev.map(item => 
-            item.idProductDetail === newCartItem.idProductDetail
-              ? { ...item, quantity: item.quantity + newCartItem.quantity} 
-              : item
+      const detailProductCart = cartLocal.find(
+        (item) => item.idProductDetail === id
+      );
+      if (detailProductCart !== undefined) {
+        if (
+          parseInt(quantity) + parseInt(detailProductCart.quantity) <=
+          detailProduct.quantity
+        ) {
+          await handleAddCartLocal(newCartItem);
+          nav("/cart");
+          toast.success("Thêm giỏ hàng thành công", {
+            autoClose: 3000,
+          });
+        } else {
+          toast.warning(
+            detailProduct.quantity - detailProductCart.quantity > 0 ? 
+            (`Bạn chỉ được thêm tối đa ${
+              detailProduct.quantity - detailProductCart.quantity
+            } sản phẩm`) :("Số lượng của sản phẩm trong giỏ đã đầy")
           );
         }
-        
-      });
-      window.location.href = "/cart"
-      toast.success("Add cart không login", {
-        autoClose: 3000,
-      });  
-     
+      } else {
+        await handleAddCartLocal(newCartItem);
+        nav("/cart");
+        toast.success("Thêm giỏ hàng thành công", {
+          autoClose: 3000,
+        });
+      }
     } else {
       const newCartItem = {
-        idAccount:idAccountLocal,
+        idAccount: idAccountLocal,
         idProductDetail: detailProduct.idProductDetail,
         price: detailProduct.price,
-        quantity: quantity
+        quantity: quantity,
       };
-
-        CartClientApi.addCart(newCartItem).then(
-          (res) => {
-            console.log(res.data.data);
-            // setListProductDetailByCategory(res.data.data);
-          },
-          (err) => {
-            console.log(err);
-          }
-        );
-        window.location.href = "/cart"
-      toast.success("Add cart có login!", {
-        autoClose: 3000,
-      });
+      const detailProductCart = cartAccount.find(
+        (item) => item.idProductDetail === id
+      );
+      console.log(detailProductCart);
+      if (detailProductCart !== undefined) {
+        if (
+          parseInt(quantity) + parseInt(detailProductCart.quantity) <=
+          detailProduct.quantity
+        ) {
+          await CartClientApi.addCart(newCartItem);
+          nav("/cart");
+          toast.success("Thêm giỏ hàng thành công", {
+            autoClose: 3000,
+          });
+        } else {
+          toast.warning(
+            detailProduct.quantity - detailProductCart.quantity > 0 ? 
+            (`Bạn chỉ được thêm tối đa ${
+              detailProduct.quantity - detailProductCart.quantity
+            } sản phẩm`) :("Số lượng của sản phẩm trong giỏ đã đầy")
+          );
+        }
+      } else {
+        await CartClientApi.addCart(newCartItem);
+        nav("/cart");
+        toast.success("Thêm giỏ hàng thành công", {
+          autoClose: 3000,
+        });
+      }
     }
   };
-
-  const getDetailProduct = (idProduct, idColor, nameSize) => {
-    // console.log(detailProduct);
-    ProductDetailClientApi.getDetailProductOfClient(
-      idProduct,
-      idColor,
-      nameSize
-    ).then(
+  const getDetailProduct = (idProductDetail) => {
+    setItemSize(idProductDetail);
+    ProductDetailClientApi.getDetailProductOfClient(idProductDetail).then(
       (res) => {
         console.log(res.data.data);
         setDetailProduct(res.data.data);
+        const nameSizeArray = res.data.data.listSize.split(",");
+        const sizeList = [];
+        for (let index = 0; index < nameSizeArray.length; index += 2) {
+          const name = nameSizeArray[index];
+          const id = nameSizeArray[index + 1];
+          sizeList.push({ name, id });
+        }
+        setListSize(sizeList);
+        setModal(true);
+        setCurrentImageIndex(0);
       },
       (err) => {
         console.log(err);
       }
     );
-    setModal(true);
   };
-  const handleSizeClick = (index, idProduct, codeColor, nameSize) => {
-    getDetailProduct(idProduct, codeColor, nameSize);
-    setClickedIndex(index);
+  const changeSize = (item) => {
+    getDetailProduct(item);
   };
 
-  const handleClickDetail = (idProduct, codeColor, nameSize) => {
+  const handleClickDetail = (idProductDetail) => {
     setClickedIndex(-1);
-    getDetailProduct(idProduct, codeColor, nameSize);
+    getDetailProduct(idProductDetail);
+    setId(idProductDetail);
   };
   const closeModal = () => {
     setModal(false);
@@ -132,76 +196,166 @@ function CardItem({
   };
 
   const formatMoney = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
-  };
-  const handleButtonMouseEnter = () => {
-    setHovered(true);
+    return (
+      parseInt(price)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
+    );
   };
 
-  const handleButtonMouseLeave = () => {
-    setHovered(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  useEffect(() => {
+    // Thiết lập một interval để tự động chuyển ảnh sau một khoảng thời gian
+    const intervalId = setInterval(() => {
+      nextImage();
+    }, 2000); // Thay đổi số 3000 để đặt khoảng thời gian chuyển ảnh (tính bằng mili giây)
+
+    // Xóa interval khi component unmount để tránh lỗi memory leak
+    return () => clearInterval(intervalId);
+  }, [currentImageIndex]);
+  const previousImage = () => {
+    if (currentImageIndex === 0) {
+      // Nếu đang ở ảnh đầu tiên, chuyển đến ảnh cuối cùng
+      setCurrentImageIndex(detailProduct.image.split(",").length - 1);
+    } else {
+      setCurrentImageIndex(currentImageIndex - 1);
+    }
   };
+
+  const nextImage = () => {
+    if (currentImageIndex === detailProduct.image.split(",").length - 1) {
+      // Nếu đang ở ảnh cuối cùng, chuyển đến ảnh đầu tiên
+      setCurrentImageIndex(0);
+    } else {
+      setCurrentImageIndex(currentImageIndex + 1);
+    }
+  };
+  const itemTimestamp = dayjs.unix(item.createdDate / 1000);
+  const nowTimestampReduce = now.subtract(15, "day");
   return (
     <>
-      <div>
-        <div
-          to="/detail"
-          className="card-item"
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-        >
-          <Link className="link-card-item" to="/detail">
-            {item.valuePromotion !== null && (
-              <p className="value-promotion">
-                Giảm {parseInt(item.valuePromotion)}%
-              </p>
-            )}
-            <img className="image-product" src={item.image} alt="..." />
+      <div
+        className="card-item"
+        data-slick-index="-1"
+        tabindex="0"
+      >
+        <div>
+          <Link
+            className="link-card-item"
+            to={`/detail-product/${item.idProductDetail}`}
+            onClick={() => window.location.href = `/detail-product/${item.idProductDetail}`}
+          >
+            <div className="box-img-product">
+              <div
+                style={{
+                  backgroundImage: `url(${item.image.split(",")[0]})`,
+                }}
+                className="image-product"
+              >
+                {item.valuePromotion !== null ? (
+                  <div className="value-promotion">
+                    Giảm {parseInt(item.valuePromotion)}%
+                  </div>
+                ) : null}
+                {nowTimestampReduce <= itemTimestamp && (
+                  <div className="new-product">Mới</div>
+                )}
+              </div>
+            </div>
             <div>
               <p className="name-product">
-                {item.nameProduct}
-                {/* - [{item.nameSize}] */}
+                {item.nameProduct} - [{item.nameSize}]
               </p>
             </div>
-            <p className="price-product">{formatMoney(item.price)}</p>
+            <div className="list-color-detail-card">
+                  <div
+                    className="color-product"
+                    key={index}
+                    style={{
+                      backgroundColor: item.codeColor,
+                    }}
+                  ></div>
+                </div>
+            <p className="price-product">
+              {item.valuePromotion !== null ? (
+                <>
+                  <span style={{ marginLeft: 5 }}>
+                    {" "}
+                    {formatMoney(
+                      item.price - item.price * (item.valuePromotion / 100)
+                    )}
+                  </span>
+                  <del style={{ color: "black", fontSize: 16, marginLeft: 5 }}>
+                    {formatMoney(item.price)}
+                  </del>
+                </>
+              ) : (
+                formatMoney(item.price)
+              )}
+            </p>
           </Link>
         </div>
-
-        <p
-          className={`button-buy-now ${hovered ? "visible" : "hidden"}`}
-          onMouseEnter={handleButtonMouseEnter}
-          onMouseLeave={handleButtonMouseLeave}
+        <div
+          className="button-buy-now"
           onClick={() => {
-            handleClickDetail(item.idProduct, item.codeColor, item.nameSize);
+            handleClickDetail(item.idProductDetail);
           }}
         >
           Mua ngay
-        </p>
+        </div>
       </div>
 
       <Modal
         className="modal-detail-product"
-        width={900}
+        width={1000}
         onCancel={closeModal}
         open={modal}
-        closeIcon={null}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
         <div className="modal-detail-product">
           <Row justify="center">
-            <Col lg={{ span: 11, offset: 0 }} style={{ height: 500 }}>
+            <Col
+              lg={{ span: 11, offset: 0 }}
+              style={{ height: 500, display: "flex", alignItems: "center" }}
+            >
+              <LeftOutlined
+                className="button-prev-card"
+                onClick={previousImage}
+              />
               <img
                 className="img-detail-product"
-                src={detailProduct.image}
+                src={detailProduct.image.split(",")[currentImageIndex]}
                 alt="..."
               />
+              <RightOutlined className="button-next-card" onClick={nextImage} />
             </Col>
-            <Col lg={{ span: 12, offset: 1 }} style={{ height: 500 }}>
+            <Col
+              lg={{ span: 12, offset: 1 }}
+              style={{ height: 500, paddingLeft: 20 }}
+            >
               <h1>{detailProduct.nameProduct}</h1>
               <div className="price-product">
                 {" "}
-                Giá: {formatMoney(detailProduct.price)}
+                {detailProduct.valuePromotion !== null ? (
+                  <>
+                    <span style={{ marginLeft: 5 }}>
+                      {" "}
+                      {formatMoney(
+                        detailProduct.price -
+                          detailProduct.price *
+                            (detailProduct.valuePromotion / 100)
+                      )}
+                    </span>
+                    <del
+                      style={{ color: "black", fontSize: 16, marginLeft: 5 }}
+                    >
+                      {formatMoney(detailProduct.price)}
+                    </del>
+                  </>
+                ) : (
+                  formatMoney(detailProduct.price)
+                )}
               </div>
               <div>
                 <div>
@@ -213,10 +367,7 @@ function CardItem({
                     className="color-product"
                     key={index}
                     style={{
-                      backgroundColor: detailProduct.codeColor.replace(
-                        "%23",
-                        "#"
-                      ),
+                      backgroundColor: detailProduct.codeColor,
                     }}
                   ></div>
                 </div>
@@ -225,36 +376,32 @@ function CardItem({
               <div>
                 ------------------------------------------------------------------------
               </div>
-              <div>
+              <div className="box-size-pd">
                 <div>Size:</div>
-                <div className="list-size-product" tabIndex="0">
-                  {detailProduct.listNameSize
-                    .split(",")
-                    .sort()
-                    .map((nameSize, index) => (
-                      <div
-                        className={`size-product ${
-                          clickedIndex === index ? "clicked" : ""
-                        }`}
-                        key={index}
-                        tabIndex="0"
-                        onClick={() =>
-                          handleSizeClick(
-                            index,
-                            item.idProduct,
-                            item.codeColor,
-                            nameSize
-                          )
-                        }
-                        style={
-                          nameSize !== detailProduct.nameSize
-                            ? {}
-                            : { border: "1px solid black" }
-                        }
-                      >
-                        {nameSize}
-                      </div>
-                    ))}
+                <div className="list-size-product-pd" tabIndex="0">
+                  {listSize.map((item, index) => (
+                    <div
+                      key={index}
+                      className={
+                        itemSize === item.id
+                          ? "size-product-pd-click"
+                          : "size-product-pd"
+                      }
+                      tabIndex="0"
+                      onClick={() => changeSize(item.id)}
+                    >
+                      {item.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ marginBottom: "10px", color: "black" }}>
+                  Số lượng tồn:{" "}
+                  <span style={{ color: "#ff4400" }}>
+                    {detailProduct.quantity} sản phẩm
+                  </span>
                 </div>
               </div>
               <div className="add-to-card">
@@ -263,8 +410,9 @@ function CardItem({
                   name="quantity"
                   type="number"
                   value={quantity}
-                  // defaultValue="1"
-                  min="1"
+                  disabled={detailProduct.quantity === 0}
+                  min={1}
+                  max={detailProduct.quantity}
                   onChange={(value) => setQuantity(value)}
                 ></InputNumber>
                 <div className="button-add-to-card" onClick={addToCard}>

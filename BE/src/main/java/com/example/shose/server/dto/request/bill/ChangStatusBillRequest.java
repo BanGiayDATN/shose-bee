@@ -20,4 +20,7 @@ public class ChangStatusBillRequest {
     private StatusMethod method;
 
     private String totalMoney;
+
+     private  boolean statusCancel = false;
+
 }

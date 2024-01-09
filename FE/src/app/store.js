@@ -12,6 +12,11 @@ import AddressReducer from "./reducer/Address.reducer";
 import ProductDetailReducer from "./reducer/ProductDetail.reducer";
 import ColorReducer from "./reducer/Color.reducer";
 import VoucherReducer from "./reducer/Voucher.reducer";
+import ProductReducer from "./reducer/Product.reducer";
+import LoadingReducer from "./reducer/Loading.reducer";
+import AddressAccountClientReducer from "./reducer/AddressAccountClient.reducer";
+import NotificationReducer from "./reducer/Notification.reducer";
+import UserClientReducer from "./reducer/UserClient.reducer";
 export const store = configureStore({
   reducer: {
     category: CategoryReducer,
@@ -27,6 +32,11 @@ export const store = configureStore({
     productDetail: ProductDetailReducer,
     color: ColorReducer,
     voucher: VoucherReducer,
+    product: ProductReducer,
+    loading: LoadingReducer,
+    addressAccountClient: AddressAccountClientReducer,
+    userClient:UserClientReducer,
+    notification:NotificationReducer
   },
 });
 

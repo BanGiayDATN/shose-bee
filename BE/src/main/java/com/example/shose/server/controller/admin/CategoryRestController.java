@@ -20,12 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Nguyễn Vinh
  */
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/admin/category")
+@CrossOrigin("*")
 public class CategoryRestController {
 
     @Autowired
     private CategoryService categoryService;
+
 
     @GetMapping()
     public ResponseObject getList(final FindCategoryRequest req) {

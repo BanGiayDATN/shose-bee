@@ -135,7 +135,7 @@ const ModalUpdateCustomer = ({ visible }) => {
           setCustomer(res.data.data);
           const formValues = {
             ...res.data.data,
-            dateOfBirth: moment(res.data.data.dateOfBirth).format("YYYY-MM-DD"),
+            dateOfBirth: moment(res.data.data.dateOfBirth).format("DD/MM/YYYY"),
           };
 
           if (addressData) {
@@ -338,12 +338,14 @@ const ModalUpdateCustomer = ({ visible }) => {
               <Col span={12}>
                 <div style={{ marginLeft: "20%" }}>
                   <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                     listType="picture-circle"
                     fileList={uploadedFile ? [uploadedFile] : []}
                     onPreview={handlePreview}
                     onChange={handleChange}
                     onRemove={() => setUploadedFile(null)}
+                    customRequest={({ file, onSuccess }) => {
+                      onSuccess(file);
+                    }}
                     showUploadList={{
                       showPreviewIcon: true,
                       showRemoveIcon: true,
@@ -395,11 +397,25 @@ const ModalUpdateCustomer = ({ visible }) => {
                     label="Tên khách hàng"
                     name="fullName"
                     rules={[
+                      { required: true, message: "Vui lòng nhập tên" },
                       {
-                        required: true,
-                        message: "Vui lòng nhập tên khách hàng",
+                        validator: (_, value) => {
+                          if (value && value[0] === " ") {
+                            return Promise.reject(
+                              "Tên không được nhập khoảng trắng"
+                            );
+                          }
+                          if (value.length > 50) {
+                            return Promise.reject(
+                              "Tên khách hàng tối đa 50 ký tự"
+                            );
+                          }
+                          if (/\d/.test(value)) {
+                            return Promise.reject("Tên không được chứa số");
+                          }
+                          return Promise.resolve();
+                        },
                       },
-                      { max: 30, message: "Tên khách hàng tối đa 30 ký tự" },
                     ]}
                   >
                     <Input
@@ -508,10 +524,7 @@ const ModalUpdateCustomer = ({ visible }) => {
                     },
                   ]}
                 >
-                  <Input
-                    className="input-item"
-                    placeholder="Số điện thoại"
-                  />
+                  <Input className="input-item" placeholder="Số điện thoại" />
                 </Form.Item>
                 <Form.Item
                   label="Ngày sinh"

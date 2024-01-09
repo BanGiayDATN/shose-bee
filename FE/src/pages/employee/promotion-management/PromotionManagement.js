@@ -1,21 +1,3 @@
-import React, { useEffect, useState, useRef } from "react";
-import "./style-promotion.css";
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  Table,
-  Modal,
-  InputNumber,
-  DatePicker,
-} from "antd";
-import { Link } from "react-router-dom";
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import {
-  GetPromotion,
-  SetPromotion,
-} from "../../../app/reducer/Promotion.reducer";
 import {
   faEdit,
   faEye,
@@ -24,11 +6,31 @@ import {
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useAppDispatch, useAppSelector } from "../../../app/hook";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Row,
+  Select,
+  Table,
+} from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { toast } from "react-toastify";
+
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { useAppDispatch, useAppSelector } from "../../../app/hook";
+import {
+  GetPromotion,
+  SetPromotion,
+} from "../../../app/reducer/Promotion.reducer";
+import "./style-promotion.css";
 dayjs.extend(utc);
 const PromotionManagement = () => {
   const dispatch = useAppDispatch();
@@ -38,9 +40,7 @@ const PromotionManagement = () => {
   const [formData, setFormData] = useState({});
   const [formDataSearch, setFormDataSearch] = useState({});
   const [showData, setShowData] = useState(true);
-  const [id, setId] = useState("");
   const [formErrors, setFormErrors] = useState({});
-  const receiveFormData = useRef({});
   const data = useAppSelector(GetPromotion);
 
   useEffect(() => {
@@ -53,8 +53,6 @@ const PromotionManagement = () => {
     loadData();
   }, [showData, formDataSearch]);
 
- 
-
   const closeModal = () => {
     setModal(false);
     setShowDetail(false);
@@ -63,16 +61,6 @@ const PromotionManagement = () => {
   const resetFormSearch = () => {
     setFormDataSearch({});
     loadData();
-  };
-  const convertToLong = () => {
-    const convertedFormData = { ...formData };
-    if (formData.startDate) {
-      convertedFormData.startDate = dayjs(formData.startDate).unix() * 1000;
-    }
-    if (formData.endDate) {
-      convertedFormData.endDate = dayjs(formData.endDate).unix() * 1000;
-    }
-    return convertedFormData;
   };
   const convertToLongSearch = () => {
     const convertedFormDataSearch = { ...formDataSearch };
@@ -102,16 +90,16 @@ const PromotionManagement = () => {
   const detailPromotion = (id) => {
     PromotionApi.getOne(id).then(
       (res) => {
-        const  getDetailPromotion = res.data.data
+        const getDetailPromotion = res.data.data;
         setFormData({
           name: getDetailPromotion.name,
-          code:getDetailPromotion.code,
+          code: getDetailPromotion.code,
           value: getDetailPromotion.value,
           startDate: dayjs(getDetailPromotion.startDate),
           endDate: dayjs(getDetailPromotion.endDate),
           status: getDetailPromotion.status,
           createdDate: dayjs(getDetailPromotion.createdDate),
-        })
+        });
       },
       (err) => console.log(err)
     );
@@ -132,22 +120,26 @@ const PromotionManagement = () => {
     detailPromotion(id);
     setShowDetail(true);
   };
-
+  const updatedList = list.map((item, index) => ({
+    ...item,
+    stt: index + 1,
+  }));
   const columns = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      align: "center",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Mã khuyến mại",
+      title: "Mã ",
       dataIndex: "code",
       key: "code",
       sorter: (a, b) => a.code.localeCompare(b.code),
     },
     {
-      title: "Tên khuyến mại",
+      title: "Tên đợt giảm giá",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
@@ -156,6 +148,7 @@ const PromotionManagement = () => {
     {
       title: "Giá trị giảm",
       dataIndex: "value",
+      align: "center",
       key: "value",
       sorter: (a, b) => a.value - b.value,
       render: (value) => `${value}%`,
@@ -163,6 +156,7 @@ const PromotionManagement = () => {
     {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
+      align: "center",
       key: "startDate",
       sorter: (a, b) => a.startDate - b.startDate,
       render: (date) => dayjs(date).format("HH:mm:ss  DD-MM-YYYY "),
@@ -170,6 +164,7 @@ const PromotionManagement = () => {
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
+      align: "center",
       key: "endDate",
       sorter: (a, b) => a.endDate - b.endDate,
       render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
@@ -178,6 +173,7 @@ const PromotionManagement = () => {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
+      align: "center",
       sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
       render: (date) => dayjs(date).format("HH:mm:ss DD-MM-YYYY"),
     },
@@ -185,12 +181,21 @@ const PromotionManagement = () => {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
+      align: "center",
       render: (text) => {
         const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+          text === "DANG_KICH_HOAT"
+            ? "trangthai-sd"
+            : text === "HET_HAN_KICH_HOAT"
+            ? "trangthai-ksd"
+            : "trangthai-ckh";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Còn hạn " : "Hết hạn"}
+            {text === "DANG_KICH_HOAT"
+              ? "Đang kích hoạt"
+              : text === "HET_HAN_KICH_HOAT"
+              ? "Ngừng kích hoạt"
+              : "Chưa kích hoạt"}
           </button>
         );
       },
@@ -200,25 +205,28 @@ const PromotionManagement = () => {
       dataIndex: "hanhDong",
       key: "hanhDong",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             type="primary"
-            title="Chi tiết thể loại"
+            title="Chi tiết khuyến mại"
             style={{ backgroundColor: "#FF9900" }}
             onClick={() => openDetail(record.id)}
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          <Link to="/update-promotion-management">
-            <Button
-              type="primary"
-              title="Chỉnh sửa thể loại"
-              style={{ backgroundColor: "green", borderColor: "green" }}
-              onClick={() => openUpdate(record.id)}
-            >
-              <FontAwesomeIcon icon={faEdit} />
-            </Button>
-          </Link>
+          {record.status === "DANG_KICH_HOAT" ||
+          record.status === "CHUA_KICH_HOAT" ? (
+            <Link to="/update-promotion-management">
+              <Button
+                type="primary"
+                title="Chỉnh sửa khuyến mại"
+                style={{ backgroundColor: "green", borderColor: "green" }}
+                onClick={() => openUpdate(record.id)}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+            </Link>
+          ) : null}
         </div>
       ),
     },
@@ -232,21 +240,22 @@ const PromotionManagement = () => {
       label: "Mã khuyễn mại",
       text: "mã khuyễn mại",
       hidden: true,
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "name",
       type: "text",
       label: "Tên khuyễn mại",
       text: "tên khuyễn mại",
-      class: "input-form",
+      class: "input-form-promotion",
     },
     {
       name: "value",
       type: "number",
       label: "Giá trị giảm",
       text: "giá trị giảm",
-      class: "input-form",
+      align: "center",
+      class: "input-form-promotion",
       formatter: (value) => `${value}%`,
     },
     {
@@ -254,33 +263,37 @@ const PromotionManagement = () => {
       type: "date",
       label: "Ngày bắt đầu",
       text: "ngày bắt đầu",
-      class: "input-form",
+      align: "center",
+      class: "input-form-promotion",
     },
     {
       name: "endDate",
       type: "date",
       label: "Ngày kết thúc",
       text: "ngày kết thúc",
-      class: "input-form",
+      align: "center",
+      class: "input-form-promotion",
     },
     {
       name: "status",
       type: "select",
       label: "Trạng thái",
       options: [
-        { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-        { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
+        { value: "DANG_SU_DUNG", label: "Còn hạn" },
+        { value: "KHONG_SU_DUNG", label: "Hết hạn" },
       ],
       text: "trạng thái",
-      class: "input-form",
+      align: "center",
+      class: "input-form-promotion",
     },
     {
       name: "createdDate",
       type: "date",
       label: "Ngày tạo",
       text: "ngày tạo",
+      align: "center",
       hidden: true,
-      class: "input-form",
+      class: "input-form-promotion",
     },
   ];
 
@@ -289,21 +302,22 @@ const PromotionManagement = () => {
       name: "code",
       type: "text",
       label: "Mã khuyễn mại",
-      class: "input-search",
+      class: "input-search-promotion",
       placeholder: "Tìm kiếm",
     },
     {
       name: "name",
       type: "text",
       label: "Tên khuyễn mại",
-      class: "input-search",
+      class: "input-search-promotion",
       placeholder: "Tìm kiếm",
     },
     {
       name: "value",
       type: "number",
       label: "Giá trị giảm",
-      class: "input-search",
+      class: "input-search-promotion",
+      align: "center",
       placeholder: "Tìm kiếm",
       formatter: (value) => `${value}%`,
     },
@@ -311,25 +325,29 @@ const PromotionManagement = () => {
       name: "status",
       type: "select",
       label: "Trạng thái",
+      align: "center",
       options: [
-        { value: "DANG_SU_DUNG", label: "Đang sử dụng" },
-        { value: "KHONG_SU_DUNG", label: "Không sử dụng" },
+        { value: "DANG_KICH_HOAT", label: "Đang kích hoạt" },
+        { value: "CHUA_KICH_HOAT", label: "Chưa kích hoạt" },
+        { value: "HET_HAN_KICH_HOAT", label: "Ngừng kích hoạt" },
       ],
-      class: "input-search",
+      class: "input-search-promotion",
       placeholder: "Tìm kiếm",
     },
     {
       name: "startDate",
       type: "date",
       label: "Từ ngày",
-      class: "input-search",
+      align: "center",
+      class: "input-search-promotion",
       placeholder: "Tìm kiếm",
     },
     {
       name: "endDate",
       type: "date",
       label: "Đến ngày",
-      class: "input-search",
+      align: "center",
+      class: "input-search-promotion",
       placeholder: "Tìm kiếm",
     },
   ];
@@ -337,81 +355,253 @@ const PromotionManagement = () => {
     <div className="promotion">
       <h1 className="title-promotion">
         {" "}
-        <FontAwesomeIcon icon={faKaaba} /> Quản lý khuyến mại
+        <FontAwesomeIcon icon={faKaaba} /> Quản lý đợt giảm giá
       </h1>
 
       <div className="form-search">
-        <h3>
-          <FontAwesomeIcon icon={faFilter} /> Bộ lọc
-        </h3>
+        <Row>
+          <FontAwesomeIcon
+            icon={faFilter}
+            style={{ fontSize: "26px", marginRight: "10px" }}
+          />
+          <span style={{ fontSize: "18px", fontWeight: "500" }}>Bộ lọc</span>
+        </Row>
         <hr></hr>
 
         <div className="row-search">
-          {fieldsSearch.map((field, index) => {
-            return (
-              <div key={index}>
-                <Form.Item label={field.label}>
-                  {field.type === "number" && (
-                    <InputNumber
-                      className={field.class}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      value={formDataSearch[field.name] || ""}
-                      onChange={(value) =>
-                        handleInputChangeSearch(field.name, value)
-                      }
-                      min="1"
-                      formatter={field.formatter}
-                    />
-                  )}
-                  {field.type === "date" && (
-                    <DatePicker
-                      className={field.class}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      value={formDataSearch[field.name]}
-                      onChange={(value) => {
-                        handleInputChangeSearch(field.name, value);
-                      }}
-                      format="DD-MM-YYYY"
-                    />
-                  )}
+          <Row justifyContent="center">
+            <Col>
+              {fieldsSearch
+                .slice(0, Math.floor(fieldsSearch.length / 3))
+                .map((field, index) => {
+                  return (
+                    <div key={index}>
+                      <Form.Item
+                        label={field.label}
+                        labelWrap={8}
+                        wrapperCol={15}
+                      >
+                        {field.type === "number" && (
+                          <InputNumber
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                            min="1"
+                            formatter={field.formatter}
+                          />
+                        )}
+                        {field.type === "date" && (
+                          <DatePicker
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name]}
+                            onChange={(value) => {
+                              handleInputChangeSearch(field.name, value);
+                            }}
+                            format="DD-MM-YYYY"
+                          />
+                        )}
 
-                  {field.type === "select" && (
-                    <Select
-                      className={field.class}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      value={formDataSearch[field.name] || ""}
-                      onChange={(value) =>
-                        handleInputChangeSearch(field.name, value)
-                      }
-                    >
-                      <Option value="">Tất cả</Option>
-                      {field.options.map((option, optionIndex) => (
-                        <Option key={optionIndex} value={option.value}>
-                          {option.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
-                  {field.type !== "date" &&
-                    field.type !== "select" &&
-                    field.type !== "number" && (
-                      <Input
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.placeholder}
-                        value={formDataSearch[field.name] || ""}
-                        onChange={(e) =>
-                          handleInputChangeSearch(field.name, e.target.value)
-                        }
-                      />
-                    )}
-                </Form.Item>
-              </div>
-            );
-          })}
+                        {field.type === "select" && (
+                          <Select
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                          >
+                            <Option value="">Tất cả</Option>
+                            {field.options.map((option, optionIndex) => (
+                              <Option key={optionIndex} value={option.value}>
+                                {option.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                        {field.type !== "date" &&
+                          field.type !== "select" &&
+                          field.type !== "number" && (
+                            <Input
+                              className={field.class}
+                              name={field.name}
+                              placeholder={field.placeholder}
+                              value={formDataSearch[field.name] || ""}
+                              onChange={(e) =>
+                                handleInputChangeSearch(
+                                  field.name,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                      </Form.Item>
+                    </div>
+                  );
+                })}
+            </Col>
+            <Col>
+              {fieldsSearch
+                .slice(
+                  Math.floor(fieldsSearch.length / 3),
+                  Math.floor((2 * fieldsSearch.length) / 3)
+                )
+                .map((field, index) => {
+                  return (
+                    <div key={index}>
+                      <Form.Item
+                        label={field.label}
+                        labelCol={{ span: 7 }}
+                        wrapperCol={{ span: 15 }}
+                      >
+                        {field.type === "number" && (
+                          <InputNumber
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                            min="1"
+                            formatter={field.formatter}
+                          />
+                        )}
+                        {field.type === "date" && (
+                          <DatePicker
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name]}
+                            onChange={(value) => {
+                              handleInputChangeSearch(field.name, value);
+                            }}
+                            format="DD-MM-YYYY"
+                          />
+                        )}
+
+                        {field.type === "select" && (
+                          <Select
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                          >
+                            <Option value="">Tất cả</Option>
+                            {field.options.map((option, optionIndex) => (
+                              <Option key={optionIndex} value={option.value}>
+                                {option.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                        {field.type !== "date" &&
+                          field.type !== "select" &&
+                          field.type !== "number" && (
+                            <Input
+                              className={field.class}
+                              name={field.name}
+                              placeholder={field.placeholder}
+                              value={formDataSearch[field.name] || ""}
+                              onChange={(e) =>
+                                handleInputChangeSearch(
+                                  field.name,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                      </Form.Item>
+                    </div>
+                  );
+                })}
+            </Col>
+            <Col>
+              {fieldsSearch
+                .slice(Math.floor((2 * fieldsSearch.length) / 3))
+                .map((field, index) => {
+                  return (
+                    <div key={index}>
+                      <Form.Item
+                        label={field.label}
+                        labelCol={{ span: 7 }}
+                        wrapperCol={{ span: 15 }}
+                      >
+                        {field.type === "number" && (
+                          <InputNumber
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                            min="1"
+                            formatter={field.formatter}
+                          />
+                        )}
+                        {field.type === "date" && (
+                          <DatePicker
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name]}
+                            onChange={(value) => {
+                              handleInputChangeSearch(field.name, value);
+                            }}
+                            format="DD-MM-YYYY"
+                          />
+                        )}
+
+                        {field.type === "select" && (
+                          <Select
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                          >
+                            <Option value="">Tất cả</Option>
+                            {field.options.map((option, optionIndex) => (
+                              <Option key={optionIndex} value={option.value}>
+                                {option.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                        {field.type !== "date" &&
+                          field.type !== "select" &&
+                          field.type !== "number" && (
+                            <Input
+                              className={field.class}
+                              name={field.name}
+                              placeholder={field.placeholder}
+                              value={formDataSearch[field.name] || ""}
+                              onChange={(e) =>
+                                handleInputChangeSearch(
+                                  field.name,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                      </Form.Item>
+                    </div>
+                  );
+                })}
+            </Col>
+          </Row>
         </div>
 
         <div className="reset-form-search">
@@ -424,14 +614,17 @@ const PromotionManagement = () => {
           </Button>
         </div>
       </div>
-
-      <h3>
-        {" "}
-        <FontAwesomeIcon icon={faListAlt} /> Danh sách khuyến mại{" "}
-      </h3>
+      <Row>
+        <FontAwesomeIcon
+          icon={faListAlt}
+          style={{ fontSize: "26px", marginRight: "10px" }}
+        />
+        <span style={{ fontSize: "18px", fontWeight: "500" }}>
+          Danh sách đợt giảm giá
+        </span>
+      </Row>
       <hr></hr>
       <div className="manager-promotion">
-
         <Link to="/create-promotion-management">
           <Button title="Thêm khuyến mại" className="button-add">
             + Thêm
@@ -440,7 +633,7 @@ const PromotionManagement = () => {
 
         <div className="promotion-table">
           <Table
-            dataSource={list}
+            dataSource={updatedList}
             rowKey="id"
             columns={columns}
             pagination={{ pageSize: 5 }}
@@ -535,8 +728,8 @@ const PromotionManagement = () => {
                         placeholder={field.label}
                         value={
                           formData[field.name] === "DANG_SU_DUNG"
-                            ? "Đang sử dụng"
-                            : "Không sử dụng"
+                            ? "Còn hạn"
+                            : "Hết hạn"
                         }
                       />
                     ) : (

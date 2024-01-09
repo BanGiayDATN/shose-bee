@@ -1,7 +1,6 @@
 package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
-import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;
@@ -48,14 +47,19 @@ public class Bill extends PrimaryEntity {
     @Column(name = "item_discount")
     private BigDecimal itemDiscount;
 
-    @Column(name = "total_money ")
+    @Column(name = "total_money")
     private BigDecimal totalMoney;
+
+    private String email;
 
     @Column(name = "confirmation_date")
     private Long confirmationDate;
 
     @Column(name = "delivery_date")
     private Long deliveryDate;
+
+    @Column(name = "shipping_time")
+    private Long shippingTime;
 
     @Column(name = "receive_date ")
     private Long receiveDate ;
@@ -72,6 +76,11 @@ public class Bill extends PrimaryEntity {
 
     @Column(name = "money_ship ")
     private BigDecimal moneyShip;
+
+    private int poinUse;
+
+    @Column(name = "value_poin")
+    private BigDecimal valuePoin;
 
     @Enumerated(EnumType.STRING)
     private StatusBill statusBill;

@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  Input,
-  Button,
-  Select,
-  Table,
-  Slider,
-  Image,
-  Row,
-  Col,
-  Tooltip,
-} from "antd";
+import { Input, Button, Select, Table, Slider, Row, Col, Tooltip } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-staff.css";
 import { AccountApi } from "../../../api/employee/account/account.api";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import { GetAccount, SetAccount } from "../../../app/reducer/Account.reducer";
-import { GetAddress, SetAddress } from "../../../app/reducer/Address.reducer";
+import { GetAddress } from "../../../app/reducer/Address.reducer";
 
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +18,6 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment/moment";
-
 
 const { Option } = Select;
 
@@ -63,8 +52,8 @@ const AccountManagement = () => {
       ...prevSearchAccount,
       [name]: value,
     }));
+    // handleSubmitSearch(value);
   };
-
   const handleKeywordChange = (event) => {
     const { value } = event.target;
     handleInputChangeSearch("keyword", value);
@@ -80,7 +69,6 @@ const AccountManagement = () => {
       const filteredAccounts = res.data.data.filter(
         (account) =>
           account.fullName.includes(keyword) ||
-          account.email.includes(keyword) ||
           account.phoneNumber.includes(keyword)
       );
       setListaccount(filteredAccounts);
@@ -88,18 +76,19 @@ const AccountManagement = () => {
     });
   }, [searchAccount.status]);
 
-  const handleSubmitSearch = (event) => {
-    event.preventDefault();
+  const handleSubmitSearch = (value) => {
     const { keyword, status } = searchAccount;
 
     AccountApi.fetchAll({ status }).then((res) => {
       const filteredAccounts = res.data.data
-        .filter(
-          (account) =>
-            account.fullName.toLowerCase().includes(keyword) ||
-            account.email.includes(keyword) ||
+        .filter((account) => {
+          const toKeyword = keyword.toLowerCase();
+          const fullName = account.fullName.toLowerCase();
+          return (
+            fullName.includes(toKeyword) ||
             account.phoneNumber.includes(keyword)
-        )
+          );
+        })
         .map((account, index) => ({
           ...account,
           stt: index + 1,
@@ -176,7 +165,6 @@ const AccountManagement = () => {
           stt: index + 1,
         }));
         setListaccount(res.data.data);
-        // setListAddress(res.data.data);
         setInitialAccountList(accounts);
         setInitialStartDate(null);
         setInitialEndDate(null);
@@ -189,10 +177,8 @@ const AccountManagement = () => {
   };
 
   // Xử lý logic chỉnh sửa
-  const [idUpdate, setIdUpdate] = useState("");
   const [idDetail, setIdDetail] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
   const handleViewDetail = (id) => {
@@ -208,6 +194,10 @@ const AccountManagement = () => {
   useEffect(() => {
     filterByAgeRange(ageRange[0], ageRange[1]);
   }, [ageRange, initialAccountList]);
+
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
 
   const columns = [
     {
@@ -262,7 +252,7 @@ const AccountManagement = () => {
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       sorter: (a, b) => a.dateOfBirth - b.dateOfBirth,
-      render: (date) => moment(date).format("DD-MM-YYYY"),
+      render: (date) => moment(date).format("DD/MM/YYYY"),
     },
     {
       title: "Giới tính",
@@ -338,7 +328,7 @@ const AccountManagement = () => {
                     marginLeft: "19px",
                     marginBottom: "20px",
                   }}
-                  placeholder="Tìm kiếm tên / email / sđt... "
+                  placeholder="Tìm kiếm tên và sđt... "
                   type="text"
                   name="keyword"
                   value={searchAccount.keyword}
@@ -448,8 +438,9 @@ const AccountManagement = () => {
             dataSource={listaccount}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="account-table"
+            rowClassName={getRowClassName}
           />
         </div>
       </div>

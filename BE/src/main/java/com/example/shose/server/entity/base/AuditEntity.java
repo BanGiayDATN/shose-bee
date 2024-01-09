@@ -28,6 +28,4 @@ public abstract class AuditEntity {
     @Column
     private String updatedBy;
 
-
-
 }

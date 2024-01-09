@@ -17,8 +17,6 @@ import {
   Row,
   Select,
   Slider,
-  Space,
-  Spin,
   Table,
   Tooltip,
 } from "antd";
@@ -35,11 +33,13 @@ import { Option } from "antd/es/mentions";
 import "./style-product.css";
 import ModalQRScanner from "./modal/ModalQRScanner";
 import { toast } from "react-toastify";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import ModalUpdateProductDetail from "./modal/ModalUpdateProductDetail";
+import ModalPriceAndQuantity from "./modal/ModalPriceAndQuantity";
 
 const UpdateProductDetailManagment = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Bộ lọc
   const [listMaterial, setListMaterial] = useState([]);
@@ -55,8 +55,8 @@ const UpdateProductDetailManagment = () => {
     ProducDetailtApi.getOne(data).then((res) => {
       setScannedQRCode(res.data.data);
     });
-    setModalVisible(false); // C
-    setModalVisible(false); // Close the modal after scanning
+    setModalVisible(false);
+    setModalVisible(false);
   };
 
   const listSize = [];
@@ -113,11 +113,8 @@ const UpdateProductDetailManagment = () => {
 
   const handleSubmitSearch = (event) => {
     event.preventDefault();
-    ProducDetailtApi.fetchAll({
-      product: search,
-    }).then((res) => {
+    ProducDetailtApi.fetchAll(selectedValues).then((res) => {
       setListProductDetails(res.data.data);
-      // Restore the selected rows using temporarySelectedRowKeys
       setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
@@ -129,7 +126,6 @@ const UpdateProductDetailManagment = () => {
       product: "",
     }).then((res) => {
       setListProductDetails(res.data.data);
-      // Restore the selected rows using temporarySelectedRowKeys
       setSelectedRowKeys(temporarySelectedRowKeys);
     });
   };
@@ -289,7 +285,7 @@ const UpdateProductDetailManagment = () => {
             borderRadius: "6px",
             width: "60px",
             height: "25px",
-            pointerEvents: "none", // Ngăn chặn sự kiện click
+            pointerEvents: "none",
           }}
         />
       ),
@@ -300,10 +296,18 @@ const UpdateProductDetailManagment = () => {
       key: "status",
       render: (text) => {
         const genderClass =
-          text === "DANG_SU_DUNG" ? "trangthai-sd" : "trangthai-ksd";
+          text === "DANG_SU_DUNG"
+            ? "trangthai-sd"
+            : text === "KHONG_SU_DUNG"
+            ? "trangthai-ksd"
+            : "trangthai-hethang";
         return (
           <button className={`gender ${genderClass}`}>
-            {text === "DANG_SU_DUNG" ? "Đang kinh doanh " : "Không kinh doanh"}
+            {text === "DANG_SU_DUNG"
+              ? "Đang kinh doanh "
+              : text === "KHONG_SU_DUNG"
+              ? "Không kinh doanh"
+              : "Hết sản phẩm "}
           </button>
         );
       },
@@ -336,6 +340,10 @@ const UpdateProductDetailManagment = () => {
       return;
     }
 
+    if (value === null || value === undefined || isNaN(value) || value <= 0) {
+      return;
+    }
+
     const updatedRow = {
       ...listProductDetails.find((detail) => detail.id === id),
       quantity: value,
@@ -356,6 +364,10 @@ const UpdateProductDetailManagment = () => {
   const handlePriceChange = (id, value) => {
     if (!temporarySelectedRowKeys.includes(id)) {
       toast.warning("Vui lòng chọn hàng để chỉnh sửa trước.");
+      return;
+    }
+
+    if (value === null || value === undefined || isNaN(value) || value <= 0) {
       return;
     }
 
@@ -384,7 +396,7 @@ const UpdateProductDetailManagment = () => {
       cancelText: "Hủy",
       onOk: () => {
         console.log(updatedDetails);
-        if (updatedDetails.length == 0) {
+        if (updatedDetails.length === 0) {
           toast.warning("Bạn chưa có sản phẩm để chỉnh sửa");
           return;
         }
@@ -398,20 +410,14 @@ const UpdateProductDetailManagment = () => {
         console.log(extractedDetails);
         const formData = new FormData();
         formData.append("data", extractedDetails);
-        axios
-          .put(
-            `http://localhost:8080/admin/product-detail/list-data`,
-            extractedDetails
-          )
-          .then((response) => {
+        ProducDetailtApi.updateListProduct(extractedDetails).then(
+          (response) => {
             console.log(response.data);
             setSelectedRowKeys([]);
             setTemporarySelectedRowKeys([]);
-            window.location.href = `/product-detail-management/${id}`;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+            loadData();
+          }
+        );
       },
     });
   };
@@ -499,6 +505,31 @@ const UpdateProductDetailManagment = () => {
         },
       },
     ],
+  };
+
+  const [openQuantityAndPrice, setQuantityAndPrice] = useState(false);
+  const handleUpdateQuantityAndPrice = (newValues) => {
+    const updatedData = listProductDetails.map((record) => {
+      if (selectedRowKeys.includes(record.id)) {
+        return {
+          ...record,
+          quantity: newValues.quantityCustom,
+          price: newValues.priceCustom,
+        };
+      }
+      return record;
+    });
+
+    setListProductDetails(updatedData);
+    setUpdatedDetails(updatedData);
+    setQuantityAndPrice(false);
+  };
+
+  const showModalQuantityAndPrice = () => {
+    setQuantityAndPrice(true);
+  };
+  const handleCancelQuantityAndPrice = () => {
+    setQuantityAndPrice(false);
   };
 
   // detail update product detail
@@ -704,7 +735,7 @@ const UpdateProductDetailManagment = () => {
               </Select>
             </Col>
             <Col span={2} style={{ textAlign: "right", paddingRight: 10 }}>
-              <label>Giới Tinh :</label>
+              <label>Giới Tính :</label>
             </Col>
             <Col span={3}>
               <Select
@@ -754,14 +785,28 @@ const UpdateProductDetailManagment = () => {
             Danh sách sản phẩm chi tiết
           </span>
           <div style={{ marginLeft: "auto" }}>
-            <Button
-              className="btn_filter"
-              icon={<FontAwesomeIcon icon={faEdit} />}
-              style={{ height: 40 }}
-              onClick={handleUpload}
-            >
-              Update sản phẩm
-            </Button>
+            <Tooltip title=" Chỉnh số lượng và giá chung">
+              <Button
+                className="btn_filter"
+                onClick={showModalQuantityAndPrice}
+                style={{
+                  height: "40px",
+                  margin: "0px 20px",
+                }}
+              >
+                Chỉnh số lượng và giá chung
+              </Button>
+            </Tooltip>
+            <Tooltip title=" Cập nhập ">
+              <Button
+                className="btn_filter"
+                icon={<FontAwesomeIcon icon={faEdit} />}
+                style={{ height: 40 }}
+                onClick={handleUpload}
+              >
+                Update sản phẩm
+              </Button>
+            </Tooltip>
           </div>
         </div>
         <div style={{ marginTop: "25px" }}>
@@ -779,6 +824,11 @@ const UpdateProductDetailManagment = () => {
           id={selectedDetail}
           visible={modalUpdateVisible}
           onCancel={handleModalCancel}
+        />
+        <ModalPriceAndQuantity
+          open={openQuantityAndPrice}
+          onCancel={handleCancelQuantityAndPrice}
+          onUpdate={handleUpdateQuantityAndPrice}
         />
       </div>
     </>

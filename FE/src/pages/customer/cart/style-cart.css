@@ -1,3 +1,7 @@
+.cart {
+  padding-bottom: 100px;
+  background-color: #f7f7f7;
+}
 .img-shoe {
   width: 200px;
   animation: slideFromRight 1.5s ease-in-out;
@@ -55,7 +59,7 @@
   color: #312620;
   width: 100%;
   font-family: "Jost", sans-serif;
-  margin-bottom: 100px;
+  margin-bottom: 30px;
 }
 
 .title-cart::after {
@@ -68,27 +72,40 @@
   height: 0.1px; /* Độ dày của border */
   background-color: #ff4400;
 }
+.content-cart{
+  padding-top: 50px;
+}
 .form-content-cart {
   width: 100%;
   display: flex;
+  margin-top: 10px;
 }
 .info-cart {
-  /* width: 1000px; */
   width: 65%;
-  margin-right: 5%;
+}
+.box-title-cart{
+  height: 30px;
+  display: flex;
+  padding: 20px 30px;
+  align-items: center;
+  margin-top: 60px;
+  margin-bottom:30px;
+  background-color:white;
+  border: 1px solid #ebebeb
 }
 .bill-of-cart {
+  width: 400px;
+  margin-left: 3%;
   margin-top: 60px;
-  /* width: 450px; */
-  width: 30%;
-  background-color: #fc703d;
-  padding: 10px;
+  /* margin-left: auto; */
+  padding: 9px;
   height: 520px;
 }
 .content-bill-of-cart {
-  background-color: #f4efed;
+  background-color: #f1f1f1;
   padding: 20px;
   height: 500px;
+  border: 1px solid rgb(230, 230, 230);
 }
 .text-bill-in-cart {
   display: flex;
@@ -98,95 +115,125 @@
   font-size: 25px;
   font-weight: 700;
 }
-.cart-is-empty{
+.cart-is-empty {
   width: 100%;
   height: 520px;
   background-color: #fcfafa;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: url("https://bizweb.dktcdn.net/100/414/833/themes/803358/assets/empty-cart.png?1698141402395");
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-size: 70%;
   /* border: #7c7876 1px dotted; */
 }
 .item-cart {
   display: flex;
   height: 230px;
   padding: 30px;
-  border-bottom: dotted 1px  rgb(195, 166, 156) ;
+  border-bottom: dotted 1px rgb(195, 166, 156);
   background-color: #ffffff;
   margin-bottom: 20px;
 }
 .item-cart.last-item {
-  border-bottom:2px solid rgb(115, 108, 108);
+  border-bottom: 2px solid rgb(115, 108, 108);
 }
 .cart-name {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 3%;
 }
 .cart-price {
   color: #7c7876;
-  font-size: 15px;
+  font-size: 16px;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-  margin-bottom: 35px;
+  margin-top: 10px;
 }
 .info-product-detail {
-  width: 300px;
-  margin-right: 5%;
-}
-/* .form-status-cart{
-    margin-left: 15%;
-  } */
-.button-delete-cart {
+  width: 45%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+}
+.form-change-quantity {
+  display: flex;
   align-items: center;
-  background-color: rgb(34, 32, 32);
-  width: 130px;
-  height: 40px;
+  margin-top: 10px;
+}
+.button-minus-quantity {
+  padding: 5px;
   cursor: pointer;
 }
+.quantity-product-in-cart {
+  width: 60px;
+  margin: 0 10px;
+  text-align: center;
+}
+.button-plus-quantity {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.form-status-cart {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  align-items: center;
+}
+.button-delete-cart {
+  background-color: rgb(255, 255, 255);
+  width: 130px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
 .icon-button-delete-cart {
-  color: white;
+  color: rgb(249, 3, 3);
   font-size: 25px;
+  cursor: pointer;
 }
 
 .box-cart-img {
   display: flex;
   align-items: center;
+  width: 30%;
 }
-.button-delete-all-cart{
+.button-delete-all-cart {
   width: 200px;
-  height: 50px;
-  background-color: rgb(34, 32, 32);
+  height: 40px;
+  background-color: #303030;
   color: white;
-  font-size: 20px;
+  font-size: 17px;
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
+  font-weight: 600;
 }
-.button-continue-to-buy{
+.button-continue-to-buy {
   width: 200px;
-  height: 50px;
-  background-color: #ff4400;
+  height: 40px;
+  background-color: #303030;
   color: white;
-  font-size: 20px;
+  font-size: 17px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 60%;
+  margin-left: auto;
+  cursor: pointer;
+  font-weight: 600;
 }
-.form-quantity-size {
-  display: flex;
-  margin-top: 30px;
-}
+
 .input-quantity-cart {
-  border-radius: 0;
-  height: 50px;
-  width: 70px;
+  height: 30px;
+  width: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 7px;
+  border-radius: 7px;
 }
 .select-size-cart {
   margin-top: 7px;
@@ -240,6 +287,10 @@
 }
 .custom-checkbox-all {
   border-color: #ff4400;
+  border-radius: "20px";
+}
+.span.ant-checkbox-inner {
+  border-color: #ff4400;
 }
 .custom-checkbox-all .ant-checkbox-inner {
   background-color: rgb(255, 255, 255);
@@ -250,6 +301,7 @@
 .custom-checkbox-all .ant-checkbox-checked .ant-checkbox-inner {
   background-color: #ed7347;
   border-color: #ff4400;
+  border-radius: "20px";
 }
 
 /* Định dạng checkbox tùy chỉnh */
@@ -271,7 +323,7 @@
   padding: 30px 20px;
   border-bottom: 1px dotted rgb(195, 166, 156);
 }
-.voucher-of-cart-acc{
+.voucher-of-cart-acc {
   padding: 30px 20px;
   border-bottom: 1px dotted rgb(195, 166, 156);
   display: flex;
@@ -285,6 +337,8 @@
   color: white;
   font-weight: 600;
   cursor: pointer;
+  border-radius: 5px;
+  margin-left: 3px;
 }
 .value-bill-of-cart {
   border-bottom: 1px dotted rgb(195, 166, 156);
@@ -299,19 +353,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #312f2e;
+  background-color: #ff4400;
   width: 100%;
-  height: 90px;
+  height: 70px;
   color: white;
-  font-size: 25px;
+  font-size: 20px;
   margin-top: 30px;
   cursor: pointer;
+  font-weight: 700;
 }
 .button-pay:hover {
   background-color: #252323;
   color: #eff2f5;
 }
-.content-code-voucher-cart{
+.content-code-voucher-cart {
   width: 100%;
   padding: 10px;
   background-color: #f9f7f7;
@@ -320,41 +375,39 @@
   margin-top: 5%;
   margin-bottom: 10%;
 }
-.input-code-voucher-cart{
-width: 65%;
-height: 40px;
-padding-left: 10px;
-border: #e4dedb 1px solid;
-margin-left: 5px;
+.input-code-voucher-cart {
+  width: 65%;
+  height: 40px;
+  padding-left: 10px;
+  border: #e4dedb 1px solid;
+  margin-left: 5px;
 }
 .input-code-voucher-cart:focus {
   border-color: #242629; /* Đổi màu đường viền khi focus */
 }
-.input-code-voucher-cart:focus .button-submit-voucher-cart{
+.input-code-voucher-cart:focus .button-submit-voucher-cart {
   border-color: #242629; /* Đổi màu đường viền khi focus */
 }
-.button-submit-voucher-cart{
+.button-submit-voucher-cart {
   border: #f2eeed 1px solid;
   padding: 8px;
   margin-left: 15px;
   color: #d1c9c6;
-  cursor: none;
-  /* pointer-events: none; */
+  cursor: not-allowed;
 }
-.button-submit-voucher-cart.show{
+.button-submit-voucher-cart.show {
   border: #726a69 1px solid;
-color: #7b7572;
-cursor: pointer;
+  color: #7b7572;
+  cursor: pointer;
 }
-.category-voucher{
+.category-voucher {
   border-bottom: #e2dcd9 1px solid;
-
 }
 .voucher-list {
   max-height: 350px; /* Đặt chiều cao tối đa cho danh sách */
   overflow-y: auto; /* Hiển thị thanh cuộn dọc khi danh sách quá cao */
 }
-.item-voucher{
+.item-voucher {
   width: 100%;
   height: 120px;
   border: #e2dcd9 1px solid;
@@ -363,26 +416,38 @@ cursor: pointer;
   margin-bottom: 5%;
   margin-top: 20px;
 }
-.img-voucher-cart{
-  width: 120px;
+.item-voucher.hidden {
+  width: 100%;
   height: 120px;
+  border: #e2dcd9 1px solid;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5%;
+  margin-top: 20px;
+  background-color: #dfdfdf;
+  cursor: not-allowed;
 }
-.button-cancel-voucher-cart{
-  width:120px;
-  height:40px;
+.img-voucher-cart {
+  margin-left: 5%;
+  width: 150px;
+  height: 70px;
+}
+.button-cancel-voucher-cart {
+  width: 120px;
+  height: 40px;
   margin-top: 20px;
   margin-left: auto;
   background-color: #ffffff;
-  color:#7b7572;
+  color: #7b7572;
   display: flex;
   align-items: center;
   justify-content: center;
   border: #e2dcd9 1px solid;
   cursor: pointer;
 }
-.button-ok-voucher-cart{
-  width:120px;
-  height:40px;
+.button-ok-voucher-cart {
+  width: 120px;
+  height: 40px;
   margin-top: 20px;
   margin-left: 10px;
   background-color: #ff4400;
@@ -392,18 +457,6 @@ cursor: pointer;
   justify-content: center;
   cursor: pointer;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 @media only screen and (max-width: 46.1875em) {
   .form-content-cart {
@@ -442,5 +495,8 @@ cursor: pointer;
     margin-top: 70px;
     margin-right: 100px;
   }
+}
 
+.red-icon {
+  color: rgb(226, 12, 12);
 }

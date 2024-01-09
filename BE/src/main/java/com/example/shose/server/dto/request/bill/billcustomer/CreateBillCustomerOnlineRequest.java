@@ -3,6 +3,7 @@ package com.example.shose.server.dto.request.bill.billcustomer;
  *  @author diemdz
  */
 
+import com.example.shose.server.dto.response.payment.PayMentVnpayResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,8 @@ public class CreateBillCustomerOnlineRequest {
     private String district;
     private Integer districtId;
 
+    private String shippingTime;
+
     private String province;
     private Integer provinceId;
 
@@ -31,8 +34,11 @@ public class CreateBillCustomerOnlineRequest {
     private BigDecimal totalMoney;
     private String paymentMethod;
 
-    private List<BillDetailCustomerOnline> billDetail;
+    private List<BillDetailOnline> billDetail;
+
     private BigDecimal afterPrice;
 
     private String idVoucher;
+
+    private PayMentVnpayResponse responsePayment;
 }

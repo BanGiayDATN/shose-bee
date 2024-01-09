@@ -16,7 +16,7 @@ function HeaderMenu() {
   const [isOptionVisible, setOptionVisible] = useState(false);
   const [modal, setModal] = useState(false);
   const [activeField, setActiveField] = useState("");
-  const idAccountLocal = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
   const { totalQuantity } = useCart();
 
   const fields = [
@@ -29,11 +29,18 @@ function HeaderMenu() {
       className: "title-menu",
       title: "SẢN PHẨM",
       href: "/products",
-      option: [
-        { title: "Giày nam", className: "title-option" },
-        { title: "Giày nữ", className: "title-option" },
-      ],
     },
+    {
+      className: "title-menu",
+      title: "NAM",
+      href: "/products",
+    },
+    {
+      className: "title-menu",
+      title: "NỮ",
+      href: "/products",
+    },
+
     {
       className: "title-menu",
       title: "VỀ CHÚNG TÔI",
@@ -59,13 +66,7 @@ function HeaderMenu() {
     setActiveField("");
   };
   const onSearch = () => {
-    if (window.scrollY === 0) {
-      setModal(true);
-      console.log(modal);
-    } else {
-      setModal(true);
-      console.log(modal);
-    }
+    setModal(true);
   };
 
   const offSearch = () => {
@@ -90,7 +91,9 @@ function HeaderMenu() {
                 onMouseEnter={() => handleMenuHover(field.title)}
                 onMouseLeave={handleMenuLeave}
               >
-                <Link to={field.href} className="link-menu">{field.title}</Link>
+                <Link to={field.href} className="link-menu">
+                  {field.title}
+                </Link>
                 {field.option &&
                   isOptionVisible &&
                   activeField === field.title && (
@@ -108,7 +111,7 @@ function HeaderMenu() {
             );
           })}
         </div>
-        <div className="left-menu">
+        <div className="right-menu">
           <div className="search-menu">
             <SearchOutlined
               style={{ fontSize: "20px" }}
@@ -117,15 +120,22 @@ function HeaderMenu() {
           </div>
           |
           <div>
-            <Link to= "/cart">
+            <Link to="/cart">
               <Badge
                 size="small"
                 count={totalQuantity}
-                style={{ backgroundColor: "#ff4400", fontSize: "10px" }}
+                style={{
+                  backgroundColor: "#ff4400",
+                  fontSize: "10px",
+                  height: "15px",
+                  width: "15px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
               >
                 <ShoppingCartOutlined
                   className="cart-menu"
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: "22px" }}
                 />
               </Badge>
             </Link>
@@ -138,7 +148,7 @@ function HeaderMenu() {
 
       {/* <div> */}
 
-      <div className={`search-panel ${modal ? "visible" : "hidden"}`}>
+      <div className={`search-panel ${modal === true ? "visible" : "hidden"}`}>
         <div className="header-search">
           <div className="text-search">Tìm kiếm sản phẩm</div>
 

@@ -65,7 +65,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                   :#{#req.keyword} IS NULL OR :#{#req.keyword} = ''
                   OR p.code LIKE %:#{#req.keyword}% 
                   OR p.name LIKE %:#{#req.keyword}%
-              ) and p.status = 'DANG_SU_DUNG'
+              ) and p.status = 'DANG_SU_DUNG' and p.id in (select pd.id_product from product_detail pd)
             ORDER BY p.last_modified_date DESC  
             """, nativeQuery = true)
     List<ProductUseRespone> getProductUse(@Param("req") FindProductUseRequest req);
@@ -90,7 +90,12 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                    c.name AS nameCategory,
                    b.name AS nameBrand,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE ppd2.status='DANG_SU_DUNG' AND pd.id = detail.id AND p2.status ='DANG_KICH_HOAT')
+                   AS promotion,
                    detail.quantity,
                    s2.name AS size,
                    c2.code AS color,

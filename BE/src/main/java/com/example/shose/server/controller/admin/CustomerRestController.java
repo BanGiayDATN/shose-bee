@@ -7,9 +7,11 @@ import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.QuickCreateCustomerRequest;
 import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
+import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.service.CustomerService;
 import com.example.shose.server.util.ResponseObject;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,7 @@ public class CustomerRestController {
         customerRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
         customerRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
         customerRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
+        customerRequest.setCitizenIdentity(jsonObject.get("citizenIdentity").getAsString());
 
         // add địa chỉ
         CreateAddressRequest addressRequest = new CreateAddressRequest();
@@ -83,16 +86,9 @@ public class CustomerRestController {
                                  @RequestParam("multipartFile") MultipartFile file) {
         JsonObject jsonObject = JsonParser.parseString(req).getAsJsonObject();
 
-        // update khách hàng
-        UpdateCustomerRequest customerRequest = new UpdateCustomerRequest();
-//        customerRequest.setId(id);
+        Gson gson = new Gson();
+        UpdateCustomerRequest customerRequest = gson.fromJson(req, UpdateCustomerRequest.class);
         customerRequest.setId(id);
-        customerRequest.setFullName(jsonObject.get("fullName").getAsString());
-        customerRequest.setPhoneNumber(jsonObject.get("phoneNumber").getAsString());
-        customerRequest.setEmail(jsonObject.get("email").getAsString());
-        customerRequest.setGender(Boolean.valueOf(jsonObject.get("gender").getAsString()));
-        customerRequest.setStatus(Status.valueOf(jsonObject.get("status").getAsString()));
-        customerRequest.setDateOfBirth(Long.valueOf(jsonObject.get("dateOfBirth").getAsString()));
 
         // update địa chỉ
         UpdateAddressRequest addressRequest = new UpdateAddressRequest();
@@ -138,5 +134,4 @@ public class CustomerRestController {
     public ResponseObject getOneByPhoneNumber(@PathVariable("phoneNumber") String phoneNumber) {
         return new ResponseObject(customerService.getOneByPhoneNumber(phoneNumber));
     }
-
 }

@@ -1,23 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./../style-voucher.css";
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  Table,
-  Modal,
-  InputNumber,
-  Popconfirm,
-  DatePicker,
-} from "antd";
+import { Form, Input, Button, Modal, InputNumber, DatePicker } from "antd";
 import { VoucherApi } from "../../../../api/employee/voucher/Voucher.api";
 import { CreateVoucher } from "../../../../app/reducer/Voucher.reducer";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAppDispatch, useAppSelector } from "../../../../app/hook";
+import { useAppDispatch } from "../../../../app/hook";
 dayjs.extend(utc);
 function CreateVoucherManagement({ modalCreate, setModalCreate }) {
   const [formData, setFormData] = useState({});
@@ -27,8 +17,7 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
     setFormData({ ...formData, [name]: value });
   };
 
-  useEffect(() => {
-  }, [formData]);
+  useEffect(() => {}, [formData]);
   const convertToLong = () => {
     const convertedFormData = { ...formData };
     if (formData.startDate) {
@@ -40,59 +29,85 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
     return convertedFormData;
   };
 
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      currencyDisplay: "code",
+    });
+    return formatter.format(value);
+  };
+
   const handleSubmit = () => {
-    
-    const isFormValid =
-      formData.name &&
-      formData.value &&
-      formData.quantity &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.startDate < formData.endDate;
+    Modal.confirm({
+      title: "Xác nhận thêm",
+      content: "Bạn có chắc chắn muốn thêm phiếu giảm giá ?",
+      okText: "Thêm",
+      cancelText: "Hủy",
+      onOk() {
+        const isFormValid =
+          formData.name &&
+          formData.value &&
+          formData.quantity &&
+          formData.startDate &&
+          formData.endDate &&
+          formData.startDate < formData.endDate &&
+          formData.endDate > dayjs().valueOf();
 
-    if (!isFormValid) {
-      const errors = {
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-      };
-      setFormErrors(errors);
-      return;
-    }
-
-    VoucherApi.create(convertToLong())
-      .then((res) => {
-        dispatch(CreateVoucher(res.data.data));
-        toast.success("Thêm thành công!", {
-          autoClose: 5000,
-        });
-        closeModal();
-      })
-      .catch((error) => {
-        if (error.response.data.message === "BS-400") {
-          toast.success("Vui lòng nhập đầy đủ!", {
-            autoClose: 5000,
-          });
+        if (!isFormValid) {
+          const errors = {
+            name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
+            value: !formData.value ? "Vui lòng nhập giá giảm" : "",
+            startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+            quantity: !formData.quantity ? "Vui lòng nhập số lượng" : "",
+            endDate: !formData.endDate
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : formData.endDate <= dayjs().valueOf()
+              ? "Ngày kết thúc phải lớn hơn hiện tại"
+              : "",
+          };
+          setFormErrors(errors);
           return;
         }
-      });
+
+        VoucherApi.create(convertToLong())
+          .then((res) => {
+            dispatch(CreateVoucher(res.data.data));
+            toast.success("Thêm thành công!", {
+              autoClose: 5000,
+            });
+
+            closeModal();
+          })
+          .catch((error) => {
+            if (error.response.data.message === "BS-400") {
+              toast.success("Vui lòng nhập đầy đủ!", {
+                autoClose: 5000,
+              });
+              return;
+            }
+          });
+      },
+    });
   };
   const closeModal = () => {
     setModalCreate(false);
     setFormData([]);
     setFormErrors([]);
   };
-
+  const formatMoney = (price) => {
+    return (
+      parseInt(price)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
+    );
+  };
   return (
     <div>
       <Modal
-        title="Thêm khuyến mãi"
+        title="Thêm phiếu giảm giá"
         visible={modalCreate}
         onCancel={closeModal}
         okButtonProps={{ style: { display: "none" } }}
@@ -100,14 +115,14 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
       >
         <Form layout="vertical">
           <Form.Item
-            label="Tên khuyến mãi"
+            label="Tên phiếu giảm giá"
             validateStatus={formErrors["name"] ? "error" : ""}
             help={formErrors["name"] || ""}
           >
             <Input
               name="name"
               className="input-create-voucher"
-              placeholder="Tên khuyến mãi"
+              placeholder="Tên phiếu giảm giá"
               value={formData["name"]}
               onChange={(e) => {
                 inputChange("name", e.target.value);
@@ -127,7 +142,23 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
               onChange={(value) => {
                 inputChange("value", value);
               }}
-              min='1'
+              min="1"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
+            />
+          </Form.Item>
+          <Form.Item label="Đơn tối thiểu">
+            <InputNumber
+              name="minimumBill"
+              placeholder="Đơn tối thiểu"
+              className="input-create-voucher"
+              value={formData["minimumBill"]}
+              onChange={(value) => {
+                inputChange("minimumBill", value);
+              }}
+              min="10000"
+              formatter={(value) => formatCurrency(value)}
+              parser={(value) => value.replace(/[^\d]/g, "")}
             />
           </Form.Item>
           <Form.Item
@@ -143,7 +174,7 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
               onChange={(value) => {
                 inputChange("quantity", value);
               }}
-              min='1'
+              min="1"
             />
           </Form.Item>
           <Form.Item
@@ -180,20 +211,18 @@ function CreateVoucherManagement({ modalCreate, setModalCreate }) {
           </Form.Item>
 
           <Form.Item>
-            <Button onClick={closeModal}>Hủy</Button>
-            <Popconfirm
-              title="Thông báo"
-              description={"Bạn có chắc chắn muốn thêm không ?"}
-              onConfirm={() => {
-                handleSubmit();
-              }}
-              okText="Có"
-              cancelText="Không"
-            >
-              <Button className="button-submit" key="submit" title="Thêm">
+            <div style={{ float: "right" }}>
+              <Button onClick={closeModal}>Hủy</Button>
+              <Button
+                className="button-add-promotion"
+                key="submit"
+                title="Thêm"
+                onClick={handleSubmit}
+                style={{ marginLeft: "20px" }}
+              >
                 Thêm
               </Button>
-            </Popconfirm>
+            </div>
           </Form.Item>
         </Form>
       </Modal>

@@ -8,41 +8,26 @@ import com.example.shose.server.dto.request.voucher.FindVoucherRequest;
 import com.example.shose.server.dto.request.voucher.UpdateVoucherRequest;
 import com.example.shose.server.dto.response.voucher.VoucherRespone;
 import com.example.shose.server.entity.Voucher;
-import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusPromotion;
 import com.example.shose.server.infrastructure.exception.rest.RestApiException;
-import com.example.shose.server.infrastructure.exception.rest.ShoseExceptionRestHandler;
 import com.example.shose.server.repository.VoucherRepository;
 import com.example.shose.server.service.VoucherService;
 import com.example.shose.server.util.ConvertDateToLong;
-import com.example.shose.server.util.ErrorCode;
 import com.example.shose.server.util.RandomNumberGenerator;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 
 @Service
 @Slf4j
 public class VoucherServiceImpl implements VoucherService {
+
     @Autowired
     private VoucherRepository voucherRepository;
-
-
 
     @Override
     public List<VoucherRespone> getAll(FindVoucherRequest findVoucherRequest) {
@@ -50,45 +35,93 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Voucher add(CreateVoucherRequest request) {
-           if(StringUtils.isEmpty(request.getName())
-                   || request.getValue() == null
-                   || request.getQuantity() == null
-                   || request.getStartDate() == null
-                   || request.getEndDate() == null
-           ){
+    public List<Voucher> findAll() {
+        return voucherRepository.getAllHaveQuantity();
+    }
 
-               throw  new RestApiException(ErrorCode.BAD_REQUEST);
-           }
+    @Override
+    public List<Voucher> getAllHaveQuantity() {
+        return voucherRepository.getAllHaveQuantity();
+    }
 
-           request.setCode(new RandomNumberGenerator().randomToString("KM"));
+    @Override
+    public Voucher add(CreateVoucherRequest request) throws RestApiException {
+        Optional<Voucher>  optional = voucherRepository.findByName(request.getName());
+        if(optional.isPresent()){
+            throw new RestApiException("Tên khuyến mãi đã tồn tại");
+        }
+        if(request.getEndDate() <= request.getStartDate()){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+        }
+        long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
+        if(request.getEndDate() <=currentSeconds){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn hiện tại");
+        }
+        Status status = (request.getStartDate() > currentSeconds) ? Status.CHUA_KICH_HOAT : (currentSeconds >= request.getEndDate()  ? Status.KHONG_SU_DUNG : Status.DANG_SU_DUNG);
            Voucher voucher = Voucher.builder()
-                   .code(request.getCode())
+                   .code(new RandomNumberGenerator().randomToString("VC",999999999))
                    .name(request.getName())
                    .value(request.getValue())
                    .quantity(request.getQuantity())
                    .startDate(request.getStartDate())
                    .endDate(request.getEndDate())
-                   .status(Status.DANG_SU_DUNG).build();
+                   .status(status)
+                   .minimumBill(request.getMinimumBill())
+                   .build();
            return voucherRepository.save(voucher);
     }
 
     @Override
-    public Voucher update(UpdateVoucherRequest request) {
+    public Voucher update(UpdateVoucherRequest request) throws RestApiException {
         Optional<Voucher> optional = voucherRepository.findById(request.getId());
         if (!optional.isPresent()) {
-            throw new RestApiException(Message.NOT_EXISTS);
+            throw new RestApiException("Khuyến mãi không tồn tại");
         }
-
         Voucher voucher = optional.get();
-        voucher.setCode(request.getCode());
         voucher.setName(request.getName());
         voucher.setValue(request.getValue());
         voucher.setQuantity(request.getQuantity());
         voucher.setStartDate(request.getStartDate());
         voucher.setEndDate(request.getEndDate());
-        voucher.setStatus(request.getStatus());
+        voucher.setMinimumBill(request.getMinimumBill());
+        if(request.getEndDate() <= request.getStartDate()){
+            throw new RestApiException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+        }
+        long currentSeconds = (System.currentTimeMillis() / 1000) * 1000;
+        Status status = (request.getStartDate() > currentSeconds) ? Status.CHUA_KICH_HOAT : (currentSeconds >= request.getEndDate()  ? Status.KHONG_SU_DUNG : Status.DANG_SU_DUNG);
+        voucher.setStatus(status);
         return voucherRepository.save(voucher);
+    }
+
+    @Override
+    public Voucher updateStatus(String id) throws RestApiException {
+        Optional<Voucher> optional = voucherRepository.findById(id);
+        if (!optional.isPresent()) {
+            throw new RestApiException("Khuyến mãi không tồn tại");
+        }
+        Voucher voucher = optional.get();
+        long currentSeconds = System.currentTimeMillis();
+        if(voucher.getEndDate()<= currentSeconds){
+            voucher.setStatus(Status.KHONG_SU_DUNG);
+        } else if (voucher.getEndDate()>= currentSeconds) {
+            voucher.setStatus(Status.DANG_SU_DUNG);
+        }
+        voucherRepository.save(voucher);
+        return voucher;
+    }
+
+    @Override
+    public Voucher updateStatusQuantity(String id) throws RestApiException {
+        Optional<Voucher> optional = voucherRepository.findById(id);
+        if (!optional.isPresent()) {
+            throw new RestApiException("Khuyến mãi không tồn tại");
+        }
+        Voucher voucher = optional.get();
+         if(voucher.getQuantity()<1){
+            voucher.setStatus(Status.KHONG_SU_DUNG);
+        }
+        voucherRepository.save(voucher);
+        return voucher;
     }
 
     @Override
@@ -124,14 +157,19 @@ public class VoucherServiceImpl implements VoucherService {
         return startVouchers;
     }
 
-
     @Override
     public Voucher getByCode(String code) {
         return voucherRepository.getByCode(code);
     }
 
     @Override
-    public List<Voucher> getVoucherByIdAccount(String idAccount) {
-        return voucherRepository.getVoucherByIdAccount(idAccount);
+    public List<Voucher> getVoucherByIdAccount() {
+        return voucherRepository.findAll();
     }
+
+    @Override
+    public VoucherRespone getVoucherByMinimum(int minimum) {
+        return voucherRepository.getVoucherByMinimum(minimum);
+    }
+
 }

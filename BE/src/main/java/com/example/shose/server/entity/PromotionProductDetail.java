@@ -2,6 +2,7 @@ package com.example.shose.server.entity;
 
 import com.example.shose.server.entity.base.PrimaryEntity;
 import com.example.shose.server.infrastructure.constant.Status;
+import com.example.shose.server.infrastructure.constant.StatusPromotion;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -38,6 +38,14 @@ public class PaymentsMethod extends PrimaryEntity {
 
     private String description;
 
+    private String vnp_TransactionNo;
+
+    @Column(name = "transaction_date")
+    private Long transactionDate;
+
+    @Column(name = "create_at")
+    private Long createAt;
+
     @Column(name = "total_money")
     private BigDecimal totalMoney;
 

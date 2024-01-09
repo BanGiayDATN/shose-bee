@@ -2,7 +2,10 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.brand.FindBrandRequest;
 import com.example.shose.server.dto.response.BrandResponse;
+import com.example.shose.server.dto.response.brand.GetBrandInProductDetail;
+import com.example.shose.server.dto.response.category.GetCategoryInProductDetail;
 import com.example.shose.server.entity.Brand;
+import com.example.shose.server.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,5 +46,12 @@ public interface BrandRepository extends JpaRepository<Brand, String> {
 
     @Query("SELECT s FROM Brand s WHERE s.name =:name AND s.id <> :id")
     Brand getByNameExistence(@Param("name") String name,
-                             @Param("id") String id);
+                                @Param("id") String id);
+    @Query(value = """
+            select b.id,b.name from brand b
+            where b.id in (select pd.id_brand from product_detail pd)
+            group by b.id,b.name
+            """, nativeQuery = true)
+    List<GetBrandInProductDetail> getBrandInProductDetail();
+
 }

@@ -78,6 +78,14 @@ public interface AddressRepository extends JpaRepository<Address, String> {
 
     @Query("SELECT a FROM  Address a WHERE (a.status =:status) and (a.user.id =:idUser)")
     List<Address> findAllAddressByStatus(@Param("status") Status status, @Param("idUser") String idUser);
+    @Query("SELECT a FROM  Address a WHERE a.status ='DANG_SU_DUNG' ")
+    Address getAddressDefault();
+
+    @Query("SELECT a FROM  Address a" +
+            " join User u on a.user.id = u.id" +
+            " join Account acc on u.id = acc.user.id" +
+            " WHERE a.status ='DANG_SU_DUNG' and acc.id = :id")
+    Address getAddressDefaultAccount(@Param("id") String id);
 
     @Query(value = """
             SELECT 
@@ -92,13 +100,14 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.province_id AS provinceId,
                 a.to_district_id AS toDistrictId,
                 a.ward_code AS wardCode,
-                u.full_name AS fullName,
-                u.phone_number AS phonenumber
+                a.full_name AS fullName,
+                a.phone_number AS phoneNumber,
+                u.id AS userId
             FROM address a
             JOIN user u on a.id_user = u.id
             WHERE u.id LIKE :#{#idUser}
             GROUP BY a.id
-            ORDER BY a.last_modified_date DESC
+            ORDER BY a.status ASC
                   """,
             nativeQuery = true
     )
@@ -113,13 +122,15 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.ward AS ward,
                 a.status AS status,
                 a.ward_code AS wardCode,
-                u.full_name AS fullName,
-                u.phone_number AS phoneNumber
+                a.province_id AS provinceId,
+                a.to_district_id AS districtId,
+                a.full_name AS fullName,
+                a.phone_number AS phoneNumber,
+                u.id AS userId
             FROM address a
             JOIN user u on a.id_user = u.id
             JOIN account acc on u.id = acc.id_user
             WHERE acc.id = :idAccount and a.status = 'DANG_SU_DUNG'
-            
                   """,
             nativeQuery = true
     )
@@ -133,19 +144,21 @@ public interface AddressRepository extends JpaRepository<Address, String> {
                 a.ward AS ward,
                 a.status AS status,
                 a.ward_code AS wardCode,
-                u.full_name AS fullName,
-                u.phone_number AS phoneNumber
+                a.province_id AS provinceId,
+                a.to_district_id AS districtId,
+                a.full_name AS fullName,
+                a.phone_number AS phoneNumber,
+                u.id AS userId
             FROM address a
             JOIN user u on a.id_user = u.id
             JOIN account acc on u.id = acc.id_user
             WHERE acc.id = :idAccount
-            
+            ORDER BY  a.status ASC
                   """,
             nativeQuery = true
     )
-    List<AddressAccountResponse> getListAddressByAcountId(@Param("idAccount") String idAccount);
+    List<AddressAccountResponse> getListAddressByAccountId(@Param("idAccount") String idAccount);
 
-//    Address getOneAddressByStatus(@Param("status") Status status,@Param("idUser") String idUser);
 
 }
 

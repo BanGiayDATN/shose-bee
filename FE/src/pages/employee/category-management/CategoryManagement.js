@@ -123,11 +123,16 @@ const CategoryManagement = () => {
     stt: index + 1,
   }));
 
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
+
   const columns = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      align: "center",
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -140,12 +145,14 @@ const CategoryManagement = () => {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
+      align: "center",
       sorter: (a, b) => a.lastModifiedDate - b.lastModifiedDate,
       render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
       title: "Trạng Thái",
       dataIndex: "status",
+      align: "center",
       key: "status",
       render: (text) => {
         const genderClass =
@@ -161,8 +168,9 @@ const CategoryManagement = () => {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
+      align: "center",
       render: (text, record) => (
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             type="primary"
             title="Chi tiết thể loại"
@@ -202,7 +210,7 @@ const CategoryManagement = () => {
               <Input
                 placeholder="Tìm kiếm"
                 type="text"
-                style={{ width: "50%", marginLeft: "10px" , height:"40px"}}
+                style={{ width: "50%", marginLeft: "10px", height: "40px" }}
                 name="keyword"
                 value={searchCategory.keyword}
                 onChange={handleKeywordChange}
@@ -249,12 +257,12 @@ const CategoryManagement = () => {
           <span style={{ fontSize: "18px", fontWeight: "500" }}>
             Danh sách thể loại
           </span>
-          <div style={{ marginLeft: "auto" , marginRight:"3%" }}>
+          <div style={{ marginLeft: "auto", marginRight: "3%" }}>
             <Button
               type="primary"
               icon={<FontAwesomeIcon icon={faPlus} />}
               onClick={() => setModalVisible(true)}
-              style={{height:"40px"}}
+              style={{ height: "40px" }}
             >
               Thêm
             </Button>
@@ -265,8 +273,9 @@ const CategoryManagement = () => {
             dataSource={listCategoryWithStt}
             rowKey="id"
             columns={columns}
-            pagination={{ pageSize: 3 }}
+            pagination={{ pageSize: 5 }}
             className="category-table"
+            rowClassName={getRowClassName}
           />
         </div>
         {/* modal thêm */}

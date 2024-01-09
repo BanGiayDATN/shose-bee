@@ -1,41 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { faBookmark, faEye } from "@fortawesome/free-solid-svg-icons";
 import {
-  Row,
-  Col,
-  Form,
-  InputNumber,
-  Select,
-  DatePicker,
-  Input,
-  Popconfirm,
   Button,
-  Table,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
   Modal,
+  Row,
+  Select,
+  Table,
 } from "antd";
-import {
-  faEdit,
-  faEye,
-  faFilter,
-  faKaaba,
-  faListAlt,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
-import { LeftOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { useAppDispatch, useAppSelector } from "../../../app/hook";
-import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
-import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
-import { ProductApi } from "../../../api/employee/product/product.api";
 import { ProducDetailtApi } from "../../../api/employee/product-detail/productDetail.api";
+import { ProductApi } from "../../../api/employee/product/product.api";
+import { PromotionApi } from "../../../api/employee/promotion/Promotion.api";
+import { useAppDispatch, useAppSelector } from "../../../app/hook";
 import {
   GetProductDetail,
   SetProductDetail,
 } from "../../../app/reducer/ProductDetail.reducer";
-
+import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
+import { useNavigate } from "react-router-dom";
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
   const [formErrors, setFormErrors] = useState({});
@@ -50,7 +40,7 @@ function CreateVoucherManagement() {
   const [listPromotion, setListPromotion] = useState([]);
   const { Option } = Select;
   const datas = useAppSelector(GetProductDetail);
-  const [form] = Form.useForm();
+  const nav = useNavigate();
   useEffect(() => {
     if (datas != null) {
       SetProductDetail(datas);
@@ -152,47 +142,59 @@ function CreateVoucherManagement() {
     return convertedFormData;
   };
   const handleSubmit = () => {
-    const isFormValid =
-      formData.name &&
-      formData.value &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.startDate < formData.endDate;
-
-    if (!isFormValid) {
-      const errors = {
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mãi" : "",
-        value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-      };
-      setFormErrors(errors);
+    console.log(selectedRowKeysDetail);
+    if (selectedRowKeysDetail.length === 0) {
+      toast.error("Vui lòng chọn sản phẩm để thêm");
       return;
     }
-    console.log(formData.idProductDetails);
-    // if(formData.idProductDetails === undefined){
-    //    toast.success("Bạn chưa chọn chi tiết sản phẩm cho khuyến mại!", {
-    //     autoClose: 5000,
-    //   })
-    //   return;
-    // }
-    PromotionApi.create(convertToLong()).then((res) => {
-      dispatch(CreatePromotion(res.data.data));
-      toast.success("Thêm thành công!", {
-        autoClose: 5000,
-      });
-      window.location.href = "/promotion-management";
+    Modal.confirm({
+      title: "Xác nhận thêm",
+      content: "Bạn có chắc chắn muốn thêm khuyến mại ?",
+      okText: "Thêm",
+      cancelText: "Hủy",
+      onOk() {
+        const isFormValid =
+          formData.name &&
+          formData.value &&
+          formData.startDate &&
+          formData.endDate &&
+          formData.startDate < formData.endDate &&
+          formData.endDate > dayjs().valueOf();
+
+        if (!isFormValid) {
+          const errors = {
+            name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
+            value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
+            startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+
+            endDate: !formData.endDate
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : formData.endDate <= dayjs().valueOf()
+              ? "Ngày kết thúc phải lớn hơn hiện tại"
+              : "",
+          };
+          setFormErrors(errors);
+          return;
+        }
+        PromotionApi.create(convertToLong()).then(
+          (res) => {
+            dispatch(CreatePromotion(res.data.data));
+            toast.success("Thêm thành công.", {
+              autoClose: 5000,
+            });
+            nav("/promotion-management");
+            setFormData({});
+            setListProductDetail([]);
+            onSelectChange("");
+            onSelectChangeDetail("");
+            setSelectedRowKeysDetail("");
+          },
+          (err) => {}
+        );
+      },
     });
-    setFormData({});
-    setListProductDetail([]);
-    onSelectChange("");
-    onSelectChangeDetail("");
-    setSelectedRowKeysDetail("");
   };
   const closeModal = () => {
     setModal(false);
@@ -287,12 +289,49 @@ function CreateVoucherManagement() {
       title: "Ảnh sản phẩm",
       dataIndex: "image",
       key: "image",
-      render: (text) => (
-        <img
-          src={text}
-          alt="Ảnh sản phẩm"
-          style={{ width: "70px", borderRadius: "5px" }}
-        />
+      render: (text, record) => (
+        <div style={{ width: "90px", height: "90px" }}>
+          <div
+            style={{
+              backgroundImage: `url(${text})`,
+              width: "100%",
+              height: "100%",
+              backgroundSize: "cover", // Đặt kích thước để hình ảnh bao phủ toàn bộ phần tử
+              backgroundPosition: "center", // Đặt vị trí của hình ảnh là trung tâm
+              borderRadius: "5px",
+              position: "relative",
+            }}
+          >
+            {record.value !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  right: 0,
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "3em",
+                    color: record.value > 50 ? "red" : "#ffcc00",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    fontSize: "11px",
+                    color: record.value > 50 ? "white" : "black", // Màu của văn bản
+                    zIndex: 1, // Đặt độ sâu trên cùng
+                    textAlign: "center",
+                  }}
+                >
+                  Giảm {record.value}%
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       ),
     },
     {
@@ -436,15 +475,10 @@ function CreateVoucherManagement() {
       <Row>
         <Col className="add-promotion" lg={{ span: 7, offset: 0 }}>
           <div className="title-add-promotion">
-            <h1>Thêm khuyến mại</h1>
+            <h1>Thêm đợt giảm giá</h1>
           </div>
 
-          <Form
-            form={form}
-            name="validateOnly"
-            layout="vertical"
-            autoComplete="off"
-          >
+          <Form name="validateOnly" layout="vertical" autoComplete="off">
             {fields.map((field, index) => {
               return (
                 <div>
@@ -453,11 +487,6 @@ function CreateVoucherManagement() {
                     label={field.label}
                     validateStatus={formErrors[field.name] ? "error" : ""}
                     help={formErrors[field.name] || ""}
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
                   >
                     {field.type === "number" && (
                       <InputNumber
@@ -469,7 +498,7 @@ function CreateVoucherManagement() {
                           handleInputChange(field.name, value);
                         }}
                         min="1"
-                        max="100"
+                        max="80"
                         formatter={field.formatter}
                       />
                     )}
@@ -524,38 +553,36 @@ function CreateVoucherManagement() {
             })}
 
             <Form.Item label=" ">
-              <Popconfirm
-                title="Thông báo"
-                description="Bạn có chắc chắn muốn thêm không ?"
-                onConfirm={() => {
-                  handleSubmit();
-                }}
-                okText="Có"
-                cancelText="Không"
+              <Button
+                className="button-add-promotion"
+                key="submit"
+                title="Thêm"
+                onClick={handleSubmit}
               >
-                <Button
-                  className="button-add-promotion"
-                  key="submit"
-                  title="Thêm"
-                >
-                  Thêm
-                </Button>
-              </Popconfirm>
+                Thêm
+              </Button>
             </Form.Item>
           </Form>
         </Col>
 
         <Col className="get-product" lg={{ span: 16, offset: 0 }}>
-          <Col >
+          <Col>
             <br></br>
             <br></br>
             <h1>Sản phẩm</h1>
 
-            <div style={{ display: "flex", margin: 20,justifyContent:"center",alignItems:"center" }}>
+            <div
+              style={{
+                display: "flex",
+                margin: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <p>Tìm kiếm</p>{" "}
               <Input
                 placeholder="Mã hoặc tên sản phẩm"
-                style={{ width: 400,height:40, marginLeft: 20 }}
+                style={{ width: 400, height: 40, marginLeft: 20 }}
                 onChange={(e) =>
                   handleInputChangeSearch("keyword", e.target.value)
                 }
@@ -597,26 +624,24 @@ function CreateVoucherManagement() {
         </Col>
       </Row>
 
-      {modal && (
-        <Modal
-          title="Chi tiết sản phẩm - khuyễn mại"
-          visible={modal}
-          onCancel={closeModal}
-          openModal={false}
-          okButtonProps={{ style: { display: "none" } }}
-          width={1000}
-        >
-          <div>
-            <Table
-              rowKey="code"
-              columns={columnsPromotion}
-              dataSource={updatedListPromotion}
-              pagination={{ pageSize: 5 }}
-              style={{ margin: "50px" }}
-            />
-          </div>
-        </Modal>
-      )}
+      <Modal
+        title="Chi tiết sản phẩm - khuyễn mại"
+        visible={modal}
+        onCancel={closeModal}
+        openModal={false}
+        okButtonProps={{ style: { display: "none" } }}
+        width={1000}
+      >
+        <div>
+          <Table
+            rowKey="code"
+            columns={columnsPromotion}
+            dataSource={updatedListPromotion}
+            pagination={{ pageSize: 5 }}
+            style={{ margin: "50px" }}
+          />
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -21,6 +21,7 @@ const voucherSlice = createSlice({
           state[index] = updatedVoucher;
         }
     },
+    
   },
 });
 

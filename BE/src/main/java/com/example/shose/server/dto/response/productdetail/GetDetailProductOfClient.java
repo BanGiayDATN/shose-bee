@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface GetDetailProductOfClient {
-    @Value("#{target.idProduct}")
-    String getIdProduct();
+
     @Value("#{target.idProductDetail}")
     String getIdProductDetail();
 
@@ -25,12 +24,26 @@ public interface GetDetailProductOfClient {
 
     @Value("#{target.quantity}")
     Integer getQuantity();
+    @Value("#{target.valuePromotion}")
+    BigDecimal getValuePromotion();
+    @Value("#{target.createdDate}")
+    String getCreatedDate();
+
     @Value("#{target.codeColor}")
     String getCodeColor();
 
-    @Value("#{target.listNameSize}")
-    String getListNameSize();
-
     @Value("#{target.nameSize}")
     String getNameSize();
+    @Value("#{target.listSize}")
+    String getListSize();
+
+    @Value("#{target.nameCategory}")
+    String getNameCategory();
+    @Value("#{target.nameBrand}")
+    String getNameBrand();
+    @Value("#{target.nameMaterial}")
+    String getNameMaterial();
+    @Value("#{target.nameSole}")
+    String getNameSole();
+
 }
