@@ -15,27 +15,7 @@ import java.util.List;
 @EnableCaching
 @EnableScheduling
 public class ServerApplication  {
-
-//    @Autowired
-//    private AccountRepository accountRepository;
-
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
     }
-
-
-//    @Override
-//    public void run(String... args) throws Exception {
-//        initializeDatabase();
-//    }
-//
-//    private void initializeDatabase() {
-//        Account account =
-//        if (accountRepository.count() == 0) {
-//            Account account = new Account();
-//
-//            accountRepository.save(account);
-//        }
-//    }
-
 }
