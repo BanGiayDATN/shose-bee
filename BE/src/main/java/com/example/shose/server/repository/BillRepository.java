@@ -303,7 +303,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
             LEFT JOIN image i ON max_images.max_image_id = i.id
             JOIN size s2 on detail.id_size = s2.id
             JOIN color c2 on detail.id_color = c2.id
-            WHERE bi.id = :idBill
+            WHERE bi.id = :idBill AND bd.quantity > 0
             """, nativeQuery = true)
     List<BillGiveBack> getBillGiveBack(@Param("idBill") String idBill);
 

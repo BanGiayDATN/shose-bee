@@ -41,7 +41,15 @@ import { faBookmark, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { PoinApi } from "../../../api/employee/poin/poin.api";
 import { useReactToPrint } from "react-to-print";
 
-function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNotify }) {
+function CreateBill({
+  removePane,
+  targetKey,
+  invoiceNumber,
+  code,
+  key,
+  id,
+  addNotify,
+}) {
   const [products, setProducts] = useState([]);
   const keyTab = useSelector((state) => state.bill.billAtCounter.key);
   const [isModalPayMentOpen, setIsModalPayMentOpen] = useState(false);
@@ -400,7 +408,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
         toast.error(error.response.data.message);
       });
   }, []);
-  const changeQuanTiTyAddProduct = useSelector((state) => state.bill.bill.change);
+  const changeQuanTiTyAddProduct = useSelector(
+    (state) => state.bill.bill.change
+  );
   useEffect(() => {
     if (valueAddressShip != null) {
       handleWardChange(valueAddressShip.children, valueAddressShip);
@@ -409,9 +419,9 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
       code: code,
       quantity: products.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.quantity;
-      }, 0)
-    })
-    console.log("gia tri code: "+  code);
+      }, 0),
+    });
+    console.log("gia tri code: " + code);
   }, [products, changeQuanTiTyAddProduct]);
 
   const loadData = () => {
@@ -432,10 +442,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
       (res) => {
         const data = [];
         res.data.data.map((item) => {
-          if (
-            item.status == "DANG_SU_DUNG"
-             && item.quantity > 0
-          ) {
+          if (item.status == "DANG_SU_DUNG" && item.quantity > 0) {
             data.push(item);
           }
         });
@@ -525,11 +532,13 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
     CustomerApi.fetchAll({ status }).then((res) => {
       const filteredCustomers = res.data.data
         .filter((customer) => {
+          const fullName = customer.fullName || "";
+          const phoneNumber = customer.phoneNumber || "";
           const toKeyword = keyword.toLowerCase();
-          const fullName = customer.fullName.toLowerCase();
+
           return (
-            fullName.includes(toKeyword) ||
-            customer.phoneNumber.includes(keyword)
+            fullName.toLowerCase().includes(toKeyword) ||
+            phoneNumber.includes(keyword)
           );
         })
         .map((customer, index) => ({
@@ -713,12 +722,14 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
       ship = shipFee;
     }
     var total = Math.max(
-        products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0) +
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) +
         ship -
         exchangeRateMoney -
-        voucher.discountPrice, 0);
+        voucher.discountPrice,
+      0
+    );
     var totaPayMent = dataPayment.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalMoney;
     }, 0);
@@ -935,12 +946,12 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
     }
     var dataPayMentTraSau = dataPayment;
     var total =
-        products.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0) +
-        ship -
-        exchangeRateMoney -
-        voucher.discountPrice;
+      products.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price * currentValue.quantity;
+      }, 0) +
+      ship -
+      exchangeRateMoney -
+      voucher.discountPrice;
     if (traSau) {
       dataPayMentTraSau = [
         {
@@ -955,10 +966,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
     var dataPayMentTienMat = dataPayment.filter(
       (payment) => payment.method === "TIEN_MAT"
     );
-    if (
-      dataPayMentTienMat != null &&
-      totaPayMent > total
-    ) {
+    if (dataPayMentTienMat != null && totaPayMent > total) {
       dataPayMentTraSau = [
         {
           actionDescription: "",
@@ -988,8 +996,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
       deliveryDate: ngayShip,
       code: code,
       openDelivery: isOpenDelivery,
-      totalExcessMoney:Math.max(
-        totaPayMent - Math.max(total, 0), 0),
+      totalExcessMoney: Math.max(totaPayMent - Math.max(total, 0), 0),
       poin: poin,
     };
     console.log(totalBill);
@@ -2470,13 +2477,16 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
                       width: "100%",
                     }}
                   >
-                    <Col span={2}>
-                      <CiDeliveryTruck
-                        style={{ height: "30px", width: "50px" }}
+                    <Col span={5}>
+                      <img
+                        src={
+                          "https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png"
+                        }
+                        style={{ width: "130px" }}
                       />
                     </Col>
                     <Col
-                      span={22}
+                      span={13}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -2914,7 +2924,7 @@ function CreateBill({ removePane, targetKey, invoiceNumber, code, key, id, addNo
                 height: "38px",
                 marginRight: "8px",
               }}
-              placeholder="Tìm kiếm"
+              placeholder="Tìm kiếm theo số điện thoại tên "
               type="text"
               name="keyword"
               value={searchCustomer.keyword}

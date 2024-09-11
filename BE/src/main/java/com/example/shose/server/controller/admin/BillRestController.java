@@ -173,4 +173,9 @@ public class BillRestController {
         return new ResponseObject(billService.getShipBill(request));
     }
 
+    @PostMapping("/send-mail-give-back/{id}")
+    public ResponseObject sendMailGiveBack (@PathVariable("id") String id){
+        return new ResponseObject(billService.sendMailGiveBack(id));
+    }
+
 }

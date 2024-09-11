@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import { CloseOutlined } from "@ant-design/icons";
 import { faCarRear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -90,7 +91,7 @@ function Payment() {
     return () => clearInterval(interval);
   }, []);
   useEffect(() => {
-    setTotalBillToPay(totalBill-voucher.value);
+    setTotalBillToPay(totalBill - voucher.value);
     formBillChange("afterPrice", totalBill);
     const updatedListproductOfBill = listproductOfBill.map((item) => {
       const { nameProduct, nameSize, image, ...rest } = item;
@@ -522,10 +523,16 @@ function Payment() {
                 {dayShip !== "" && (
                   <>
                     {" "}
-                    <FontAwesomeIcon
-                      icon={faCarRear}
-                      style={{ fontSize: "30px", marginRight: "20px" }}
-                    />{" "}
+                    <img
+                      src={
+                        "https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png"
+                      }
+                      style={{
+                        width: "110px",
+                        marginLeft: "5px",
+                        marginRight: "10px",
+                      }}
+                    />
                     <span style={{ fontSize: "20px", fontWeight: "500" }}>
                       {" "}
                       Thời gian nhận hàng dự kiến: {dayShip}

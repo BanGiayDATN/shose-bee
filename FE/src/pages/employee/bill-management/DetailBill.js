@@ -1081,7 +1081,7 @@ function DetailBill() {
                   </Col>
                   <Col
                     span={
-                      statusPresent > 3 &&
+                      statusPresent > 1 &&
                       bill.shippingTime != null &&
                       bill.statusBill !== "TRA_HANG"
                         ? 5
@@ -1089,7 +1089,7 @@ function DetailBill() {
                     }
                   >
                     {" "}
-                    {statusPresent > 3 &&
+                    {statusPresent > 1 &&
                     bill.shippingTime != null &&
                     bill.statusBill !== "TRA_HANG" ? (
                       <Button

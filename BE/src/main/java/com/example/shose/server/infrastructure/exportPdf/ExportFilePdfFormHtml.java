@@ -8,6 +8,7 @@ import com.example.shose.server.dto.response.billdetail.BillDetailResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.PaymentsMethod;
 import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
+import com.example.shose.server.infrastructure.constant.StatusBill;
 import com.example.shose.server.infrastructure.constant.StatusMethod;
 import com.example.shose.server.infrastructure.constant.StatusPayMents;
 import com.example.shose.server.repository.BillDetailRepository;
@@ -119,7 +120,7 @@ public class ExportFilePdfFormHtml {
     public InvoiceResponse getInvoiceResponse(Bill bill, BigDecimal totalExcessMoney) {
         CompletableFuture<String> qrFuture = CompletableFuture.supplyAsync(() -> qrCodeAndCloudinary.generateAndUploadQRCode(bill.getCode()));
 
-        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.getId(), "THANH_CONG"));
+        List<BillDetailResponse> billDetailResponses = billDetailRepository.findAllByIdBill(new BillDetailRequest(bill.getId(), ""));
         List<PaymentsMethod> paymentsMethods = paymentsMethodRepository.findAllByBill(bill);
         List<String> findAllPaymentByIdBillAndMethod = paymentsMethodRepository.findAllPayMentByIdBillAndMethod(bill.getId());
 
@@ -142,6 +143,7 @@ public class ExportFilePdfFormHtml {
                 .checkShip(true)
                 .totalTraSau(formatter.format(totalPaymentTraSau))
                 .moneyShip(formatter.format(bill.getMoneyShip()))
+                .checkBillTra(bill.getStatusBill() == StatusBill.TRA_HANG ? true : false)
                 .build();
 
         invoice.setTotalBill(totalMoney.compareTo(BigDecimal.ZERO) > 0 ? formatter.format(totalMoney) : "0 đ");
@@ -163,6 +165,7 @@ public class ExportFilePdfFormHtml {
                                     : billDetailRequest.getPrice().multiply(BigDecimal.valueOf(100 - billDetailRequest.getPromotion())).divide(BigDecimal.valueOf(100))))
                             .quantity(billDetailRequest.getQuantity())
                             .promotion(billDetailRequest.getPromotion())
+                            .status(billDetailRequest.getStatus().equals("TRA_HANG")  ? "Trả hàng ": "Thành công")
                             .build();
 
                     if (billDetailRequest.getPromotion() != null) {
@@ -176,7 +179,7 @@ public class ExportFilePdfFormHtml {
 
         List<InvoicePaymentResponse> paymentsMethodRequests = paymentsMethods.stream()
                 .map(item -> InvoicePaymentResponse.builder()
-                        .total(formatter.format(item.getMethod() == StatusMethod.TIEN_MAT ? item.getTotalMoney().add(totalExcessMoney) : item.getTotalMoney()))
+                        .total(formatter.format(item.getMethod() == StatusMethod.TIEN_MAT  ? item.getTotalMoney().add(totalExcessMoney) : item.getTotalMoney()))
                         .method(getPaymentMethod(item.getMethod()))
                         .status(getPaymentStatus(item.getStatus()))
                         .vnp_TransactionNo(item.getVnp_TransactionNo())

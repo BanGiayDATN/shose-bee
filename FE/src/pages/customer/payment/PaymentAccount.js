@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   faCarRear,
@@ -55,7 +56,7 @@ function PaymentAccount() {
   const comercial = [
     { title: "CHÀO MỪNG QUÝ KHÁCH!" },
     { title: " CHÚC QUÝ KHÁCH MUA HÀNG HAPPY!" },
-    { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 800K!" },
+    { title: " FREE SHIPPING VỚI HÓA ĐƠN TRÊN 2 triệu!" },
   ];
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
   const [totalAfter, setTotalAfter] = useState(0);
@@ -607,9 +608,15 @@ function PaymentAccount() {
               </div>
             </div>
             <div className="time-recieve-goods">
-              <FontAwesomeIcon
-                icon={faCarRear}
-                style={{ fontSize: "30px", marginRight: "20px" }}
+              <img
+                src={
+                  "https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png"
+                }
+                style={{
+                  width: "130px",
+                  marginLeft: "5px",
+                  marginRight: "10px",
+                }}
               />
               <span>Thời gian nhận hàng dự kiến: {dayShip}</span>
             </div>

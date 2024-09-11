@@ -3,6 +3,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import {
   faBookmark,
+  faList12,
+  faRectangleList,
   faRotateBack,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -27,6 +29,7 @@ import { useNavigate, useParams } from "react-router";
 import moment from "moment";
 import ModalQuantityGiveBack from "./modal/ModalQuantityGiveBack";
 import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
+import { useReactToPrint } from "react-to-print";
 
 export default function DetailBillGiveBack() {
   const [form] = Form.useForm();
@@ -558,9 +561,8 @@ export default function DetailBillGiveBack() {
         formData.append("data", JSON.stringify(dataProductGiveBack));
         formData.append("updateBill", JSON.stringify(updateBill));
         BillApi.UpdateBillGiveBack(formData)
-          .then(() => {
-            nav("/give-back-management");
-            toast.success("Hoàn trả thành công.");
+          .then((res) => {
+            getHtmlByIdBill2(res.data.data.code, totalMoneyBillGiveBack());
           })
           .catch((error) => {
             console.error(error);
@@ -569,6 +571,20 @@ export default function DetailBillGiveBack() {
       .catch((err) => console.log({ err }));
   };
 
+  const generatePDF = useReactToPrint({
+    content: () => document.getElementById("pdfContent"),
+    documentTitle: "Userdata",
+    onAfterPrint: () => {
+      nav("/give-back-management");
+      toast.success("Hoàn trả thành công.");
+    },
+  });
+  const getHtmlByIdBill2 = (id, totalExcessMoney) => {
+    BillApi.fetchHtmlIdBill(id, totalExcessMoney).then((res) => {
+      document.getElementById("pdfContent").innerHTML = res.data.data;
+      generatePDF();
+    });
+  };
   const [voucher, setVoucher] = useState(null);
   const total = totalMoneyBill() - totalMoneyBillGiveBack();
   useEffect(() => {
@@ -590,6 +606,10 @@ export default function DetailBillGiveBack() {
         }}
       >
         <div>
+          <h1 style={{ fontSize: "25px", marginBottom: "5px" }}>
+            <FontAwesomeIcon icon={faRectangleList} size="xl" /> Quản lý trả
+            hàng
+          </h1>
           <Card style={{ marginRight: "20px" }}>
             <h1 style={{ fontSize: "22px" }}>Thông tin khách hàng</h1>
             {bill != null && (
@@ -1081,6 +1101,9 @@ export default function DetailBillGiveBack() {
         onCancel={handleCancel}
         handleSusses={(values) => handleOk(values)}
       />
+      <div style={{ display: "none" }}>
+        <div id="pdfContent" />
+      </div>
     </>
   );
 }

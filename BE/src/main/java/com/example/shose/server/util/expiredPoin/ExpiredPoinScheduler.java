@@ -24,7 +24,7 @@ public class ExpiredPoinScheduler {
     @Autowired
     private UserReposiory userReposiory;
 
-    @Scheduled(cron = "0 0 2 1/30 * ?")
+    @Scheduled(cron = "0 0 0 1 6,12 ?")
     public void scheduledFixedDelayTask(){
         userReposiory.findAll().parallelStream().forEach(user ->{
             userReposiory.resetAllPoinUser(user.getId());

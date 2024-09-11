@@ -242,4 +242,11 @@ export class BillApi {
       data: data,
     });
   };
+
+  static sendMailGiveBack = (id) => {
+    return request({
+      method: "POST",
+      url: `/admin/bill/send-mail-give-back/${id}`,
+    });
+  };
 }

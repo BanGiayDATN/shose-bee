@@ -490,12 +490,12 @@ public class DBGenerator implements CommandLineRunner {
 //                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
 //                .points(12)
 //                .build();
-//        User oanh = User.builder()
-//                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
-//                .fullName("Nguyễn Thi Phương Oanh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("oanhntpph26142@fpt.edu.vn")
-//                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
-//                .points(12)
-//                .build();
+        User oanh = User.builder()
+                .avata("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo1OaW3VfQMuHMJiqrUGUxoEUDI4aNVu6mWQ&usqp=CAU")
+                .fullName("Nguyễn Thi Phương Oanh").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("oanhntpph26142@fpt.edu.vn")
+                .gender(true).phoneNumber("0987654321").status(Status.DANG_SU_DUNG)
+                .points(12)
+                .build();
 //        User tuThang = User.builder()
 //                .avata("https://res-console.cloudinary.com/dyq10bthd/thumbnails/v1/image/upload/v1698666418/cmFqOGRqc2xvMWdlcHBscTdzMnA=/grid_landscape")
 //                .fullName("Dương Tu Thắng").dateOfBirth(new ConvertDateToLong().dateToLong("01/06/20000")).email("thangdtph27626@fpt.edu.vn")
@@ -520,7 +520,7 @@ public class DBGenerator implements CommandLineRunner {
         userReposiory.save(user3);
 //        userReposiory.save(hao);
 //        userReposiory.save(vinh);
-//        userReposiory.save(oanh);
+        userReposiory.save(oanh);
 //        userReposiory.save(diem);
 //        userReposiory.save(tuThang);
 //        userReposiory.save(T_Nguyen);
@@ -532,14 +532,14 @@ public class DBGenerator implements CommandLineRunner {
 //        Account accountVinh = Account.builder().user(vinh).email(vinh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
 //        Account accountTu = Account.builder().user(tuThang).email(tuThang.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
 //        Account accountDiem = Account.builder().user(diem).email(diem.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
-//        Account accountOanh = Account.builder().user(oanh).email(oanh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
+        Account accountOanh = Account.builder().user(oanh).email(oanh.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
 //        Account accountT_Nguyen = Account.builder().user(T_Nguyen).email(T_Nguyen.getEmail()).password("123").roles(Roles.ROLE_ADMIN).build();
         accountRepository.save(account1);
         accountRepository.save(account2);
         accountRepository.save(account3);
 //        accountRepository.save(accountHao);
 //        accountRepository.save(accountVinh);
-//        accountRepository.save(accountOanh);
+        accountRepository.save(accountOanh);
 //        accountRepository.save(accountDiem);
 //        accountRepository.save(accountTu);
 //        accountRepository.save(accountT_Nguyen);

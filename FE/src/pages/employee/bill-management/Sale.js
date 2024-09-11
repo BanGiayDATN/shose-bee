@@ -36,11 +36,10 @@ function Sale() {
   const addNotify = (notify) => {
     var index = quantityNotify.findIndex((item) => item.code === notify.code);
     if (index != -1) {
-      var data = quantityNotify
-      data.splice(index,1,notify)
+      var data = quantityNotify;
+      data.splice(index, 1, notify);
       setQuantityNotify(data);
     }
-   
   };
   useEffect(() => {
     BillApi.fetchAllBillAtCounter().then((res) => {
@@ -71,21 +70,21 @@ function Sale() {
           const id = String(index + 1);
           setDataKey([...dataKey, item.code]);
           const newActiveKey = `${newTabIndex.current}`;
-          return  {
+          return {
             label: newTabIndex.current++,
             id: item.id,
             code: item.code,
             invoiceNumber: 1,
             key: newActiveKey,
-          }
+          };
         });
         const dataNotify = res.data.data.map((item, index) => {
-          return  {
+          return {
             code: item.code,
-            quantity: 0
-          }
+            quantity: 0,
+          };
         });
-        setQuantityNotify(dataNotify)
+        setQuantityNotify(dataNotify);
         dispatch(getAllBillWait(defaultPanes));
         setActiveKey("1");
       }
@@ -114,27 +113,27 @@ function Sale() {
   }, []);
 
   const add = (e) => {
-    if (items.length >= 5) {
+    if (items.length >= 10) {
       toast.warning(`Không thể tạo thêm hóa đơn`);
     } else {
       BillApi.getCodeBill().then((res) => {
         setDataKey([...dataKey, res.data.data.code]);
         const newActiveKey = `${newTabIndex.current}`;
         dispatch(
-          addBillWait( {
+          addBillWait({
             label: newTabIndex.current++,
             id: res.data.data.id,
             code: res.data.data.code,
             invoiceNumber: 1,
             key: newActiveKey,
-          },)
+          })
         );
-        const dataNotify = quantityNotify
+        const dataNotify = quantityNotify;
         quantityNotify.push({
           code: res.data.data.code,
-          quantity: 0
-        })
-        setQuantityNotify(dataNotify)
+          quantity: 0,
+        });
+        setQuantityNotify(dataNotify);
         dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`));
         setActiveKey(newActiveKey);
         setChangTab(newActiveKey);
@@ -168,23 +167,23 @@ function Sale() {
       BillApi.getCodeBill().then((res) => {
         const newActiveKey = `${newTabIndex.current}`;
         dispatch(
-          addBillWait( {
+          addBillWait({
             label: newTabIndex.current++,
             id: res.data.data.id,
             code: res.data.data.code,
             invoiceNumber: 1,
             key: newActiveKey,
             code: res.data.data.code,
-          },)
+          })
         );
         dispatch(addBillAtCounTer(`Hóa đơn ${newTabIndex.current}`));
         setActiveKey(newActiveKey);
-        const dataNotify = quantityNotify
+        const dataNotify = quantityNotify;
         quantityNotify.push({
           code: res.data.data.code,
-          quantity: 0
-        })
-        setQuantityNotify(dataNotify)
+          quantity: 0,
+        });
+        setQuantityNotify(dataNotify);
         setChangTab(newActiveKey);
         setInvoiceNumber(invoiceNumber + 1);
         dispatch(updateKeyBillAtCounter(newActiveKey));
@@ -198,7 +197,7 @@ function Sale() {
       remove(activeKey, invoiceNumber, items);
     }
   };
-console.log(items);
+  console.log(items);
   return (
     <div>
       <Row style={{ background: "white", width: "100%" }}>
@@ -225,26 +224,30 @@ console.log(items);
             type="editable-card"
             onEdit={onEdit}
             items={items.map((item) => {
-              var index = quantityNotify.findIndex((notify) => notify.code == item.code)
+              var index = quantityNotify.findIndex(
+                (notify) => notify.code == item.code
+              );
               console.log(index);
               return {
                 label: (
-                  <Badge count={index != -1? quantityNotify[index]?.quantity: null}>
-                    <span>  {"Hóa đơn "+ item?.label}</span>
+                  <Badge
+                    count={index != -1 ? quantityNotify[index]?.quantity : null}
+                  >
+                    <span> {"Hóa đơn " + item?.label}</span>
                   </Badge>
                 ),
                 key: item.key,
                 children: (
-                    <CreateBill
-                      code={item.code}
-                      key={item.label}
-                      id={item.id}
-                      style={{ width: "100%" }}
-                      invoiceNumber={1}
-                      removePane={remove}
-                      targetKey={item.key}
-                      addNotify={addNotify}
-                    />
+                  <CreateBill
+                    code={item.code}
+                    key={item.label}
+                    id={item.id}
+                    style={{ width: "100%" }}
+                    invoiceNumber={1}
+                    removePane={remove}
+                    targetKey={item.key}
+                    addNotify={addNotify}
+                  />
                 ),
                 code: item.code,
               };

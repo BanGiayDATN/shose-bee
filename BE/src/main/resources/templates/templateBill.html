@@ -150,6 +150,7 @@
                 <td class="th"><strong>Tên</strong></td>
                 <td class="th"><strong>Giá</strong></td>
                 <td class="th"><strong>Số lương</strong></td>
+                <td class="th"><strong>Trạng thái</strong></td>
                 <td class="th"><strong>Tổng</strong></td>
                 </thead>
                 <tbody>
@@ -166,6 +167,7 @@
                             </span>
                         </td>
                         <td class="td" th:text="${item.quantity }">1</td>
+                        <td class="td" th:text="${item.status }">1</td>
                         <td class="td" th:text="${item.sum}">$10.99</td>
                     </tr>
                 </th:block>
@@ -175,7 +177,8 @@
                     <tr>
                         <td class="thick-line" ></td>
                         <td class="thick-line"></td>
-                        <td class="thick-line " style="font-size: 16px; font-weight: 500"><strong>Tổng Tiền hàng:</strong></td>
+                        <td class="thick-line " style="font-size: 16px; font-weight: 500"><strong th:if="${!invoice.checkBillTra}">Tổng Tiền hàng:</strong>
+                            <strong th:if="${invoice.checkBillTra}">Tổng Tiền hàng mua:</strong></td>
                         <td class="thick-line text-end" float="right" style="font-size: 18px; font-weight: 600" th:text="${invoice.totalMoney}"></td>
                     </tr>
                     <tr>
@@ -208,8 +211,8 @@
             </table>
         </div>
     </div>
-    <div style="padding: 20px 10px;border-top-style: dashed; border-width: 1px; border-color: rgb(0, 0, 0);">
-        <div class="" style="margin-right: 20px; margin-bottom: 50px">
+    <div  style="padding: 20px 10px;border-top-style: dashed; border-width: 1px; border-color: rgb(0, 0, 0);">
+        <div class="" style="margin-right: 20px; margin-bottom: 50px" th:if="${!invoice.checkBillTra}">
             <table class="table table-condensed" style="width: 100%">
                 <thead>
                 </thead>
@@ -230,7 +233,7 @@
             <table class="table table-condensed" style="width: 100%">
                 <thead>
                 </thead>
-                <tbody>
+                <tbody th:if="${!invoice.checkBillTra}">
                     <tr>
                         <td  float="right">Tổng thanh toán:</td>
                         <td class="text-center" float="right" th:text="${invoice.totalPayment}"></td>
@@ -239,6 +242,12 @@
                         <td  float="right">Tiền Thối lại:</td>
                         <td class="text-center" float="right" th:text="${invoice.change}"></td>
                     </tr>
+                </tbody>
+                <tbody th:if="${invoice.checkBillTra}">
+                <tr>
+                    <td  float="right">Tổng tiền trả:</td>
+                    <td class="text-center" float="right" th:text="${invoice.change}"></td>
+                </tr>
                 </tbody>
             </table>
         </div>

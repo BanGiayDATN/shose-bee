@@ -28,6 +28,7 @@ export default function Policy() {
         getItem("Chính sách bảo mật", "6"),
         getItem("Chính sách bảo mật thông tin thanh toán", "7"),
         getItem("Chính sách dành cho khách hàng", "8"),
+        getItem("Chính sách điểm thưởng thành viên", "16"),
         getItem("Chính sách thanh toán", "9"),
         getItem("Điều khoản dịch vụ", "10"),
         getItem("Chính sách trả hàng", "4"),
@@ -60,7 +61,7 @@ export default function Policy() {
         style={{ marginTop: "30px", marginBottom: "30px" }}
       >
         <Col span={8}>
-          <Card style={{ maxHeight: "670px" }}>
+          <Card style={{ maxHeight: "750px" }}>
             <h2>Thông tin bạn cần biết</h2>
             <hr />
             <Menu
